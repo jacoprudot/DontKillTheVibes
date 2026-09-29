@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
-import * as { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 
 export class Sandbox {
   private workspaceRoot: string;
@@ -12,6 +12,15 @@ export class Sandbox {
     
     // Create a temporary directory for sandbox operations
     this.tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dontkillthevibes-'));
+
+    // Ensure the temp dir does not leak if the process exits without cleanup()
+    process.on('exit', () => {
+      try {
+        fs.rmSync(this.tempDir, { recursive: true, force: true });
+      } catch {
+        // Best-effort cleanup on exit
+      }
+    });
     
     // Ensure workspace root exists
     if (!fs.existsSync(this.workspaceRoot)) {
@@ -29,26 +38,27 @@ export class Sandbox {
   /**
    * Executes a command in the sandbox with restrictions
    */
-  execSandbox(command: string, options: { timeout?: number; env?: NodeJS.ProcessEnv } = {}): string {
+  execSandbox(bin: string, args: string[], options: { timeout?: number; env?: NodeJS.ProcessEnv; cwd?: string } = {}): string {
     try {
-      // Default options
-      const opts = {
-        timeout: options.timeout || 30000, // 30 seconds default
-        env: {
-          ...process.env,
-          // Restrict environment to prevent leakage
-          PATH: process.env.PATH,
-          HOME: this.tempDir,
-          TMPDIR: this.tempDir,
-          ...(options.env || {})
-        },
-        cwd: this.tempDir,
-        encoding: 'utf8',
-        ...options
+      // Caller-supplied env is applied FIRST, then the safe fields are
+      // forced on top so options can never override PATH/HOME/TMPDIR.
+      // No process.env spread: only a minimal, non-sensitive environment
+      // is passed to the child.
+      const restrictedEnv: NodeJS.ProcessEnv = {
+        ...(options.env || {}),
+        PATH: process.env.PATH || '',
+        HOME: this.tempDir,
+        TMPDIR: this.tempDir
       };
+
+      // Execute command in sandbox safely without shell
+      const result = execFileSync(bin, args, {
+        timeout: options.timeout || 30000, // 30 seconds default
+        env: restrictedEnv,
+        cwd: options.cwd || this.tempDir,
+        encoding: 'utf8'
+      });
       
-      // Execute command in sandbox
-      const result = execSync(command, opts);
       return result.trim();
     } catch (error) {
       if (error instanceof Error) {

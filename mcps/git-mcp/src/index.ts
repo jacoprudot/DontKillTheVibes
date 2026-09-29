@@ -2,10 +2,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
   CallToolRequestSchema,
-  ErrorCode,
-  ListResourcesRequestSchema,
-  ListToolsRequestSchema,
-  ReadResourceRequestSchema
+  ListToolsRequestSchema
 } from '@modelcontextprotocol/sdk/types.js';
 
 // Import tool handlers
@@ -15,6 +12,43 @@ import { getBranchTree } from './tools/get-branch-tree.js';
 import { findLargeFiles } from './tools/find-large-files.js';
 import { GitWrapper } from './git-wrapper.js';
 import { PathGuard } from './path-guard.js';
+import { logAudit } from './audit-log.js';
+
+interface ToolResult {
+  success: boolean;
+  data?: unknown;
+  error?: { code: string; message: string; retryable: boolean };
+}
+
+/**
+ * Wraps the internal {success,data,error} contract into a conformant
+ * MCP CallToolResult with a content array.
+ */
+function toCallToolResult(toolName: string, args: unknown, result: ToolResult) {
+  logAudit(toolName, args, result);
+  if (result.success) {
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({ success: true, data: result.data })
+        }
+      ]
+    };
+  }
+  return {
+    isError: true,
+    content: [
+      {
+        type: 'text' as const,
+        text: JSON.stringify({
+          success: false,
+          error: result.error ?? { code: 'UNKNOWN_ERROR', message: 'Unknown error', retryable: true }
+        })
+      }
+    ]
+  };
+}
 
 async function main() {
   const server = new Server(
@@ -24,7 +58,6 @@ async function main() {
     },
     {
       capabilities: {
-        resources: {},
         tools: {},
       }
     }
@@ -44,8 +77,8 @@ async function main() {
           "type": "object",
           "properties": {
             "file": {"type": "string"},
-            "start_line": {"type": "number", "optional": true},
-            "end_line": {"type": "number", "optional": true}
+            "start_line": {"type": "number"},
+            "end_line": {"type": "number"}
           },
           "required": ["file"]
         }
@@ -57,7 +90,7 @@ async function main() {
           "type": "object",
           "properties": {
             "since_commit": {"type": "string"},
-            "paths": {"type": "string", "optional": true}
+            "paths": {"type": "string"}
           },
           "required": ["since_commit"]
         }
@@ -68,7 +101,7 @@ async function main() {
         "inputSchema": {
           "type": "object",
           "properties": {
-            "max_depth": {"type": "number", "optional": true}
+            "max_depth": {"type": "number"}
           }
         }
       },
@@ -78,7 +111,7 @@ async function main() {
         "inputSchema": {
           "type": "object",
           "properties": {
-            "size_threshold_mb": {"type": "number", "optional": true}
+            "size_threshold_mb": {"type": "number"}
           }
         }
       }
@@ -86,26 +119,40 @@ async function main() {
   }));
 
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    const toolName = request.params.name;
+    const args = request.params.arguments;
     try {
-      switch (request.params.name) {
+      let result: ToolResult;
+      switch (toolName) {
         case "get_blame":
-          return await getBlame(gitWrapper, request.params.arguments as any);
+          result = await getBlame(gitWrapper, pathGuard, args as any);
+          break;
         case "get_diff_since":
-          return await getDiffSince(gitWrapper, request.params.arguments as any);
+          result = await getDiffSince(gitWrapper, pathGuard, args as any);
+          break;
         case "get_branch_tree":
-          return await getBranchTree(gitWrapper, request.params.arguments as any);
+          result = await getBranchTree(gitWrapper, pathGuard, args as any);
+          break;
         case "find_large_files":
-          return await findLargeFiles(gitWrapper, request.params.arguments as any);
+          result = await findLargeFiles(gitWrapper, pathGuard, args as any);
+          break;
         default:
-          throw new Error(`Unknown tool: ${request.params.name}`);
+          throw new Error(`Unknown tool: ${toolName}`);
       }
+      return toCallToolResult(toolName, args, result);
     } catch (error) {
+      const errorObj = {
+        code: "INTERNAL_ERROR",
+        message: error instanceof Error ? error.message : String(error),
+        retryable: true
+      };
+      logAudit(toolName, args, { success: false, error: errorObj });
       return {
         isError: true,
         content: [
           {
-            type: "text",
-            text: `Error: ${error instanceof Error ? error.message : String(error)}`
+            type: "text" as const,
+            text: JSON.stringify({ success: false, error: errorObj })
           }
         ]
       };

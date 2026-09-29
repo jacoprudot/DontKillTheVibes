@@ -39,6 +39,17 @@ export async function getDiffSince(
         }
       };
     }
+
+    if (error instanceof Error && (error.message.includes('Invalid git ref') || error.message.includes('Invalid pathspec'))) {
+      return {
+        success: false,
+        error: {
+          code: "INVALID_COMMIT",
+          message: error.message,
+          retryable: false
+        }
+      };
+    }
     
     return {
       success: false,

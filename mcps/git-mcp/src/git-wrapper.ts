@@ -1,17 +1,51 @@
 import { PathGuard } from './path-guard.js';
-import * as { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
+import { statSync } from 'fs';
 
 export class GitWrapper {
   constructor(private pathGuard: PathGuard) {}
 
   /**
+   * Validates a git ref (commit SHA, HEAD, branch/tag name).
+   * Rejects anything that could be interpreted as a shell metacharacter
+   * or a command-line option. All commands run without a shell
+   * (execFileSync), so this is defense-in-depth.
+   */
+  static validateRef(ref: string): string {
+    if (/^[0-9a-f]{7,40}$/i.test(ref)) {
+      return ref;
+    }
+    // Allow refs like HEAD, main, feature/foo, v1.2.3
+    if (
+      /^[A-Za-z0-9._\/-]+$/.test(ref) &&
+      !ref.includes('..') &&
+      !ref.startsWith('-')
+    ) {
+      return ref;
+    }
+    throw new Error(`Invalid git ref: ${ref}`);
+  }
+
+  /**
+   * Validates a git pathspec (single relative path used with `--`).
+   */
+  static validatePathspec(pathspec: string): string {
+    if (
+      /^[A-Za-z0-9._\/\\-]+$/.test(pathspec) &&
+      !pathspec.split(/[\/\\]/).includes('..') &&
+      !pathspec.startsWith('-')
+    ) {
+      return pathspec;
+    }
+    throw new Error(`Invalid pathspec: ${pathspec}`);
+  }
+
+  /**
    * Executes a git command safely
    */
-  private execGit(command: string): string {
+  private execGit(args: string[]): string {
     try {
-      // In a real implementation, we would use more sophisticated sanitization
-      // This is a simplified version for demonstration
-      const result = execSync(`git ${command}`, { 
+      const result = execFileSync('git', args, { 
         encoding: 'utf8',
         timeout: 30000 // 30 second timeout
       });
@@ -37,14 +71,21 @@ export class GitWrapper {
     }
     
     // Build git blame command
-    let command = `blame --porcelain ${safePath}`;
+    const args = ['blame', '--porcelain'];
     if (startLine !== undefined && endLine !== undefined) {
-      command += ` -L ${startLine},${endLine}`;
+      if (!Number.isInteger(startLine) || !Number.isInteger(endLine) || startLine < 1 || endLine < startLine) {
+        throw new Error(`Invalid line range: ${startLine}-${endLine}`);
+      }
+      args.push(`-L`, `${startLine},${endLine}`);
     } else if (startLine !== undefined) {
-      command += ` -L ${startLine}`;
+      if (!Number.isInteger(startLine) || startLine < 1) {
+        throw new Error(`Invalid start line: ${startLine}`);
+      }
+      args.push(`-L`, `${startLine}`);
     }
+    args.push(safePath);
     
-    const result = this.execGit(command);
+    const result = this.execGit(args);
     return this.parseBlameResult(result);
   }
 
@@ -52,15 +93,21 @@ export class GitWrapper {
    * Gets diff since a specific commit
    */
   async getDiffSince(sinceCommit: string, paths?: string) {
-    // Build git diff command
-    let command = `diff ${sinceCommit}`;
+    // Validate git ref and pathspec before use
+    GitWrapper.validateRef(sinceCommit);
     if (paths) {
-      command += ` -- ${paths}`;
+      GitWrapper.validatePathspec(paths);
+    }
+
+    // Build git diff command
+    const args = ['diff', sinceCommit, '--'];
+    if (paths) {
+      args.push(paths);
     } else {
-      command += ` -- .`;
+      args.push('.');
     }
     
-    const result = this.execGit(command);
+    const result = this.execGit(args);
     return this.parseDiffResult(result);
   }
 
@@ -69,7 +116,7 @@ export class GitWrapper {
    */
   async getBranchTree(maxDepth?: number) {
     // Get all branches
-    const branchesResult = this.execGit('branch --list');
+    const branchesResult = this.execGit(['branch', '--list']);
     const branches = branchesResult
       .split('\n')
       .map(b => b.trim().replace(/^[\*\s]+/, '')) // Remove * and leading spaces
@@ -80,22 +127,25 @@ export class GitWrapper {
     
     for (const branchName of branches) {
       try {
+        // Skip branch names that don't pass ref validation
+        GitWrapper.validateRef(branchName);
+
         // Get latest commit for branch
-        const commitResult = this.execGit(`rev-parse ${branchName}`);
+        const commitResult = this.execGit(['rev-parse', branchName]);
         const commit = commitResult.trim();
         
         // Calculate ahead/behind compared to main/master
         let ahead = 0;
         let behind = 0;
         try {
-          const mergeBaseResult = this.execGit(`merge-base HEAD ${branchName}`);
+          const mergeBaseResult = this.execGit(['merge-base', 'HEAD', branchName]);
           const mergeBase = mergeBaseResult.trim();
           
-          const aheadResult = this.execGit(`rev-list --count ${mergeBase}..${branchName}`);
-          ahead = parseInt(aheadResult.trim()) || 0;
+          const aheadResult = this.execGit(['rev-list', '--count', `${mergeBase}..${branchName}`]);
+          ahead = aheadResult ? parseInt(aheadResult.trim()) : 0;
           
-          const behindResult = this.execGit(`rev-list --count ${branchName}..${mergeBase}`);
-          behind = parseInt(behindResult.trim()) || 0;
+          const behindResult = this.execGit(['rev-list', '--count', `${branchName}..${mergeBase}`]);
+          behind = behindResult ? parseInt(behindResult.trim()) : 0;
         } catch (e) {
           // If we can't calculate ahead/behind, continue with zeros
         }
@@ -134,7 +184,7 @@ export class GitWrapper {
     const thresholdBytes = (sizeThresholdMb || 10) * 1024 * 1024; // Default 10MB
     
     // Get all files in repository
-    const lsFilesResult = this.execGit('ls-files');
+    const lsFilesResult = this.execGit(['ls-files']);
     const filePaths = lsFilesResult
       .split('\n')
       .map(f => f.trim())
@@ -153,19 +203,13 @@ export class GitWrapper {
         }
         
         // Get file size
-        const stats = this.pathGuard.isFile(safePath) 
-          ? require('fs').statSync(safePath) 
-          : null;
-          
-        if (!stats) {
-          continue;
-        }
+        const stats = statSync(safePath);
         
         const sizeBytes = stats.size;
         if (sizeBytes >= thresholdBytes) {
           // Get latest commit for this file
           try {
-            const commitResult = this.execGit(`log -1 --format=%H -- ${filePath}`);
+            const commitResult = this.execGit(['log', '-1', '--format=%H', '--', filePath]);
             const commit = commitResult.trim();
             
             largeFiles.push({
@@ -214,17 +258,17 @@ export class GitWrapper {
     let currentTime = 0;
     
     for (const line of lines) {
-      if (line.startsWith('')) {
-        // Commit line
+      // Commit line: 40-character hex SHA-1
+      if (/^[0-9a-f]{40}/.test(line)) {
         const parts = line.split(' ');
-        if (parts.length >= 2) {
-          currentCommit = parts[1];
+        if (parts.length >= 1) {
+          currentCommit = parts[0] || '';
         }
       } else if (line.startsWith('author ')) {
         currentAuthor = line.substring(7);
       } else if (line.startsWith('author-time ')) {
         const timeStr = line.substring(12);
-        currentTime = parseInt(timeStr) * 1000; // Convert to milliseconds
+        currentTime = timeStr ? parseInt(timeStr) * 1000 : 0; // Convert to milliseconds
       } else if (line.startsWith('\t')) {
         // Actual content line
         currentLine++;
@@ -269,8 +313,9 @@ export class GitWrapper {
         // Start new file
         const parts = line.split(' ');
         if (parts.length >= 4) {
-          const fromPath = parts[2].slice(2); // Remove 'b/'
-          const toPath = parts[3].slice(2);   // Remove 'b/'
+          // Using non-null assertion operator since we've checked length >= 4
+          const fromPath = parts[2]!.slice(2); // Remove 'b/'
+          const toPath = parts[3]!.slice(2);   // Remove 'b/'
           currentFile = {
             path: toPath,
             additions: 0,

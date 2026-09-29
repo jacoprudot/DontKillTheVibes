@@ -1,4 +1,5 @@
 {
+  "_comment": "Local server paths (command/args) are relative to the repo root. The custom MCP servers (git-mcp, benchmark-mcp) must be built first: pnpm --filter git-mcp build && pnpm --filter benchmark-mcp build",
   "servers": {
     "github": {
       "command": "npx",
@@ -16,6 +17,18 @@
         "-y",
         "@modelcontextprotocol/server-filesystem",
         "."
+      ]
+    },
+    "git-mcp": {
+      "command": "node",
+      "args": [
+        "mcps/git-mcp/dist/index.js"
+      ]
+    },
+    "benchmark-mcp": {
+      "command": "node",
+      "args": [
+        "mcps/benchmark-mcp/dist/index.js"
       ]
     }
   }
