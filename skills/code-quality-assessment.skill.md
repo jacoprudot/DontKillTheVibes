@@ -12,12 +12,12 @@ inputs:
   - Linter/config files (.eslintrc, prettier.config, pylint, rubocop)
   - Test files (to gauge test-to-code ratio)
   - Dependency manifests (for outdated/linter-plugin detection)
-  - Access to filesystem-mcp and git-mcp
+  - Access to filesystem and git-mcp
 outputs:
   - findings[] (per templates/finding-schema.json with module: "code")
   - code-quality-summary.json (complexity metrics, duplication analysis, test coverage estimates)
 mcpDependencies:
-  - filesystem-mcp
+  - filesystem
   - git-mcp
 decisionTrees:
   - Complexity Thresholds (Per Function)
@@ -58,13 +58,13 @@ Before using this skill, the LLM should gather:
 4. Dependency manifests:
    - `package.json`, `requirements.txt`, `pom.xml`, `build.gradle`, `Cargo.toml`, `go.mod`
 5. Access to the following MCPs:
-   - `filesystem-mcp`: For reading source code and configuration files
+   - `filesystem`: For reading source code and configuration files
    - `git-mcp`: For analyzing code evolution and identifying hotspots
 
 ## Analysis Procedure
 
 ### Step 1: Source Discovery
-Use filesystem-mcp.glob_search to locate all source code files while excluding dependencies and build artifacts.
+Use filesystem.glob_search to locate all source code files while excluding dependencies and build artifacts.
 
 ### Step 2: Complexity Analysis
 Apply complexity decision trees to functions/methods using AST-like reasoning (simulated via pattern matching).
@@ -444,7 +444,7 @@ function getUserProfile(userId) {
     - Remediation: "Add .catch(err) => { throw err; } or use try/catch with async/await"
     - Evidence: ".then().then() without .catch() - network errors will be unhandled"
     - Metric: "Unhandled rejection risk: network failure, timeout, 5xx response"
-  - code-unhandled-promise-2 (severity: high, effort: S):
+  - code-unhandled-promise-4 (severity: high, effort: S):
     - Description: "Returned promise not handled by caller"
     - Location: Call site where getUserProfile(123) is used
     - Remediation: "Either await the promise or handle with .then/.catch"
@@ -469,7 +469,7 @@ function getUserProfile(userId) {
 - Difficult to test and maintain
 **Output**:
 - findings[]:
-  - code-god-object-1 (severity: high, effort: L):
+  - code-god-object-6 (severity: high, effort: L):
     - Description: "God object managing multiple unrelated concerns"
     - Location: src/core/datamanager.py line 1 (class definition)
     - Remediation: "Split into: DatabaseManager, FileStorage, NotificationService, OrderProcessor"

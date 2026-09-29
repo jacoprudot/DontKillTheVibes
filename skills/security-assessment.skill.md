@@ -12,13 +12,13 @@ inputs:
   - Configuration files (for security misconfigurations)
   - Dependency manifests (for vulnerability scanning)
   - Optional: GitHub token (for accessing private repo security features)
-  - Access to github-mcp, filesystem-mcp, and git-mcp
+  - Access to github, filesystem, and git-mcp
 outputs:
   - findings[] (per templates/finding-schema.json with module: "security")
   - security-summary.json (vulnerability analysis, secret detection results, configuration issues)
 mcpDependencies:
-  - github-mcp
-  - filesystem-mcp
+  - github
+  - filesystem
   - git-mcp
 decisionTrees:
   - Secret Detection
@@ -42,6 +42,8 @@ Use this skill after establishing project context to evaluate:
 
 ## Inputs
 
+> **Data Availability:** Rules that require scanning git history for secrets (e.g., `security-secret-in-history-2`) need full repository history access. If unavailable, skip the rule and lower confidence for dependent findings.
+
 Before using this skill, the LLM should gather:
 1. Code files:
    - Application code (`**/*.js`, `**/*.ts`, `**/*.py`, `**/*.java`, `**/*.go`, `**/*.cs`, etc.)
@@ -59,17 +61,17 @@ Before using this skill, the LLM should gather:
    - Environment files (`.env`, `.env.*`, `.env.local`)
    - Vault/secrets manager configs
 5. Access to the following MCPs:
-   - `github-mcp`: For accessing GitHub security features (secret scanning, Dependabot)
-   - `filesystem-mcp`: For reading code and configuration files
+   - `github`: For accessing GitHub security features (secret scanning, Dependabot)
+   - `filesystem`: For reading code and configuration files
    - `git-mcp`: For analyzing secret history in git
 
 ## Analysis Procedure
 
 ### Step 1: Secret Discovery
-Use filesystem-mcp and git-mcp to search for secrets in code and git history.
+Use filesystem and git-mcp to search for secrets in code and git history.
 
 ### Step 2: Dependency Vulnerability Scan
-Use github-mcp (if token available) or filesystem-mcp to check dependencies against vulnerability databases.
+Use github (if token available) or filesystem to check dependencies against vulnerability databases.
 
 ### Step 3: Configuration Security Review
 Examine configuration files for security misconfigurations using decision trees.
@@ -101,31 +103,27 @@ Emit findings[] array and security-summary.json with:
    → FINDING: security-env-file-committed-3 (severity: high, effort: XS)
    - Evidence: ".env file containing DATABASE_URL found in repository"
    - Remediation: "Add .env to .gitignore and remove from history using git filter-repo"
-4. IF jwt_secret_weak_or_default
-   → FINDING: security-jwt-weak-4 (severity: critical, effort: XS)
-   - Evidence: "JWT secret: 'secret' or 'changeme' found in auth config"
-   - Remediation: "Use strong random secret (minimum 32 bytes) from secure source"
-5. IF encryption_key_weak_or_short
+4. IF encryption_key_weak_or_short
    → FINDING: security-encryption-weak-5 (severity: critical, effort: XS)
    - Evidence: "AES key: '123456789012345' (15 bytes) found in crypto config"
    - Remediation: "Use proper key length (16, 24, or 32 bytes for AES) from secure random source"
-6. IF database_connection_string_in_code
+5. IF database_connection_string_in_code
    → FINDING: security-db-conn-string-6 (severity: high, effort: XS)
    - Evidence: "postgres://user:password@localhost:5432/db found in database.js"
    - Remediation: "Use environment variables: process.env.DATABASE_URL"
-7. IF private_key_in_code
+6. IF private_key_in_code
    → FINDING: security-private-key-7 (severity: critical, effort: XS)
    - Evidence: "-----BEGIN RSA PRIVATE KEY----- found in src/ssl/server.key"
    - Remediation: "Store private key in secrets manager; never commit to repository"
-8. IF oauth_token_or_secret_in_code
+7. IF oauth_token_or_secret_in_code
    → FINDING: security-oauth-secret-8 (severity: critical, effort: XS)
    - Evidence: "GitHub token: ghp_... found in integrations/github.js"
    - Remediation: "Use OAuth app credentials stored securely; never commit personal tokens"
-9. IF encryption_algorithm_weak
+8. IF encryption_algorithm_weak
    → FINDING: security-weak-crypto-9 (severity: high, effort: M)
    - Evidence: "Using MD5 or SHA1 for password hashing"
    - Remediation: "Use bcrypt, scrypt, or Argon2 for password hashing"
-10. IF random_number_generator_weak
+9. IF random_number_generator_weak
     → FINDING: security-weak-rng-10 (severity: medium, effort: M)
     - Evidence: "Using Math.random() for token generation instead of crypto.randomBytes"
     - Remediation: "Use cryptographically secure random number generator"
@@ -230,8 +228,8 @@ Emit findings[] array and security-summary.json with:
    - Evidence: "app.use(cors({ origin: true })) - allows any origin"
    - Remediation: "Restrict origins to specific domains: ['https://app.example.com']"
 3. IF jwt_secret_default_or_short
-   → FINDING: security-jwt-weak-3 (severity: critical, effort: S)
-   - Evidence: "JWT secret: 'secret' found in configuration"
+   → FINDING: security-jwt-weak-3 (severity: critical, effort: XS)
+   - Evidence: "JWT secret: 'secret' or 'changeme' found in auth config"
    - Remediation: "Use strong random secret (minimum 32 bytes) from secure source"
 4. IF session_cookie_not_secure
    → FINDING: security-session-cookie-not-secure-3 (severity: medium, effort: XS)

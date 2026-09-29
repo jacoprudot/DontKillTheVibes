@@ -9,13 +9,13 @@ llmCapabilities:
   - Reasoning over commit history and issue data
 inputs:
   - Repository URL (with optional GitHub token for private repos)
-  - Access to github-mcp, filesystem-mcp, and git-mcp
+  - Access to github, filesystem, and git-mcp
 outputs:
   - findings[] (per templates/finding-schema.json with module: "github")
   - project-profile.json (tech stack, maturity, stakeholders, pain points)
 mcpDependencies:
-  - github-mcp
-  - filesystem-mcp
+  - github
+  - filesystem
   - git-mcp
 decisionTrees:
   - Tech Stack Inference
@@ -38,26 +38,26 @@ Before using this skill, the LLM should gather:
 1. Repository URL (format: `owner/repo` or full GitHub URL)
 2. Optional: GitHub token (for private repo access or increased rate limits)
 3. Access to the following MCPs:
-   - `github-mcp`: For API access to repo data
-   - `filesystem-mcp`: For reading repository contents (if cloned locally)
+   - `github`: For API access to repo data
+   - `filesystem`: For reading repository contents (if cloned locally)
    - `git-mcp`: For Git history analysis
 
 ## Analysis Procedure
 
 ### Step 1: Repository Discovery
-Use github-mcp.get_repo_contents to examine the repository structure and identify key files that indicate technology purpose.
+Use github.get_repo_contents to examine the repository structure and identify key files that indicate technology purpose.
 
 ### Step 2: Tech Stack Inference
 Apply the Tech Stack Inference decision tree to determine primary languages, frameworks, and architectural patterns.
 
 ### Step 3: Commit History Analysis
-Use github-mcp.get_commit_history and git-mcp tools to analyze development patterns over time.
+Use github.get_commit_history and git-mcp tools to analyze development patterns over time.
 
 ### Step 4: Issue/PR Health Assessment
-Use github-mcp.get_issues and related tools to evaluate collaboration and maintenance health.
+Use github.get_issues and related tools to evaluate collaboration and maintenance health.
 
 ### Step 5: Log Pattern Mining
-If repository is cloned locally, use filesystem-mcp to search for and analyze log files for operational insights.
+If repository is cloned locally, use filesystem to search for and analyze log files for operational insights.
 
 ### Step 6: Synthesize Project Profile
 Combine all findings into a project-profile.json that summarizes:

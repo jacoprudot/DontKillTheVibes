@@ -13,12 +13,12 @@ inputs:
   - Configuration files (Spring beans, Angular modules, NestJS modules)
   - API route definitions (Express, FastAPI, Django REST)
   - Event/message definitions (if using queues/streams)
-  - Access to filesystem-mcp and git-mcp
+  - Access to filesystem and git-mcp
 outputs:
   - findings[] (per templates/finding-schema.json with module: "structure")
   - architecture-summary.json (coupling metrics, dependency graph, layer violations, pattern adherence)
 mcpDependencies:
-  - filesystem-mcp
+  - filesystem
   - git-mcp
 decisionTrees:
   - Coupling Analysis
@@ -62,13 +62,13 @@ Before using this skill, the LLM should gather:
    - Event handlers (`**/events/**/*`, `**/listeners/**/*`)
    - Stream processors (`**/processors/**/*`, `**/workers/**/*`)
 6. Access to the following MCPs:
-   - `filesystem-mcp`: For reading directory structure and file contents
+   - `filesystem`: For reading directory structure and file contents
    - `git-mcp`: For analyzing structural evolution and identifying hotspots
 
 ## Analysis Procedure
 
 ### Step 1: Structural Discovery
-Use filesystem-mcp to map the directory structure and identify package/namespace boundaries.
+Use filesystem to map the directory structure and identify package/namespace boundaries.
 
 ### Step 2: Import Analysis
 Extract and analyze import/require statements from source files to build dependency graphs.
@@ -379,7 +379,7 @@ public class OrderController {
     - Remediation: "Inject OrderService instead and delegate to service layer"
     - Evidence: "Autowired OrderRepository in controller"
     - Metric: "Direct repository access in 3 controller methods"
-  - structure-controller-logic-1 (severity: medium, effort: M):
+  - structure-controller-logic-6 (severity: medium, effort: M):
     - Description: "Controller contains business logic that should be in service layer"
     - Location: src/controllers/OrderController.java lines 16-24
     - Remediation: "Move tax calculation and discount application to OrderService"

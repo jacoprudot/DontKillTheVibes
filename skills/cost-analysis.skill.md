@@ -13,13 +13,13 @@ inputs:
   - Third-party service configurations (API keys, service clients)
   - Usage logs or metrics (if available)
   - Dependency manifests (for licensing and service costs)
-  - Access to filesystem-mcp and github-mcp
+  - Access to filesystem and github
 outputs:
   - findings[] (per templates/finding-schema.json with module: "cost")
   - cost-analysis-summary.json (cost breakdown, optimization opportunities, ROI estimates)
 mcpDependencies:
-  - filesystem-mcp
-  - github-mcp
+  - filesystem
+  - github
 decisionTrees:
   - GitHub Actions Cost
   - Third-Party API Costs
@@ -42,6 +42,8 @@ Use this skill after establishing project context to evaluate:
 - Compliance costs (audit preparation, certification maintenance)
 
 ## Inputs
+
+> **Data Availability:** Rules that require GitHub Actions monthly usage minutes or development-efficiency metrics need live API access. If unavailable, skip the rule and lower confidence for dependent findings.
 
 Before using this skill, the LLM should gather:
 1. Infrastructure configuration:
@@ -67,13 +69,13 @@ Before using this skill, the LLM should gather:
    - `package.json`, `requirements.txt`, `pom.xml`, `build.gradle`, `Cargo.toml`, `go.mod`
    - For identifying licensed components and potential costs
 6. Access to the following MCPs:
-   - `filesystem-mcp`: For reading configuration and usage files
-   - `github-mcp`: For accessing CI/CD usage and repository insights
+   - `filesystem`: For reading configuration and usage files
+   - `github`: For accessing CI/CD usage and repository insights
 
 ## Analysis Procedure
 
 ### Step 1: Infrastructure Discovery
-Use filesystem-mcp to locate infrastructure as code and configuration files.
+Use filesystem to locate infrastructure as code and configuration files.
 
 ### Step 2: CI/CD Analysis
 Examine CI/CD configuration for usage patterns and optimization opportunities.
@@ -135,7 +137,7 @@ Emit findings[] array and cost-analysis-summary.json with:
 10. IF no_matrix_optimization
     → FINDING: cost-gha-matrix-inefficient-10 (severity: medium, effort: M)
     - Evidence: "Matrix runs 24 combinations (3x4x2) when only 6 are needed"
-    - Remaining: "Optimize matrix to exclude unnecessary combinations"
+    - Remediation: "Optimize matrix to exclude unnecessary combinations"
 ```
 
 ### Third-Party API Costs
@@ -179,7 +181,7 @@ Emit findings[] array and cost-analysis-summary.json with:
 10. IF using_deprecated_api_endpoint
     → FINDING: cost-api-deprecated-endpoint-10 (severity: low, effort: S)
     - Evidence: "Using Twitter API v1.1 when v2 is available and cheaper"
-    - Remaining: "Migrate to newer API version for better performance and pricing"
+    - Remediation: "Migrate to newer API version for better performance and pricing"
 ```
 
 ### Infrastructure Signals
@@ -263,7 +265,7 @@ Emit findings[] array and cost-analysis-summary.json with:
 9. IF no_open_source_license_policy
     → FINDING: cost-no-oss-policy-9 (severity: medium, effort: M)
     - Evidence: "No policy governing use of open source components"
-    - Remaining: "Create and implement open source use policy"
+    - Remediation: "Create and implement open source use policy"
 10. IF using_deprecated_or_unsafe_version
     → FINDING: cost-deprecated-version-10 (severity: medium, effort: M)
     - Evidence: "Using OpenSSL 1.0.1 (vulnerable to Heartbleed) instead of current version"
@@ -311,7 +313,7 @@ Emit findings[] array and cost-analysis-summary.json with:
 10. IF no_performance_budgeting
     → FINDING: cost-no-performance-budget-10 (severity: medium, effort: M)
     - Evidence: "No performance budgets set for page load times or API response times"
-    - Remaining: "Establish performance budgets and monitor against them"
+    - Remediation: "Establish performance budgets and monitor against them"
 ```
 
 ## Output Format

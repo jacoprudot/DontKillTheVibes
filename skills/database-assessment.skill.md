@@ -1,6 +1,6 @@
 ---
 name: database-assessment
-description: Teach LLM to analyze database schema, migrations, and query patterns for correctness, performance, and scalability, and scalability
+description: Teach LLM to analyze database schema, migrations, and query patterns for correctness, performance, and scalability
 version: 1.0
 module: database
 llmCapabilities:
@@ -11,12 +11,12 @@ inputs:
   - Schema files (.sql, prisma, Django models, TypeORM entities, Mongoose schemas)
   - Migration scripts
   - Optional: query logs
-  - Access to filesystem-mcp and git-mcp
+  - Access to filesystem and git-mcp
 outputs:
   - findings[] (per templates/finding-schema.json with module: "database")
   - schema-summary.json (tables, relationships, indexes, migration analysis)
 mcpDependencies:
-  - filesystem-mcp
+  - filesystem
   - git-mcp
 decisionTrees:
   - Missing Index Detection (PostgreSQL/Supabase Focus)
@@ -40,6 +40,8 @@ Use this skill after establishing project context with github-intelligence.skill
 
 ## Inputs
 
+> **Data Availability:** Rules that require live database telemetry (table row counts, EXPLAIN plans, PostgreSQL/server settings) cannot be verified from repository files alone. If unavailable, skip the rule and lower confidence for dependent findings.
+
 Before using this skill, the LLM should gather:
 1. Schema definition files:
    - SQL files (`**/*.sql`)
@@ -58,16 +60,16 @@ Before using this skill, the LLM should gather:
    - Entity Framework (`**/Migrations/*.cs`)
 3. Optional: Query logs if available (slow query logs, application logs with SQL)
 4. Access to the following MCPs:
-   - `filesystem-mcp`: For reading schema and migration files
+   - `filesystem`: For reading schema and migration files
    - `git-mcp`: For analyzing migration history and schema evolution over time
 
 ## Analysis Procedure
 
 ### Step 1: Schema Discovery
-Use filesystem-mcp.glob_search to locate all schema definition files in the repository.
+Use filesystem.glob_search to locate all schema definition files in the repository.
 
 ### Step 2: Migration Analysis
-Use git-mcp.get_diff_since and filesystem-mcp to locate and analyze migration scripts.
+Use git-mcp.get_diff_since and filesystem to locate and analyze migration scripts.
 
 ### Step 3: Schema Evaluation
 Apply each decision tree from this skill to evaluate:

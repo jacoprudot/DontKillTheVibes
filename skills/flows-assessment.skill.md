@@ -14,13 +14,13 @@ inputs:
   - Orchestration definitions (n8n workflow files, Airflow DAGs, Temporal workflows)
   - State management files (Redux stores, Vuex, NgRx)
   - Background job definitions (Sidekiq, Celery, Hangfire)
-  - Access to filesystem-mcp and github-mcp
+  - Access to filesystem and github
 outputs:
   - findings[] (per templates/finding-schema.json with module: "flows")
   - flow-analysis-summary.json (request flow analysis, async processing health, orchestration status)
 mcpDependencies:
-  - filesystem-mcp
-  - github-mcp
+  - filesystem
+  - github
 decisionTrees:
   - Request Flow
   - Async Processing
@@ -43,6 +43,8 @@ Use this skill after establishing project context and analyzing code/structure t
 - State management (Redux, Vuex, NgRx - mutability, performance, debugging)
 
 ## Inputs
+
+> **Data Availability:** Rules that require consumer lag or DLQ monitoring metrics need live message-broker telemetry. If unavailable, skip the rule and lower confidence for dependent findings.
 
 Before using this skill, the LLM should gather:
 1. API definitions:
@@ -74,13 +76,13 @@ Before using this skill, the LLM should gather:
    - Celery tasks (`**/tasks/**/*`)
    - Hangfire jobs (`**/jobs/**/*`)
 7. Access to the following MCPs:
-   - `filesystem-mcp`: For reading workflow and configuration files
-   - `github-mcp`: For accessing workflow definitions in repo (if not cloned locally)
+   - `filesystem`: For reading workflow and configuration files
+   - `github`: For accessing workflow definitions in repo (if not cloned locally)
 
 ## Analysis Procedure
 
 ### Step 1: Flow Discovery
-Use filesystem-mcp to locate API routes, webhooks, message consumers, workflow definitions, and state management files.
+Use filesystem to locate API routes, webhooks, message consumers, workflow definitions, and state management files.
 
 ### Step 2: Request Flow Analysis
 Apply request flow decision trees to evaluate middleware order, validation placement, and response handling.
@@ -503,7 +505,7 @@ paymentService.processPayment(paymentDetails);
     - Remediation: "Await the payment gateway call and handle errors appropriately"
     - Evidence: "this.paymentGateway.charge() called without await"
     - Metric: "Financial risk: payments may fail silently"
-  - flows-unhandled-promise-2 (severity: high, effort: S):
+  - flows-missing-error-handler-5 (severity: medium, effort: M):
     - Description: "Returned promise not handled by caller"
     - Location: Controller calling paymentService.processPayment()
     - Remediation: "Either await the promise or handle with .then/.catch"

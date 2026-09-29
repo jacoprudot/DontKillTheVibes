@@ -14,14 +14,14 @@ inputs:
   - Architecture diagrams or component interaction descriptions
   - System goals/SLAs (latency, throughput, availability targets)
   - Infrastructure specs (CPU, memory, network, storage)
-  - Access to benchmark-mcp, filesystem-mcp, and github-mcp
+  - Access to benchmark-mcp, filesystem, and github
 outputs:
   - findings[] (per templates/finding-schema.json with module: "performance")
   - performance-analysis-summary.json (bottleneck analysis, optimization recommendations, capacity planning)
 mcpDependencies:
   - benchmark-mcp
-  - filesystem-mcp
-  - github-mcp
+  - filesystem
+  - github
 decisionTrees:
   - Bottleneck Identification
   - Goal-Based Optimization (Latency-Sensitive, Throughput-Oriented, Cost-Optimized)
@@ -45,6 +45,8 @@ Use this skill after establishing project context and analyzing code/structure/f
 - Regression detection from previous performance baselines
 
 ## Inputs
+
+> **Data Availability:** Rules that require cache hit rates or live profiling metrics need runtime telemetry (benchmark-mcp or APM data). If unavailable, skip the rule and lower confidence for dependent findings.
 
 Before using this skill, the LLM should gather:
 1. Performance data (if available):
@@ -79,8 +81,8 @@ Before using this skill, the LLM should gather:
    - Bare metal specifications
 7. Access to the following MCPs:
    - `benchmark-mcp`: For running benchmarks and profiling
-   - `filesystem-mcp`: For reading configuration and code files
-   - `github-mcp`: For accessing repository information and workflows
+   - `filesystem`: For reading configuration and code files
+   - `github`: For accessing repository information and workflows
 
 ## Analysis Procedure
 
@@ -152,7 +154,7 @@ Emit findings[] array and performance-analysis-summary.json with:
     - Evidence: "Template rendering takes 150ms of 350ms page load time"
     - Remediation: "Consider caching rendered templates or using streaming templates"
 11. IF image_processing_time > 50%_request_latency
-    → FINDING: performance-image-processing-11 (severity: high,ity: high, effort: M)
+    → FINDING: performance-image-processing-11 (severity: high, effort: M)
     - Evidence: "Image resizing and compression takes 200ms of 350ms request time"
     - Remediation: "Offload image processing to background workers or use CDN image optimization"
 12. IF encryption_decryption_time > 30%_request_latency
@@ -298,43 +300,43 @@ Emit findings[] array and performance-analysis-summary.json with:
 #### Cost-Optimized Systems
 ```markdown
 1. IF cpu_utilization < 20% sustained
-   → FINDING: cost-underutilized-compute-1 (severity: low, effort: S)
+   → FINDING: performance-underutilized-compute-1 (severity: low, effort: S)
    - Evidence: "Average CPU utilization 15% over 24-hour period"
    - Remediation: "Right-size instances or use autoscaling to match demand"
 2. IF memory_utilization < 25% sustained
-   → FINDING: cost-underutilized-memory-2 (severity: low, effort: S)
+   → FINDING: performance-underutilized-memory-2 (severity: low, effort: S)
    - Evidence: "Average memory utilization 18% over 24-hour period"
    - Remediation: "Right-size instances or use autoscaling to match demand"
 3. IF storage_utilization < 15% sustained
-   → FINDING: cost-underutilized-storage-3 (severity: low, effort: S)
+   → FINDING: performance-underutilized-storage-3 (severity: low, effort: S)
    - Evidence: "Average storage utilization 12% over 24-hour period"
    - Remediation: "Right-size storage or implement lifecycle policies to reduce costs"
 4. IF spot_instance_eligible_workloads_on_demand
-   → FINDING: cost-spot-eligible-4 (severity: low, effort: M)
+   → FINDING: performance-spot-eligible-4 (severity: low, effort: M)
    - Evidence: "Batch processing workloads suitable for spot instances running on demand"
    - Remediation: "Use spot instances with fallback to on-demand for fault tolerance"
 5. IF reserved_instance_opportunity
-   → FINDING: cost-reserved-instance-5 (severity: low, effort: M)
+   → FINDING: performance-reserved-instance-5 (severity: low, effort: M)
    - Evidence: "Steady-state workload running on on-demand instances for 3+ months"
    - Remediation: "Purchase reserved instances or savings plans for 30-50% cost reduction"
 6. IF database_index_overuse
-   → FINDING: cost-db-index-overuse-6 (severity: medium, effort: M)
+   → FINDING: performance-db-index-overuse-6 (severity: medium, effort: M)
    - Evidence: "Table has 15 indexes but only 3 used regularly based on query analysis"
    - Remediation: "Remove unused indexes to reduce write overhead and storage costs"
 7. IF database_connection_pool_oversized
-   → FINDING: cost-db-pool-oversized-7 (severity: medium, effort: M)
+   → FINDING: performance-db-pool-oversized-7 (severity: medium, effort: M)
    - Evidence: "Connection pool set to 100 connections when peak usage is 15"
    - Remediation: "Right-size connection pool to match actual concurrent usage"
 8. IF log_retention_too_long
-   → FINDING: cost-log-retention-too-long-8 (severity: low, effort: M)
+   → FINDING: performance-log-retention-too-long-8 (severity: low, effort: M)
    - Evidence: "Logs retained indefinitely increasing storage costs"
    - Remediation: "Implement log rotation and retention policy (e.g., keep 30 days)"
 9. IF log_retention_too_short
-   → FINDING: cost-log-retention-too-short-9 (severity: low, effort: M)
+   → FINDING: performance-log-retention-too-short-9 (severity: low, effort: M)
    - Evidence: "Debug logs retained only 1 hour insufficient for troubleshooting"
    - Remediation: "Adjust retention to balance troubleshooting needs and storage costs"
 10. IF no_data_archiving_strategy
-    → FINDING: cost-no-data-archiving-10 (severity: medium, effort: M)
+    → FINDING: performance-no-data-archiving-10 (severity: medium, effort: M)
     - Evidence: "All data kept in hot storage indefinitely"
     - Remediation: "Implement hot/warm/cold storage strategy based on access patterns"
 ```
