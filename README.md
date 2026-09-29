@@ -8,6 +8,23 @@ When you're scaling fast, the codebase can quickly turn into a bottleneck. **Don
 
 It's completely LLM-agnostic and relies on strict decision-trees and math-based prioritization to eliminate AI hallucinations and give you real engineering value.
 
+## 🎯 The Vibe Coding Problems We Solve
+
+As teams increasingly rely on AI to write code, several critical risks emerge. **DontKillTheVibes** is explicitly designed to solve them:
+
+1. **Silent Tech Debt Accumulation (Patches over Patches)**
+   *The Problem:* LLMs with limited context windows duplicate logic and apply superficial fixes instead of designing global systems.
+   *Our Solution:* The `structure-analyst` and `code-quality-analyst` skills are designed to look at the macro-architecture, detecting coupling, dependency cycles, and duplication.
+2. **Critical Security Vulnerabilities**
+   *The Problem:* Iterative AI bug-fixing often introduces or inherits insecure patterns (open databases, data leaks).
+   *Our Solution:* The `security-analyst` enforces strict security reviews on inputs, secrets, and cloud configurations.
+3. **Loss of Control (The Black Box Effect)**
+   *The Problem:* Without senior supervision, AI-generated code becomes unmaintainable. When a production crash happens, no one knows how to debug it.
+   *Our Solution:* The `Synthesis Agent` returns control to the developer by outputting a structured, human-readable 30/60/90-day architectural roadmap. It maps dependencies so you understand *exactly* what the code is doing.
+4. **Hidden Costs & Professional Stagnation**
+   *The Problem:* Massive token consumption via endless prompt regeneration, coupled with developers losing their analytical edge.
+   *Our Solution:* The `cost-analyst` identifies infrastructure and API bloat, while the toolkit as a whole explains the *why* behind architectural decisions, acting as an automated senior mentor.
+
 ## ⚡ 30-Second Start
 
 1. **Clone the repository:**
