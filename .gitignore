@@ -82,13 +82,14 @@ tmp/
 
 # Security sensitive files
 .github-token
-dontkillthevibes/audit.log
+.dontkillthevibes/audit.log
 
 # Build artifacts
+.turbo/
 package-lock.json
 yarn.lock
-pnpm-lock.yaml
 
 # Internal plans and documents
 BUILD_PLAN.md
 SOUL.md
+PROMPT_NEMO_*.md

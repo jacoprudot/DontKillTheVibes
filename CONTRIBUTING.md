@@ -50,10 +50,10 @@ Please use the [feature request template](.github/ISSUE_TEMPLATE/feature_request
 ## Development Process
 
 1. Fork the repo and clone locally
-2. Install dependencies: `npm install`
+2. Install dependencies: `pnpm install`
 3. Create feature branch: `git checkout -b feature/amazing-feature`
 4. Make changes
-5. Run tests: `npm test`
+5. Build: `pnpm build` — Validate skills: `pnpm validate:skills` — Run tests: `pnpm test`
 6. Commit changes: `git commit -m 'Add amazing feature'`
 7. Push to branch: `git push origin feature/amazing-feature`
 8. Open pull request

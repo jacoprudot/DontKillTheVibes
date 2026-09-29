@@ -36,10 +36,10 @@ As teams increasingly rely on AI to write code, several critical risks emerge. *
    ```bash
    npm install -g pnpm
    pnpm install
-   pnpm turbo run build
+   pnpm build
    ```
 3. **Configure MCPs:**
-   The framework uses official MCP servers for GitHub and Filesystem, plus custom ones for Git Blame and Benchmarking. Ensure your environment has the required tokens (e.g., `GITHUB_PERSONAL_ACCESS_TOKEN`) set if you plan to use the GitHub MCP.
+   The framework uses official MCP servers for GitHub and Filesystem, plus custom ones for Git Blame and Benchmarking (registered in `mcp_config.json`; build with `pnpm build` before connecting). Ensure your environment has the required tokens (e.g., `GITHUB_PERSONAL_ACCESS_TOKEN`) set if you plan to use the GitHub MCP.
 
 4. **Run the Synthesis Agent:**
    Open your preferred AI terminal tool (like Claude Code) inside the repository you want to assess, and feed it the Synthesis Agent prompt along with the path to the skills:
@@ -51,6 +51,12 @@ As teams increasingly rely on AI to write code, several critical risks emerge. *
 - **Skills (`skills/`)**: Decision-tree analysis capabilities for Database, Code, Structure, Flows, Security, Cost, and Performance.
 - **MCPs (`mcps/`)**: Tools for your LLM. Includes custom servers for deep Git analysis and localized code benchmarking.
 - **Agents (`agents/`)**: 8 specialist analyst roles + 1 **Synthesis Agent** that prioritizes findings using a severity × module-weight algorithm.
+
+## Status (honest)
+
+- MCPs build clean and are covered by security-focused smoke tests (`scripts/mcp-smoke.mjs`); audit trail in `.dontkillthevibes/audit.log`.
+- Output contract is enforceable: `scripts/validate-assessment.mjs` validates `assessment.json` against `templates/finding-schema.json`. A real end-to-end run against the RealWorld API ships in `examples/realworld-assessment/`.
+- Known gaps: MCP unit tests not yet written (`pnpm test` runs jest but there are no test files yet), CI workflows pending, and the full 8-agent parallel pipeline is executed by the orchestrating LLM rather than a bundled runner.
 
 ## Philosophy
 
