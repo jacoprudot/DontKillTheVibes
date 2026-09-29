@@ -1,0 +1,31 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "pipeline": {
+    "build": {
+      "filter": "dontkillthevibes",
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**"]
+    },
+    "test": {
+      "filter": "dontkillthevibes",
+      "dependsOn": ["^test"],
+      "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**.*"]
+    },
+    "lint": {
+      "filter": "dontkillthevibes",
+      "dependsOn": ["^lint"]
+    },
+    "validate:skills": {
+      "filter": "dontkillthevibes"
+    },
+    "validate:mcps": {
+      "filter": "dontkillthevibes"
+    },
+    "docs:generate": {
+      "filter": "dontkillthevibes"
+    },
+    "integration:test": {
+      "filter": "dontkillthevibes"
+    }
+  }
+}

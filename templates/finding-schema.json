@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DontKillTheVibes Finding",
+  "type": "object",
+  "required": ["id", "module", "severity", "location", "description", "remediation", "effort", "confidence"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z-]+-\\d+$",
+      "description": "Unique finding ID: module-category-number (e.g., database-missing-index-1)"
+    },
+    "module": {
+      "type": "string",
+      "enum": ["database", "code", "structure", "flows", "security", "cost", "performance", "github"],
+      "description": "Which assessment module produced this finding"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low", "info"],
+      "description": "Risk severity for prioritization"
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "file": { "type": "string", "description": "Relative path from repo root" },
+        "line": { "type": "integer", "minimum": 0, "description": "Line number (0 if file-level)" },
+        "function": { "type": "string", "description": "Function/method name if applicable" },
+        "commit": { "type": "string", "description": "Commit SHA if finding is historical" }
+      },
+      "required": ["file"]
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of the issue"
+    },
+    "remediation": {
+      "type": "string",
+      "description": "Specific, actionable fix steps"
+    },
+    "effort": {
+      "type": "string",
+      "enum": ["XS", "S", "M", "L", "XL"],
+      "description": "Estimated effort to fix"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "How confident the assessor is (0.0-1.0)"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Categorization tags (e.g., ['n+1', 'orm', 'postgresql'])"
+    },
+    "relatedFindings": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "IDs of related findings for dependency mapping"
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "snippet": { "type": "string", "description": "Code/config snippet showing the issue" },
+        "metric": { "type": "number", "description": "Quantitative metric (e.g., complexity score)" },
+        "benchmark": { "type": "string", "description": "Benchmark result if applicable" }
+      }
+    }
+  }
+}

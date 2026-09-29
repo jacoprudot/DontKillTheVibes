@@ -1,0 +1,40 @@
+{
+  "name": "dontkillthevibes",
+  "version": "0.1.0-beta",
+  "description": "LLM-orchestrated assessment toolkit for vibe coders",
+  "author": "Jacobo Prudot (Jaco) <jaco@leongael.xyz>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    ".",
+    "mcps/*",
+    "skills/*",
+    "templates/*",
+    "verification/*",
+    "docs/*",
+    "scripts/*"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "security:audit": "turbo run security:audit",
+    "validate:skills": "turbo run validate:skills",
+    "validate:mcps": "turbo run validate:mcps",
+    "docs:generate": "turbo run docs:generate",
+    "integration:test": "turbo run integration:test"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "dontkillthevibes": {
+    "skillSchemaVersion": "1.0",
+    "mcpProtocolVersion": "2024-11-05",
+    "minLlmCapabilities": ["tool-use", "structured-output"]
+  }
+}

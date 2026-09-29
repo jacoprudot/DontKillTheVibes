@@ -1,0 +1,8 @@
+packages:
+  - '.'
+  - 'mcps/*'
+  - 'skills/*'
+  - 'templates/*'
+  - 'verification/*'
+  - 'docs/*'
+  - 'scripts/*'
