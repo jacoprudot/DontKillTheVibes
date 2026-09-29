@@ -88,3 +88,7 @@ dontkillthevibes/audit.log
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+
+# Internal plans and documents
+BUILD_PLAN.md
+SOUL.md
