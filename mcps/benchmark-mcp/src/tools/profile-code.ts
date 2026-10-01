@@ -47,7 +47,7 @@ export async function profileCode(
       }
     }
 
-    const durationSec = args.duration_sec || 10; // Default 10 seconds
+    const durationSec = args.duration_sec ?? 10; // Default 10 seconds
 
     if (durationSec <= 0) {
       return errorResult('INVALID_ARGUMENTS', 'duration_sec must be positive', false);

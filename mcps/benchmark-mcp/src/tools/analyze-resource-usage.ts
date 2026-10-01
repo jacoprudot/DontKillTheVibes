@@ -10,8 +10,8 @@ export async function analyzeResourceUsage(
   }
 ) {
   try {
-    const durationSec = args.duration_sec || 5; // Default 5 seconds
-    const intervalMs = args.interval_ms || 1000; // Default 1 second intervals
+    const durationSec = args.duration_sec ?? 5; // Default 5 seconds
+    const intervalMs = args.interval_ms ?? 1000; // Default 1 second intervals
 
     if (durationSec <= 0) {
       return errorResult('INVALID_ARGUMENTS', 'duration_sec must be positive', false);

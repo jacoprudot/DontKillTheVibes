@@ -111,12 +111,14 @@ export async function compareBenchmarks(
       
       let severity: 'high' | 'medium' | 'low' = 'low';
       if (isLatencyMetric) {
-        // Latency: higher is worse
-        if (changePercent > 50) {
+        // Latency: higher is worse — significance judged on the magnitude of
+        // the change, so large improvements (big negative %) are also reported.
+        const absChange = Math.abs(changePercent);
+        if (absChange > 50) {
           severity = 'high';
-        } else if (changePercent > 20) {
+        } else if (absChange > 20) {
           severity = 'medium';
-        } else if (changePercent > 5) {
+        } else if (absChange > 5) {
           severity = 'low';
         } else {
           continue; // Insignificant change
@@ -139,12 +141,14 @@ export async function compareBenchmarks(
           });
         }
       } else if (isThroughputMetric) {
-        // Throughput: higher is better
-        if (changePercent < -50) {
+        // Throughput: higher is better — significance judged on magnitude so
+        // large improvements (positive %) are also reported.
+        const absChange = Math.abs(changePercent);
+        if (absChange > 50) {
           severity = 'high';
-        } else if (changePercent < -20) {
+        } else if (absChange > 20) {
           severity = 'medium';
-        } else if (changePercent < -5) {
+        } else if (absChange > 5) {
           severity = 'low';
         } else {
           continue; // Insignificant change

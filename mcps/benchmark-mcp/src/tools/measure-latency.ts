@@ -35,7 +35,7 @@ export async function measureLatency(
       );
     }
     const body = args.body || '';
-    const samples = args.samples || 10; // Default to 10 samples
+    const samples = args.samples ?? 10; // Default to 10 samples
 
     if (samples < 1) {
       return errorResult('INVALID_ARGUMENTS', 'samples must be at least 1', false);

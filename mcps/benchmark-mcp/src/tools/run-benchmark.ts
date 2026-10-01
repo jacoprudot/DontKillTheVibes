@@ -38,8 +38,8 @@ export async function runBenchmark(
       );
     }
 
-    const durationSec = args.duration_sec || 30; // Default 30 seconds
-    const connections = args.connections || 10; // Default 10 connections
+    const durationSec = args.duration_sec ?? 30; // Default 30 seconds
+    const connections = args.connections ?? 10; // Default 10 connections
 
     if (durationSec <= 0) {
       return errorResult('INVALID_ARGUMENTS', 'duration_sec must be positive', false);
@@ -175,7 +175,8 @@ function parseWrkOutput(output: string): any {
 
   for (const line of lines) {
     if (line.includes('Requests/sec:')) {
-      const match = line.match(/([\d.]+)\s*Requests\/sec/);
+      // Real wrk format: "Requests/sec:    999.00" (value AFTER the label)
+      const match = line.match(/Requests\/sec:\s+([\d.]+)/);
       if (match && match[1]) {
         result.requests_per_second = parseFloat(match[1]);
       }
@@ -184,14 +185,15 @@ function parseWrkOutput(output: string): any {
       if (match && match[1]) {
         result.transfer_per_second = match[1];
       }
-    } else if (line.includes('Latency') && line.includes('Avg')) {
-      const avgMatch = line.match(/Avg\s+(\S+)/);
-      if (avgMatch && avgMatch[1]) {
-        result.latency_avg = avgMatch[1];
+    } else if (/^\s*Latency\s/.test(line)) {
+      // Real wrk format: "    Latency   10.00ms   2.00ms   50.00ms   90.00%"
+      // (avg, stdev, max) — no "Avg" label on the data line itself.
+      const parts = line.trim().split(/\s+/);
+      if (parts[1]) {
+        result.latency_avg = parts[1];
       }
-      const maxMatch = line.match(/Max\s+(\S+)/);
-      if (maxMatch && maxMatch[1]) {
-        result.latency_max = maxMatch[1];
+      if (parts[3]) {
+        result.latency_max = parts[3];
       }
     }
   }
