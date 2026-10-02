@@ -9,7 +9,7 @@
     "build": "tsc",
     "prepare": "npm run build",
     "test": "jest",
-    "security:audit": "echo \"Security audit placeholder\" && exit 0"
+    "security:audit": "node ../../scripts/security-audit.mjs ."
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.1"

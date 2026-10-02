@@ -80,13 +80,19 @@ describe('analyzeResourceUsage tool', () => {
     });
 
     it('should parse tasklist output on Windows / ps output on POSIX', async () => {
+      // tasklist reports RSS as grouped KB ("123,456 K"); ps -o rss= reports plain KB.
+      // Both feed the same KB->MB conversion, so the expectation must follow the
+      // platform-specific sample below (a single hardcoded value only passed on Windows).
+      const tasklistSample = '"chrome.exe","1234","Console","1","123,456 K"';
+      const psSample = ' 126464  12.5';
+
       execFileSyncMock.mockImplementation((bin: string) => {
         if (process.platform === 'win32') {
           expect(bin).toBe('tasklist');
-          return '"chrome.exe","1234","Console","1","123,456 K"';
+          return tasklistSample;
         }
         expect(bin).toBe('ps');
-        return ' 126464  12.5';
+        return psSample;
       });
       const result = await analyzeResourceUsage({} as any, {
         pid: 1234,
@@ -97,7 +103,8 @@ describe('analyzeResourceUsage tool', () => {
       expect(payload.success).toBe(true);
       expect(payload.data.pid).toBe(1234);
       expect(payload.data.samples_count).toBeGreaterThan(0);
-      expect(payload.data.samples[0].rss_mb).toBeCloseTo(123456 / 1024, 1);
+      const expectedRssKb = process.platform === 'win32' ? 123456 : 126464;
+      expect(payload.data.samples[0].rss_mb).toBeCloseTo(expectedRssKb / 1024, 1);
     });
 
     it('should return EXTERNAL_PID_UNSUPPORTED when the OS tool is unavailable', async () => {

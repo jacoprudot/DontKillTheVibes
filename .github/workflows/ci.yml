@@ -9,22 +9,22 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
+
     - name: Setup Node.js 24
       uses: actions/setup-node@v4
       with:
         node-version: '24'
-        
+
     - name: Install pnpm
       uses: pnpm/action-setup@v3
       with:
         version: 12
         run_install: false
-        
+
     - name: Get pnpm store directory
       shell: bash
       run: |
@@ -37,18 +37,28 @@ jobs:
         key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
         restore-keys: |
           ${{ runner.os }}-pnpm-store-
-          
+
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
 
     - name: Build MCPs
       run: pnpm build
-      
-    - name: Run Unit Tests
+
+    - name: Run Unit Tests (80% coverage gate)
       run: pnpm test
-      
-    - name: Validate Skills (JSON Schemas)
-      run: pnpm validate:skills
-      
-    - name: Run MCP Smoke Tests
-      run: node scripts/mcp-smoke.mjs
+
+    - name: Security audit (no shell, no env leak)
+      run: pnpm security:audit
+
+    - name: Validate skills and MCP packages
+      run: |
+        pnpm validate:skills
+        pnpm validate:mcps
+
+    - name: Validate the shipped assessment example
+      run: node scripts/validate-assessment.mjs examples/realworld-assessment/assessment.json
+
+    - name: MCP security smoke tests (injection guards)
+      run: |
+        node scripts/mcp-smoke.mjs mcps/git-mcp/dist/index.js get_diff_since '{"since_commit":"HEAD; id"}' --expect INVALID_COMMIT
+        node scripts/mcp-smoke.mjs mcps/benchmark-mcp/dist/index.js profile_code '{"binary":"rm","args":["-rf","/"],"profiler":"perf"}' --expect BINARY_NOT_ALLOWED

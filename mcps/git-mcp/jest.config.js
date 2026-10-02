@@ -5,6 +5,9 @@ export default {
   roots: ['<rootDir>/src'],
   testMatch: ['**/*.test.ts'],
   moduleFileExtensions: ['ts', 'js', 'json'],
+  // Coverage must be collected on every run, otherwise jest never evaluates
+  // coverageThreshold and the "strict 80%" guarantee is silently unenforced.
+  collectCoverage: true,
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',

@@ -11,6 +11,9 @@
     },
     "lint": {
       "dependsOn": ["^lint"]
+    },
+    "security:audit": {
+      "inputs": ["src/**", "SECURITY.md"]
     }
   }
 }
