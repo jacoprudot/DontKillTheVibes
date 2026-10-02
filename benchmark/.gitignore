@@ -1,0 +1,7 @@
+# Clones created by benchmark/run.mjs (never committed).
+work/
+
+# Scratch space used by --mock (generated mock toolkit runner, mock target tree).
+# Also ignored globally by the root .gitignore (temp/ and tmp/), declared here
+# explicitly so the intent is visible next to the harness that writes it.
+tmp/
