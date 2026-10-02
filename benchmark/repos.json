@@ -1,0 +1,35 @@
+{
+  "$comment": "Benchmark target list. Every entry was verified against the GitHub API on 2026-10-02: public, not archived, MIT-licensed, and small enough that the digest fits the context budget. 'realworld-control' is the labelled control because it is the repo already assessed by hand in examples/realworld-assessment. Commit SHAs are NEVER stored here: benchmark/run.mjs records the resolved commit (git rev-parse HEAD) into results/<name>/meta.json at run time, so a run is reproducible without pinning a SHA by hand. SAMPLING LIMITATION, stated up front: two of the four targets (roomGPT, llamacoder) are by the same author and share a Next.js house style, and three of four are TypeScript. This is a small, convenience sample of recognizable AI-built apps, not a representative one.",
+  "targets": [
+    {
+      "name": "realworld-control",
+      "url": "https://github.com/gothinkster/realworld",
+      "note": "control: the repo already assessed by hand in examples/realworld-assessment",
+      "provenance": "Reference implementation (NestJS + Prisma + JWT). Control, not a vibe-coding sample."
+    },
+    {
+      "name": "roomgpt",
+      "url": "https://github.com/Nutlope/roomGPT",
+      "note": "AI-built weekend project: photo of a room in, redesigned room out",
+      "provenance": "TypeScript, MIT, 10679 stars, 22.7 MB, last push 2024-04-20. Author publicly documented building it in a weekend."
+    },
+    {
+      "name": "screenshot-to-code",
+      "url": "https://github.com/abi/screenshot-to-code",
+      "note": "Fast-built app: screenshot in, HTML/Tailwind/React out",
+      "provenance": "Python (FastAPI) + React, MIT, 79925 stars, 11.1 MB, last push 2026-09-29."
+    },
+    {
+      "name": "llamacoder",
+      "url": "https://github.com/Nutlope/llamacoder",
+      "note": "Open-source Claude Artifacts clone; serverless DB via Convex",
+      "provenance": "TypeScript + Convex, MIT, 7137 stars, 5.8 MB, last push 2026-09-15."
+    },
+    {
+      "name": "chatbot-ui",
+      "url": "https://github.com/mckaywrigley/chatbot-ui",
+      "note": "Popular AI chat UI with Supabase auth + database",
+      "provenance": "TypeScript/Next.js + Supabase, MIT, 33352 stars, 3.6 MB, last push 2024-08-03."
+    }
+  ]
+}

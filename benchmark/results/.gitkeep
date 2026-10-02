@@ -1,0 +1,2 @@
+# results/ is the evidence directory: it MUST be committed.
+# Only work/ (clones) and tmp/ (mock scratch) are gitignored.
