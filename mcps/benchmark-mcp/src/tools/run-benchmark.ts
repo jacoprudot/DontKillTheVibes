@@ -41,12 +41,23 @@ export async function runBenchmark(
     const durationSec = args.duration_sec ?? 30; // Default 30 seconds
     const connections = args.connections ?? 10; // Default 10 connections
 
-    if (durationSec <= 0) {
-      return errorResult('INVALID_ARGUMENTS', 'duration_sec must be positive', false);
+    // These values are interpolated into the generated JMX/Lua artifacts, so a
+    // non-numeric value (which passes a bare `<= 0` check) or an out-of-range
+    // value must be rejected outright rather than coerced.
+    if (!Number.isInteger(durationSec) || durationSec <= 0 || durationSec > 86400) {
+      return errorResult(
+        'INVALID_ARGUMENTS',
+        'duration_sec must be an integer between 1 and 86400',
+        false
+      );
     }
 
-    if (connections <= 0) {
-      return errorResult('INVALID_ARGUMENTS', 'connections must be positive', false);
+    if (!Number.isInteger(connections) || connections <= 0 || connections > 10000) {
+      return errorResult(
+        'INVALID_ARGUMENTS',
+        'connections must be an integer between 1 and 10000',
+        false
+      );
     }
 
     // Create temporary directory for benchmark files

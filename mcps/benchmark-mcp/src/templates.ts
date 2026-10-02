@@ -27,6 +27,81 @@ export function loadTemplate(name: string): string {
 }
 
 /**
+ * Escapes a value for use inside an XML text node or attribute. Without this,
+ * a legal URL character (e.g. `&` in a query string) produces a JMX file that
+ * JMeter refuses to parse, and a crafted value could inject new XML elements
+ * into the generated test plan.
+ */
+function escapeXml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+/**
+ * Quotes a Lua string literal (LuaJIT / Lua 5.1 escapes). Control characters
+ * are emitted as 3-digit decimal escapes so they can never be confused with a
+ * following digit.
+ */
+function quoteLuaString(value: string): string {
+  let out = '"';
+  for (const ch of value) {
+    switch (ch) {
+      case '\\':
+        out += '\\\\';
+        break;
+      case '"':
+        out += '\\"';
+        break;
+      case '\n':
+        out += '\\n';
+        break;
+      case '\r':
+        out += '\\r';
+        break;
+      case '\t':
+        out += '\\t';
+        break;
+      default: {
+        const code = ch.codePointAt(0) ?? 0;
+        if (code < 0x20 || code === 0x7f) {
+          out += `\\${code.toString().padStart(3, '0')}`;
+        } else {
+          out += ch;
+        }
+      }
+    }
+  }
+  return `${out}"`;
+}
+
+/**
+ * Serializes a JSON-compatible value as a Lua literal. JSON object syntax
+ * (`{"path": "/x"}`) is a syntax error in Lua, so objects are emitted as
+ * `["key"] = value` tables; sequence arrays stay positional so `#endpoints`
+ * and `endpoints[i]` keep working in the wrk template.
+ */
+function toLuaLiteral(value: unknown): string {
+  if (value === null || value === undefined) return 'nil';
+  if (typeof value === 'string') return quoteLuaString(value);
+  if (typeof value === 'boolean') return value ? 'true' : 'false';
+  if (typeof value === 'number') return Number.isFinite(value) ? String(value) : 'nil';
+  if (Array.isArray(value)) {
+    return `{ ${value.map(item => toLuaLiteral(item)).join(', ')} }`;
+  }
+  if (typeof value === 'object') {
+    const fields = Object.entries(value as Record<string, unknown>)
+      .filter(([, fieldValue]) => fieldValue !== undefined)
+      .map(([key, fieldValue]) => `[${quoteLuaString(key)}] = ${toLuaLiteral(fieldValue)}`);
+    return `{ ${fields.join(', ')} }`;
+  }
+  return 'nil';
+}
+
+/**
  * Builds the k6 options object for a given traffic pattern.
  */
 export function buildK6Options(
@@ -78,9 +153,12 @@ export function buildK6Script(
   vus: number,
   durationSec: number
 ): string {
+  // Function replacers everywhere: a string replacement would expand `$&`,
+  // `$'`, `$\`` and `$$` found in user-controlled values, silently corrupting
+  // (and inflating) the generated artifact.
   return loadTemplate('k6-template.js')
-    .replace('__OPTIONS__', JSON.stringify(buildK6Options(trafficPattern, vus, durationSec)))
-    .replace('__ENDPOINTS__', JSON.stringify(endpoints));
+    .replace('__OPTIONS__', () => JSON.stringify(buildK6Options(trafficPattern, vus, durationSec)))
+    .replace('__ENDPOINTS__', () => JSON.stringify(endpoints));
 }
 
 /**
@@ -97,9 +175,10 @@ export function buildWrkScript(endpoints: EndpointSpec[]): string {
       ...(ep.body ? { body: ep.body } : {})
     };
   });
-  return loadTemplate('wrk-template.lua').replace(
-    '__ENDPOINTS__',
-    JSON.stringify(wrkEndpoints)
+  // Emit a Lua table, not JSON: `{"path": ...}` is not valid Lua and wrk
+  // cannot load it. Function replacer avoids `$` pattern expansion.
+  return loadTemplate('wrk-template.lua').replace('__ENDPOINTS__', () =>
+    toLuaLiteral(wrkEndpoints)
   );
 }
 
@@ -109,10 +188,10 @@ export function buildWrkScript(endpoints: EndpointSpec[]): string {
 export function buildJmxTemplate(targetUrl: string, threads: number, durationSec: number): string {
   const url = new URL(targetUrl);
   return loadTemplate('jmeter-template.jmx')
-    .replaceAll('__HOST__', url.hostname)
-    .replaceAll('__PORT__', url.port || (url.protocol === 'https:' ? '443' : '80'))
-    .replaceAll('__PROTOCOL__', url.protocol.replace(':', ''))
-    .replaceAll('__PATH__', url.pathname + url.search)
-    .replaceAll('__THREADS__', String(threads))
-    .replaceAll('__DURATION__', String(durationSec));
+    .replaceAll('__HOST__', () => escapeXml(url.hostname))
+    .replaceAll('__PORT__', () => escapeXml(url.port || (url.protocol === 'https:' ? '443' : '80')))
+    .replaceAll('__PROTOCOL__', () => escapeXml(url.protocol.replace(':', '')))
+    .replaceAll('__PATH__', () => escapeXml(url.pathname + url.search))
+    .replaceAll('__THREADS__', () => escapeXml(String(threads)))
+    .replaceAll('__DURATION__', () => escapeXml(String(durationSec)));
 }

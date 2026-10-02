@@ -178,6 +178,50 @@ describe('runBenchmark tool', () => {
     expect(parse(r2).error.code).toBe('INVALID_ARGUMENTS');
   });
 
+  it('should reject non-integer connections that would be injected into the JMX', async () => {
+    const payloads = [
+      '1</stringProp><JSR223Sampler guiclass="TestBeanGUI"/>',
+      '10' // numeric string, still not a number
+    ];
+    for (const connections of payloads) {
+      const result = await runBenchmark(sandbox, {
+        template: 'jmeter',
+        target_url: 'http://localhost:3000/api',
+        connections: connections as unknown as number
+      });
+      const payload = parse(result);
+      expect(payload.success).toBe(false);
+      expect(payload.error.code).toBe('INVALID_ARGUMENTS');
+      expect(payload.error.message).toContain('connections');
+    }
+    expect(execSpy).not.toHaveBeenCalled();
+  });
+
+  it('should reject non-finite and fractional benchmark arguments', async () => {
+    const cases: Array<Record<string, unknown>> = [
+      { connections: Number.NaN },
+      { connections: Number.POSITIVE_INFINITY },
+      { connections: 1.5 },
+      { duration_sec: 'x' },
+      { duration_sec: Number.NaN },
+      { duration_sec: 1.5 },
+      { duration_sec: 86401 },
+      { connections: 10001 }
+    ];
+    for (const extra of cases) {
+      const args: any = {
+        template: 'wrk',
+        target_url: 'http://localhost:3000/api',
+        ...extra
+      };
+      const result = await runBenchmark(sandbox, args);
+      const payload = parse(result);
+      expect(payload.success).toBe(false);
+      expect(payload.error.code).toBe('INVALID_ARGUMENTS');
+    }
+    expect(execSpy).not.toHaveBeenCalled();
+  });
+
   it('should reject unsupported benchmark templates', async () => {
     const result = await runBenchmark(sandbox, {
       template: 'locust' as any,
