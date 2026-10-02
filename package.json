@@ -25,7 +25,8 @@
     "test": "turbo run test --filter=./mcps/*",
     "security:audit": "turbo run security:audit --filter=./mcps/*",
     "validate:skills": "node scripts/validate-skills.mjs",
-    "validate:mcps": "node scripts/validate-mcps.mjs"
+    "validate:mcps": "node scripts/validate-mcps.mjs",
+    "dktv:assess": "node scripts/dktv-assess.mjs"
   },
   "devDependencies": {
     "@modelcontextprotocol/sdk": "^1.30.1",
