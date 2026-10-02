@@ -4,7 +4,7 @@
 {Brief description of what this MCP provides}
 
 ## Security Model
-See templates/security-model.md for the standardized security controls implemented in all MCPs.
+See templates/security-model.md for the security model these MCPs must follow — it also lists explicitly what is **not** enforced, so do not restate controls that are not implemented.
 
 ## Tools
 
