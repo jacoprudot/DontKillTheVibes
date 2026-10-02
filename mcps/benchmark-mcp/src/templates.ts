@@ -1,5 +1,4 @@
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
+import { K6_TEMPLATE, WRK_TEMPLATE, JMETER_TEMPLATE } from './templates-content.js';
 
 export interface EndpointSpec {
   url: string;
@@ -9,28 +8,22 @@ export interface EndpointSpec {
 }
 
 /**
- * Loads a built-in benchmark template. Only templates shipped in the
- * benchmark-templates directory can be loaded — never user content.
+ * Returns a built-in benchmark template by file name. Templates are compiled
+ * into the MCP (see templates-content.ts) — never loaded from disk and never
+ * user content, so they cannot be tampered with at runtime.
  */
+const BUILTIN_TEMPLATES: Record<string, string> = {
+  'k6-template.js': K6_TEMPLATE,
+  'wrk-template.lua': WRK_TEMPLATE,
+  'jmeter-template.jmx': JMETER_TEMPLATE
+};
+
 export function loadTemplate(name: string): string {
-  const candidates = [
-    // src/templates.ts -> src/benchmark-templates (running from source)
-    new URL(`./benchmark-templates/${name}`, import.meta.url),
-    // dist/templates.js -> dist/benchmark-templates (if copied post-build)
-    new URL(`../benchmark-templates/${name}`, import.meta.url),
-    // dist/templates.js -> <pkg>/src/benchmark-templates (repo layout)
-    new URL(`../src/benchmark-templates/${name}`, import.meta.url),
-    // fallback: package root
-    new URL(`../../benchmark-templates/${name}`, import.meta.url)
-  ];
-  for (const candidate of candidates) {
-    try {
-      return readFileSync(fileURLToPath(candidate), 'utf8');
-    } catch {
-      // try next candidate
-    }
+  const template = BUILTIN_TEMPLATES[name];
+  if (template === undefined) {
+    throw new Error(`Benchmark template not found: ${name}`);
   }
-  throw new Error(`Benchmark template not found: ${name}`);
+  return template;
 }
 
 /**
