@@ -2,6 +2,17 @@
   "name": "dontkillthevibes",
   "version": "0.1.0-beta",
   "description": "LLM-orchestrated assessment toolkit for vibe coders",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude-code",
+    "ai-agents",
+    "vibe-coding",
+    "static-analysis",
+    "technical-debt",
+    "llm",
+    "cursor"
+  ],
   "author": "Jacobo Prudot (Jaco) <jaco@leongael.xyz>",
   "license": "MIT",
   "private": true,

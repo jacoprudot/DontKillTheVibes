@@ -1,3 +1,5 @@
+![DontKillTheVibes Banner](assets/banner.jpg)
+
 # DontKillTheVibes (DKTV) 🚀
 
 The LLM-orchestrated assessment toolkit for vibe coders, scale-ups, and fast-moving engineering teams.

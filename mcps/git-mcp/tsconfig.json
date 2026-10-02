@@ -11,6 +11,7 @@
     "node_modules",
     "dist",
     "test",
-    "tests"
+    "tests",
+    "**/*.test.ts"
   ]
 }
