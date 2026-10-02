@@ -50,7 +50,7 @@ patrón `_count` ya usado para `favoritesCount`.
 **Evidence**: `include: { ... favoritedBy: true ... }` + `article.favoritedBy.some((favorited: any) => favorited.id === id)`
 **Depends On**: `database-sequential-pagination-1` | **Blocks**: None
 
-### Priority 4: `code-missing-validation-3`
+### Priority 4: `code-missing-validation-4`
 **Module**: code | **Severity**: high | **Effort**: M | **Confidence**: 0.9
 **Location**: `src/app/routes/article/article.service.ts:69` (`getArticles`; patrón en todos los controllers)
 **Description**: No existe validación en ninguna frontera de la API: los servicios
@@ -59,7 +59,7 @@ slugs y payloads de auth no se validan antes de llegar a Prisma.
 **Remediation**: Middleware de validación (zod/class-validator) en todas las
 rutas; tipar estrictamente las entradas de los servicios.
 **Evidence**: `export const getArticles = async (query: any, id?: number) => {`
-**Depends On**: None | **Blocks**: `code-any-type-4`
+**Depends On**: None | **Blocks**: `code-any-type-6`
 
 ### Priority 5: `security-cors-wildcard-2`
 **Module**: security | **Severity**: medium | **Effort**: XS | **Confidence**: 0.9
@@ -69,13 +69,13 @@ rutas; tipar estrictamente las entradas de los servicios.
 **Evidence**: `app.use(cors());`
 **Depends On**: None | **Blocks**: None
 
-### Priority 6: `code-any-type-4`
+### Priority 6: `code-any-type-6`
 **Module**: code | **Severity**: medium | **Effort**: S | **Confidence**: 0.85
 **Location**: `src/app/routes/article/article.service.ts:69` (`getArticles`; mappers :601/:647)
 **Description**: `any` en interfaces públicas/servicio (`query: any`, `favorited: any`), anulando el type-safety exactamente en la superficie de la API.
 **Remediation**: DTOs para query/body (`ArticleQuery { tag?; author?; limit?; offset? }`); tipos generados de Prisma en los mappers.
 **Evidence**: `export const getArticles = async (query: any, id?: number) => { ... favoritedBy.some((favorited: any) => ...`
-**Depends On**: `code-missing-validation-3` | **Blocks**: None
+**Depends On**: `code-missing-validation-4` | **Blocks**: None
 
 ### Priority 7: `security-error-detail-1`
 **Module**: security | **Severity**: info | **Effort**: XS | **Confidence**: 0.7
@@ -97,10 +97,10 @@ rutas; tipar estrictamente las entradas de los servicios.
 - `database-overfetch-relation-1`: existencia filtrada en favoritedBy (S)
 
 ### 60 Days (Core Fixes)
-- `code-any-type-4`: DTOs y tipos Prisma en mappers (S)
+- `code-any-type-6`: DTOs y tipos Prisma en mappers (S)
 
 ### 90 Days (Strategic)
-- `code-missing-validation-3`: middleware de validación en toda la API (M)
+- `code-missing-validation-4`: middleware de validación en toda la API (M)
 
 ---
 

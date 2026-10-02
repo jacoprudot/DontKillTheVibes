@@ -279,6 +279,10 @@ Emit findings[] array and security-summary.json with:
     → FINDING: security-no-input-validation-14 (severity: high, effort: M)
     - Evidence: "API endpoints accept user input without validation or sanitization"
     - Remediation: "Implement comprehensive input validation at all trust boundaries"
+16. IF error_detail_exposed_to_client
+    → FINDING: security-error-detail-1 (severity: info, effort: XS)
+    - Evidence: "Global error handler returns raw err.message with HTTP 500 to the client"
+    - Remediation: "Log the full error server-side and return a generic message to the client"
 ```
 
 ## Output Format
@@ -403,8 +407,8 @@ module.exports = {
     - Remediation: "Remove key and use environment variables or AWS Secrets Manager"
     - Evidence: "AKIAIOSFODNN7EXAMPLE matches AWS access key pattern"
     - Metric: "Key validity: requires verification but pattern matches"
-  - security-secret-in-code-2 (severity: critical, effort: XS):
-    - Description: "AWS secret access key hardcoded in source code"
+  - security-secret-in-code-1 (severity: critical, effort: XS):
+    - Description: "AWS secret access key hardcoded in source code (second instance of the same canonical rule)"
     - Location: src/config/aws.js line 3
     - Remediation: "Remove key and use environment variables or AWS Secrets Manager"
     - Evidence: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY matches AWS secret key pattern"

@@ -1,12 +1,12 @@
-# Comparación: corrida real end-to-end vs baseline Gemini (simulated)
+# Comparación: corrida real end-to-end vs baseline Gemini (corrida real, verbatim)
 
 Mismo objetivo (`temp/realworld`, RealWorld API). Baseline:
-`../gemini-baseline/assessment-realworld-simulated.md`. Corrida:
+`../gemini-baseline/assessment-realworld-gemini-raw.md`. Corrida:
 `./assessment.json` + `./assessment-report.md` (esta carpeta).
 
 ## Cobertura
 
-| Métrica | Gemini (simulated) | DKTV real |
+| Métrica | Gemini (corrida real) | DKTV real |
 |---|---|---|
 | Hallazgos totales | 3 | 7 |
 | Criticals | 0 | 1 |
@@ -31,7 +31,7 @@ Mismo objetivo (`temp/realworld`, RealWorld API). Baseline:
 |---|---|---|
 | IDs `^[a-z-]+-\d+$` | ❌ `PERF-01` | ✅ |
 | Enum de módulos | ❌ "Performance" | ✅ |
-| Enum de effort | ❌ `M/L` | ✅ |
+| Enum de effort | ✅ en este baseline — el `M/L` fuera de enum pertenece a otro baseline: `../gemini-baseline/assessment-chilo-legal-gemini-raw.md` | ✅ |
 | `confidence` 0–1 | ❌ ausente | ✅ en los 7 |
 | `assessment.json` | ❌ no generado | ✅ |
 | Algoritmo de priorización | ❌ contradicho | ✅ scores calculados, security primero |

@@ -345,7 +345,7 @@ Emit findings[] array and code-quality-summary.json with:
 ### findings[] Array
 Each finding must conform to the finding-schema.json with:
 - `module`: "code"
-- `id`: code-[category]-[number] (e.g., code-unhandled-promise-1)
+- `id`: code-[category]-[number] (e.g., code-unhandled-promise-4)
 - `severity`: Based on decision tree assessment
 - `location`: 
   - `file`: Path to source file (relative to repo root)
@@ -438,7 +438,7 @@ function getUserProfile(userId) {
 - Function returns promise but caller doesn't await or handle it
 **Output**:
 - findings[]:
-  - code-promise-chain-missing-catch-1 (severity: medium, effort: S):
+  - code-promise-chain-missing-catch-5 (severity: medium, effort: S):
     - Description: "Promise chain missing .catch() handler"
     - Location: src/services/userService.js lines 2-8
     - Remediation: "Add .catch(err) => { throw err; } or use try/catch with async/await"
@@ -508,7 +508,7 @@ func (c *MapCache) Set(key string, value interface{}) {
 - Will cause race conditions under load
 **Output**:
 - findings[]:
-  - code-mutex-missing-1 (severity: medium, effort: M):
+  - code-mutex-missing-4 (severity: medium, effort: M):
     - Description: "Concurrent map access without synchronization"
     - Location: src/cache/mapcache.go line 4 (MapCache struct)
     - Remediation: "Add sync.RWMutex to protect map access"

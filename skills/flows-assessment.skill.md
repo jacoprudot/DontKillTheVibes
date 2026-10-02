@@ -596,7 +596,7 @@ paymentService.processPayment(paymentDetails);
     - Remediation: "Add error trigger node connected to notification/escalation flow"
     - Evidence: "Workflow definition shows no error connections from any node"
     - Metric: "Failure visibility: zero - errors will go unnoticed"
-  - flows-n8n-no-timeout-3 (severity: medium, effort: M):
+  - flows-n8n-no-timeout-4 (severity: medium, effort: M):
     - Description: "HTTP Request node lacks timeout setting"
     - Location: workflows/customer-onboarding.json (HTTP Request node)
     - Remediation: "Set reasonable timeout values (e.g., 10000ms)"

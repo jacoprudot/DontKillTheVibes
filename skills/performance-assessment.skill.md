@@ -786,7 +786,7 @@ Each finding must conform to the finding-schema.json with:
 - Likely cause: recent deployment or configuration change
 **Output**:
 - findings[]:
-  - performance-latency-regression-1 (severity: medium, effort: M):
+  - performance-no-regression-detection-5 (severity: medium, effort: M):
     - Description: "Performance regression detected in 95th percentile latency"
     - Location: Performance comparison between baselines
     - Remediation: "Investigate recent changes for performance impact"

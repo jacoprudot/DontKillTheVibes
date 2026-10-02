@@ -71,76 +71,250 @@ Combine all findings into a project-profile.json that summarizes:
 
 ### Tech Stack Inference
 ```markdown
-1. IF package.json exists → Node.js project
-   - IF express in deps → Express (severity: info)
-   - IF next in deps → Next.js (severity: info)
-   - IF nest in deps → Nest.js (severity: info)
-   - IF react in deps → React frontend (severity: info)
-   - IF typescript in deps → TypeScript usage (severity: info)
-2. IF requirements.txt/pyproject.toml → Python project
-   - IF django → Django (severity: info)
-   - IF fastapi → FastAPI (severity: info)
-   - IF flask → Flask (severity: info)
-   - IF pandas/numpy → Data science focus (severity: info)
-3. IF pom.xml/build.gradle → Java project (Maven/Gradle)
-   - IF spring-boot → Spring Boot (severity: info)
-   - IF maven → Maven build (severity: info)
-   - IF gradle → Gradle build (severity: info)
-4. IF go.mod → Go project (severity: info)
-5. IF Cargo.toml → Rust project (severity: info)
-6. IF composer.json → PHP project (severity: info)
-7. IF Dockerfile → Containerized deployment (severity: info)
-   - IF docker-compose.yml → Multi-service orchestration (severity: info)
-   - IF k8s/ OR kubernetes/ → Kubernetes manifests (severity: info)
-8. IF .github/workflows → CI/CD via GitHub Actions (severity: info)
-   - IF .gitlab-ci.yml → GitLab CI (severity: info)
-   - IF jenkins/ → Jenkins CI (severity: info)
-9. IF README.md contains badges → Evaluate badge ecosystem (severity: info)
-10. IF multiple language files detected → Polyglot project (severity: low)
+1. IF package.json exists
+   → FINDING: github-tech-stack-1 (severity: info, effort: XS)
+   - Evidence: "package.json present at repository root"
+   - Remediation: "No action required — confirms the Node.js runtime; scope JS/TS checks accordingly"
+2. IF package.json AND express in deps
+   → FINDING: github-tech-stack-2 (severity: info, effort: XS)
+   - Evidence: "express listed in package.json dependencies"
+   - Remediation: "No action required — informs request-flow and middleware review"
+3. IF package.json AND next in deps
+   → FINDING: github-tech-stack-3 (severity: info, effort: XS)
+   - Evidence: "next listed in package.json dependencies"
+   - Remediation: "No action required — informs routing and build review"
+4. IF package.json AND nest in deps
+   → FINDING: github-tech-stack-4 (severity: info, effort: XS)
+   - Evidence: "nest listed in package.json dependencies"
+   - Remediation: "No action required — informs module and DI structure review"
+5. IF package.json AND react in deps
+   → FINDING: github-tech-stack-5 (severity: info, effort: XS)
+   - Evidence: "react listed in package.json dependencies"
+   - Remediation: "No action required — informs frontend review"
+6. IF package.json AND typescript in deps
+   → FINDING: github-tech-stack-6 (severity: info, effort: XS)
+   - Evidence: "typescript listed in package.json dependencies"
+   - Remediation: "No action required — enables the code-quality TypeScript rules"
+7. IF requirements.txt OR pyproject.toml exists
+   → FINDING: github-tech-stack-7 (severity: info, effort: XS)
+   - Evidence: "requirements.txt or pyproject.toml present at repository root"
+   - Remediation: "No action required — confirms the Python runtime; scope Python checks accordingly"
+8. IF project_is_python AND django in deps
+   → FINDING: github-tech-stack-8 (severity: info, effort: XS)
+   - Evidence: "django declared in requirements.txt or pyproject.toml"
+   - Remediation: "No action required — informs ORM and security review"
+9. IF project_is_python AND fastapi in deps
+   → FINDING: github-tech-stack-9 (severity: info, effort: XS)
+   - Evidence: "fastapi declared in requirements.txt or pyproject.toml"
+   - Remediation: "No action required — informs request-flow review"
+10. IF project_is_python AND flask in deps
+    → FINDING: github-tech-stack-10 (severity: info, effort: XS)
+    - Evidence: "flask declared in requirements.txt or pyproject.toml"
+    - Remediation: "No action required — informs request-flow review"
+11. IF project_is_python AND (pandas OR numpy) in deps
+    → FINDING: github-tech-stack-11 (severity: info, effort: XS)
+    - Evidence: "pandas or numpy declared in the dependency manifest"
+    - Remediation: "No action required — flags a data-science workload for memory and IO review"
+12. IF pom.xml OR build.gradle exists
+    → FINDING: github-tech-stack-12 (severity: info, effort: XS)
+    - Evidence: "pom.xml or build.gradle present at repository root"
+    - Remediation: "No action required — confirms the Java runtime and build tool"
+13. IF project_is_java AND spring-boot in deps
+    → FINDING: github-tech-stack-13 (severity: info, effort: XS)
+    - Evidence: "spring-boot declared in pom.xml or build.gradle"
+    - Remediation: "No action required — informs configuration and security review"
+14. IF project_is_java AND maven build
+    → FINDING: github-tech-stack-14 (severity: info, effort: XS)
+    - Evidence: "pom.xml present with Maven plugin configuration"
+    - Remediation: "No action required — informs CI and dependency review"
+15. IF project_is_java AND gradle build
+    → FINDING: github-tech-stack-15 (severity: info, effort: XS)
+    - Evidence: "build.gradle present with Gradle configuration"
+    - Remediation: "No action required — informs CI and dependency review"
+16. IF go.mod exists
+    → FINDING: github-tech-stack-16 (severity: info, effort: XS)
+    - Evidence: "go.mod present at repository root"
+    - Remediation: "No action required — confirms the Go runtime"
+17. IF Cargo.toml exists
+    → FINDING: github-tech-stack-17 (severity: info, effort: XS)
+    - Evidence: "Cargo.toml present at repository root"
+    - Remediation: "No action required — confirms the Rust runtime"
+18. IF composer.json exists
+    → FINDING: github-tech-stack-18 (severity: info, effort: XS)
+    - Evidence: "composer.json present at repository root"
+    - Remediation: "No action required — confirms the PHP runtime"
+19. IF Dockerfile exists
+    → FINDING: github-tech-stack-19 (severity: info, effort: XS)
+    - Evidence: "Dockerfile present at repository root"
+    - Remediation: "No action required — informs deployment and image-hardening review"
+20. IF Dockerfile exists AND docker-compose.yml exists
+    → FINDING: github-tech-stack-20 (severity: info, effort: XS)
+    - Evidence: "docker-compose.yml defines more than one service"
+    - Remediation: "No action required — informs service-topology and network review"
+21. IF k8s/ OR kubernetes/ directory exists
+    → FINDING: github-tech-stack-21 (severity: info, effort: XS)
+    - Evidence: "Kubernetes manifests present under k8s/ or kubernetes/"
+    - Remediation: "No action required — informs capacity and configuration review"
+22. IF .github/workflows/ exists
+    → FINDING: github-tech-stack-22 (severity: info, effort: XS)
+    - Evidence: ".github/workflows contains one or more workflow files"
+    - Remediation: "No action required — enables the GitHub Actions security tree"
+23. IF .gitlab-ci.yml exists
+    → FINDING: github-tech-stack-23 (severity: info, effort: XS)
+    - Evidence: ".gitlab-ci.yml present at repository root"
+    - Remediation: "No action required — CI runs outside GitHub Actions"
+24. IF jenkins/ directory exists
+    → FINDING: github-tech-stack-24 (severity: info, effort: XS)
+    - Evidence: "Jenkinsfile or jenkins/ configuration present"
+    - Remediation: "No action required — CI runs outside GitHub Actions"
+25. IF README.md contains badges
+    → FINDING: github-tech-stack-25 (severity: info, effort: XS)
+    - Evidence: "README.md renders status badges (CI, coverage, version)"
+    - Remediation: "No action required — badge ecosystem is a maturity signal"
+26. IF multiple language manifests detected
+    → FINDING: github-tech-stack-26 (severity: low, effort: S)
+    - Evidence: "Two or more of package.json, requirements.txt, pom.xml, go.mod present"
+    - Remediation: "Confirm each language keeps its own lint/test pipeline; a polyglot repo hides untested surfaces"
 ```
 
 ### Commit History Analysis
 ```markdown
-1. IF commits/week < 2 → stale project (severity: medium)
-2. IF commits/week > 20 → highly active (severity: info)
-3. IF refactor commits > 30% of total → active refactoring (severity: info)
-4. IF feature commits > 50% → feature-focused development (severity: info)
-5. IF bugfix commits > 40% → quality-focused maintenance (severity: info)
-6. IF merge commits > 50% → heavy branching strategy (severity: medium)
-7. IF squash merges > 70% → clean history preference (severity: info)
-8. IF commit messages follow conventional commits → good hygiene (severity: info)
-9. IF average commit size > 500 lines → large commits (severity: medium)
-10. IF late-night commits common → potential burnout indicator (severity: low)
+1. IF commits/week < 2
+   → FINDING: github-commit-history-1 (severity: medium, effort: M)
+   - Evidence: "Commit rate below 2 per week over the analyzed window"
+   - Remediation: "Treat as low-activity: confirm maintainer availability before depending on the project"
+2. IF commits/week > 20
+   → FINDING: github-commit-history-2 (severity: info, effort: XS)
+   - Evidence: "Commit rate above 20 per week over the analyzed window"
+   - Remediation: "No action required — high activity confirms active maintenance"
+3. IF refactor commits > 30% of total
+   → FINDING: github-commit-history-3 (severity: info, effort: XS)
+   - Evidence: "More than 30% of commits are refactors"
+   - Remediation: "No action required — flag elevated regression risk during the refactor window"
+4. IF feature commits > 50%
+   → FINDING: github-commit-history-4 (severity: info, effort: XS)
+   - Evidence: "More than 50% of commits add or extend features"
+   - Remediation: "No action required — feature-focused development signal"
+5. IF bugfix commits > 40%
+   → FINDING: github-commit-history-5 (severity: info, effort: XS)
+   - Evidence: "More than 40% of commits are bug fixes"
+   - Remediation: "No action required — quality-focused maintenance signal; watch for recurring defect areas"
+6. IF merge commits > 50%
+   → FINDING: github-commit-history-6 (severity: medium, effort: M)
+   - Evidence: "More than 50% of commits are merges"
+   - Remediation: "Review the branch strategy; long-lived branches delay integration and hide conflicts"
+7. IF squash merges > 70%
+   → FINDING: github-commit-history-7 (severity: info, effort: XS)
+   - Evidence: "More than 70% of merges are squashed"
+   - Remediation: "No action required — clean-history preference; note reduced git-blame granularity"
+8. IF commit messages follow conventional commits
+   → FINDING: github-commit-history-8 (severity: info, effort: XS)
+   - Evidence: "Commit subjects match the conventional-commits grammar"
+   - Remediation: "No action required — good hygiene signal"
+9. IF average commit size > 500 changed lines
+   → FINDING: github-commit-history-9 (severity: medium, effort: M)
+   - Evidence: "Mean diff size above 500 lines per commit"
+   - Remediation: "Encourage smaller commits; large diffs make review and bisection unreliable"
+10. IF late-night commits are common
+    → FINDING: github-commit-history-10 (severity: low, effort: S)
+    - Evidence: "A large share of commits land in late-night local hours"
+    - Remediation: "Surface as a sustainability signal, not as a technical severity"
 ```
 
 ### Issue/PR Health
 ```markdown
-1. IF median time to first response > 72h → slow triage (severity: medium)
-2. IF median time to first response < 6h → responsive maintenance (severity: info)
-3. IF issue closure rate < 50% → backlog growing (severity: high)
-4. IF issue closure rate > 80% → healthy resolution rate (severity: info)
-5. IF PR review depth < 2 comments → shallow reviews (severity: medium)
-6. IF PR review depth > 10 comments → thorough review process (severity: info)
-7. IF stale issues > 30% → poor maintenance (severity: medium)
-8. IF stale issues < 10% → good issue hygiene (severity: info)
-9. IF PR merge rate < 50% → review bottleneck (severity: medium)
-10. IF PR merge rate > 80% → efficient review process (severity: info)
-11. IF labeled issues < 20% → poor categorization (severity: medium)
-12. IF labeled issues > 80% → good organization (severity: info)
+1. IF median time to first response > 72h
+   → FINDING: github-issue-health-1 (severity: medium, effort: M)
+   - Evidence: "Median first response above 72 hours"
+   - Remediation: "Add a triage rotation or auto-response; slow triage lets the backlog grow"
+2. IF median time to first response < 6h
+   → FINDING: github-issue-health-2 (severity: info, effort: XS)
+   - Evidence: "Median first response under 6 hours"
+   - Remediation: "No action required — responsive maintenance signal"
+3. IF issue closure rate < 50%
+   → FINDING: github-issue-health-3 (severity: high, effort: M)
+   - Evidence: "Fewer than half of opened issues are closed"
+   - Remediation: "Triage and close stale backlog items; an unbounded backlog hides real defects"
+4. IF issue closure rate > 80%
+   → FINDING: github-issue-health-4 (severity: info, effort: XS)
+   - Evidence: "More than 80% of opened issues are closed"
+   - Remediation: "No action required — healthy resolution rate"
+5. IF PR review depth < 2 comments
+   → FINDING: github-issue-health-5 (severity: medium, effort: M)
+   - Evidence: "Median PR review carries fewer than 2 comments"
+   - Remediation: "Introduce a review checklist; shallow review lets defects through"
+6. IF PR review depth > 10 comments
+   → FINDING: github-issue-health-6 (severity: info, effort: XS)
+   - Evidence: "Median PR review carries more than 10 comments"
+   - Remediation: "No action required — thorough review process signal"
+7. IF stale issues > 30%
+   → FINDING: github-issue-health-7 (severity: medium, effort: M)
+   - Evidence: "More than 30% of open issues have no recent activity"
+   - Remediation: "Close or relabel stale issues; unresolved noise erodes trust in the tracker"
+8. IF stale issues < 10%
+   → FINDING: github-issue-health-8 (severity: info, effort: XS)
+   - Evidence: "Fewer than 10% of open issues are stale"
+   - Remediation: "No action required — good issue hygiene signal"
+9. IF PR merge rate < 50%
+   → FINDING: github-issue-health-9 (severity: medium, effort: M)
+   - Evidence: "Fewer than half of opened PRs are merged"
+   - Remediation: "Find and remove the review bottleneck (owner, PR size, flaky CI)"
+10. IF PR merge rate > 80%
+    → FINDING: github-issue-health-10 (severity: info, effort: XS)
+    - Evidence: "More than 80% of opened PRs are merged"
+    - Remediation: "No action required — efficient review process signal"
+11. IF labeled issues < 20%
+    → FINDING: github-issue-health-11 (severity: medium, effort: S)
+    - Evidence: "Fewer than 20% of issues carry labels"
+    - Remediation: "Apply a label taxonomy; unlabeled issues cannot be triaged at scale"
+12. IF labeled issues > 80%
+    → FINDING: github-issue-health-12 (severity: info, effort: XS)
+    - Evidence: "More than 80% of issues carry labels"
+    - Remediation: "No action required — good organization signal"
 ```
 
 ### Log Pattern Mining
 ```markdown
-1. IF application logs found → operational visibility (severity: info)
-2. IF error logs show repeating patterns → chronic issues (severity: medium)
-3. IF access logs show traffic patterns → usage insights (severity: info)
-4. IF security logs show attempts → threat landscape (severity: medium)
-5. IF audit logs missing → compliance gap (severity: medium)
-6. IF debug logs in production → security risk (severity: high)
-7. IF log rotation configured → good ops practice (severity: info)
-8. IF centralized logging → mature observability (severity: info)
-9. IF no logs found → observability gap (severity: medium)
-10. IF structured logs (JSON) → machine-readable (severity: info)
+1. IF application logs found
+   → FINDING: github-log-pattern-1 (severity: info, effort: XS)
+   - Evidence: "Application log files or logging configuration present in the repository"
+   - Remediation: "No action required — operational visibility signal"
+2. IF error logs show repeating patterns
+   → FINDING: github-log-pattern-2 (severity: medium, effort: M)
+   - Evidence: "The same error signature recurs across the captured log window"
+   - Remediation: "File the recurring signature as a defect and fix the root cause, not the symptom"
+3. IF access logs show traffic patterns
+   → FINDING: github-log-pattern-3 (severity: info, effort: XS)
+   - Evidence: "Access logs include request paths, statuses, and timing"
+   - Remediation: "No action required — usage insight signal; use it to scope hot paths"
+4. IF security logs show attempts
+   → FINDING: github-log-pattern-4 (severity: medium, effort: S)
+   - Evidence: "Authentication or authorization failures recorded in logs"
+   - Remediation: "Confirm alerting on these events; unexplained attempts indicate probing"
+5. IF audit logs missing
+   → FINDING: github-log-pattern-5 (severity: medium, effort: M)
+   - Evidence: "No audit trail for privileged or data-changing operations"
+   - Remediation: "Add append-only audit logging for privileged actions to close the compliance gap"
+6. IF debug logs in production
+   → FINDING: github-log-pattern-6 (severity: high, effort: S)
+   - Evidence: "Verbose debug logging enabled in the production configuration"
+   - Remediation: "Set production log level to info or higher; debug output can leak payloads and secrets"
+7. IF log rotation configured
+   → FINDING: github-log-pattern-7 (severity: info, effort: XS)
+   - Evidence: "Log rotation or retention policy is configured"
+   - Remediation: "No action required — good ops practice signal"
+8. IF centralized logging configured
+   → FINDING: github-log-pattern-8 (severity: info, effort: XS)
+   - Evidence: "Logs are shipped to a central platform (e.g., ELK, Loki, CloudWatch)"
+   - Remediation: "No action required — mature observability signal"
+9. IF no logs found
+   → FINDING: github-log-pattern-9 (severity: medium, effort: M)
+   - Evidence: "No logging configuration or log artifacts found in the repository"
+   - Remediation: "Treat as an observability gap only after confirming the deployment does not log elsewhere"
+10. IF structured logs (JSON)
+    → FINDING: github-log-pattern-10 (severity: info, effort: XS)
+    - Evidence: "Log lines are emitted as structured JSON rather than free text"
+    - Remediation: "No action required — machine-readable logging signal"
 ```
 
 ## Output Format
@@ -211,10 +385,11 @@ Each finding must conform to the finding-schema.json with:
 - No logs found in repository (expected for API service)
 **Output**:
 - findings[]: 
-  - github-tech-stack-1 (severity: info, effort: XS): "Node.js/Express API with MongoDB"
-  - github-maturity-1 (severity: info, effort: XS): "Active project with good maintenance practices"
-  - github-collaboration-1 (severity: info, effort: XS): "Responsive team with thorough review process"
+  - github-tech-stack-1 (severity: info, effort: XS): "Node.js project (package.json) with Express in dependencies"
+  - github-commit-history-2 (severity: info, effort: XS): "Highly active project (15 commits/week)"
+  - github-issue-health-2 (severity: info, effort: XS): "Responsive team (median first response 4h)"
 - project-profile.json: 
+```json
   {
     "name": "api-service",
     "description": "RESTful API service for internal tools",
@@ -256,14 +431,15 @@ Each finding must conform to the finding-schema.json with:
 - No CI/CD configuration found
 - Commit history: 0.5 commits/week, mostly typo fixes
 - Issues: median response 30 days, closure rate 20%, many stale issues
-- README.md outdated, missing installation instructions
+- README.md outdated, missing installation instructions (no canonical rule for documentation quality yet — recorded only in project-profile.json repositoryHealth.documentationQuality)
 **Output**:
 - findings[]:
-  - github-tech-stack-1 (severity: info, effort: XS): "Python/Django 1.8 (outdated)"
-  - github-maturity-2 (severity: medium, effort: S): "Stale project with low activity"
-  - github-collaboration-2 (severity: high, effort: M): "Poor maintenance responsiveness"
-  - github-documentation-3 (severity: medium, effort: M): "Outdated documentation"
+  - github-tech-stack-7 (severity: info, effort: XS): "Python project (requirements.txt) running unsupported Django 1.8"
+  - github-commit-history-1 (severity: medium, effort: M): "Stale project with low activity (0.5 commits/week)"
+  - github-issue-health-1 (severity: medium, effort: M): "Slow triage (median first response 30 days)"
+  - github-issue-health-3 (severity: high, effort: M): "Backlog growing (issue closure rate 20%)"
 - project-profile.json:
+```json
   {
     "name": "old-project",
     "description": "Legacy web application, likely abandoned",
@@ -314,10 +490,12 @@ Each finding must conform to the finding-schema.json with:
 - No logs found (expected for compiled binary service)
 **Output**:
 - findings[]: 
-  - github-tech-stack-1 (severity: info, effort: XS): "Go/Gin microservice with WebSocket support"
-  - github-maturity-1 (severity: info, effort: XS): "High-frequency trading system with extreme performance focus"
-  - github-collaboration-1 (severity: info, effort: XS): "Elite team with rapid response and deep review process"
+  - github-tech-stack-16 (severity: info, effort: XS): "Go project (go.mod) using Gin and Gorilla WebSocket"
+  - github-commit-history-2 (severity: info, effort: XS): "Extremely active project (45 commits/week, 50% refactors)"
+  - github-issue-health-2 (severity: info, effort: XS): "Elite team with rapid first response (median 2h)"
+  - github-issue-health-6 (severity: info, effort: XS): "Deep review process (15 comments per PR)"
 - project-profile.json: 
+```json
   {
     "name": "high-frequency-trader",
     "description": "Low-latency trading platform for institutional clients",
@@ -350,6 +528,7 @@ Each finding must conform to the finding-schema.json with:
       "communityHealth": "exceptional"
     }
   }
+```
 
 ## Extensibility
 

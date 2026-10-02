@@ -22,6 +22,7 @@ decisionTrees:
   - Missing Index Detection (PostgreSQL/Supabase Focus)
   - Irreversible Migration Detection
   - N+1 Query Risk
+  - Query Anti-Patterns
   - Connection Pool Misconfiguration
   - PostgreSQL-Specific Rules (Supabase focus)
 ---
@@ -158,6 +159,18 @@ Emit findings[] array and schema-summary.json with:
    → FINDING: database-iteration-overload-5 (severity: high, effort: M)
    - Evidence: "Code iterates over QuerySet without pagination or chunking"
    - Remediation: "Use iterator(), yield_per(), or add pagination limits"
+```
+
+### Query Anti-Patterns
+```markdown
+1. IF sequential_count_and_findmany_on_paginated_endpoint
+   → FINDING: database-sequential-pagination-1 (severity: high, effort: S)
+   - Evidence: "prisma.article.count() awaited immediately before prisma.article.findMany() on the same list endpoint"
+   - Remediation: "Run both queries concurrently: const [count, rows] = await Promise.all([countQuery, listQuery])"
+2. IF full_relation_included_to_derive_single_flag
+   → FINDING: database-overfetch-relation-1 (severity: high, effort: S)
+   - Evidence: "include: { favoritedBy: true } loads the entire many-to-many relation only to compute favoritedBy.some(f => f.id === id)"
+   - Remediation: "Filter the relation to the current user: favoritedBy: { where: { id: userId }, select: { id: true } }"
 ```
 
 ### Connection Pool Misconfiguration

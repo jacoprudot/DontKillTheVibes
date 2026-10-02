@@ -1,8 +1,15 @@
-# Gemini Baseline (simulated run) — NON-CONFORMANT
+# Gemini Baseline — real Gemini run, verbatim, NON-CONFORMANT
 
-Estos dos reportes fueron generados por Gemini (Antigravity IDE Synthesis Agent)
-el 2026-09-29 contra `temp/realworld/` (gothinkster RealWorld API) y
-`temp/chilo-legal/`.
+Estos dos reportes son la **salida cruda y sin editar** de Gemini (Antigravity IDE
+Synthesis Agent) del 2026-09-29 contra `temp/realworld/` (gothinkster RealWorld API)
+y `temp/chilo-legal/`.
+
+> **Sobre la palabra "simulated":** los apéndices de los propios reportes dicen
+> *"Full deep-dive simulated run"*, pero eso se refiere a que **los MCPs no estaban
+> conectados**, no a que los hallazgos fueran inventados. Las afirmaciones factuales
+> son reales y verificables contra el código; lo que se improvisó fue el **formato**,
+> no el contenido. Los archivos se conservan tal cual los emitió Gemini: si se
+> editaran, dejarían de ser evidencia.
 
 ## Por qué se conservan
 
@@ -13,12 +20,12 @@ Son el **baseline de referencia** para medir el valor real del toolkit:
 - El output **incumple 100% el contrato del toolkit**: IDs de hallazgo
   inválidos (`PERF-01` vs patrón `^[a-z-]+-\d+$`), sin campo `confidence`,
   sin `assessment.json`, effort `M/L` fuera de enum, priorización que
-  contradice el algoritmo del synthesis-agent, y cobertura de ~4 hallazgos
-  frente a las 334 reglas definidas en los skills.
+  contradice el algoritmo del synthesis-agent, y cobertura de 3–4 hallazgos
+  frente a las 394 reglas canónicas definidas en los skills.
 
-El apéndice del reporte de realworld lo admite: *"Full deep-dive simulated
-run"* — los MCPs no estaban conectados; el LLM interpretó el rol e improvisó
-el formato.
+El apéndice del reporte de realworld lo admite: los MCPs no estaban conectados, así
+que el LLM interpretó el rol e **improvisó el formato**. Ese es exactamente el fallo
+que el toolkit existe para eliminar: contenido plausible, contrato inexistente.
 
 ## Uso
 

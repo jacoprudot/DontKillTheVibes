@@ -7,7 +7,7 @@
     "id": {
       "type": "string",
       "pattern": "^[a-z-]+-\\d+$",
-      "description": "Unique finding ID: module-category-number (e.g., database-missing-index-1)"
+      "description": "Unique finding ID: module-category-number (e.g., database-missing-index-fk-1)"
     },
     "module": {
       "type": "string",
