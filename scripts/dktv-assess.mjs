@@ -23,7 +23,13 @@
  *   --language <code>    Report language, e.g. es/en (default: es)
  *   --context-chars <n>  Total file-content budget in chars (default: 120000)
  *   --max-retries <n>    Validation retry attempts (default: 3)
+ *   --max-tokens <n>     Completion token budget (default: 8192). Reasoning models
+ *                        (e.g. NVIDIA Nemotron) spend part of this on hidden
+ *                        reasoning, so raise it if responses come back truncated.
  *   --dry-run            Build the prompt, print stats, do not call the API
+ *   --emit-digest <file> Write the exact repo digest (JSON) that would be sent, then exit.
+ *                        Used by benchmark/run.mjs so both comparison arms get
+ *                        byte-identical input.
  */
 import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -43,7 +49,9 @@ function parseArgs(argv) {
     language: 'es',
     contextChars: 120_000,
     maxRetries: 3,
+    maxTokens: 8192,
     dryRun: false,
+    emitDigest: null,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -56,7 +64,9 @@ function parseArgs(argv) {
     else if (a === '--language') opts.language = next();
     else if (a === '--context-chars') opts.contextChars = parseInt(next(), 10);
     else if (a === '--max-retries') opts.maxRetries = parseInt(next(), 10);
+    else if (a === '--max-tokens') opts.maxTokens = parseInt(next(), 10);
     else if (a === '--dry-run') opts.dryRun = true;
+    else if (a === '--emit-digest') opts.emitDigest = resolve(next());
     else if (a === '--help' || a === '-h') { console.log('See header comment in scripts/dktv-assess.mjs'); process.exit(0); }
     else { console.error(`Unknown arg: ${a}`); process.exit(2); }
   }
@@ -69,6 +79,39 @@ function parseArgs(argv) {
 const SKIP_DIRS = new Set(['.git', 'node_modules', 'dist', 'build', 'out', '.next', '.turbo', '.nuxt', 'coverage', '.dontkillthevibes', '.cache', 'target', 'vendor', '__pycache__']);
 const SKIP_EXT = new Set(['.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.webp', '.woff', '.woff2', '.ttf', '.eot', '.pdf', '.zip', '.gz', '.tgz', '.tar', '.rar', '.7z', '.mp4', '.mp3', '.mov', '.wasm', '.exe', '.dll', '.so', '.dylib', '.jar', '.class', '.pyc', '.db', '.sqlite', '.bin', '.lock', '.ico']);
 const PER_FILE_CAP = 10_000; // chars of content per file
+
+// Filenames that must never leave the machine: the digest is sent to an
+// external LLM endpoint, so these are excluded from content AND tree.
+const SENSITIVE_NAME =
+  /(^\.env(\..+)?$|\.(pem|key|p12|pfx|jks|keystore)$|^id_(rsa|ed25519|ecdsa|dsa)(\.|$)|\.(secret|secrets|credentials)$|^credentials(\.|$)|^\.npmrc$|^\.netrc$)/i;
+
+/**
+ * Minimal .gitignore honoring (comments and blank lines skipped; `!`
+ * negation unsupported — negated patterns are ignored, which can only
+ * over-exclude, never leak).
+ */
+function loadGitignore(target) {
+  const gi = join(target, '.gitignore');
+  if (!existsSync(gi)) return () => false;
+  const regexes = readFileSync(gi, 'utf8')
+    .split(/\r?\n/)
+    .map(l => l.trim())
+    .filter(l => l && !l.startsWith('#') && !l.startsWith('!'))
+    .map(p => {
+      const dirOnly = p.endsWith('/');
+      const anchored = p.startsWith('/');
+      let pat = p.replace(/^\//, '').replace(/\/$/, '');
+      let re = pat
+        .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+        .replace(/\*\*/g, '::DOUBLESTAR::')
+        .replace(/\*/g, '[^/]*')
+        .replace(/::DOUBLESTAR::/g, '.*')
+        .replace(/\?/g, '[^/]');
+      re = anchored ? `^${re}` : `(^|/)${re}`;
+      return new RegExp(`${re}($|/)`);
+    });
+  return rel => regexes.some(r => r.test(rel));
+}
 
 function walk(dir, base, files) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -86,11 +129,19 @@ function buildDigest(target, budget) {
   const all = [];
   walk(target, target, all);
   all.sort((a, b) => a.rel.localeCompare(b.rel));
-  const tree = all.map(f => f.rel);
+  const isIgnored = loadGitignore(target);
+  const tree = [];
   const included = [];
   const skippedContent = [];
+  const skippedSensitive = [];
   let spent = 0;
   for (const f of all) {
+    if (SENSITIVE_NAME.test(f.rel.split('/').pop())) {
+      skippedSensitive.push(f.rel);
+      continue;
+    }
+    if (isIgnored(f.rel)) { skippedContent.push(f.rel); continue; }
+    tree.push(f.rel);
     if (SKIP_EXT.has(f.ext)) { skippedContent.push(f.rel); continue; }
     let size;
     try { size = statSync(f.full).size; } catch { continue; }
@@ -108,10 +159,27 @@ function buildDigest(target, budget) {
     spent += content.length;
     included.push({ rel: f.rel, content });
   }
-  return { tree, included, skippedContent, chars: spent };
+  return { tree, included, skippedContent, skippedSensitive, chars: spent };
 }
 
 /* ---------- prompts ---------- */
+/**
+ * Every canonical rule id, harvested from the `→ FINDING: <id>` lines in
+ * skills/*.skill.md. The decision trees define them, but they sit inside ~220k
+ * chars of prose. A real NVIDIA NIM run showed the model inventing plausible-looking
+ * ids (code-any-type-1, code-env-var-check-1, …) that the validator then rejected on
+ * all five findings, so the runner now lists the registry explicitly.
+ */
+function loadCanonicalRegistry() {
+  const ids = new Set();
+  const dir = join(root, 'skills');
+  for (const f of readdirSync(dir).filter(n => n.endsWith('.skill.md'))) {
+    const content = readFileSync(join(dir, f), 'utf8');
+    for (const m of content.matchAll(/→\s*FINDING:\s*([A-Za-z0-9-]+)/g)) ids.add(m[1]);
+  }
+  return [...ids].sort();
+}
+
 function buildSystemPrompt(language) {
   const synthesis = readFileSync(join(root, 'agents/synthesis-agent.md'), 'utf8');
   const skillFiles = readdirSync(join(root, 'skills')).filter(f => f.endsWith('.skill.md')).sort();
@@ -126,6 +194,10 @@ ${synthesis}
 
 ${skills}
 
+# Canonical rule ID registry — the ONLY valid finding ids
+
+${loadCanonicalRegistry().join('\n')}
+
 # Output contract (hard requirement)
 
 Respond with ONLY a JSON object — no prose, no markdown fences, no comments:
@@ -138,8 +210,10 @@ Respond with ONLY a JSON object — no prose, no markdown fences, no comments:
 }
 
 Rules for each finding:
+- id: MUST be copied verbatim from the canonical registry above. Inventing an id — even a plausible-looking one such as code-any-type-1 or code-env-var-check-1 — is a contract violation and the whole assessment is rejected. Ids must be unique across all findings.
+- If a real problem has no matching rule in the registry, do NOT invent a rule: omit the finding, or attach it to the closest existing rule and name that rule in the description.
 - Required fields: id, module, severity, location, description, remediation, effort, confidence.
-- id pattern: ^[a-z-]+-\\d+$ (module-category-number, unique across all findings).
+- id shape only (NOT sufficient on its own — the registry rule above is binding): ^[a-z-]+-\\d+$ (module-category-number, unique across all findings).
 - module ∈ database|code|structure|flows|security|cost|performance|github
 - severity ∈ critical|high|medium|low|info; effort ∈ XS|S|M|L|XL
 - confidence: number 0.0-1.0 (use < 0.6 only for genuinely uncertain findings)
@@ -156,14 +230,17 @@ function buildUserPrompt(target, digest) {
   const tree = digest.tree.slice(0, 2000).join('\n');
   const files = digest.included.map(f => `### ${f.rel}\n\`\`\`\n${f.content}\n\`\`\``).join('\n\n');
   const truncatedNote = digest.skippedContent.length
-    ? `\n\nFiles not included (binary or context budget): ${digest.skippedContent.length} — base findings ONLY on the files shown.`
+    ? `\n\nFiles not included (binary, gitignored, or context budget): ${digest.skippedContent.length} — base findings ONLY on the files shown.`
+    : '';
+  const sensitiveNote = digest.skippedSensitive.length
+    ? `\n\nWithheld for privacy BEFORE transmission: ${digest.skippedSensitive.length} sensitive file(s) — ${digest.skippedSensitive.slice(0, 20).join(', ')}${digest.skippedSensitive.length > 20 ? ', …' : ''}\nThese files were NEVER sent to you. Their absence is NOT evidence that the repository is clean: do not report a secret-management rule as passing, and do not state that no secrets are committed. If a rule needs those files as evidence, omit the finding or lower its confidence below 0.6 and say the evidence was withheld.`
     : '';
   return `# Repository: ${repoName}
 
 ## File tree (${digest.tree.length} files)
 ${tree}
 
-## File contents (${digest.included.length} files, ${digest.chars} chars)${truncatedNote}
+## File contents (${digest.included.length} files, ${digest.chars} chars)${truncatedNote}${sensitiveNote}
 
 ${files}
 
@@ -176,7 +253,7 @@ async function callChat(opts, messages, useJsonMode) {
     model: opts.model,
     messages,
     temperature: 0.2,
-    max_tokens: 8192,
+    max_tokens: opts.maxTokens,
     ...(useJsonMode ? { response_format: { type: 'json_object' } } : {}),
   };
   const res = await fetch(`${opts.baseUrl.replace(/\/$/, '')}/chat/completions`, {
@@ -198,8 +275,16 @@ async function callChat(opts, messages, useJsonMode) {
   if (!res.ok) throw new Error(`LLM HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
   const data = await res.json();
   const content = data.choices?.[0]?.message?.content;
-  if (!content) throw new Error('LLM returned no content');
-  return { content, usage: data.usage };
+  const finishReason = data.choices?.[0]?.finish_reason;
+  if (!content) {
+    // Reasoning models can spend the whole budget on hidden reasoning and return
+    // an empty content field. Say exactly why instead of a bare "no content".
+    throw new Error(
+      `LLM returned no content (finish_reason: ${finishReason ?? 'unknown'}; reasoning_tokens: ` +
+      `${data.usage?.completion_tokens_details?.reasoning_tokens ?? 'n/a'}). If finish_reason is "length", raise --max-tokens.`
+    );
+  }
+  return { content, usage: data.usage, finishReason };
 }
 
 /* ---------- json extraction ---------- */
@@ -215,8 +300,8 @@ function extractJson(text) {
 /* ---------- main ---------- */
 const opts = parseArgs(process.argv.slice(2));
 if (!existsSync(opts.target)) { console.error(`--target not found: ${opts.target}`); process.exit(2); }
-if (!opts.dryRun && !opts.apiKey) { console.error('Missing API key: set LLM_API_KEY or pass --api-key (or use --dry-run)'); process.exit(2); }
-if (!opts.dryRun && !opts.model) {
+if (!opts.dryRun && !opts.emitDigest && !opts.apiKey) { console.error('Missing API key: set LLM_API_KEY or pass --api-key (or use --dry-run)'); process.exit(2); }
+if (!opts.dryRun && !opts.emitDigest && !opts.model) {
   console.error('Missing model: set LLM_MODEL or pass --model. NIM examples: moonshotai/kimi-k2-instruct-0905, deepseek-ai/deepseek-v3.1, zai-org/glm-4.6-air, nvidia/llama-3.1-nemotron-70b-instruct');
   process.exit(2);
 }
@@ -227,7 +312,18 @@ const systemPrompt = buildSystemPrompt(opts.language);
 const userPrompt = buildUserPrompt(opts.target, digest);
 const approxTokens = Math.round((systemPrompt.length + userPrompt.length) / 4);
 console.log(`Context: ${digest.included.length}/${digest.tree.length} files, ~${approxTokens} tokens estimated`);
+if (digest.skippedSensitive.length)
+  console.log(`Sensitive files excluded (never sent to the LLM): ${digest.skippedSensitive.length}`);
 if (approxTokens > 100_000) console.warn('WARNING: prompt exceeds ~100k tokens — reduce --context-chars or use a model with a larger context window.');
+
+// Benchmark hook: dump the exact digest that would be sent, so a comparison run can
+// feed both arms (naive prompt vs. toolkit prompt) byte-identical input.
+if (opts.emitDigest) {
+  mkdirSync(dirname(opts.emitDigest), { recursive: true });
+  writeFileSync(opts.emitDigest, JSON.stringify(digest, null, 2), 'utf8');
+  console.log(`Digest written to ${opts.emitDigest}`);
+  process.exit(0);
+}
 
 if (opts.dryRun) {
   mkdirSync(opts.out, { recursive: true });
@@ -245,12 +341,18 @@ mkdirSync(opts.out, { recursive: true });
 let lastUsage = null;
 for (let attempt = 1; attempt <= opts.maxRetries + 1; attempt++) {
   console.log(`Attempt ${attempt}/${opts.maxRetries + 1}: calling ${opts.model} ...`);
-  const { content, usage } = await callChat(opts, messages, true);
+  const { content, usage, finishReason } = await callChat(opts, messages, true);
   lastUsage = usage;
+  if (finishReason === 'length') {
+    console.warn(`  response was TRUNCATED (finish_reason: length) — raise --max-tokens (currently ${opts.maxTokens})`);
+  }
   let candidate;
   try { candidate = extractJson(content); }
   catch (e) {
-    messages.push({ role: 'assistant', content }, { role: 'user', content: `Your response was not parseable JSON: ${e.message}. Return ONLY the JSON object.` });
+    const hint = finishReason === 'length'
+      ? ` Your previous response was cut off by the ${opts.maxTokens}-token limit; return a shorter but COMPLETE JSON object.`
+      : '';
+    messages.push({ role: 'assistant', content }, { role: 'user', content: `Your response was not parseable JSON: ${e.message}.${hint} Return ONLY the JSON object.` });
     continue;
   }
   const candidatePath = join(opts.out, 'assessment.candidate.json');
