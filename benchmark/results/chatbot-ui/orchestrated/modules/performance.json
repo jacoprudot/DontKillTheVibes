@@ -1,0 +1,351 @@
+{
+  "module": "performance",
+  "skill_file": "skills/performance-assessment.skill.md",
+  "agent_file": "agents/performance-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 2,
+    "weak_after": 1,
+    "repaired": 1,
+    "repair_failed": 1,
+    "repair_calls": 1,
+    "weak_over_cap": 0,
+    "stamped_total": 0,
+    "stamped_severity": 0,
+    "stamped_effort": 0,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 54089,
+    "usage": {
+      "prompt_tokens": 14518,
+      "completion_tokens": 3507,
+      "total_tokens": 18025,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 3380,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "app/api/chat/openai/route.ts",
+      "app/api/retrieval/retrieve/route.ts",
+      "app/api/assistants/openai/route.ts",
+      "lib/supabase/server.ts",
+      "db/index.ts",
+      "supabase/migrations/20240108234549_add_messages.sql",
+      "next.config.js",
+      "lib/supabase/middleware.ts",
+      "lib/server/server-utils.ts",
+      "lib/server/server-chat-helpers.ts",
+      "package.json",
+      "middleware.ts",
+      "lib/envs.ts",
+      "lib/utils.ts"
+    ],
+    "requested_in_tree": [
+      "app/api/chat/openai/route.ts",
+      "app/api/retrieval/retrieve/route.ts",
+      "app/api/assistants/openai/route.ts",
+      "lib/supabase/server.ts",
+      "db/index.ts",
+      "supabase/migrations/20240108234549_add_messages.sql",
+      "next.config.js",
+      "lib/supabase/middleware.ts",
+      "lib/server/server-utils.ts",
+      "lib/server/server-chat-helpers.ts",
+      "package.json",
+      "middleware.ts",
+      "lib/envs.ts",
+      "lib/utils.ts"
+    ],
+    "requested_not_in_tree": [],
+    "requested_over_cap": [],
+    "files_read": [
+      "app/api/chat/openai/route.ts",
+      "app/api/retrieval/retrieve/route.ts",
+      "app/api/assistants/openai/route.ts",
+      "lib/supabase/server.ts",
+      "db/index.ts",
+      "supabase/migrations/20240108234549_add_messages.sql",
+      "next.config.js",
+      "lib/supabase/middleware.ts",
+      "lib/server/server-utils.ts",
+      "lib/server/server-chat-helpers.ts",
+      "package.json",
+      "middleware.ts",
+      "lib/envs.ts",
+      "lib/utils.ts"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 38148,
+    "content_chars": 24304,
+    "usage": {
+      "prompt_tokens": 12214,
+      "completion_tokens": 8879,
+      "total_tokens": 21093,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 8148,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": [{\"id\": \"performance-http-no-pooling-2\", \"module\": \"performance\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/openai/route.ts\", \"line\": 18}, \"description\": \"Creating a new OpenAI instance per request without connection pooling\", \"remediation\": \"Reuse the OpenAI client instance across requests to enable HTTP connection pooling.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"performance-http-no-pooling-2\", \"module\": \"performance\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/retrieval/retrieve/route.ts\", \"line\": 24}, \"description\": \"Creating a new Supabase admin client per request without connection pooling\", \"remediation\": \"Reuse the Supabase client instance across requests to enable HTTP connection pooling.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"performance-http-no-pooling-2\", \"module\": \"performance\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/retrieval/retrieve/route.ts\", \"line\": 41}, \"description\": \"Creating a new OpenAI instance for Azure per request without connection pooling\", \"remediation\": \"Reuse the OpenAI client instance across requests to enable HTTP connection pooling.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"performance-http-no-pooling-2\", \"module\": \"performance\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/retrieval/retrieve/route.ts\", \"line\": 50}, \"description\": \"Creating a new OpenAI instance per request without connection pooling\", \"remediation\": \"Reuse the OpenAI client instance across requests to enable HTTP connection pooling.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"performance-http-no-pooling-2\", \"module\": \"performance\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/assistants/openai/route.ts\", \"line\": 12}, \"description\": \"Creating a new OpenAI instance per request without connection pooling\", \"remediation\": \"Reuse the OpenAI client instance across requests to enable HTTP connection pooling.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"performance-http-no-pooling-2\", \"module\": \"performance\", \"severity\": \"medium\", \"location\": {\"file\": \"lib/supabase/middleware.ts\", \"line\": 8}, \"description\": \"Creating a new Supabase client per request without connection pooling\", \"remediation\": \"Reuse the Supabase client instance across requests to enable HTTP connection pooling.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"performance-http-no-pooling-2\", \"module\": \"performance\", \"severity\": \"medium\", \"location\": {\"file\": \"lib/server/server-chat-helpers.ts\", \"line\": 8}, \"description\": \"Creating a new Supabase client per request without connection pooling\", \"remediation\": \"Reuse the Supabase client instance across requests to enable HTTP connection pooling.\", \"effort\": \"M\", \"confidence\": 0.9}]}",
+    "findings_raw": [
+      {
+        "id": "performance-http-no-pooling-2",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 18
+        },
+        "description": "Creating a new OpenAI instance per request without connection pooling",
+        "remediation": "Reuse the OpenAI client instance across requests to enable HTTP connection pooling.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "performance-http-no-pooling-2",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/retrieval/retrieve/route.ts",
+          "line": 24
+        },
+        "description": "Creating a new Supabase admin client per request without connection pooling",
+        "remediation": "Reuse the Supabase client instance across requests to enable HTTP connection pooling.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "performance-http-no-pooling-2",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/retrieval/retrieve/route.ts",
+          "line": 41
+        },
+        "description": "Creating a new OpenAI instance for Azure per request without connection pooling",
+        "remediation": "Reuse the OpenAI client instance across requests to enable HTTP connection pooling.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "performance-http-no-pooling-2",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/retrieval/retrieve/route.ts",
+          "line": 50
+        },
+        "description": "Creating a new OpenAI instance per request without connection pooling",
+        "remediation": "Reuse the OpenAI client instance across requests to enable HTTP connection pooling.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "performance-http-no-pooling-2",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/assistants/openai/route.ts",
+          "line": 12
+        },
+        "description": "Creating a new OpenAI instance per request without connection pooling",
+        "remediation": "Reuse the OpenAI client instance across requests to enable HTTP connection pooling.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "performance-http-no-pooling-2",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "lib/supabase/middleware.ts",
+          "line": 8
+        },
+        "description": "Creating a new Supabase client per request without connection pooling",
+        "remediation": "Reuse the Supabase client instance across requests to enable HTTP connection pooling.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "performance-http-no-pooling-2",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "lib/server/server-chat-helpers.ts",
+          "line": 8
+        },
+        "description": "Creating a new Supabase client per request without connection pooling",
+        "remediation": "Reuse the Supabase client instance across requests to enable HTTP connection pooling.",
+        "effort": "M",
+        "confidence": 0.9
+      }
+    ],
+    "findings_kept": [
+      {
+        "id": "performance-http-no-pooling-2",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 18
+        },
+        "description": "Creating a new OpenAI instance per request without connection pooling",
+        "remediation": "Reuse the OpenAI client instance across requests to enable HTTP connection pooling.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "performance-http-no-pooling-2",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/retrieval/retrieve/route.ts",
+          "line": 24
+        },
+        "description": "Creating a new Supabase admin client per request without connection pooling",
+        "remediation": "Reuse the Supabase client instance across requests to enable HTTP connection pooling.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "performance-http-no-pooling-2",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/retrieval/retrieve/route.ts",
+          "line": 41
+        },
+        "description": "Creating a new OpenAI instance for Azure per request without connection pooling",
+        "remediation": "Reuse the OpenAI client instance across requests to enable HTTP connection pooling.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "performance-http-no-pooling-2",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/retrieval/retrieve/route.ts",
+          "line": 38
+        },
+        "description": "Creating a new OpenAI instance per request without connection pooling",
+        "remediation": "Reuse the OpenAI client instance across requests to enable HTTP connection pooling.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "performance-http-no-pooling-2",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/assistants/openai/route.ts",
+          "line": 12
+        },
+        "description": "Creating a new OpenAI instance per request without connection pooling",
+        "remediation": "Reuse the OpenAI client instance across requests to enable HTTP connection pooling.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "performance-http-no-pooling-2",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "lib/supabase/middleware.ts",
+          "line": 8
+        },
+        "description": "Creating a new Supabase client per request without connection pooling",
+        "remediation": "Reuse the Supabase client instance across requests to enable HTTP connection pooling.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "performance-http-no-pooling-2",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "lib/server/server-chat-helpers.ts",
+          "line": 8
+        },
+        "description": "Creating a new Supabase client per request without connection pooling",
+        "remediation": "Reuse the Supabase client instance across requests to enable HTTP connection pooling.",
+        "effort": "M",
+        "confidence": 0.9
+      }
+    ],
+    "findings_dropped": []
+  },
+  "repair": {
+    "candidates": [
+      "performance-http-no-pooling-2",
+      "performance-http-no-pooling-2"
+    ],
+    "over_cap_ids": [],
+    "weak_before_ids": [
+      "performance-http-no-pooling-2",
+      "performance-http-no-pooling-2"
+    ],
+    "weak_after_ids": [
+      "performance-http-no-pooling-2"
+    ],
+    "prompt_chars": 5589,
+    "prompt_budget_skipped": [],
+    "usage": {
+      "prompt_tokens": 1805,
+      "completion_tokens": 679,
+      "total_tokens": 2484,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 629,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"fixes\": [{\"id\": \"performance-http-no-pooling-2\", \"line\": 38}, {\"id\": \"performance-http-no-pooling-2\", \"line\": 13}]}",
+    "applied": [
+      {
+        "id": "performance-http-no-pooling-2",
+        "file": "app/api/retrieval/retrieve/route.ts",
+        "from": 50,
+        "to": 38
+      }
+    ],
+    "failed": [
+      {
+        "id": "performance-http-no-pooling-2",
+        "file": "app/api/assistants/openai/route.ts",
+        "from": 12,
+        "line": 38,
+        "reason": "line 38 outside 1..33"
+      }
+    ],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 0,
+    "stamped_severity": 0,
+    "stamped_effort": 0,
+    "rules_unknown": 0,
+    "changes": []
+  }
+}

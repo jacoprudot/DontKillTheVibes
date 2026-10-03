@@ -6,7 +6,7 @@
   "model": "nvidia/nemotron-3-super-120b-a12b",
   "base_url": "https://integrate.api.nvidia.com/v1",
   "target_dir": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\realworld-control",
-  "timestamp": "2026-10-02T23:56:47.951Z",
+  "timestamp": "2026-10-03T20:13:19.720Z",
   "digest": {
     "file": "digest.json",
     "tree_files": 66,
@@ -23,8 +23,147 @@
     "naive": {
       "ok": true,
       "output": "naive.md"
+    },
+    "orchestrated": {
+      "ok": true,
+      "requested": true,
+      "output": "orchestrated/assessment.json"
     }
   },
-  "note": "Digest was produced once and passed to both arms; the only difference is prompt/tooling.",
+  "arm_c": {
+    "requested": true,
+    "runner": "scripts/dktv-orchestrate.mjs",
+    "max_files": 25,
+    "max_chars": 200000,
+    "max_tokens": 32768,
+    "metrics": {
+      "run_mode": "real",
+      "repo": "realworld-control",
+      "assessed_at": "2026-10-03T20:01:54.001Z",
+      "report_path": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\results\\realworld-control\\orchestrated\\assessment-report.md",
+      "report_written": true,
+      "findings_total": 9,
+      "findings_evaluated": 11,
+      "weak_before": 4,
+      "weak_after": 3,
+      "repaired": 1,
+      "repair_failed": 3,
+      "repair_calls": 2,
+      "weak_over_cap": 0,
+      "stamped_total": 8,
+      "stamped_severity": 2,
+      "stamped_effort": 7,
+      "rules_unknown": 0,
+      "llm_calls": 18,
+      "repair_budget": {
+        "max_calls": 8,
+        "max_findings_per_module": 5,
+        "window_radius": 40,
+        "window_chars_cap": 6000,
+        "prompt_chars_cap": 40000,
+        "calls_used": 2
+      },
+      "per_module": {
+        "database": {
+          "weak_before": 0,
+          "weak_after": 0,
+          "repaired": 0,
+          "repair_failed": 0,
+          "repair_calls": 0,
+          "weak_over_cap": 0,
+          "stamped_total": 1,
+          "stamped_severity": 1,
+          "stamped_effort": 0,
+          "rules_unknown": 0
+        },
+        "code": {
+          "weak_before": 0,
+          "weak_after": 0,
+          "repaired": 0,
+          "repair_failed": 0,
+          "repair_calls": 0,
+          "weak_over_cap": 0,
+          "stamped_total": 0,
+          "stamped_severity": 0,
+          "stamped_effort": 0,
+          "rules_unknown": 0
+        },
+        "structure": {
+          "weak_before": 0,
+          "weak_after": 0,
+          "repaired": 0,
+          "repair_failed": 0,
+          "repair_calls": 0,
+          "weak_over_cap": 0,
+          "stamped_total": 1,
+          "stamped_severity": 0,
+          "stamped_effort": 1,
+          "rules_unknown": 0
+        },
+        "flows": {
+          "weak_before": 3,
+          "weak_after": 3,
+          "repaired": 0,
+          "repair_failed": 3,
+          "repair_calls": 1,
+          "weak_over_cap": 0,
+          "stamped_total": 3,
+          "stamped_severity": 1,
+          "stamped_effort": 3,
+          "rules_unknown": 0
+        },
+        "security": {
+          "weak_before": 1,
+          "weak_after": 0,
+          "repaired": 1,
+          "repair_failed": 0,
+          "repair_calls": 1,
+          "weak_over_cap": 0,
+          "stamped_total": 3,
+          "stamped_severity": 0,
+          "stamped_effort": 3,
+          "rules_unknown": 0
+        },
+        "cost": {
+          "weak_before": 0,
+          "weak_after": 0,
+          "repaired": 0,
+          "repair_failed": 0,
+          "repair_calls": 0,
+          "weak_over_cap": 0,
+          "stamped_total": 0,
+          "stamped_severity": 0,
+          "stamped_effort": 0,
+          "rules_unknown": 0
+        },
+        "performance": {
+          "weak_before": 0,
+          "weak_after": 0,
+          "repaired": 0,
+          "repair_failed": 0,
+          "repair_calls": 0,
+          "weak_over_cap": 0,
+          "stamped_total": 0,
+          "stamped_severity": 0,
+          "stamped_effort": 0,
+          "rules_unknown": 0
+        },
+        "github": {
+          "weak_before": 0,
+          "weak_after": 0,
+          "repaired": 0,
+          "repair_failed": 0,
+          "repair_calls": 0,
+          "weak_over_cap": 0,
+          "stamped_total": 0,
+          "stamped_severity": 0,
+          "stamped_effort": 0,
+          "rules_unknown": 0
+        }
+      },
+      "report_language": "es"
+    }
+  },
+  "note": "Arms A and B share one digest (identical input, different prompt/tooling). Arm C (B2) does its own per-module file selection, so its input differs by design.",
   "api_key_recorded": false
 }

@@ -1,0 +1,185 @@
+{
+  "metadata": {
+    "repo": "screenshot-to-code",
+    "assessed_at": "2026-10-03T20:33:07.161Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "nvidia/nemotron-3-super-120b-a12b",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 18,
+    "findings_raw": 6,
+    "findings_dropped": 0,
+    "sensitive_files_withheld": 2,
+    "files_withheld_sensitive": [
+      "frontend/.env.example",
+      "frontend/src/.env.jest.example"
+    ],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "A",
+    "total_findings": 5,
+    "by_severity": {
+      "medium": 2,
+      "low": 3
+    },
+    "by_module": {
+      "code": 1,
+      "flows": 3,
+      "cost": 1
+    },
+    "effort_estimate": {
+      "XS": 1,
+      "S": 3,
+      "M": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "flows-retry-no-backoff-4",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "backend/routes/screenshot.py",
+        "line": 69
+      },
+      "description": "External HTTP calls to screenshotone.com lack retry mechanism with backoff, leading to potential failures due to transient errors.",
+      "remediation": "Implement retry logic with exponential backoff for external HTTP calls to improve resilience.",
+      "effort": "XS",
+      "confidence": 0.85
+    },
+    {
+      "id": "cost-unoptimized-images-8",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "backend/agent/providers/anthropic/image.py",
+        "line": 41
+      },
+      "description": "The CLAUDE_MAX_IMAGE_DIMENSION is set to 7990, which is higher than the recommended 1568 for optimal latency and cost. This results in unnecessary bandwidth and processing costs with no quality benefit.",
+      "remediation": "Lower CLAUDE_MAX_IMAGE_DIMENSION to 1568 as recommended in the comment to reduce bandwidth and latency costs.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "code-print-statement-5",
+      "module": "code",
+      "severity": "low",
+      "location": {
+        "file": "backend/main.py",
+        "line": 31
+      },
+      "description": "Print statement found in production code",
+      "remediation": "Remove the print statement or replace with proper logging",
+      "effort": "S",
+      "confidence": 0.9
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "backend/routes/home.py",
+        "line": 8
+      },
+      "description": "No security headers are set in the HTTP responses, exposing the application to various security risks such as XSS, clickjacking, etc.",
+      "remediation": "Add security headers middleware to set headers like Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, etc.",
+      "effort": "S",
+      "confidence": 0.9
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "backend/routes/home.py",
+        "line": 8
+      },
+      "description": "No request ID is generated or propagated for tracing HTTP requests, making it difficult to trace requests across services.",
+      "remediation": "Implement middleware to generate a unique request ID for each incoming request and include it in the response headers and logs.",
+      "effort": "S",
+      "confidence": 0.8
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "flows-retry-no-backoff-4",
+          "cost-unoptimized-images-8"
+        ],
+        "total_effort": "L"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "code-print-statement-5"
+        ],
+        "total_effort": "S"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "flows-missing-security-headers-10",
+          "flows-missing-request-id-7"
+        ],
+        "total_effort": "M"
+      }
+    ],
+    "dependencies": {}
+  },
+  "priority_scores": [
+    {
+      "id": "flows-retry-no-backoff-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.85,
+      "score": 17,
+      "canonical_rule": "flows-retry-no-backoff-4"
+    },
+    {
+      "id": "cost-unoptimized-images-8",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-unoptimized-images-8"
+    },
+    {
+      "id": "code-print-statement-5",
+      "severity": "low",
+      "module": "code",
+      "confidence": 0.9,
+      "score": 4.5,
+      "canonical_rule": "code-print-statement-5"
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.9,
+      "score": 4.5,
+      "canonical_rule": "flows-missing-security-headers-10"
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.8,
+      "score": 4,
+      "canonical_rule": "flows-missing-request-id-7"
+    }
+  ]
+}

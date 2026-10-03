@@ -1,0 +1,309 @@
+{
+  "module": "flows",
+  "skill_file": "skills/flows-assessment.skill.md",
+  "agent_file": "agents/flows-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 3,
+    "weak_after": 3,
+    "repaired": 0,
+    "repair_failed": 3,
+    "repair_calls": 1,
+    "weak_over_cap": 0,
+    "stamped_total": 3,
+    "stamped_severity": 1,
+    "stamped_effort": 3,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 33561,
+    "usage": {
+      "prompt_tokens": 8761,
+      "completion_tokens": 3741,
+      "total_tokens": 12502,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 3639,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "src/main.ts",
+      "src/app/routes/routes.ts",
+      "src/app/routes/article/article.controller.ts",
+      "src/app/routes/auth/auth.controller.ts",
+      "src/app/routes/profile/profile.controller.ts",
+      "src/app/routes/tag/tag.controller.ts",
+      "src/app/routes/article/article.service.ts",
+      "src/app/routes/auth/auth.service.ts",
+      "src/app/routes/profile/profile.service.ts",
+      "src/app/routes/tag/tag.service.ts",
+      "src/app/routes/auth/auth.ts"
+    ],
+    "requested_in_tree": [
+      "src/main.ts",
+      "src/app/routes/routes.ts",
+      "src/app/routes/article/article.controller.ts",
+      "src/app/routes/auth/auth.controller.ts",
+      "src/app/routes/profile/profile.controller.ts",
+      "src/app/routes/tag/tag.controller.ts",
+      "src/app/routes/article/article.service.ts",
+      "src/app/routes/auth/auth.service.ts",
+      "src/app/routes/profile/profile.service.ts",
+      "src/app/routes/tag/tag.service.ts",
+      "src/app/routes/auth/auth.ts"
+    ],
+    "requested_not_in_tree": [],
+    "requested_over_cap": [],
+    "files_read": [
+      "src/main.ts",
+      "src/app/routes/routes.ts",
+      "src/app/routes/article/article.controller.ts",
+      "src/app/routes/auth/auth.controller.ts",
+      "src/app/routes/profile/profile.controller.ts",
+      "src/app/routes/tag/tag.controller.ts",
+      "src/app/routes/article/article.service.ts",
+      "src/app/routes/auth/auth.service.ts",
+      "src/app/routes/profile/profile.service.ts",
+      "src/app/routes/tag/tag.service.ts",
+      "src/app/routes/auth/auth.ts"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 42010,
+    "content_chars": 28611,
+    "usage": {
+      "prompt_tokens": 13478,
+      "completion_tokens": 10853,
+      "total_tokens": 24331,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 10334,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": [{\"id\": \"security-jwt-weak-3\", \"module\": \"flows\", \"severity\": \"critical\", \"location\": {\"file\": \"src/app/routes/auth/auth.ts\", \"line\": 16}, \"description\": \"Se utiliza un secreto JWT de respaldo hardcodeado ('superSecret') lo que representa un riesgo de seguridad si la variable de entorno no está configurada.\", \"remediation\": \"Eliminar el valor de respaldo y asegurar que la variable de entorno JWT_SECRET esté siempre configurada en todos los entornos.\", \"effort\": \"L\", \"confidence\": 1.0}, {\"id\": \"flows-missing-rate-limit-8\", \"module\": \"flows\", \"severity\": \"medium\", \"location\": {\"file\": \"src/main.ts\", \"line\": 0}, \"description\": \"No se ha implementado ningún mecanismo de limitación de tasa en la aplicación, lo que podría permitir ataques de fuerza bruta o agotamiento de recursos.\", \"remediation\": \"Agregar un middleware de limitación de tasa (como express-rate-limit) antes de definir las rutas.\", \"effort\": \"M\", \"confidence\": 1.0}, {\"id\": \"flows-missing-request-id-7\", \"module\": \"flows\", \"severity\": \"low\", \"location\": {\"file\": \"src/main.ts\", \"line\": 0}, \"description\": \"La aplicación no genera ni incluye un ID de solicitud en las respuestas o registros, lo que dificulta el rastreo y depuración de solicitudes.\", \"remediation\": \"Implementar un middleware que genere un ID de solicitud único para cada solicitud y lo agregue a los encabezados de respuesta y/o registros.\", \"effort\": \"XS\", \"confidence\": 1.0}, {\"id\": \"flows-missing-security-headers-10\", \"module\": \"flows\", \"severity\": \"high\", \"location\": {\"file\": \"src/main.ts\", \"line\": 0}, \"description\": \"La aplicación no configura cabeceras de seguridad esenciales (como HSTS, CSP, etc.), lo la deja vulnerable a diversos ataques comunes en el navegador.\", \"remediation\": \"Integrar un middleware de cabeceras de seguridad (como helmet) para configurar automáticamente cabeceras de seguridad recomendadas.\", \"effort\": \"L\", \"confidence\": 1.0}]}",
+    "findings_raw": [
+      {
+        "id": "security-jwt-weak-3",
+        "module": "flows",
+        "severity": "critical",
+        "location": {
+          "file": "src/app/routes/auth/auth.ts",
+          "line": 16
+        },
+        "description": "Se utiliza un secreto JWT de respaldo hardcodeado ('superSecret') lo que representa un riesgo de seguridad si la variable de entorno no está configurada.",
+        "remediation": "Eliminar el valor de respaldo y asegurar que la variable de entorno JWT_SECRET esté siempre configurada en todos los entornos.",
+        "effort": "L",
+        "confidence": 1
+      },
+      {
+        "id": "flows-missing-rate-limit-8",
+        "module": "flows",
+        "severity": "medium",
+        "location": {
+          "file": "src/main.ts",
+          "line": 0
+        },
+        "description": "No se ha implementado ningún mecanismo de limitación de tasa en la aplicación, lo que podría permitir ataques de fuerza bruta o agotamiento de recursos.",
+        "remediation": "Agregar un middleware de limitación de tasa (como express-rate-limit) antes de definir las rutas.",
+        "effort": "M",
+        "confidence": 1
+      },
+      {
+        "id": "flows-missing-request-id-7",
+        "module": "flows",
+        "severity": "low",
+        "location": {
+          "file": "src/main.ts",
+          "line": 0
+        },
+        "description": "La aplicación no genera ni incluye un ID de solicitud en las respuestas o registros, lo que dificulta el rastreo y depuración de solicitudes.",
+        "remediation": "Implementar un middleware que genere un ID de solicitud único para cada solicitud y lo agregue a los encabezados de respuesta y/o registros.",
+        "effort": "XS",
+        "confidence": 1
+      },
+      {
+        "id": "flows-missing-security-headers-10",
+        "module": "flows",
+        "severity": "high",
+        "location": {
+          "file": "src/main.ts",
+          "line": 0
+        },
+        "description": "La aplicación no configura cabeceras de seguridad esenciales (como HSTS, CSP, etc.), lo la deja vulnerable a diversos ataques comunes en el navegador.",
+        "remediation": "Integrar un middleware de cabeceras de seguridad (como helmet) para configurar automáticamente cabeceras de seguridad recomendadas.",
+        "effort": "L",
+        "confidence": 1
+      }
+    ],
+    "findings_kept": [
+      {
+        "id": "security-jwt-weak-3",
+        "module": "flows",
+        "severity": "critical",
+        "location": {
+          "file": "src/app/routes/auth/auth.ts",
+          "line": 16
+        },
+        "description": "Se utiliza un secreto JWT de respaldo hardcodeado ('superSecret') lo que representa un riesgo de seguridad si la variable de entorno no está configurada.",
+        "remediation": "Eliminar el valor de respaldo y asegurar que la variable de entorno JWT_SECRET esté siempre configurada en todos los entornos.",
+        "effort": "XS",
+        "confidence": 1
+      },
+      {
+        "id": "flows-missing-rate-limit-8",
+        "module": "flows",
+        "severity": "medium",
+        "location": {
+          "file": "src/main.ts",
+          "line": 0
+        },
+        "description": "No se ha implementado ningún mecanismo de limitación de tasa en la aplicación, lo que podría permitir ataques de fuerza bruta o agotamiento de recursos.",
+        "remediation": "Agregar un middleware de limitación de tasa (como express-rate-limit) antes de definir las rutas.",
+        "effort": "M",
+        "confidence": 1
+      },
+      {
+        "id": "flows-missing-request-id-7",
+        "module": "flows",
+        "severity": "low",
+        "location": {
+          "file": "src/main.ts",
+          "line": 0
+        },
+        "description": "La aplicación no genera ni incluye un ID de solicitud en las respuestas o registros, lo que dificulta el rastreo y depuración de solicitudes.",
+        "remediation": "Implementar un middleware que genere un ID de solicitud único para cada solicitud y lo agregue a los encabezados de respuesta y/o registros.",
+        "effort": "S",
+        "confidence": 1
+      },
+      {
+        "id": "flows-missing-security-headers-10",
+        "module": "flows",
+        "severity": "low",
+        "location": {
+          "file": "src/main.ts",
+          "line": 0
+        },
+        "description": "La aplicación no configura cabeceras de seguridad esenciales (como HSTS, CSP, etc.), lo la deja vulnerable a diversos ataques comunes en el navegador.",
+        "remediation": "Integrar un middleware de cabeceras de seguridad (como helmet) para configurar automáticamente cabeceras de seguridad recomendadas.",
+        "effort": "S",
+        "confidence": 1
+      }
+    ],
+    "findings_dropped": []
+  },
+  "repair": {
+    "candidates": [
+      "flows-missing-security-headers-10",
+      "flows-missing-rate-limit-8",
+      "flows-missing-request-id-7"
+    ],
+    "over_cap_ids": [],
+    "weak_before_ids": [
+      "flows-missing-rate-limit-8",
+      "flows-missing-request-id-7",
+      "flows-missing-security-headers-10"
+    ],
+    "weak_after_ids": [
+      "flows-missing-rate-limit-8",
+      "flows-missing-request-id-7",
+      "flows-missing-security-headers-10"
+    ],
+    "prompt_chars": 5729,
+    "prompt_budget_skipped": [],
+    "usage": {
+      "prompt_tokens": 1802,
+      "completion_tokens": 586,
+      "total_tokens": 2388,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 521,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"fixes\": [{\"id\": \"flows-missing-security-headers-10\", \"line\": 0}, {\"id\": \"flows-missing-rate-limit-8\", \"line\": 0}, {\"id\": \"flows-missing-request-id-7\", \"line\": 0}]}",
+    "applied": [],
+    "failed": [
+      {
+        "id": "flows-missing-security-headers-10",
+        "file": "src/main.ts",
+        "from": 0,
+        "line": 0,
+        "reason": "line 0 outside 1..58"
+      },
+      {
+        "id": "flows-missing-rate-limit-8",
+        "file": "src/main.ts",
+        "from": 0,
+        "line": 0,
+        "reason": "line 0 outside 1..58"
+      },
+      {
+        "id": "flows-missing-request-id-7",
+        "file": "src/main.ts",
+        "from": 0,
+        "line": 0,
+        "reason": "line 0 outside 1..58"
+      }
+    ],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 3,
+    "stamped_severity": 1,
+    "stamped_effort": 3,
+    "rules_unknown": 0,
+    "changes": [
+      {
+        "id": "security-jwt-weak-3",
+        "from": {
+          "severity": "critical",
+          "effort": "L"
+        },
+        "to": {
+          "severity": "critical",
+          "effort": "XS"
+        }
+      },
+      {
+        "id": "flows-missing-request-id-7",
+        "from": {
+          "severity": "low",
+          "effort": "XS"
+        },
+        "to": {
+          "severity": "low",
+          "effort": "S"
+        }
+      },
+      {
+        "id": "flows-missing-security-headers-10",
+        "from": {
+          "severity": "high",
+          "effort": "L"
+        },
+        "to": {
+          "severity": "low",
+          "effort": "S"
+        }
+      }
+    ]
+  }
+}

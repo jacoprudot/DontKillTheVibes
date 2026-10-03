@@ -1,126 +1,266 @@
 {
   "target": "roomgpt",
   "mock": false,
-  "created_at": "2026-10-02T23:14:48.467Z",
+  "created_at": "2026-10-03T21:15:26.047Z",
   "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
   "labels": [
     {
       "label": "C1",
-      "arm": "naive",
-      "source_id": "naive-claim-10",
-      "title": "10. Redundant Visibility Logic in Toggle Container",
+      "arm": "orchestrated",
+      "source_id": "cost-no-license-tracking-5",
+      "title": "cost-no-license-tracking-5",
       "security_relevant": false
     },
     {
       "label": "C2",
       "arm": "naive",
-      "source_id": "naive-claim-9",
-      "title": "9. Hardcoded Model Version",
+      "source_id": "naive-claim-13",
+      "title": "13. Hardcoded Replicate Model Version (app/generate/route.ts)",
       "security_relevant": true
     },
     {
       "label": "C3",
       "arm": "naive",
-      "source_id": "naive-claim-11",
-      "title": "11. Non-Standard Header Icon in Header Component",
+      "source_id": "naive-claim-12",
+      "title": "12. Potential Upload Widget API Key Confusion (app/dream/page.tsx)",
       "security_relevant": false
     },
     {
       "label": "C4",
-      "arm": "naive",
-      "source_id": "naive-claim-2",
-      "title": "2. Missing CSS Classes for Visibility Toggling",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-usage-monitoring-9",
+      "title": "cost-api-no-usage-monitoring-9",
       "security_relevant": false
     },
     {
       "label": "C5",
-      "arm": "toolkit",
-      "source_id": "code-missing-validation-4",
-      "title": "code-missing-validation-4",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. Unused Dependency (package.json)",
       "security_relevant": false
     },
     {
       "label": "C6",
-      "arm": "naive",
-      "source_id": "naive-claim-3",
-      "title": "3. Unreliable Loading State Timeout",
-      "security_relevant": false
+      "arm": "orchestrated",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "security_relevant": true
     },
     {
       "label": "C7",
       "arm": "naive",
-      "source_id": "naive-claim-1",
-      "title": "1. Incorrect Response Handling in `app/dream/page.tsx`",
-      "security_relevant": true
+      "source_id": "naive-claim-11",
+      "title": "11. Missing Alt Text for GitHub Icon (components/Header.tsx)",
+      "security_relevant": false
     },
     {
       "label": "C8",
       "arm": "naive",
-      "source_id": "naive-claim-5",
-      "title": "5. Filename Handling Bug in `appendNewToName`",
+      "source_id": "naive-claim-6",
+      "title": "6. Silent Download Failures (utils/downloadPhoto.ts)",
       "security_relevant": false
     },
     {
       "label": "C9",
-      "arm": "naive",
-      "source_id": "naive-claim-7",
-      "title": "7. Rate Limiter IP Identification Fragility",
+      "arm": "toolkit",
+      "source_id": "structure-controller-logic-6",
+      "title": "structure-controller-logic-6",
       "security_relevant": false
     },
     {
       "label": "C10",
-      "arm": "toolkit",
-      "source_id": "code-unhandled-promise-4",
-      "title": "code-unhandled-promise-4",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. Infinite Polling Loop Without Timeout (app/generate/route.ts)",
       "security_relevant": false
     },
     {
       "label": "C11",
-      "arm": "naive",
-      "source_id": "naive-claim-8",
-      "title": "8. Infinite Polling Risk in Replicate Integration",
+      "arm": "orchestrated",
+      "source_id": "performance-no-adaptive-timeout-6",
+      "title": "performance-no-adaptive-timeout-6",
       "security_relevant": false
     },
     {
       "label": "C12",
-      "arm": "toolkit",
-      "source_id": "security-missing-headers-10",
-      "title": "security-missing-headers-10",
+      "arm": "orchestrated",
+      "source_id": "cost-license-attribution-missing-2",
+      "title": "cost-license-attribution-missing-2",
       "security_relevant": false
     },
     {
       "label": "C13",
       "arm": "naive",
-      "source_id": "naive-claim-12",
-      "title": "12. Missing Alt Text for SVG Icons",
+      "source_id": "naive-claim-7",
+      "title": "7. Incorrect ARIA Labels (components/Footer.tsx)",
       "security_relevant": false
     },
     {
       "label": "C14",
-      "arm": "naive",
-      "source_id": "naive-claim-6",
-      "title": "6. Missing HTTP Status Check in Download Utility",
+      "arm": "toolkit",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
       "security_relevant": true
     },
     {
       "label": "C15",
+      "arm": "toolkit",
+      "source_id": "cost-api-no-usage-monitoring-9",
+      "title": "cost-api-no-usage-monitoring-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. Rate Limiter IP Identifier Failure (app/generate/route.ts)",
+      "security_relevant": false
+    },
+    {
+      "label": "C17",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. Image Response Handling Mismatch (app/dream/page.tsx vs app/generate/route.ts)",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-retry-strategy-8",
+      "title": "cost-api-no-retry-strategy-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "orchestrated",
+      "source_id": "cost-no-http-compression-9",
+      "title": "cost-no-http-compression-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. Unnecessary Key in Dropdown (components/DropDown.tsx)",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. Missing Error Boundary (app/layout.tsx)",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "orchestrated",
+      "source_id": "cost-api-in-loop-3",
+      "title": "cost-api-in-loop-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. Non-Responsive Compare Slider (components/CompareSlider.tsx)",
+      "security_relevant": false
+    },
+    {
+      "label": "C24",
+      "arm": "orchestrated",
+      "source_id": "code-unhandled-promise-4",
+      "title": "code-unhandled-promise-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C25",
+      "arm": "orchestrated",
+      "source_id": "performance-no-request-collapsing-4",
+      "title": "performance-no-request-collapsing-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. OG Image Hardcoded to Demo Domain (app/layout.tsx)",
+      "security_relevant": true
+    },
+    {
+      "label": "C27",
+      "arm": "orchestrated",
+      "source_id": "code-console-log-7",
+      "title": "code-console-log-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C28",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "Summary of Critical Issues",
+      "security_relevant": false
+    },
+    {
+      "label": "C29",
+      "arm": "toolkit",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "security_relevant": false
+    },
+    {
+      "label": "C30",
       "arm": "toolkit",
       "source_id": "flows-retry-no-max-5",
       "title": "flows-retry-no-max-5",
       "security_relevant": false
     },
     {
-      "label": "C16",
-      "arm": "naive",
-      "source_id": "naive-claim-4",
-      "title": "4. Poor Error Message Handling",
+      "label": "C31",
+      "arm": "orchestrated",
+      "source_id": "structure-layer-violation-1",
+      "title": "structure-layer-violation-1",
       "security_relevant": false
     },
     {
-      "label": "C17",
+      "label": "C32",
       "arm": "toolkit",
-      "source_id": "flows-missing-timeout-6",
-      "title": "flows-missing-timeout-6",
+      "source_id": "flows-fire-and-forget-critical-1",
+      "title": "flows-fire-and-forget-critical-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C33",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "14. Inconsistent Theme Array Ordering (utils/dropdownTypes.ts)",
+      "security_relevant": false
+    },
+    {
+      "label": "C34",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. Faulty Filename Extension Handling (utils/appendNewToName.ts)",
+      "security_relevant": false
+    },
+    {
+      "label": "C35",
+      "arm": "orchestrated",
+      "source_id": "code-missing-validation-4",
+      "title": "code-missing-validation-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C36",
+      "arm": "orchestrated",
+      "source_id": "cost-no-oss-policy-9",
+      "title": "cost-no-oss-policy-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C37",
+      "arm": "toolkit",
+      "source_id": "cost-unoptimized-images-8",
+      "title": "cost-unoptimized-images-8",
       "security_relevant": false
     }
   ]

@@ -6,7 +6,7 @@
   "model": "nvidia/nemotron-3-super-120b-a12b",
   "base_url": "https://integrate.api.nvidia.com/v1",
   "target_dir": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\llamacoder",
-  "timestamp": "2026-10-02T20:35:12.525Z",
+  "timestamp": "2026-10-03T21:55:45.965Z",
   "digest": {
     "file": "digest.json",
     "tree_files": 255,
@@ -23,8 +23,21 @@
     "naive": {
       "ok": true,
       "output": "naive.md"
+    },
+    "orchestrated": {
+      "ok": false,
+      "requested": false,
+      "output": "orchestrated/assessment.json"
     }
   },
-  "note": "Digest was produced once and passed to both arms; the only difference is prompt/tooling.",
+  "arm_c": {
+    "requested": false,
+    "runner": "scripts/dktv-orchestrate.mjs",
+    "max_files": 25,
+    "max_chars": 200000,
+    "max_tokens": 65536,
+    "metrics": null
+  },
+  "note": "Arms A and B share one digest (identical input, different prompt/tooling). Arm C (B2) does its own per-module file selection, so its input differs by design.",
   "api_key_recorded": false
 }

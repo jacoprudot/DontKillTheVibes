@@ -1,0 +1,185 @@
+{
+  "module": "flows",
+  "skill_file": "skills/flows-assessment.skill.md",
+  "agent_file": "agents/flows-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 0,
+    "weak_after": 0,
+    "repaired": 0,
+    "repair_failed": 0,
+    "repair_calls": 0,
+    "weak_over_cap": 0,
+    "stamped_total": 0,
+    "stamped_severity": 0,
+    "stamped_effort": 0,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 39844,
+    "usage": {
+      "prompt_tokens": 10451,
+      "completion_tokens": 4127,
+      "total_tokens": 14578,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 3953,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "app/api/create-chat/route.ts",
+      "app/api/generate-chat-title/route.ts",
+      "app/api/get-next-completion-stream-promise/route.ts",
+      "app/api/og/route.tsx",
+      "app/api/s3-upload/complete/route.ts",
+      "app/api/s3-upload/route.ts",
+      "lib/s3-upload-route.ts",
+      "lib/s3-upload-complete-route.ts",
+      "lib/image-upload-route.ts",
+      "lib/image-upload.ts",
+      "lib/s3.ts",
+      "lib/chat-auto-fix.ts",
+      "lib/completion-stream-lifecycle.ts",
+      "lib/generation.ts",
+      "lib/prompt-config.ts",
+      "lib/prompts.ts",
+      "lib/domain.ts",
+      "lib/prisma.ts",
+      "lib/image-verification.ts",
+      "lib/utils.ts"
+    ],
+    "requested_in_tree": [
+      "app/api/create-chat/route.ts",
+      "app/api/generate-chat-title/route.ts",
+      "app/api/get-next-completion-stream-promise/route.ts",
+      "app/api/og/route.tsx",
+      "app/api/s3-upload/complete/route.ts",
+      "app/api/s3-upload/route.ts",
+      "lib/image-upload-route.ts",
+      "lib/image-upload.ts",
+      "lib/s3.ts",
+      "lib/chat-auto-fix.ts",
+      "lib/completion-stream-lifecycle.ts",
+      "lib/generation.ts",
+      "lib/prompt-config.ts",
+      "lib/prompts.ts",
+      "lib/domain.ts",
+      "lib/prisma.ts",
+      "lib/image-verification.ts",
+      "lib/utils.ts"
+    ],
+    "requested_not_in_tree": [
+      "lib/s3-upload-route.ts",
+      "lib/s3-upload-complete-route.ts"
+    ],
+    "requested_over_cap": [],
+    "files_read": [
+      "app/api/create-chat/route.ts",
+      "app/api/generate-chat-title/route.ts",
+      "app/api/get-next-completion-stream-promise/route.ts",
+      "app/api/og/route.tsx",
+      "app/api/s3-upload/complete/route.ts",
+      "app/api/s3-upload/route.ts",
+      "lib/image-upload-route.ts",
+      "lib/image-upload.ts",
+      "lib/s3.ts",
+      "lib/chat-auto-fix.ts",
+      "lib/completion-stream-lifecycle.ts",
+      "lib/generation.ts",
+      "lib/prompt-config.ts",
+      "lib/prompts.ts",
+      "lib/domain.ts",
+      "lib/prisma.ts",
+      "lib/image-verification.ts",
+      "lib/utils.ts"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 88116,
+    "content_chars": 74153,
+    "usage": {
+      "prompt_tokens": 26383,
+      "completion_tokens": 10432,
+      "total_tokens": 36815,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 10186,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": [{\"id\": \"flows-missing-timeout-6\", \"module\": \"flows\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/create-chat/route.ts\", \"line\": 38}, \"description\": \"Missing timeout in Together AI non-streaming call for screenshot description\", \"remediation\": \"Add a timeout to the Together AI call to prevent hanging requests, e.g., by using the AbortSignal or setting a timeout in the client configuration.\", \"effort\": \"low\", \"confidence\": 0.8}, {\"id\": \"flows-missing-timeout-6\", \"module\": \"flows\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/generate-chat-title/route.ts\", \"line\": 101}, \"description\": \"Missing timeout in Together AI non-streaming call for chat title generation\", \"remediation\": \"Add a timeout to the Together AI call to prevent hanging requests, e.g., by using the AbortSignal or setting a timeout in the client configuration.\", \"effort\": \"low\", \"confidence\": 0.8}]}",
+    "findings_raw": [
+      {
+        "id": "flows-missing-timeout-6",
+        "module": "flows",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/create-chat/route.ts",
+          "line": 38
+        },
+        "description": "Missing timeout in Together AI non-streaming call for screenshot description",
+        "remediation": "Add a timeout to the Together AI call to prevent hanging requests, e.g., by using the AbortSignal or setting a timeout in the client configuration.",
+        "effort": "low",
+        "confidence": 0.8
+      },
+      {
+        "id": "flows-missing-timeout-6",
+        "module": "flows",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/generate-chat-title/route.ts",
+          "line": 101
+        },
+        "description": "Missing timeout in Together AI non-streaming call for chat title generation",
+        "remediation": "Add a timeout to the Together AI call to prevent hanging requests, e.g., by using the AbortSignal or setting a timeout in the client configuration.",
+        "effort": "low",
+        "confidence": 0.8
+      }
+    ],
+    "findings_kept": [],
+    "findings_dropped": [
+      {
+        "module": "flows",
+        "id": "flows-missing-timeout-6",
+        "reason": "bad effort \"low\""
+      },
+      {
+        "module": "flows",
+        "id": "flows-missing-timeout-6",
+        "reason": "bad effort \"low\""
+      }
+    ]
+  },
+  "repair": {
+    "candidates": [],
+    "over_cap_ids": [],
+    "weak_before_ids": [],
+    "weak_after_ids": [],
+    "prompt_chars": 0,
+    "prompt_budget_skipped": [],
+    "usage": null,
+    "raw_response": null,
+    "applied": [],
+    "failed": [],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 0,
+    "stamped_severity": 0,
+    "stamped_effort": 0,
+    "rules_unknown": 0,
+    "changes": []
+  }
+}

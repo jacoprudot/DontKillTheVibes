@@ -1,0 +1,191 @@
+{
+  "module": "code",
+  "skill_file": "skills/code-quality-assessment.skill.md",
+  "agent_file": "agents/code-quality-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 0,
+    "weak_after": 0,
+    "repaired": 0,
+    "repair_failed": 0,
+    "repair_calls": 0,
+    "weak_over_cap": 0,
+    "stamped_total": 0,
+    "stamped_severity": 0,
+    "stamped_effort": 0,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 31163,
+    "usage": {
+      "prompt_tokens": 8342,
+      "completion_tokens": 7621,
+      "total_tokens": 15963,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 7417,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "src/app/routes/article/article.service.ts",
+      "src/app/routes/auth/auth.service.ts",
+      "src/app/routes/profile/profile.service.ts",
+      "src/app/routes/tag/tag.service.ts",
+      "src/app/routes/article/article.controller.ts",
+      "src/app/routes/auth/auth.controller.ts",
+      "src/main.ts",
+      "src/app/routes/article/article.model.ts",
+      "src/app/routes/auth/user.model.ts",
+      "src/app/routes/profile/profile.model.ts",
+      "src/app/routes/tag/tag.model.ts",
+      "src/app/routes/auth/auth.ts",
+      "src/app/routes/routes.ts",
+      "src/app/routes/profile/profile.controller.ts",
+      "src/app/routes/tag/tag.controller.ts",
+      "src/app/routes/article/comment.model.ts",
+      ".eslintrc.json",
+      ".prettierrc",
+      "package.json",
+      "jest.config.ts",
+      "tsconfig.json",
+      ".eslintignore",
+      ".prettierignore",
+      "src/tests/services/article.service.test.ts",
+      "src/tests/services/auth.service.test.ts"
+    ],
+    "requested_in_tree": [
+      "src/app/routes/article/article.service.ts",
+      "src/app/routes/auth/auth.service.ts",
+      "src/app/routes/profile/profile.service.ts",
+      "src/app/routes/tag/tag.service.ts",
+      "src/app/routes/article/article.controller.ts",
+      "src/app/routes/auth/auth.controller.ts",
+      "src/main.ts",
+      "src/app/routes/article/article.model.ts",
+      "src/app/routes/auth/user.model.ts",
+      "src/app/routes/profile/profile.model.ts",
+      "src/app/routes/tag/tag.model.ts",
+      "src/app/routes/auth/auth.ts",
+      "src/app/routes/routes.ts",
+      "src/app/routes/profile/profile.controller.ts",
+      "src/app/routes/tag/tag.controller.ts",
+      "src/app/routes/article/comment.model.ts",
+      ".eslintrc.json",
+      ".prettierrc",
+      "package.json",
+      "jest.config.ts",
+      "tsconfig.json",
+      ".eslintignore",
+      ".prettierignore",
+      "src/tests/services/article.service.test.ts",
+      "src/tests/services/auth.service.test.ts"
+    ],
+    "requested_not_in_tree": [],
+    "requested_over_cap": [],
+    "files_read": [
+      "src/app/routes/article/article.service.ts",
+      "src/app/routes/auth/auth.service.ts",
+      "src/app/routes/profile/profile.service.ts",
+      "src/app/routes/tag/tag.service.ts",
+      "src/app/routes/article/article.controller.ts",
+      "src/app/routes/auth/auth.controller.ts",
+      "src/main.ts",
+      "src/app/routes/article/article.model.ts",
+      "src/app/routes/auth/user.model.ts",
+      "src/app/routes/profile/profile.model.ts",
+      "src/app/routes/tag/tag.model.ts",
+      "src/app/routes/auth/auth.ts",
+      "src/app/routes/routes.ts",
+      "src/app/routes/profile/profile.controller.ts",
+      "src/app/routes/tag/tag.controller.ts",
+      "src/app/routes/article/comment.model.ts",
+      ".eslintrc.json",
+      ".prettierrc",
+      "package.json",
+      "jest.config.ts",
+      "tsconfig.json",
+      ".eslintignore",
+      ".prettierignore",
+      "src/tests/services/article.service.test.ts",
+      "src/tests/services/auth.service.test.ts"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 57285,
+    "content_chars": 43311,
+    "usage": {
+      "prompt_tokens": 18607,
+      "completion_tokens": 7712,
+      "total_tokens": 26319,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 7587,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": [{\"id\": \"security-jwt-weak-3\", \"module\": \"code\", \"severity\": \"critical\", \"location\": {\"file\": \"src/app/routes/auth/auth.ts\", \"line\": 16}, \"description\": \"Hardcoded JWT secret fallback found. Using a hardcoded secret weakens the security of the application.\", \"remediation\": \"Remove the hardcoded fallback and ensure the JWT secret is set via the environment variable JWT_SECRET in all environments.\", \"effort\": \"XS\", \"confidence\": 0.9}]}",
+    "findings_raw": [
+      {
+        "id": "security-jwt-weak-3",
+        "module": "code",
+        "severity": "critical",
+        "location": {
+          "file": "src/app/routes/auth/auth.ts",
+          "line": 16
+        },
+        "description": "Hardcoded JWT secret fallback found. Using a hardcoded secret weakens the security of the application.",
+        "remediation": "Remove the hardcoded fallback and ensure the JWT secret is set via the environment variable JWT_SECRET in all environments.",
+        "effort": "XS",
+        "confidence": 0.9
+      }
+    ],
+    "findings_kept": [
+      {
+        "id": "security-jwt-weak-3",
+        "module": "code",
+        "severity": "critical",
+        "location": {
+          "file": "src/app/routes/auth/auth.ts",
+          "line": 16
+        },
+        "description": "Hardcoded JWT secret fallback found. Using a hardcoded secret weakens the security of the application.",
+        "remediation": "Remove the hardcoded fallback and ensure the JWT secret is set via the environment variable JWT_SECRET in all environments.",
+        "effort": "XS",
+        "confidence": 0.9
+      }
+    ],
+    "findings_dropped": []
+  },
+  "repair": {
+    "candidates": [],
+    "over_cap_ids": [],
+    "weak_before_ids": [],
+    "weak_after_ids": [],
+    "prompt_chars": 0,
+    "prompt_budget_skipped": [],
+    "usage": null,
+    "raw_response": null,
+    "applied": [],
+    "failed": [],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 0,
+    "stamped_severity": 0,
+    "stamped_effort": 0,
+    "rules_unknown": 0,
+    "changes": []
+  }
+}

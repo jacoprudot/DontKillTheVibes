@@ -1,0 +1,300 @@
+{
+  "module": "code",
+  "skill_file": "skills/code-quality-assessment.skill.md",
+  "agent_file": "agents/code-quality-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 1,
+    "weak_after": 0,
+    "repaired": 1,
+    "repair_failed": 0,
+    "repair_calls": 1,
+    "weak_over_cap": 0,
+    "stamped_total": 3,
+    "stamped_severity": 2,
+    "stamped_effort": 3,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 30027,
+    "usage": {
+      "prompt_tokens": 8019,
+      "completion_tokens": 3032,
+      "total_tokens": 11051,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 4336
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 2909,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "app/dream/page.tsx",
+      "app/generate/route.ts",
+      "app/layout.tsx",
+      "app/page.tsx",
+      "components/CompareSlider.tsx",
+      "components/DropDown.tsx",
+      "components/Footer.tsx",
+      "components/Header.tsx",
+      "components/LoadingDots.tsx",
+      "components/ResizablePanel.tsx",
+      "components/SquigglyLines.tsx",
+      "components/Toggle.tsx",
+      "utils/appendNewToName.ts",
+      "utils/downloadPhoto.ts",
+      "utils/dropdownTypes.ts",
+      "utils/redis.ts",
+      "next.config.js",
+      "package.json"
+    ],
+    "requested_in_tree": [
+      "app/dream/page.tsx",
+      "app/generate/route.ts",
+      "app/layout.tsx",
+      "app/page.tsx",
+      "components/CompareSlider.tsx",
+      "components/DropDown.tsx",
+      "components/Footer.tsx",
+      "components/Header.tsx",
+      "components/LoadingDots.tsx",
+      "components/ResizablePanel.tsx",
+      "components/SquigglyLines.tsx",
+      "components/Toggle.tsx",
+      "utils/appendNewToName.ts",
+      "utils/downloadPhoto.ts",
+      "utils/dropdownTypes.ts",
+      "utils/redis.ts",
+      "next.config.js",
+      "package.json"
+    ],
+    "requested_not_in_tree": [],
+    "requested_over_cap": [],
+    "files_read": [
+      "app/dream/page.tsx",
+      "app/generate/route.ts",
+      "app/layout.tsx",
+      "app/page.tsx",
+      "components/CompareSlider.tsx",
+      "components/DropDown.tsx",
+      "components/Footer.tsx",
+      "components/Header.tsx",
+      "components/LoadingDots.tsx",
+      "components/ResizablePanel.tsx",
+      "components/SquigglyLines.tsx",
+      "components/Toggle.tsx",
+      "utils/appendNewToName.ts",
+      "utils/downloadPhoto.ts",
+      "utils/dropdownTypes.ts",
+      "utils/redis.ts",
+      "next.config.js",
+      "package.json"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 45712,
+    "content_chars": 32211,
+    "usage": {
+      "prompt_tokens": 15774,
+      "completion_tokens": 13352,
+      "total_tokens": 29126,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 12899,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": [{\"id\": \"performance-no-timeout-6\", \"module\": \"code\", \"severity\": \"high\", \"location\": {\"file\": \"app/generate/route.ts\", \"line\": 65}, \"description\": \"Polling loop without a timeout may cause the function to run indefinitely, tying up server resources.\", \"remediation\": \"Add a timeout mechanism (e.g., maximum number of retries or total elapsed time) to the polling loop.\", \"effort\": \"L\", \"confidence\": 0.9}, {\"id\": \"code-unhandled-promise-4\", \"module\": \"code\", \"severity\": \"medium\", \"location\": {\"file\": \"app/generate/route.ts\", \"line\": 34}, \"description\": \"Missing error handling for asynchronous operations may lead to unhandled promise rejections and crashes.\", \"remediation\": \"Wrap the asynchronous code in a try/catch block and return an appropriate error response.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"code-console-log-7\", \"module\": \"code\", \"severity\": \"low\", \"location\": {\"file\": \"app/generate/route.ts\", \"line\": 68}, \"description\": \"Console.log statements in production code can leak information and are not recommended.\", \"remediation\": \"Remove the console.log statement or replace it with proper logging in a production environment.\", \"effort\": \"XS\", \"confidence\": 0.9}, {\"id\": \"code-missing-validation-4\", \"module\": \"code\", \"severity\": \"medium\", \"location\": {\"file\": \"utils/appendNewToName.ts\", \"line\": 4}, \"description\": \"The function does not validate that the input string contains a dot, leading to incorrect behavior for filenames without extensions.\", \"remediation\": \"Add a check for the presence of a dot and handle the case appropriately (e.g., append \\\"-new\\\" at the end if no dot is found).\", \"effort\": \"S\", \"confidence\": 0.9}]}",
+    "findings_raw": [
+      {
+        "id": "performance-no-timeout-6",
+        "module": "code",
+        "severity": "high",
+        "location": {
+          "file": "app/generate/route.ts",
+          "line": 65
+        },
+        "description": "Polling loop without a timeout may cause the function to run indefinitely, tying up server resources.",
+        "remediation": "Add a timeout mechanism (e.g., maximum number of retries or total elapsed time) to the polling loop.",
+        "effort": "L",
+        "confidence": 0.9
+      },
+      {
+        "id": "code-unhandled-promise-4",
+        "module": "code",
+        "severity": "medium",
+        "location": {
+          "file": "app/generate/route.ts",
+          "line": 34
+        },
+        "description": "Missing error handling for asynchronous operations may lead to unhandled promise rejections and crashes.",
+        "remediation": "Wrap the asynchronous code in a try/catch block and return an appropriate error response.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "code-console-log-7",
+        "module": "code",
+        "severity": "low",
+        "location": {
+          "file": "app/generate/route.ts",
+          "line": 68
+        },
+        "description": "Console.log statements in production code can leak information and are not recommended.",
+        "remediation": "Remove the console.log statement or replace it with proper logging in a production environment.",
+        "effort": "XS",
+        "confidence": 0.9
+      },
+      {
+        "id": "code-missing-validation-4",
+        "module": "code",
+        "severity": "medium",
+        "location": {
+          "file": "utils/appendNewToName.ts",
+          "line": 4
+        },
+        "description": "The function does not validate that the input string contains a dot, leading to incorrect behavior for filenames without extensions.",
+        "remediation": "Add a check for the presence of a dot and handle the case appropriately (e.g., append \"-new\" at the end if no dot is found).",
+        "effort": "S",
+        "confidence": 0.9
+      }
+    ],
+    "findings_kept": [
+      {
+        "id": "code-unhandled-promise-4",
+        "module": "code",
+        "severity": "high",
+        "location": {
+          "file": "app/generate/route.ts",
+          "line": 40
+        },
+        "description": "Missing error handling for asynchronous operations may lead to unhandled promise rejections and crashes.",
+        "remediation": "Wrap the asynchronous code in a try/catch block and return an appropriate error response.",
+        "effort": "S",
+        "confidence": 0.9
+      },
+      {
+        "id": "code-console-log-7",
+        "module": "code",
+        "severity": "low",
+        "location": {
+          "file": "app/generate/route.ts",
+          "line": 68
+        },
+        "description": "Console.log statements in production code can leak information and are not recommended.",
+        "remediation": "Remove the console.log statement or replace it with proper logging in a production environment.",
+        "effort": "S",
+        "confidence": 0.9
+      },
+      {
+        "id": "code-missing-validation-4",
+        "module": "code",
+        "severity": "high",
+        "location": {
+          "file": "utils/appendNewToName.ts",
+          "line": 4
+        },
+        "description": "The function does not validate that the input string contains a dot, leading to incorrect behavior for filenames without extensions.",
+        "remediation": "Add a check for the presence of a dot and handle the case appropriately (e.g., append \"-new\" at the end if no dot is found).",
+        "effort": "M",
+        "confidence": 0.9
+      }
+    ],
+    "findings_dropped": [
+      {
+        "module": "code",
+        "id": "performance-no-timeout-6",
+        "reason": "id not in canonical registry"
+      }
+    ]
+  },
+  "repair": {
+    "candidates": [
+      "code-unhandled-promise-4"
+    ],
+    "over_cap_ids": [],
+    "weak_before_ids": [
+      "code-unhandled-promise-4"
+    ],
+    "weak_after_ids": [],
+    "prompt_chars": 4353,
+    "prompt_budget_skipped": [],
+    "usage": {
+      "prompt_tokens": 1368,
+      "completion_tokens": 1266,
+      "total_tokens": 2634,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 1238,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"fixes\": [{\"id\": \"code-unhandled-promise-4\", \"line\": 40}]}",
+    "applied": [
+      {
+        "id": "code-unhandled-promise-4",
+        "file": "app/generate/route.ts",
+        "from": 34,
+        "to": 40
+      }
+    ],
+    "failed": [],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 3,
+    "stamped_severity": 2,
+    "stamped_effort": 3,
+    "rules_unknown": 0,
+    "changes": [
+      {
+        "id": "code-unhandled-promise-4",
+        "from": {
+          "severity": "medium",
+          "effort": "M"
+        },
+        "to": {
+          "severity": "high",
+          "effort": "S"
+        }
+      },
+      {
+        "id": "code-console-log-7",
+        "from": {
+          "severity": "low",
+          "effort": "XS"
+        },
+        "to": {
+          "severity": "low",
+          "effort": "S"
+        }
+      },
+      {
+        "id": "code-missing-validation-4",
+        "from": {
+          "severity": "medium",
+          "effort": "S"
+        },
+        "to": {
+          "severity": "high",
+          "effort": "M"
+        }
+      }
+    ]
+  }
+}

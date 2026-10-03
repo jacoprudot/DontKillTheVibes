@@ -1,0 +1,203 @@
+{
+  "module": "database",
+  "skill_file": "skills/database-assessment.skill.md",
+  "agent_file": "agents/database-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 0,
+    "weak_after": 0,
+    "repaired": 0,
+    "repair_failed": 0,
+    "repair_calls": 0,
+    "weak_over_cap": 0,
+    "stamped_total": 1,
+    "stamped_severity": 0,
+    "stamped_effort": 1,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 32934,
+    "usage": {
+      "prompt_tokens": 8765,
+      "completion_tokens": 5655,
+      "total_tokens": 14420,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 5048,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "supabase/migrations/20240108234540_setup.sql",
+      "supabase/migrations/20240108234541_add_profiles.sql",
+      "supabase/migrations/20240108234542_add_workspaces.sql",
+      "supabase/migrations/20240108234543_add_folders.sql",
+      "supabase/migrations/20240108234544_add_files.sql",
+      "supabase/migrations/20240108234545_add_file_items.sql",
+      "supabase/migrations/20240108234546_add_presets.sql",
+      "supabase/migrations/20240108234547_add_assistants.sql",
+      "supabase/migrations/20240108234548_add_chats.sql",
+      "supabase/migrations/20240108234549_add_messages.sql",
+      "supabase/migrations/20240108234550_add_prompts.sql",
+      "supabase/migrations/20240108234551_add_collections.sql",
+      "supabase/migrations/20240115135033_add_openrouter.sql",
+      "supabase/migrations/20240115171510_add_assistant_files.sql",
+      "supabase/migrations/20240115171524_add_tools.sql",
+      "supabase/migrations/20240115172125_add_assistant_tools.sql",
+      "supabase/migrations/20240118224049_add_azure_embeddings.sql",
+      "supabase/migrations/20240124234424_tool_improvements.sql",
+      "supabase/migrations/20240125192042_upgrade_openai_models.sql",
+      "supabase/migrations/20240125194719_add_custom_models.sql",
+      "supabase/migrations/20240129232644_add_workspace_images.sql",
+      "supabase/migrations/20240212063532_add_at_assistants.sql",
+      "supabase/migrations/20240213040255_remove_request_in_body_from_tools.sql",
+      "supabase/migrations/20240213085646_add_context_length_to_custom_models.sql",
+      "supabase/seed.sql"
+    ],
+    "requested_in_tree": [
+      "supabase/migrations/20240108234540_setup.sql",
+      "supabase/migrations/20240108234541_add_profiles.sql",
+      "supabase/migrations/20240108234542_add_workspaces.sql",
+      "supabase/migrations/20240108234543_add_folders.sql",
+      "supabase/migrations/20240108234544_add_files.sql",
+      "supabase/migrations/20240108234545_add_file_items.sql",
+      "supabase/migrations/20240108234546_add_presets.sql",
+      "supabase/migrations/20240108234547_add_assistants.sql",
+      "supabase/migrations/20240108234548_add_chats.sql",
+      "supabase/migrations/20240108234549_add_messages.sql",
+      "supabase/migrations/20240108234550_add_prompts.sql",
+      "supabase/migrations/20240108234551_add_collections.sql",
+      "supabase/migrations/20240115135033_add_openrouter.sql",
+      "supabase/migrations/20240115171510_add_assistant_files.sql",
+      "supabase/migrations/20240115171524_add_tools.sql",
+      "supabase/migrations/20240115172125_add_assistant_tools.sql",
+      "supabase/migrations/20240118224049_add_azure_embeddings.sql",
+      "supabase/migrations/20240124234424_tool_improvements.sql",
+      "supabase/migrations/20240125192042_upgrade_openai_models.sql",
+      "supabase/migrations/20240125194719_add_custom_models.sql",
+      "supabase/migrations/20240129232644_add_workspace_images.sql",
+      "supabase/migrations/20240212063532_add_at_assistants.sql",
+      "supabase/migrations/20240213040255_remove_request_in_body_from_tools.sql",
+      "supabase/migrations/20240213085646_add_context_length_to_custom_models.sql",
+      "supabase/seed.sql"
+    ],
+    "requested_not_in_tree": [],
+    "requested_over_cap": [],
+    "files_read": [
+      "supabase/migrations/20240108234540_setup.sql",
+      "supabase/migrations/20240108234541_add_profiles.sql",
+      "supabase/migrations/20240108234542_add_workspaces.sql",
+      "supabase/migrations/20240108234543_add_folders.sql",
+      "supabase/migrations/20240108234544_add_files.sql",
+      "supabase/migrations/20240108234545_add_file_items.sql",
+      "supabase/migrations/20240108234546_add_presets.sql",
+      "supabase/migrations/20240108234547_add_assistants.sql",
+      "supabase/migrations/20240108234548_add_chats.sql",
+      "supabase/migrations/20240108234549_add_messages.sql",
+      "supabase/migrations/20240108234550_add_prompts.sql",
+      "supabase/migrations/20240108234551_add_collections.sql",
+      "supabase/migrations/20240115135033_add_openrouter.sql",
+      "supabase/migrations/20240115171510_add_assistant_files.sql",
+      "supabase/migrations/20240115171524_add_tools.sql",
+      "supabase/migrations/20240115172125_add_assistant_tools.sql",
+      "supabase/migrations/20240118224049_add_azure_embeddings.sql",
+      "supabase/migrations/20240124234424_tool_improvements.sql",
+      "supabase/migrations/20240125192042_upgrade_openai_models.sql",
+      "supabase/migrations/20240125194719_add_custom_models.sql",
+      "supabase/migrations/20240129232644_add_workspace_images.sql",
+      "supabase/migrations/20240212063532_add_at_assistants.sql",
+      "supabase/migrations/20240213040255_remove_request_in_body_from_tools.sql",
+      "supabase/migrations/20240213085646_add_context_length_to_custom_models.sql",
+      "supabase/seed.sql"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 80629,
+    "content_chars": 65632,
+    "usage": {
+      "prompt_tokens": 25141,
+      "completion_tokens": 7713,
+      "total_tokens": 32854,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 7581,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": [{\"id\": \"security-secret-in-code-1\", \"module\": \"database\", \"severity\": \"critical\", \"location\": {\"file\": \"supabase/migrations/20240108234540_setup.sql\", \"line\": 55}, \"description\": \"Hardcoded service role key found in database function.\", \"remediation\": \"Remove the hardcoded service role key and use a secure method to provide it, such as via a secret manager or environment variable at runtime.\", \"effort\": \"XL\", \"confidence\": 0.9}]}",
+    "findings_raw": [
+      {
+        "id": "security-secret-in-code-1",
+        "module": "database",
+        "severity": "critical",
+        "location": {
+          "file": "supabase/migrations/20240108234540_setup.sql",
+          "line": 55
+        },
+        "description": "Hardcoded service role key found in database function.",
+        "remediation": "Remove the hardcoded service role key and use a secure method to provide it, such as via a secret manager or environment variable at runtime.",
+        "effort": "XL",
+        "confidence": 0.9
+      }
+    ],
+    "findings_kept": [
+      {
+        "id": "security-secret-in-code-1",
+        "module": "database",
+        "severity": "critical",
+        "location": {
+          "file": "supabase/migrations/20240108234540_setup.sql",
+          "line": 55
+        },
+        "description": "Hardcoded service role key found in database function.",
+        "remediation": "Remove the hardcoded service role key and use a secure method to provide it, such as via a secret manager or environment variable at runtime.",
+        "effort": "XS",
+        "confidence": 0.9
+      }
+    ],
+    "findings_dropped": []
+  },
+  "repair": {
+    "candidates": [],
+    "over_cap_ids": [],
+    "weak_before_ids": [],
+    "weak_after_ids": [],
+    "prompt_chars": 0,
+    "prompt_budget_skipped": [],
+    "usage": null,
+    "raw_response": null,
+    "applied": [],
+    "failed": [],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 1,
+    "stamped_severity": 0,
+    "stamped_effort": 1,
+    "rules_unknown": 0,
+    "changes": [
+      {
+        "id": "security-secret-in-code-1",
+        "from": {
+          "severity": "critical",
+          "effort": "XL"
+        },
+        "to": {
+          "severity": "critical",
+          "effort": "XS"
+        }
+      }
+    ]
+  }
+}

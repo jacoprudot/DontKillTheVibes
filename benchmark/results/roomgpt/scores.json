@@ -1,78 +1,124 @@
 {
   "target": "roomgpt",
   "mock": false,
-  "created_at": "2026-10-02T23:16:13.773Z",
+  "created_at": "2026-10-03T21:20:24.541Z",
   "judge_model": "nvidia/nemotron-3-ultra-550b-a55b",
   "judge_base_url": "https://integrate.api.nvidia.com/v1",
   "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\roomgpt",
   "mock_notice": null,
   "model_under_test": "nvidia/nemotron-3-super-120b-a12b",
   "commit": "611398c78da64f1794df2d99018c3d02d3ab0048",
-  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics.",
+  "judge_runs": 3,
+  "run_agreement": "orchestrated 93%, naive 100%, toolkit 93%",
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
   "totals": {
-    "claims": 17,
-    "toolkit": 5,
-    "naive": 12,
-    "judged": 17
+    "claims": 37,
+    "toolkit": 7,
+    "orchestrated": 14,
+    "naive": 16,
+    "judged": 37,
+    "unverifiable": 22
   },
   "summary_by_arm": {
+    "orchestrated": {
+      "claims": 14,
+      "judged": 14,
+      "real": 9,
+      "falseCount": 1,
+      "unverifiable": 4,
+      "judgeGrounded": 9,
+      "mechGrounded": 11,
+      "mechUngrounded": 3,
+      "mismatch": 0,
+      "actionableSum": 47,
+      "actionableN": 14,
+      "security": 2,
+      "securityFn": 0,
+      "claimsWithCitations": 14,
+      "citationsTotal": 14,
+      "weakCitations": 0,
+      "meanActionability": 3.36,
+      "precision": 0.9,
+      "judgeGroundedRate": 0.643
+    },
     "naive": {
-      "claims": 12,
-      "judged": 12,
-      "real": 11,
-      "judgeGrounded": 12,
+      "claims": 16,
+      "judged": 16,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 16,
+      "judgeGrounded": 1,
       "mechGrounded": 0,
-      "mechUngrounded": 12,
-      "mismatch": 12,
-      "actionableSum": 53,
-      "actionableN": 12,
-      "security": 3,
+      "mechUngrounded": 16,
+      "mismatch": 1,
+      "actionableSum": 47,
+      "actionableN": 16,
+      "security": 2,
       "securityFn": 0,
       "claimsWithCitations": 0,
       "citationsTotal": 0,
-      "meanActionability": 4.42,
-      "precision": 0.917,
-      "judgeGroundedRate": 1
+      "weakCitations": 0,
+      "meanActionability": 2.94,
+      "precision": null,
+      "judgeGroundedRate": 0.063
     },
     "toolkit": {
-      "claims": 5,
-      "judged": 5,
-      "real": 5,
-      "judgeGrounded": 3,
-      "mechGrounded": 3,
-      "mechUngrounded": 2,
+      "claims": 7,
+      "judged": 7,
+      "real": 1,
+      "falseCount": 4,
+      "unverifiable": 2,
+      "judgeGrounded": 1,
+      "mechGrounded": 7,
+      "mechUngrounded": 0,
       "mismatch": 0,
-      "actionableSum": 22,
-      "actionableN": 5,
-      "security": 0,
-      "securityFn": 0,
-      "claimsWithCitations": 5,
-      "citationsTotal": 5,
-      "meanActionability": 4.4,
-      "precision": 1,
-      "judgeGroundedRate": 0.6
+      "actionableSum": 23,
+      "actionableN": 7,
+      "security": 1,
+      "securityFn": 1,
+      "claimsWithCitations": 7,
+      "citationsTotal": 7,
+      "weakCitations": 2,
+      "meanActionability": 3.29,
+      "precision": 0.2,
+      "judgeGroundedRate": 0.143
     }
   },
   "claims": [
     {
       "label": "C1",
-      "arm": "naive",
-      "source_id": "naive-claim-10",
-      "title": "10. Redundant Visibility Logic in Toggle Container",
-      "severity": null,
-      "module": null,
+      "arm": "orchestrated",
+      "source_id": "cost-no-license-tracking-5",
+      "title": "cost-no-license-tracking-5",
+      "severity": "medium",
+      "module": "cost",
       "security_relevant": false,
       "judge": {
-        "real": true,
-        "grounded": true,
-        "actionable": 4,
-        "reason": "Outer div already controls visibility; inner Toggle condition is redundant"
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Generic advice about license checking; no evidence in provided code",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
       "mechanical": {
-        "citations": [],
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 37,
+            "reason": null
+          }
+        ],
         "verified": 0,
-        "unverified": 0,
+        "unverified": 1,
         "mismatched": 0,
         "repo_available": true
       }
@@ -80,18 +126,24 @@
     {
       "label": "C2",
       "arm": "naive",
-      "source_id": "naive-claim-9",
-      "title": "9. Hardcoded Model Version",
+      "source_id": "naive-claim-13",
+      "title": "13. Hardcoded Replicate Model Version (app/generate/route.ts)",
       "severity": null,
       "module": null,
       "security_relevant": true,
       "judge": {
-        "real": true,
-        "grounded": true,
-        "actionable": 5,
-        "reason": "Model version should be configurable via environment variable"
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Specific claim about hardcoded model version but code not available",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
       "mechanical": {
         "citations": [],
         "verified": 0,
@@ -103,18 +155,24 @@
     {
       "label": "C3",
       "arm": "naive",
-      "source_id": "naive-claim-11",
-      "title": "11. Non-Standard Header Icon in Header Component",
+      "source_id": "naive-claim-12",
+      "title": "12. Potential Upload Widget API Key Confusion (app/dream/page.tsx)",
       "severity": null,
       "module": null,
       "security_relevant": false,
       "judge": {
-        "real": true,
-        "grounded": true,
-        "actionable": 4,
-        "reason": "Custom Github component inconsistent with Heroicons used elsewhere"
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Claims undocumented fallback key but code not available",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
       "mechanical": {
         "citations": [],
         "verified": 0,
@@ -125,47 +183,30 @@
     },
     {
       "label": "C4",
-      "arm": "naive",
-      "source_id": "naive-claim-2",
-      "title": "2. Missing CSS Classes for Visibility Toggling",
-      "severity": null,
-      "module": null,
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-usage-monitoring-9",
+      "title": "cost-api-no-usage-monitoring-9",
+      "severity": "medium",
+      "module": "cost",
       "security_relevant": false,
       "judge": {
-        "real": false,
-        "grounded": true,
-        "actionable": 1,
-        "reason": "Tailwind CSS includes visible/invisible utilities; classes are defined"
-      },
-      "grounded_mechanical": "ungrounded",
-      "mechanical": {
-        "citations": [],
-        "verified": 0,
-        "unverified": 0,
-        "mismatched": 0,
-        "repo_available": true
-      }
-    },
-    {
-      "label": "C5",
-      "arm": "toolkit",
-      "source_id": "code-missing-validation-4",
-      "title": "code-missing-validation-4",
-      "severity": "high",
-      "module": "code",
-      "security_relevant": false,
-      "judge": {
+        "verdict": "real",
         "real": true,
+        "unverifiable": false,
         "grounded": true,
-        "actionable": 5,
-        "reason": "No validation of imageUrl, theme, room parameters before use"
+        "actionable": 4,
+        "reason": "Polling loop at line 69 lacks proper monitoring/logging beyond console.log",
+        "votes": {
+          "real": 2
+        }
       },
       "grounded_mechanical": "grounded",
+      "weak_citation": false,
       "mechanical": {
         "citations": [
           {
             "file": "app/generate/route.ts",
-            "line": 34,
+            "line": 69,
             "origin": "structured",
             "status": "ok",
             "fileLines": 94,
@@ -179,20 +220,26 @@
       }
     },
     {
-      "label": "C6",
+      "label": "C5",
       "arm": "naive",
-      "source_id": "naive-claim-3",
-      "title": "3. Unreliable Loading State Timeout",
+      "source_id": "naive-claim-4",
+      "title": "4. Unused Dependency (package.json)",
       "severity": null,
       "module": null,
       "security_relevant": false,
       "judge": {
-        "real": true,
-        "grounded": true,
-        "actionable": 5,
-        "reason": "Fixed 1300ms timeout doesn't match actual request duration"
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Claims unused dependency but package.json and usage not visible",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
       "mechanical": {
         "citations": [],
         "verified": 0,
@@ -202,20 +249,64 @@
       }
     },
     {
-      "label": "C7",
-      "arm": "naive",
-      "source_id": "naive-claim-1",
-      "title": "1. Incorrect Response Handling in `app/dream/page.tsx`",
-      "severity": null,
-      "module": null,
+      "label": "C6",
+      "arm": "orchestrated",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
       "security_relevant": true,
       "judge": {
+        "verdict": "real",
         "real": true,
+        "unverifiable": false,
         "grounded": true,
         "actionable": 5,
-        "reason": "Route returns string URL but client treats it as array"
+        "reason": "Input parameters extracted at line 37 with no validation before API call",
+        "votes": {
+          "real": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/generate/route.ts",
+            "line": 37,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 94,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. Missing Alt Text for GitHub Icon (components/Header.tsx)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Accessibility claim about Header.tsx but code not available",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
       "mechanical": {
         "citations": [],
         "verified": 0,
@@ -227,18 +318,24 @@
     {
       "label": "C8",
       "arm": "naive",
-      "source_id": "naive-claim-5",
-      "title": "5. Filename Handling Bug in `appendNewToName`",
+      "source_id": "naive-claim-6",
+      "title": "6. Silent Download Failures (utils/downloadPhoto.ts)",
       "severity": null,
       "module": null,
       "security_relevant": false,
       "judge": {
-        "real": true,
-        "grounded": true,
-        "actionable": 5,
-        "reason": "No-extension filenames produce '-newroom' instead of 'room-new'"
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Claims silent download failures but downloadPhoto.ts not available",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
       "mechanical": {
         "citations": [],
         "verified": 0,
@@ -249,22 +346,37 @@
     },
     {
       "label": "C9",
-      "arm": "naive",
-      "source_id": "naive-claim-7",
-      "title": "7. Rate Limiter IP Identification Fragility",
-      "severity": null,
-      "module": null,
+      "arm": "toolkit",
+      "source_id": "structure-controller-logic-6",
+      "title": "structure-controller-logic-6",
+      "severity": "medium",
+      "module": "structure",
       "security_relevant": false,
       "judge": {
-        "real": true,
-        "grounded": true,
-        "actionable": 5,
-        "reason": "x-real-ip missing in local dev causes shared rate limit"
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Business logic separation claim but line 50 code not shown",
+        "votes": {
+          "unverifiable": 2
+        }
       },
-      "grounded_mechanical": "ungrounded",
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
       "mechanical": {
-        "citations": [],
-        "verified": 0,
+        "citations": [
+          {
+            "file": "app/dream/page.tsx",
+            "line": 50,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 281,
+            "reason": null
+          }
+        ],
+        "verified": 1,
         "unverified": 0,
         "mismatched": 0,
         "repo_available": true
@@ -272,51 +384,25 @@
     },
     {
       "label": "C10",
-      "arm": "toolkit",
-      "source_id": "code-unhandled-promise-4",
-      "title": "code-unhandled-promise-4",
-      "severity": "high",
-      "module": "code",
-      "security_relevant": false,
-      "judge": {
-        "real": true,
-        "grounded": false,
-        "actionable": 4,
-        "reason": "Line 0 citation invalid; cannot verify location in generatePhoto function"
-      },
-      "grounded_mechanical": "ungrounded",
-      "mechanical": {
-        "citations": [
-          {
-            "file": "app/dream/page.tsx",
-            "line": 0,
-            "origin": "structured",
-            "status": "file-level-no-line",
-            "fileLines": 281,
-            "reason": null
-          }
-        ],
-        "verified": 0,
-        "unverified": 1,
-        "mismatched": 0,
-        "repo_available": true
-      }
-    },
-    {
-      "label": "C11",
       "arm": "naive",
-      "source_id": "naive-claim-8",
-      "title": "8. Infinite Polling Risk in Replicate Integration",
+      "source_id": "naive-claim-3",
+      "title": "3. Infinite Polling Loop Without Timeout (app/generate/route.ts)",
       "severity": null,
       "module": null,
       "security_relevant": false,
       "judge": {
-        "real": true,
-        "grounded": true,
-        "actionable": 5,
-        "reason": "Polling loop has no timeout; can hang serverless function indefinitely"
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Infinite polling claim but cited lines 28-44 not available",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
       "mechanical": {
         "citations": [],
         "verified": 0,
@@ -326,28 +412,72 @@
       }
     },
     {
-      "label": "C12",
-      "arm": "toolkit",
-      "source_id": "security-missing-headers-10",
-      "title": "security-missing-headers-10",
+      "label": "C11",
+      "arm": "orchestrated",
+      "source_id": "performance-no-adaptive-timeout-6",
+      "title": "performance-no-adaptive-timeout-6",
       "severity": "medium",
-      "module": "security",
+      "module": "performance",
       "security_relevant": false,
       "judge": {
+        "verdict": "real",
         "real": true,
-        "grounded": false,
-        "actionable": 3,
-        "reason": "Line 0 not specific; security headers should be added but location vague"
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Fixed 1000ms polling interval at line 86 confirmed in snippet",
+        "votes": {
+          "real": 2
+        }
       },
-      "grounded_mechanical": "ungrounded",
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
       "mechanical": {
         "citations": [
           {
-            "file": "next.config.js",
+            "file": "app/generate/route.ts",
+            "line": 86,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 94,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C12",
+      "arm": "orchestrated",
+      "source_id": "cost-license-attribution-missing-2",
+      "title": "cost-license-attribution-missing-2",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Generic license attribution claim; no NOTICE file visible",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "LICENSE",
             "line": 0,
             "origin": "structured",
             "status": "file-level-no-line",
-            "fileLines": 8,
+            "fileLines": 22,
             "reason": null
           }
         ],
@@ -360,18 +490,24 @@
     {
       "label": "C13",
       "arm": "naive",
-      "source_id": "naive-claim-12",
-      "title": "12. Missing Alt Text for SVG Icons",
+      "source_id": "naive-claim-7",
+      "title": "7. Incorrect ARIA Labels (components/Footer.tsx)",
       "severity": null,
       "module": null,
       "security_relevant": false,
       "judge": {
-        "real": true,
-        "grounded": true,
-        "actionable": 4,
-        "reason": "SVG icons lack aria-label/role for screen reader accessibility"
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Claims wrong project name in ARIA labels but Footer.tsx not available",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
       "mechanical": {
         "citations": [],
         "verified": 0,
@@ -382,22 +518,37 @@
     },
     {
       "label": "C14",
-      "arm": "naive",
-      "source_id": "naive-claim-6",
-      "title": "6. Missing HTTP Status Check in Download Utility",
-      "severity": null,
-      "module": null,
+      "arm": "toolkit",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
       "security_relevant": true,
       "judge": {
-        "real": true,
-        "grounded": true,
-        "actionable": 5,
-        "reason": "Error responses (404/500) processed as images without status check"
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Cites line 20 (rate limiter) not the fetch at line 40; timeout issue may exist but at wrong location",
+        "votes": {
+          "false": 2
+        }
       },
-      "grounded_mechanical": "ungrounded",
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
       "mechanical": {
-        "citations": [],
-        "verified": 0,
+        "citations": [
+          {
+            "file": "app/generate/route.ts",
+            "line": 20,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 94,
+            "reason": null
+          }
+        ],
+        "verified": 1,
         "unverified": 0,
         "mismatched": 0,
         "repo_available": true
@@ -406,23 +557,29 @@
     {
       "label": "C15",
       "arm": "toolkit",
-      "source_id": "flows-retry-no-max-5",
-      "title": "flows-retry-no-max-5",
+      "source_id": "cost-api-no-usage-monitoring-9",
+      "title": "cost-api-no-usage-monitoring-9",
       "severity": "medium",
-      "module": "flows",
+      "module": "cost",
       "security_relevant": false,
       "judge": {
+        "verdict": "real",
         "real": true,
+        "unverifiable": false,
         "grounded": true,
-        "actionable": 5,
-        "reason": "Replicate polling loop has no max attempts; risks infinite loop"
+        "actionable": 3,
+        "reason": "No request counter visible at fetch call line 40",
+        "votes": {
+          "real": 2
+        }
       },
       "grounded_mechanical": "grounded",
+      "weak_citation": false,
       "mechanical": {
         "citations": [
           {
             "file": "app/generate/route.ts",
-            "line": 65,
+            "line": 40,
             "origin": "structured",
             "status": "ok",
             "fileLines": 94,
@@ -438,18 +595,24 @@
     {
       "label": "C16",
       "arm": "naive",
-      "source_id": "naive-claim-4",
-      "title": "4. Poor Error Message Handling",
+      "source_id": "naive-claim-2",
+      "title": "2. Rate Limiter IP Identifier Failure (app/generate/route.ts)",
       "severity": null,
       "module": null,
       "security_relevant": false,
       "judge": {
-        "real": true,
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
         "grounded": true,
         "actionable": 5,
-        "reason": "Error response object stringified as [object Object] in UI"
+        "reason": "Rate limiter uses x-real-ip with empty string fallback confirmed in C14 snippet",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
       "mechanical": {
         "citations": [],
         "verified": 0,
@@ -460,19 +623,188 @@
     },
     {
       "label": "C17",
-      "arm": "toolkit",
-      "source_id": "flows-missing-timeout-6",
-      "title": "flows-missing-timeout-6",
-      "severity": "medium",
-      "module": "flows",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. Image Response Handling Mismatch (app/dream/page.tsx vs app/generate/route.ts)",
+      "severity": null,
+      "module": null,
       "security_relevant": false,
       "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Response format mismatch claim but neither file's relevant code shown",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C18",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-retry-strategy-8",
+      "title": "cost-api-no-retry-strategy-8",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
         "real": true,
+        "unverifiable": false,
         "grounded": true,
-        "actionable": 5,
-        "reason": "Replicate API fetch has no timeout; risks indefinite hang"
+        "actionable": 4,
+        "reason": "Polling loop at line 72 has no retry logic for transient failures",
+        "votes": {
+          "real": 2
+        }
       },
       "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/generate/route.ts",
+            "line": 72,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 94,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C19",
+      "arm": "orchestrated",
+      "source_id": "cost-no-http-compression-9",
+      "title": "cost-no-http-compression-9",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "next.config.js snippet shows no compression configuration",
+        "votes": {
+          "real": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "next.config.js",
+            "line": 2,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 8,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. Unnecessary Key in Dropdown (components/DropDown.tsx)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Key prop issue claimed but DropDown.tsx not available",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. Missing Error Boundary (app/layout.tsx)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Missing error boundary claim but layout.tsx not available",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C22",
+      "arm": "orchestrated",
+      "source_id": "cost-api-in-loop-3",
+      "title": "cost-api-in-loop-3",
+      "severity": "high",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Polling loop at line 69 makes unbounded GET requests to Replicate",
+        "votes": {
+          "real": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
       "mechanical": {
         "citations": [
           {
@@ -481,6 +813,534 @@
             "origin": "structured",
             "status": "ok",
             "fileLines": 94,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. Non-Responsive Compare Slider (components/CompareSlider.tsx)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Fixed width claim but CompareSlider.tsx not available",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C24",
+      "arm": "orchestrated",
+      "source_id": "code-unhandled-promise-4",
+      "title": "code-unhandled-promise-4",
+      "severity": "high",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Fetch at line 40 lacks try/catch error handling",
+        "votes": {
+          "real": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/generate/route.ts",
+            "line": 40,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 94,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C25",
+      "arm": "orchestrated",
+      "source_id": "performance-no-request-collapsing-4",
+      "title": "performance-no-request-collapsing-4",
+      "severity": "medium",
+      "module": "performance",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "No request deduplication visible at fetch call line 40",
+        "votes": {
+          "real": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/generate/route.ts",
+            "line": 40,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 94,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. OG Image Hardcoded to Demo Domain (app/layout.tsx)",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Hardcoded OG image claim but layout.tsx not available",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C27",
+      "arm": "orchestrated",
+      "source_id": "code-console-log-7",
+      "title": "code-console-log-7",
+      "severity": "low",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Cited line 68 does not contain console.log; it's at line 71",
+        "votes": {
+          "real": 1,
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/generate/route.ts",
+            "line": 68,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 94,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C28",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "Summary of Critical Issues",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Summary claim referencing other issues; no specific code location",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C29",
+      "arm": "toolkit",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Cites line 10 (rate limiter config) not parameter validation at line 37",
+        "votes": {
+          "false": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/generate/route.ts",
+            "line": 10,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 94,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C30",
+      "arm": "toolkit",
+      "source_id": "flows-retry-no-max-5",
+      "title": "flows-retry-no-max-5",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Cites line 30 (rate limit headers) not polling loop",
+        "votes": {
+          "false": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/generate/route.ts",
+            "line": 30,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 94,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C31",
+      "arm": "orchestrated",
+      "source_id": "structure-layer-violation-1",
+      "title": "structure-layer-violation-1",
+      "severity": "high",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "generatePhoto function not visible in provided snippet",
+        "votes": {
+          "false": 1,
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/dream/page.tsx",
+            "line": 47,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 281,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C32",
+      "arm": "toolkit",
+      "source_id": "flows-fire-and-forget-critical-1",
+      "title": "flows-fire-and-forget-critical-1",
+      "severity": "critical",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Cites line 100 (closing brace) not generatePhoto call",
+        "votes": {
+          "false": 1,
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/dream/page.tsx",
+            "line": 100,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 281,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C33",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "14. Inconsistent Theme Array Ordering (utils/dropdownTypes.ts)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Minor ordering inconsistency claim; code not available",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C34",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. Faulty Filename Extension Handling (utils/appendNewToName.ts)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Filename handling bug claimed but file not available",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C35",
+      "arm": "orchestrated",
+      "source_id": "code-missing-validation-4",
+      "title": "code-missing-validation-4",
+      "severity": "high",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Function uses indexOf('.') which breaks on no-dot and multi-dot filenames",
+        "votes": {
+          "real": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "utils/appendNewToName.ts",
+            "line": 4,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 8,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C36",
+      "arm": "orchestrated",
+      "source_id": "cost-no-oss-policy-9",
+      "title": "cost-no-oss-policy-9",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Generic OSS policy claim; no policy document expected in LICENSE file",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "LICENSE",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 22,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C37",
+      "arm": "toolkit",
+      "source_id": "cost-unoptimized-images-8",
+      "title": "cost-unoptimized-images-8",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Image optimization claim but upload handling code not visible at line 50",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/dream/page.tsx",
+            "line": 50,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 281,
             "reason": null
           }
         ],

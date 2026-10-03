@@ -1,0 +1,228 @@
+{
+  "module": "performance",
+  "skill_file": "skills/performance-assessment.skill.md",
+  "agent_file": "agents/performance-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 0,
+    "weak_after": 0,
+    "repaired": 0,
+    "repair_failed": 0,
+    "repair_calls": 0,
+    "weak_over_cap": 0,
+    "stamped_total": 2,
+    "stamped_severity": 2,
+    "stamped_effort": 0,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 44565,
+    "usage": {
+      "prompt_tokens": 11856,
+      "completion_tokens": 5090,
+      "total_tokens": 16946,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 4951,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "app/layout.tsx",
+      "app/page.tsx",
+      "app/generate/route.ts",
+      "app/dream/page.tsx",
+      "components/CompareSlider.tsx",
+      "components/DropDown.tsx",
+      "components/Footer.tsx",
+      "components/Header.tsx",
+      "components/LoadingDots.tsx",
+      "components/ResizablePanel.tsx",
+      "components/SquigglyLines.tsx",
+      "components/Toggle.tsx",
+      "utils/appendNewToName.ts",
+      "utils/downloadPhoto.ts",
+      "utils/dropdownTypes.ts",
+      "utils/redis.ts",
+      "next.config.js",
+      "tailwind.config.js",
+      "postcss.config.js",
+      "package.json",
+      "README.md"
+    ],
+    "requested_in_tree": [
+      "app/layout.tsx",
+      "app/page.tsx",
+      "app/generate/route.ts",
+      "app/dream/page.tsx",
+      "components/CompareSlider.tsx",
+      "components/DropDown.tsx",
+      "components/Footer.tsx",
+      "components/Header.tsx",
+      "components/LoadingDots.tsx",
+      "components/ResizablePanel.tsx",
+      "components/SquigglyLines.tsx",
+      "components/Toggle.tsx",
+      "utils/appendNewToName.ts",
+      "utils/downloadPhoto.ts",
+      "utils/dropdownTypes.ts",
+      "utils/redis.ts",
+      "next.config.js",
+      "tailwind.config.js",
+      "postcss.config.js",
+      "package.json",
+      "README.md"
+    ],
+    "requested_not_in_tree": [],
+    "requested_over_cap": [],
+    "files_read": [
+      "app/layout.tsx",
+      "app/page.tsx",
+      "app/generate/route.ts",
+      "app/dream/page.tsx",
+      "components/CompareSlider.tsx",
+      "components/DropDown.tsx",
+      "components/Footer.tsx",
+      "components/Header.tsx",
+      "components/LoadingDots.tsx",
+      "components/ResizablePanel.tsx",
+      "components/SquigglyLines.tsx",
+      "components/Toggle.tsx",
+      "utils/appendNewToName.ts",
+      "utils/downloadPhoto.ts",
+      "utils/dropdownTypes.ts",
+      "utils/redis.ts",
+      "next.config.js",
+      "tailwind.config.js",
+      "postcss.config.js",
+      "package.json",
+      "README.md"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 48670,
+    "content_chars": 35061,
+    "usage": {
+      "prompt_tokens": 16690,
+      "completion_tokens": 9074,
+      "total_tokens": 25764,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 8809,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": [{\"id\": \"performance-no-adaptive-timeout-6\", \"module\": \"performance\", \"severity\": \"high\", \"location\": {\"file\": \"app/generate/route.ts\", \"line\": 86}, \"description\": \"The code uses a fixed timeout interval for polling the Replicate API, which does not adapt to the expected completion time or system load, potentially causing unnecessary requests or delayed response.\", \"remediation\": \"Implement an exponential backoff strategy or use a webhook-based notification system to avoid fixed-interval polling.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"performance-no-request-collapsing-4\", \"module\": \"performance\", \"severity\": \"high\", \"location\": {\"file\": \"app/generate/route.ts\", \"line\": 40}, \"description\": \"Identical requests for image generation (same imageUrl, theme, and room) are not collapsed, leading to redundant work and increased load on the Replicate API.\", \"remediation\": \"Implement request collapsing by caching promises for identical requests so that concurrent requests for the same input share the same prediction.\", \"effort\": \"M\", \"confidence\": 0.9}]}",
+    "findings_raw": [
+      {
+        "id": "performance-no-adaptive-timeout-6",
+        "module": "performance",
+        "severity": "high",
+        "location": {
+          "file": "app/generate/route.ts",
+          "line": 86
+        },
+        "description": "The code uses a fixed timeout interval for polling the Replicate API, which does not adapt to the expected completion time or system load, potentially causing unnecessary requests or delayed response.",
+        "remediation": "Implement an exponential backoff strategy or use a webhook-based notification system to avoid fixed-interval polling.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "performance-no-request-collapsing-4",
+        "module": "performance",
+        "severity": "high",
+        "location": {
+          "file": "app/generate/route.ts",
+          "line": 40
+        },
+        "description": "Identical requests for image generation (same imageUrl, theme, and room) are not collapsed, leading to redundant work and increased load on the Replicate API.",
+        "remediation": "Implement request collapsing by caching promises for identical requests so that concurrent requests for the same input share the same prediction.",
+        "effort": "M",
+        "confidence": 0.9
+      }
+    ],
+    "findings_kept": [
+      {
+        "id": "performance-no-adaptive-timeout-6",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "app/generate/route.ts",
+          "line": 86
+        },
+        "description": "The code uses a fixed timeout interval for polling the Replicate API, which does not adapt to the expected completion time or system load, potentially causing unnecessary requests or delayed response.",
+        "remediation": "Implement an exponential backoff strategy or use a webhook-based notification system to avoid fixed-interval polling.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "performance-no-request-collapsing-4",
+        "module": "performance",
+        "severity": "medium",
+        "location": {
+          "file": "app/generate/route.ts",
+          "line": 40
+        },
+        "description": "Identical requests for image generation (same imageUrl, theme, and room) are not collapsed, leading to redundant work and increased load on the Replicate API.",
+        "remediation": "Implement request collapsing by caching promises for identical requests so that concurrent requests for the same input share the same prediction.",
+        "effort": "M",
+        "confidence": 0.9
+      }
+    ],
+    "findings_dropped": []
+  },
+  "repair": {
+    "candidates": [],
+    "over_cap_ids": [],
+    "weak_before_ids": [],
+    "weak_after_ids": [],
+    "prompt_chars": 0,
+    "prompt_budget_skipped": [],
+    "usage": null,
+    "raw_response": null,
+    "applied": [],
+    "failed": [],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 2,
+    "stamped_severity": 2,
+    "stamped_effort": 0,
+    "rules_unknown": 0,
+    "changes": [
+      {
+        "id": "performance-no-adaptive-timeout-6",
+        "from": {
+          "severity": "high",
+          "effort": "M"
+        },
+        "to": {
+          "severity": "medium",
+          "effort": "M"
+        }
+      },
+      {
+        "id": "performance-no-request-collapsing-4",
+        "from": {
+          "severity": "high",
+          "effort": "M"
+        },
+        "to": {
+          "severity": "medium",
+          "effort": "M"
+        }
+      }
+    ]
+  }
+}

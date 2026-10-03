@@ -1,0 +1,203 @@
+{
+  "module": "structure",
+  "skill_file": "skills/structure-assessment.skill.md",
+  "agent_file": "agents/structure-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 0,
+    "weak_after": 0,
+    "repaired": 0,
+    "repair_failed": 0,
+    "repair_calls": 0,
+    "weak_over_cap": 0,
+    "stamped_total": 1,
+    "stamped_severity": 0,
+    "stamped_effort": 1,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 26760,
+    "usage": {
+      "prompt_tokens": 6895,
+      "completion_tokens": 2748,
+      "total_tokens": 9643,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 2510,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "src/app/models/http-exception.model.ts",
+      "src/app/routes/article/article.controller.ts",
+      "src/app/routes/article/article.mapper.ts",
+      "src/app/routes/article/article.model.ts",
+      "src/app/routes/article/article.service.ts",
+      "src/app/routes/article/author.mapper.ts",
+      "src/app/routes/article/comment.model.ts",
+      "src/app/routes/auth/auth.controller.ts",
+      "src/app/routes/auth/auth.service.ts",
+      "src/app/routes/auth/auth.ts",
+      "src/app/routes/auth/register-input.model.ts",
+      "src/app/routes/auth/registered-user.model.ts",
+      "src/app/routes/auth/token.utils.ts",
+      "src/app/routes/auth/user-request.d.ts",
+      "src/app/routes/auth/user.model.ts",
+      "src/app/routes/profile/profile.controller.ts",
+      "src/app/routes/profile/profile.model.ts",
+      "src/app/routes/profile/profile.service.ts",
+      "src/app/routes/profile/profile.utils.ts",
+      "src/app/routes/routes.ts",
+      "src/app/routes/tag/tag.controller.ts",
+      "src/app/routes/tag/tag.model.ts",
+      "src/app/routes/tag/tag.service.ts",
+      "src/main.ts",
+      "src/prisma/schema.prisma"
+    ],
+    "requested_in_tree": [
+      "src/app/models/http-exception.model.ts",
+      "src/app/routes/article/article.controller.ts",
+      "src/app/routes/article/article.mapper.ts",
+      "src/app/routes/article/article.model.ts",
+      "src/app/routes/article/article.service.ts",
+      "src/app/routes/article/author.mapper.ts",
+      "src/app/routes/article/comment.model.ts",
+      "src/app/routes/auth/auth.controller.ts",
+      "src/app/routes/auth/auth.service.ts",
+      "src/app/routes/auth/auth.ts",
+      "src/app/routes/auth/register-input.model.ts",
+      "src/app/routes/auth/registered-user.model.ts",
+      "src/app/routes/auth/token.utils.ts",
+      "src/app/routes/auth/user-request.d.ts",
+      "src/app/routes/auth/user.model.ts",
+      "src/app/routes/profile/profile.controller.ts",
+      "src/app/routes/profile/profile.model.ts",
+      "src/app/routes/profile/profile.service.ts",
+      "src/app/routes/profile/profile.utils.ts",
+      "src/app/routes/routes.ts",
+      "src/app/routes/tag/tag.controller.ts",
+      "src/app/routes/tag/tag.model.ts",
+      "src/app/routes/tag/tag.service.ts",
+      "src/main.ts",
+      "src/prisma/schema.prisma"
+    ],
+    "requested_not_in_tree": [],
+    "requested_over_cap": [],
+    "files_read": [
+      "src/app/models/http-exception.model.ts",
+      "src/app/routes/article/article.controller.ts",
+      "src/app/routes/article/article.mapper.ts",
+      "src/app/routes/article/article.model.ts",
+      "src/app/routes/article/article.service.ts",
+      "src/app/routes/article/author.mapper.ts",
+      "src/app/routes/article/comment.model.ts",
+      "src/app/routes/auth/auth.controller.ts",
+      "src/app/routes/auth/auth.service.ts",
+      "src/app/routes/auth/auth.ts",
+      "src/app/routes/auth/register-input.model.ts",
+      "src/app/routes/auth/registered-user.model.ts",
+      "src/app/routes/auth/token.utils.ts",
+      "src/app/routes/auth/user-request.d.ts",
+      "src/app/routes/auth/user.model.ts",
+      "src/app/routes/profile/profile.controller.ts",
+      "src/app/routes/profile/profile.model.ts",
+      "src/app/routes/profile/profile.service.ts",
+      "src/app/routes/profile/profile.utils.ts",
+      "src/app/routes/routes.ts",
+      "src/app/routes/tag/tag.controller.ts",
+      "src/app/routes/tag/tag.model.ts",
+      "src/app/routes/tag/tag.service.ts",
+      "src/main.ts",
+      "src/prisma/schema.prisma"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 47533,
+    "content_chars": 33385,
+    "usage": {
+      "prompt_tokens": 15162,
+      "completion_tokens": 6769,
+      "total_tokens": 21931,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 6624,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": [{\"id\": \"structure-package-dependency-cycle-2\", \"module\": \"structure\", \"severity\": \"high\", \"location\": {\"file\": \"src/app/routes/article/article.service.ts\", \"line\": 4}, \"description\": \"Dependency cycle detected between article, profile, and auth modules via article.service -> profile.utils -> auth.user.model -> article.article.model\", \"remediation\": \"Break the cycle by moving the shared utils to a common module or by using dependency injection. For example, move the profileMapper to a shared utils module or pass the mapping function as a parameter.\", \"effort\": \"M\", \"confidence\": 0.9}]}",
+    "findings_raw": [
+      {
+        "id": "structure-package-dependency-cycle-2",
+        "module": "structure",
+        "severity": "high",
+        "location": {
+          "file": "src/app/routes/article/article.service.ts",
+          "line": 4
+        },
+        "description": "Dependency cycle detected between article, profile, and auth modules via article.service -> profile.utils -> auth.user.model -> article.article.model",
+        "remediation": "Break the cycle by moving the shared utils to a common module or by using dependency injection. For example, move the profileMapper to a shared utils module or pass the mapping function as a parameter.",
+        "effort": "M",
+        "confidence": 0.9
+      }
+    ],
+    "findings_kept": [
+      {
+        "id": "structure-package-dependency-cycle-2",
+        "module": "structure",
+        "severity": "high",
+        "location": {
+          "file": "src/app/routes/article/article.service.ts",
+          "line": 4
+        },
+        "description": "Dependency cycle detected between article, profile, and auth modules via article.service -> profile.utils -> auth.user.model -> article.article.model",
+        "remediation": "Break the cycle by moving the shared utils to a common module or by using dependency injection. For example, move the profileMapper to a shared utils module or pass the mapping function as a parameter.",
+        "effort": "L",
+        "confidence": 0.9
+      }
+    ],
+    "findings_dropped": []
+  },
+  "repair": {
+    "candidates": [],
+    "over_cap_ids": [],
+    "weak_before_ids": [],
+    "weak_after_ids": [],
+    "prompt_chars": 0,
+    "prompt_budget_skipped": [],
+    "usage": null,
+    "raw_response": null,
+    "applied": [],
+    "failed": [],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 1,
+    "stamped_severity": 0,
+    "stamped_effort": 1,
+    "rules_unknown": 0,
+    "changes": [
+      {
+        "id": "structure-package-dependency-cycle-2",
+        "from": {
+          "severity": "high",
+          "effort": "M"
+        },
+        "to": {
+          "severity": "high",
+          "effort": "L"
+        }
+      }
+    ]
+  }
+}

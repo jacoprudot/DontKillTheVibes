@@ -1,119 +1,189 @@
 {
   "target": "realworld-control",
   "mock": false,
-  "created_at": "2026-10-02T23:13:15.049Z",
+  "created_at": "2026-10-03T21:12:11.512Z",
   "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
   "labels": [
     {
       "label": "C1",
       "arm": "naive",
-      "source_id": "naive-claim-8",
-      "title": "8. Incomplete Tag Service Test (`src/tests/services/tag.service.test.ts`)",
+      "source_id": "naive-claim-1",
+      "title": "1. ESLint Configuration Issues",
       "security_relevant": false
     },
     {
       "label": "C2",
-      "arm": "naive",
-      "source_id": "naive-claim-11",
-      "title": "11. Build Configuration (`project.json`)",
+      "arm": "orchestrated",
+      "source_id": "database-irreversible-migration-1",
+      "title": "database-irreversible-migration-1",
       "security_relevant": false
     },
     {
       "label": "C3",
       "arm": "naive",
-      "source_id": "naive-claim-7",
-      "title": "7. Root Endpoint Mismatch (`src/main.ts` vs e2e test)",
+      "source_id": "naive-claim-3",
+      "title": "3. Failing End-to-End Test",
       "security_relevant": false
     },
     {
       "label": "C4",
-      "arm": "naive",
-      "source_id": "naive-claim-9",
-      "title": "9. ESLint Ignore Patterns (`.eslintrc.json` and `e2e/.eslintrc.json`)",
+      "arm": "toolkit",
+      "source_id": "code-missing-validation-4",
+      "title": "code-missing-validation-4",
       "security_relevant": false
     },
     {
       "label": "C5",
       "arm": "naive",
-      "source_id": "naive-claim-1",
-      "title": "1. Authentication Middleware Misconfiguration (`src/app/routes/auth/auth.ts`)",
+      "source_id": "naive-claim-8",
+      "title": "Additional Observations",
       "security_relevant": true
     },
     {
       "label": "C6",
-      "arm": "naive",
-      "source_id": "naive-claim-4",
-      "title": "4. Tag Service Filtering (`src/app/routes/tag/tag.service.ts`)",
-      "security_relevant": false
+      "arm": "orchestrated",
+      "source_id": "security-jwt-weak-3",
+      "title": "security-jwt-weak-3",
+      "security_relevant": true
     },
     {
       "label": "C7",
-      "arm": "naive",
-      "source_id": "naive-claim-6",
-      "title": "6. Missing Article Existence Check (`src/app/routes/article/article.service.ts`)",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-rate-limit-8",
+      "title": "flows-missing-rate-limit-8",
       "security_relevant": false
     },
     {
       "label": "C8",
-      "arm": "naive",
-      "source_id": "naive-claim-2",
-      "title": "2. Incomplete Article Interface (`src/app/routes/article/article.model.ts`)",
-      "security_relevant": false
+      "arm": "orchestrated",
+      "source_id": "flows-missing-security-headers-10",
+      "title": "flows-missing-security-headers-10",
+      "security_relevant": true
     },
     {
       "label": "C9",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "toolkit",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
       "arm": "toolkit",
       "source_id": "code-any-type-6",
       "title": "code-any-type-6",
       "security_relevant": false
     },
     {
-      "label": "C10",
-      "arm": "toolkit",
-      "source_id": "database-missing-index-fk-1",
-      "title": "database-missing-index-fk-1",
-      "security_relevant": false
+      "label": "C12",
+      "arm": "orchestrated",
+      "source_id": "structure-package-dependency-cycle-2",
+      "title": "structure-package-dependency-cycle-2",
+      "security_relevant": true
     },
     {
-      "label": "C11",
+      "label": "C13",
       "arm": "toolkit",
       "source_id": "security-jwt-weak-3",
       "title": "security-jwt-weak-3",
       "security_relevant": true
     },
     {
-      "label": "C12",
-      "arm": "naive",
-      "source_id": "naive-claim-3",
-      "title": "3. Incorrect Comment Filtering (`src/app/routes/article/article.service.ts`)",
-      "security_relevant": false
-    },
-    {
-      "label": "C13",
-      "arm": "naive",
-      "source_id": "naive-claim-10",
-      "title": "10. Asset Copy Pattern (`project.json`)",
-      "security_relevant": false
-    },
-    {
       "label": "C14",
-      "arm": "naive",
-      "source_id": "naive-claim-5",
-      "title": "5. Dockerfile CMD Error (`Dockerfile`)",
+      "arm": "toolkit",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
       "security_relevant": false
     },
     {
       "label": "C15",
-      "arm": "naive",
-      "source_id": "naive-claim-12",
-      "title": "Summary of Critical Fixes Required",
+      "arm": "orchestrated",
+      "source_id": "security-cors-wildcard-2",
+      "title": "security-cors-wildcard-2",
       "security_relevant": true
     },
     {
       "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. Article Service Query Logic Errors",
+      "security_relevant": false
+    },
+    {
+      "label": "C17",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. Dockerfile Runtime Error",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. Incomplete and Unused Interface",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. Flawed Unit Test Mock",
+      "security_relevant": false
+    },
+    {
+      "label": "C20",
       "arm": "toolkit",
-      "source_id": "code-structural-duplication-medium-5",
-      "title": "code-structural-duplication-medium-5",
+      "source_id": "database-irreversible-migration-2",
+      "title": "database-irreversible-migration-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "toolkit",
+      "source_id": "database-sequential-pagination-1",
+      "title": "database-sequential-pagination-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-fk-1",
+      "title": "database-missing-index-fk-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. Tag Service Specification Violation",
+      "security_relevant": false
+    },
+    {
+      "label": "C24",
+      "arm": "orchestrated",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C25",
+      "arm": "toolkit",
+      "source_id": "security-cors-wildcard-2",
+      "title": "security-cors-wildcard-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C26",
+      "arm": "toolkit",
+      "source_id": "security-rate-limit-weak-6",
+      "title": "security-rate-limit-weak-6",
       "security_relevant": false
     }
   ]

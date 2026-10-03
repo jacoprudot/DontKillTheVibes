@@ -1,0 +1,300 @@
+{
+  "metadata": {
+    "repo": "chatbot-ui",
+    "assessed_at": "2026-10-03T21:01:09.497Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "nvidia/nemotron-3-super-120b-a12b",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 17,
+    "findings_raw": 26,
+    "findings_dropped": 16,
+    "sensitive_files_withheld": 1,
+    "files_withheld_sensitive": [
+      ".env.local.example"
+    ],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "B",
+    "total_findings": 10,
+    "by_severity": {
+      "critical": 1,
+      "high": 1,
+      "medium": 7,
+      "low": 1
+    },
+    "by_module": {
+      "database": 1,
+      "flows": 3,
+      "cost": 5,
+      "performance": 1
+    },
+    "effort_estimate": {
+      "XS": 1,
+      "M": 9
+    }
+  },
+  "findings": [
+    {
+      "id": "security-secret-in-code-1",
+      "module": "database",
+      "severity": "critical",
+      "location": {
+        "file": "supabase/migrations/20240108234540_setup.sql",
+        "line": 55
+      },
+      "description": "Hardcoded service role key found in database function.",
+      "remediation": "Remove the hardcoded service role key and use a secure method to provide it, such as via a secret manager or environment variable at runtime.",
+      "effort": "XS",
+      "confidence": 0.9
+    },
+    {
+      "id": "code-missing-validation-4",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "app/api/chat/openai/route.ts",
+        "line": 12
+      },
+      "description": "The API route does not validate the incoming request body; it only uses a type assertion which does not prevent runtime errors from invalid data.",
+      "remediation": "Add input validation using a schema validator (e.g., zod) to ensure chatSettings and messages conform to expected structure before processing.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "performance-http-no-pooling-2",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "app/api/chat/openai/route.ts",
+        "line": 18
+      },
+      "description": "Creating a new OpenAI instance per request without connection pooling",
+      "remediation": "Reuse the OpenAI client instance across requests to enable HTTP connection pooling.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-api-no-client-rate-limit-4",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "app/api/chat/anthropic/route.ts",
+        "line": 63
+      },
+      "description": "Missing client-side rate limiting for Anthropic API calls",
+      "remediation": "Implement a client-side rate limiter (e.g., token bucket) to prevent exceeding Anthropic API rate limits.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-api-no-idempotency-7",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "app/api/chat/anthropic/route.ts",
+        "line": 63
+      },
+      "description": "Missing idempotency key in Anthropic API calls",
+      "remediation": "Add an idempotency key to Anthropic API requests to prevent duplicate charges from retries.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "app/api/chat/anthropic/route.ts",
+        "line": 63
+      },
+      "description": "Missing response caching for Anthropic API calls",
+      "remediation": "Implement caching of Anthropic API responses to reduce repeated calls for identical requests.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "app/api/chat/anthropic/route.ts",
+        "line": 63
+      },
+      "description": "Missing retry strategy for Anthropic API calls",
+      "remediation": "Implement a retry strategy with exponential backoff for Anthropic API calls to handle transient errors.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "app/api/chat/anthropic/route.ts",
+        "line": 63
+      },
+      "description": "Missing usage monitoring for Anthropic API calls",
+      "remediation": "Add logging and monitoring of Anthropic API usage (token count, cost) to track and control expenses.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "app/api/chat/openai/route.ts",
+        "line": 27
+      },
+      "description": "The OpenAI API request is made without setting a timeout, which could lead to indefinite hanging of the request.",
+      "remediation": "Add a timeout parameter to the OpenAI request, e.g., by setting the timeout option in the OpenAI constructor or in the request call.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-inconsistent-response-4",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "app/api/chat/tools/route.ts",
+        "line": 64
+      },
+      "description": "The API route returns a plain string with Content-Type: application/json in the no-tool-call case, while other routes return JSON objects or streams, leading to inconsistent response format.",
+      "remediation": "Wrap the message.content in a JSON object, e.g., return new Response(JSON.stringify({ content: message.content }), { ... })",
+      "effort": "M",
+      "confidence": 0.6
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "security-secret-in-code-1",
+          "code-missing-validation-4",
+          "performance-http-no-pooling-2"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "cost-api-no-client-rate-limit-4",
+          "cost-api-no-idempotency-7",
+          "cost-api-no-response-cache-5"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "cost-api-no-retry-strategy-8",
+          "cost-api-no-usage-monitoring-9",
+          "flows-missing-timeout-6",
+          "flows-inconsistent-response-4"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "performance-http-no-pooling-2": [
+        "security-secret-in-code-1"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "database",
+      "confidence": 0.9,
+      "score": 117,
+      "canonical_rule": "security-secret-in-code-1"
+    },
+    {
+      "id": "code-missing-validation-4",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 30,
+      "canonical_rule": "code-missing-validation-4"
+    },
+    {
+      "id": "performance-http-no-pooling-2",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.9,
+      "score": 21.6,
+      "canonical_rule": "performance-http-no-pooling-2"
+    },
+    {
+      "id": "cost-api-no-client-rate-limit-4",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-api-no-client-rate-limit-4"
+    },
+    {
+      "id": "cost-api-no-idempotency-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-api-no-idempotency-7"
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-api-no-response-cache-5"
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-api-no-retry-strategy-8"
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-api-no-usage-monitoring-9"
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 12,
+      "canonical_rule": "flows-missing-timeout-6"
+    },
+    {
+      "id": "flows-inconsistent-response-4",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 3,
+      "canonical_rule": "flows-inconsistent-response-4"
+    }
+  ]
+}

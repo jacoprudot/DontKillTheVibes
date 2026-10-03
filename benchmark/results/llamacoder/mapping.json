@@ -1,84 +1,175 @@
 {
   "target": "llamacoder",
   "mock": false,
-  "created_at": "2026-10-02T23:17:27.510Z",
+  "created_at": "2026-10-03T21:56:10.429Z",
   "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
   "labels": [
     {
       "label": "C1",
-      "arm": "toolkit",
-      "source_id": "security-no-input-validation-14",
-      "title": "security-no-input-validation-14",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "Security Concerns",
       "security_relevant": true
     },
     {
       "label": "C2",
       "arm": "naive",
-      "source_id": "naive-claim-1",
-      "title": "Critical Bugs",
-      "security_relevant": false
-    },
-    {
-      "label": "C3",
-      "arm": "naive",
-      "source_id": "naive-claim-3",
+      "source_id": "naive-claim-6",
       "title": "Code Quality Issues",
       "security_relevant": false
     },
     {
-      "label": "C4",
-      "arm": "naive",
-      "source_id": "naive-claim-7",
-      "title": "Configuration Issues",
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "database-missing-index-fk-1",
+      "title": "database-missing-index-fk-1",
       "security_relevant": false
     },
     {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "security-cors-wildcard-2",
+      "title": "security-cors-wildcard-2",
+      "security_relevant": true
+    },
+    {
       "label": "C5",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-client-rate-limit-4",
+      "title": "cost-api-no-client-rate-limit-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "orchestrated",
+      "source_id": "structure-controller-logic-6",
+      "title": "structure-controller-logic-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "toolkit",
+      "source_id": "database-n-plus-one-risk-1",
+      "title": "database-n-plus-one-risk-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "toolkit",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C9",
+      "arm": "toolkit",
+      "source_id": "flows-missing-idempotency-3",
+      "title": "flows-missing-idempotency-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-idempotency-7",
+      "title": "cost-api-no-idempotency-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "Specific File Issues",
+      "security_relevant": true
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "Configuration and Deployment Issues",
+      "security_relevant": true
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "Testing Concerns",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "Error Handling Gaps",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-response-cache-5",
+      "title": "cost-api-no-response-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "Critical Issues",
+      "security_relevant": false
+    },
+    {
+      "label": "C17",
+      "arm": "toolkit",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-retry-strategy-8",
+      "title": "cost-api-no-retry-strategy-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "toolkit",
+      "source_id": "security-cors-wildcard-2",
+      "title": "security-cors-wildcard-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "Accessibility Issues",
+      "security_relevant": true
+    },
+    {
+      "label": "C21",
+      "arm": "toolkit",
+      "source_id": "performance-cpu-hotspot-1",
+      "title": "performance-cpu-hotspot-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "toolkit",
+      "source_id": "code-extreme-length-6",
+      "title": "code-extreme-length-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
       "arm": "naive",
       "source_id": "naive-claim-2",
       "title": "Performance Issues",
       "security_relevant": false
     },
     {
-      "label": "C6",
-      "arm": "naive",
-      "source_id": "naive-claim-6",
-      "title": "Type Safety Issues",
-      "security_relevant": false
-    },
-    {
-      "label": "C7",
-      "arm": "naive",
-      "source_id": "naive-claim-4",
-      "title": "Potential Bugs",
-      "security_relevant": false
-    },
-    {
-      "label": "C8",
-      "arm": "naive",
-      "source_id": "naive-claim-8",
-      "title": "Missing Error Handling",
-      "security_relevant": false
-    },
-    {
-      "label": "C9",
+      "label": "C24",
       "arm": "toolkit",
-      "source_id": "cost-no-automated-tests-4",
-      "title": "cost-no-automated-tests-4",
-      "security_relevant": false
-    },
-    {
-      "label": "C10",
-      "arm": "naive",
-      "source_id": "naive-claim-5",
-      "title": "Regex Issues",
-      "security_relevant": false
-    },
-    {
-      "label": "C11",
-      "arm": "toolkit",
-      "source_id": "structure-layer-violation-1",
-      "title": "structure-layer-violation-1",
+      "source_id": "performance-external-api-8",
+      "title": "performance-external-api-8",
       "security_relevant": false
     }
   ]

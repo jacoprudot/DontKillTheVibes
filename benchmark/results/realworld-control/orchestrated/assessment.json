@@ -1,0 +1,287 @@
+{
+  "metadata": {
+    "repo": "realworld-control",
+    "assessed_at": "2026-10-03T20:01:54.001Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "nvidia/nemotron-3-super-120b-a12b",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 18,
+    "findings_raw": 11,
+    "findings_dropped": 2,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "C",
+    "total_findings": 9,
+    "by_severity": {
+      "critical": 2,
+      "high": 2,
+      "medium": 3,
+      "low": 2
+    },
+    "by_module": {
+      "database": 2,
+      "structure": 1,
+      "flows": 4,
+      "security": 2
+    },
+    "effort_estimate": {
+      "XS": 2,
+      "S": 4,
+      "M": 1,
+      "L": 2
+    }
+  },
+  "findings": [
+    {
+      "id": "database-irreversible-migration-1",
+      "module": "database",
+      "severity": "critical",
+      "location": {
+        "file": "src/prisma/migrations/20211001143221_implicit_tags/migration.sql",
+        "line": 15
+      },
+      "description": "The migration drops the ArticleTags table without migrating its data to the new _ArticleToTag table, causing irreversible data loss.",
+      "remediation": "Migrate the data from the old table to the new table before dropping the old table.",
+      "effort": "L",
+      "confidence": 0.9
+    },
+    {
+      "id": "security-jwt-weak-3",
+      "module": "flows",
+      "severity": "critical",
+      "location": {
+        "file": "src/app/routes/auth/auth.ts",
+        "line": 16
+      },
+      "description": "Se utiliza un secreto JWT de respaldo hardcodeado ('superSecret') lo que representa un riesgo de seguridad si la variable de entorno no está configurada.",
+      "remediation": "Eliminar el valor de respaldo y asegurar que la variable de entorno JWT_SECRET esté siempre configurada en todos los entornos.",
+      "effort": "XS",
+      "confidence": 1
+    },
+    {
+      "id": "database-missing-index-fk-1",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "src/prisma/migrations/20210924225358_initial/migration.sql",
+        "line": 90
+      },
+      "description": "Missing index on foreign key column \"authorId\" in table \"Article\".",
+      "remediation": "Add an index on the foreign key column to improve join performance.",
+      "effort": "S",
+      "confidence": 0.9
+    },
+    {
+      "id": "structure-package-dependency-cycle-2",
+      "module": "structure",
+      "severity": "high",
+      "location": {
+        "file": "src/app/routes/article/article.service.ts",
+        "line": 4
+      },
+      "description": "Dependency cycle detected between article, profile, and auth modules via article.service -> profile.utils -> auth.user.model -> article.article.model",
+      "remediation": "Break the cycle by moving the shared utils to a common module or by using dependency injection. For example, move the profileMapper to a shared utils module or pass the mapping function as a parameter.",
+      "effort": "L",
+      "confidence": 0.9
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "src/main.ts",
+        "line": 13
+      },
+      "description": "CORS middleware configured with wildcard origin, allowing any origin",
+      "remediation": "Configure CORS with specific allowed origins instead of using wildcard",
+      "effort": "XS",
+      "confidence": 0.95
+    },
+    {
+      "id": "security-missing-headers-10",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "src/main.ts",
+        "line": 13
+      },
+      "description": "Missing security headers such as X-Frame-Options, X-Content-Type-Options, Strict-Transport-Security, etc.",
+      "remediation": "Implement security headers middleware (e.g., helmet) to set appropriate HTTP headers",
+      "effort": "S",
+      "confidence": 0.95
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/main.ts",
+        "line": 0
+      },
+      "description": "No se ha implementado ningún mecanismo de limitación de tasa en la aplicación, lo que podría permitir ataques de fuerza bruta o agotamiento de recursos.",
+      "remediation": "Agregar un middleware de limitación de tasa (como express-rate-limit) antes de definir las rutas.",
+      "effort": "M",
+      "confidence": 1
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/main.ts",
+        "line": 0
+      },
+      "description": "La aplicación no genera ni incluye un ID de solicitud en las respuestas o registros, lo que dificulta el rastreo y depuración de solicitudes.",
+      "remediation": "Implementar un middleware que genere un ID de solicitud único para cada solicitud y lo agregue a los encabezados de respuesta y/o registros.",
+      "effort": "S",
+      "confidence": 1
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/main.ts",
+        "line": 0
+      },
+      "description": "La aplicación no configura cabeceras de seguridad esenciales (como HSTS, CSP, etc.), lo la deja vulnerable a diversos ataques comunes en el navegador.",
+      "remediation": "Integrar un middleware de cabeceras de seguridad (como helmet) para configurar automáticamente cabeceras de seguridad recomendadas.",
+      "effort": "S",
+      "confidence": 1
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "database-irreversible-migration-1",
+          "security-jwt-weak-3",
+          "database-missing-index-fk-1"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "structure-package-dependency-cycle-2",
+          "security-cors-wildcard-2"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "security-missing-headers-10",
+          "flows-missing-rate-limit-8",
+          "flows-missing-request-id-7",
+          "flows-missing-security-headers-10"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "security-jwt-weak-3": [
+        "structure-package-dependency-cycle-2"
+      ],
+      "flows-missing-rate-limit-8": [
+        "structure-package-dependency-cycle-2"
+      ],
+      "flows-missing-request-id-7": [
+        "structure-package-dependency-cycle-2"
+      ],
+      "flows-missing-security-headers-10": [
+        "structure-package-dependency-cycle-2"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "database-irreversible-migration-1",
+      "severity": "critical",
+      "module": "database",
+      "confidence": 0.9,
+      "score": 117,
+      "canonical_rule": "database-irreversible-migration-1"
+    },
+    {
+      "id": "security-jwt-weak-3",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 1,
+      "score": 100,
+      "canonical_rule": "security-jwt-weak-3"
+    },
+    {
+      "id": "database-missing-index-fk-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.9,
+      "score": 58.5,
+      "canonical_rule": "database-missing-index-fk-1"
+    },
+    {
+      "id": "structure-package-dependency-cycle-2",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.9,
+      "score": 49.5,
+      "canonical_rule": "structure-package-dependency-cycle-2"
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.95,
+      "score": 28.5,
+      "canonical_rule": "security-cors-wildcard-2"
+    },
+    {
+      "id": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.95,
+      "score": 28.5,
+      "canonical_rule": "security-missing-headers-10"
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 1,
+      "score": 20,
+      "canonical_rule": "flows-missing-rate-limit-8"
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 1,
+      "score": 5,
+      "canonical_rule": "flows-missing-request-id-7"
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 1,
+      "score": 5,
+      "canonical_rule": "flows-missing-security-headers-10"
+    }
+  ]
+}
