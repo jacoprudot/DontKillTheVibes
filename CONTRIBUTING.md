@@ -34,6 +34,62 @@ Please use the [feature request template](.github/ISSUE_TEMPLATE/feature_request
 - Ensure all outputs conform to the finding-schema.json
 - Add appropriate module and version information
 
+## Rule changes
+
+The `→ FINDING:` lines in `skills/*.skill.md` are the canonical rule registry, and every id
+in it is public API: shipped assessments cite those ids, and `scripts/validate-assessment.mjs`
+resolves them here. Changes are governed — see [skills/CHANGELOG.md](skills/CHANGELOG.md)
+for the history and the record format.
+
+### Adding a rule
+1. Add the line to the right decision tree, in the right module's skill file:
+   `   → FINDING: module-thing-7 (severity: high, effort: M)`
+2. Use a unique id matching `^[a-z][a-z0-9]*(-[a-z0-9]+)*-\d+$` and put it in exactly one
+   place. A duplicated id is a hard failure: `loadRules` silently keeps the last one, so the
+   two copies would disagree about severity/effort/scope.
+3. Run `pnpm validate:skills` (frontmatter, id shape, duplicate ids) and
+   `node scripts/registry-diff.mjs` (fingerprint + changelog gate).
+4. Record the change in `skills/CHANGELOG.md` with the new fingerprint (see below).
+
+### Changing severity or effort
+Severity and effort are properties of the rule and are stamped onto findings from there, so
+changing them changes scores and work plans of every future report. Edit the value on the
+rule's own line and record the change — `node scripts/registry-diff.mjs` prints it as
+`CHANGED (id: severity a->b, effort a->b)`.
+
+### Deprecating a rule
+Never delete a `→ FINDING:` line: a deleted id breaks every assessment that already cites it.
+Retire the rule by marking it on the same line:
+
+```text
+   → FINDING: old-rule-1 (severity: high, effort: M) [deprecated -> new-rule-2]
+   → FINDING: old-rule-2 (severity: low, effort: S) [deprecated]
+```
+
+- The rule STAYS in the registry, so old reports keep resolving its id.
+- `[deprecated -> new-rule-2]` names the replacement; `[deprecated]` alone is valid when
+  nothing replaces it.
+- `scripts/validate-assessment.mjs` warns (never errors) on a document citing a deprecated
+  rule: `WARN: <where>: rule "<id>" is deprecated (superseded by <x>) — prefer the replacement`.
+- `node scripts/registry-diff.mjs` treats a deprecated removal as declared and refuses a
+  raw one with exit 1.
+
+### Recording a ruleset change (required)
+Every change to the registry must be recorded in [skills/CHANGELOG.md](skills/CHANGELOG.md),
+newest entry first, with the **fingerprint of the new ruleset** written verbatim in the
+entry. The fingerprint is `"<rule count>-<8 hex>"`, computed by `rulesetFingerprint()` in
+`scripts/lib/canonical-registry.mjs` over every `id|severity|effort` (sorted ids, newline
+joined). Get the current value with:
+
+```bash
+node -e "import('./scripts/lib/canonical-registry.mjs').then(m=>console.log(m.rulesetFingerprint(m.loadRules('skills'))))"
+```
+
+### CI
+`pnpm validate:skills` and `node scripts/registry-diff.mjs` both run in CI, alongside the
+shipped-example validation. A ruleset change whose new fingerprint is not in
+`skills/CHANGELOG.md` fails the build, and so does removing an id without deprecating it.
+
 ### MCPs
 - Follow the [MCP_TEMPLATE.md](templates/MCP_TEMPLATE.md) format
 - Implement all required security controls (path allowlisting, command allowlisting, resource limits, audit logging)
