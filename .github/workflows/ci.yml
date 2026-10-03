@@ -13,6 +13,10 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        # Full history: the ruleset changelog gate diffs the pushed range
+        # (github.event.before / PR base) against the working tree.
+        fetch-depth: 0
 
     - name: Setup Node.js 24
       uses: actions/setup-node@v4
@@ -57,6 +61,19 @@ jobs:
 
     - name: Validate the shipped assessment example
       run: node scripts/validate-assessment.mjs examples/realworld-assessment/assessment.json
+
+    - name: Ruleset changelog gate (undeclared rule changes fail CI)
+      shell: bash
+      run: |
+        REF="${{ github.event.pull_request.base.sha }}"
+        if [ -z "$REF" ] || [ "$REF" = "0000000000000000000000000000000000000000" ]; then
+          REF="${{ github.event.before }}"
+        fi
+        if [ -z "$REF" ] || [ "$REF" = "0000000000000000000000000000000000000000" ]; then
+          REF="HEAD~1"
+        fi
+        echo "Diffing the ruleset against $REF"
+        node scripts/registry-diff.mjs "$REF"
 
     - name: MCP security smoke tests (injection guards)
       run: |

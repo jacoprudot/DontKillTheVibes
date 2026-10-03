@@ -6,10 +6,20 @@
  *  1. Frontmatter exists and contains the required keys from templates/SKILL_TEMPLATE.md
  *  2. Every `→ FINDING: <id>` in decision trees matches ^[a-z][a-z0-9]*(-[a-z0-9]+)*-\d+$
  *
+ * Check across the whole registry:
+ *  3. Every `→ FINDING: <id>` is defined exactly ONCE. `loadRules` is silently last-wins on
+ *     a duplicate id, so a copy-pasted rule quietly changes which severity/effort (and
+ *     which description) wins depending on file order. That must be a hard failure, not a
+ *     silent coin flip. Reported through scripts/lib/canonical-registry.mjs so the
+ *     validator and the diff tool agree on what "defined twice" means.
+ *
  * Exits non-zero on any failure.
  */
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+// The canonical registry contract (parser + duplicate detection) lives in ONE module:
+// scripts/lib/canonical-registry.mjs. This validator only reports what it finds there.
+import { findDuplicateIds } from './lib/canonical-registry.mjs';
 
 const root = process.cwd();
 const skillsDir = join(root, 'skills');
@@ -64,6 +74,14 @@ for (const file of readdirSync(skillsDir).filter((f) => f.endsWith('.skill.md'))
       fail(rel, `finding id "${m[1]}" does not match ^[a-z-]+-\\d+$`);
     }
   }
+}
+
+/* Check 3: an id defined more than once is an ambiguous rule definition. loadRules() keeps
+   the last one, so two files (or two lines) claiming the same id silently disagree about
+   its severity/effort/scope — and a past report citing that id resolves to whichever copy
+   happens to win. One FAIL line per id, naming every file that defines it. */
+for (const dup of findDuplicateIds(skillsDir)) {
+  fail('skills/', `duplicate finding id "${dup.id}" defined ${dup.count} times (${dup.files.join(', ')}) — loadRules() silently keeps the last one`);
 }
 
 if (failures > 0) {

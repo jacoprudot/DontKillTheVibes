@@ -13,18 +13,28 @@
  *      tags / relatedFindings / evidence types)
  *   - finding ids unique
  *   - every finding id exists in the canonical skill registry
- *     (`→ FINDING: <id>` lines in skills/*.skill.md)
+ *     (`→ FINDING: <id> (severity: <sev>, effort: <eff>)` lines in skills/*.skill.md)
+ *   - every finding's severity and effort match the values the canonical rule declares
+ *     (the rule is the authority: prioritization is severityWeight x moduleWeight x
+ *      confidence, so an invented severity silently rewrites the whole work plan)
  *   - every id referenced by work_plan phases and dependencies resolves to a finding
  *   - summary tallies agree with the actual findings
  *
  * Warnings (exit 0) are used only for soft signals: low confidence, short
- * remediation, an empty findings list, missing optional metadata fields.
+ * remediation, an empty findings list, missing optional metadata fields, a finding that
+ * cites a DEPRECATED rule (the id is still canonical on purpose — a report produced before
+ * the rule was retired must keep validating) and a metadata.ruleset_version that disagrees
+ * with the registry in the working tree (the scores may simply be from an older ruleset).
  *
  * Exit codes: 0 = valid, 1 = violations found, 2 = usage error.
  */
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve, join } from 'node:path';
+// The canonical rule contract (ids + declared severity/effort) lives in ONE module:
+// scripts/lib/canonical-registry.mjs. This validator only ENFORCES it; the runner
+// (scripts/dktv-orchestrate.mjs) consumes the same module to MAKE the output conform.
+import { loadRules, rulesetFingerprint } from './lib/canonical-registry.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const schema = JSON.parse(readFileSync(resolve(root, 'templates/finding-schema.json'), 'utf8'));
@@ -38,17 +48,24 @@ if (!file) {
   process.exit(2);
 }
 
-/* ---------- canonical rule registry (skills/*.skill.md) ---------- */
-function loadCanonicalIds() {
-  const ids = new Set();
-  const skillsDir = join(root, 'skills');
-  if (!existsSync(skillsDir)) return ids;
-  for (const f of readdirSync(skillsDir).filter((n) => n.endsWith('.skill.md')).sort()) {
-    const content = readFileSync(join(skillsDir, f), 'utf8');
-    for (const m of content.matchAll(/→\s*FINDING:\s*([A-Za-z0-9-]+)/g)) ids.add(m[1]);
-  }
-  return ids;
-}
+/* ---------- canonical rule registry (scripts/lib/canonical-registry.mjs) ---------- */
+/**
+ * Returns Map<id, { severity, effort, deprecated, supersededBy }>. Each decision-tree rule
+ * line declares the authoritative severity/effort for that rule, e.g.
+ *   → FINDING: security-secret-in-code-1 (severity: critical, effort: XS)
+ * A rule with no declared severity or effort records null for that field, and the
+ * corresponding check is skipped for that rule (never invent an error).
+ *
+ * A rule marked `[deprecated -> <id>]` STAYS canonical on purpose: reports produced before
+ * the retirement cite it and must keep validating. Citing it is a WARNING here, not an
+ * error (see the deprecation warning below).
+ * The parsing itself lives in scripts/lib/canonical-registry.mjs so that the validator
+ * and the runner can never disagree about what a rule declares.
+ */
+const SKILLS_DIR = join(root, 'skills');
+// Fingerprint of the registry in the working tree: `"<count>-<8 hex>"`. Stamped into
+// metadata.ruleset_version by the runners; compared (as a warning) against the document.
+const currentFingerprint = useRegistry ? rulesetFingerprint(loadRules(SKILLS_DIR)) : null;
 
 /* ---------- load document ---------- */
 let doc;
@@ -68,9 +85,19 @@ if (doc === null || typeof doc !== 'object' || Array.isArray(doc)) {
   process.exit(1);
 }
 
-const canonical = useRegistry ? loadCanonicalIds() : new Set();
+const rules = useRegistry ? loadRules(SKILLS_DIR) : new Map();
+const canonical = new Set(rules.keys());
 if (useRegistry && canonical.size === 0) {
   warn.push('no canonical finding ids found in skills/ — registry check skipped');
+}
+if (useRegistry && canonical.size > 0) {
+  let undeclared = 0;
+  for (const r of rules.values()) if (r.severity === null || r.effort === null) undeclared++;
+  if (undeclared > 0) {
+    warn.push(
+      `${undeclared} canonical rule(s) declare no severity/effort; those checks are skipped for them`
+    );
+  }
 }
 
 /* ---------- helpers ---------- */
@@ -120,6 +147,30 @@ if (findings) {
         errors.push(
           `${where}: id "${f.id}" is not a canonical rule id — it must come from a decision tree in skills/*.skill.md`
         );
+      } else if (canonical.size > 0) {
+        // the rule declares the authoritative severity/effort; only compare fields the
+        // rule actually declares and the finding actually carries (a missing required
+        // field is already reported by the schema check above)
+        const rule = rules.get(f.id);
+        if (rule.severity !== null && f.severity !== undefined && f.severity !== rule.severity) {
+          errors.push(
+            `${where}: severity "${f.severity}" does not match the rule's declared severity "${rule.severity}" (${f.id})`
+          );
+        }
+        if (rule.effort !== null && f.effort !== undefined && f.effort !== rule.effort) {
+          errors.push(
+            `${where}: effort "${f.effort}" does not match the rule's declared effort "${rule.effort}" (${f.id})`
+          );
+        }
+        // Retiring a rule must not invalidate a report that was produced while the rule was
+        // live: a deprecated id stays canonical and this is a WARNING, never an error.
+        if (rule.deprecated) {
+          warn.push(
+            rule.supersededBy
+              ? `${where}: rule "${f.id}" is deprecated (superseded by ${rule.supersededBy}) — prefer the replacement`
+              : `${where}: rule "${f.id}" is deprecated — prefer a current rule`
+          );
+        }
       }
     } else if (f.id !== undefined) {
       errors.push(`${where}: id must be a string`);
@@ -226,6 +277,17 @@ if (!isObj(doc.metadata)) {
     if (!doc.metadata[k]) warn.push(`metadata.${k} missing`);
   }
   if (!doc.metadata.llm_used) warn.push('metadata.llm_used missing');
+  // Provenance, not contract: the fingerprint the document was scored under is stamped by
+  // the runners. A mismatch means the registry moved AFTER this assessment was produced, so
+  // the scores may not be comparable with a fresh run — worth saying out loud, never worth
+  // rejecting the document (it was valid when it was written).
+  const declaredVersion = doc.metadata.ruleset_version;
+  if (useRegistry && currentFingerprint && declaredVersion !== undefined && declaredVersion !== null
+    && declaredVersion !== currentFingerprint) {
+    warn.push(
+      `metadata.ruleset_version "${declaredVersion}" was scored under a different ruleset (current "${currentFingerprint}") — scores may not be comparable`
+    );
+  }
 }
 
 if (!isObj(doc.summary)) {
