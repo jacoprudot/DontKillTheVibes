@@ -1,0 +1,176 @@
+{
+  "metadata": {
+    "repo": "realworld-control",
+    "assessed_at": "2024-06-15T12:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "dontkillthevibes-synthesis-agent"
+  },
+  "summary": {
+    "overall_health": "C",
+    "total_findings": 6,
+    "critical_count": 1
+  },
+  "findings": [
+    {
+      "id": "security-jwt-weak-3",
+      "module": "security",
+      "severity": "critical",
+      "location": {
+        "file": "src/app/routes/auth/auth.ts",
+        "line": 16
+      },
+      "description": "JWT secret fallback to weak hardcoded value 'superSecret'",
+      "remediation": "Remove the fallback and require JWT_SECRET environment variable to be set in production",
+      "effort": "XS",
+      "confidence": 0.9,
+      "evidence": {
+        "snippet": "secret: process.env.JWT_SECRET || 'superSecret',",
+        "metric": 11,
+        "benchmark": "Should be a strong random string of at least 32 bytes"
+      },
+      "tags": [
+        "secret",
+        "jwt",
+        "authentication"
+      ],
+      "relatedFindings": []
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "src/app/routes/article/article.service.ts",
+        "line": 3
+      },
+      "description": "Sequential execution of count and findMany queries for the same filter, causing extra database load",
+      "remediation": "Run both queries concurrently using Promise.all to reduce database roundtrips",
+      "effort": "S",
+      "confidence": 0.9,
+      "evidence": {
+        "snippet": "const articlesCount = await prisma.article.count({ ... });\nconst articles = await prisma.article.findMany({ ... });",
+        "metric": 1,
+        "benchmark": "Could reduce database load by up to 50% for read operations"
+      },
+      "tags": [
+        "database",
+        "performance",
+        "query",
+        "pagination"
+      ],
+      "relatedFindings": []
+    },
+    {
+      "id": "code-missing-validation-4",
+      "module": "code",
+      "severity": "high",
+      "location": {
+        "file": "src/app/routes/article/article.controller.ts",
+        "line": 30
+      },
+      "description": "API endpoint lacks input validation at the boundary (controller), relying on service-layer validation",
+      "remediation": "Add input validation middleware or controller-level validation for request body",
+      "effort": "M",
+      "confidence": 0.9,
+      "evidence": {
+        "snippet": "const article = await createArticle(req.body.article, req.auth?.user?.id);",
+        "metric": 1,
+        "benchmark": "Should validate request body before processing"
+      },
+      "tags": [
+        "validation",
+        "api",
+        "input"
+      ],
+      "relatedFindings": []
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "src/main.ts",
+        "line": 7
+      },
+      "description": "CORS middleware configured to allow all origins, posing a security risk",
+      "remediation": "Restrict CORS origins to specific domains in production",
+      "effort": "XS",
+      "confidence": 0.9,
+      "evidence": {
+        "snippet": "app.use(cors());",
+        "metric": 1,
+        "benchmark": "Should specify allowed origins array"
+      },
+      "tags": [
+        "cors",
+        "security",
+        "middleware"
+      ],
+      "relatedFindings": []
+    },
+    {
+      "id": "security-missing-headers-10",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "src/main.ts",
+        "line": 10
+      },
+      "description": "Missing security headers (HSTS, CSP, X-Frame-Options, etc.) to protect against common web vulnerabilities",
+      "remediation": "Add security headers middleware (e.g., helmet) to set protective HTTP headers",
+      "effort": "S",
+      "confidence": 0.9,
+      "evidence": {
+        "snippet": "Missing headers in HTTP responses",
+        "metric": 4,
+        "benchmark": "Should include headers like Strict-Transport-Security, Content-Security-Policy, etc."
+      },
+      "tags": [
+        "security",
+        "headers",
+        "middleware"
+      ],
+      "relatedFindings": []
+    },
+    {
+      "id": "code-any-type-6",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "src/app/routes/article/article.service.ts",
+        "line": 10
+      },
+      "description": "Use of 'any' type in public API functions compromises type safety",
+      "remediation": "Replace 'any' with specific types or interfaces for better type safety",
+      "effort": "S",
+      "confidence": 0.9,
+      "evidence": {
+        "snippet": "const buildFindAllQuery = (query: any, id: number | undefined) => {",
+        "metric": 1,
+        "benchmark": "Should use explicit types for all public API parameters"
+      },
+      "tags": [
+        "typescript",
+        "type-safety",
+        "any-type"
+      ],
+      "relatedFindings": []
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-jwt-weak-3",
+        "security-cors-wildcard-2",
+        "database-sequential-pagination-1",
+        "security-missing-headers-10",
+        "code-any-type-6"
+      ],
+      "60_days": [
+        "code-missing-validation-4"
+      ],
+      "90_days": []
+    },
+    "dependencies": []
+  }
+}

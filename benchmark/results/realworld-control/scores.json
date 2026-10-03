@@ -1,0 +1,462 @@
+{
+  "target": "realworld-control",
+  "mock": false,
+  "created_at": "2026-10-02T23:14:48.401Z",
+  "judge_model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "judge_base_url": "https://integrate.api.nvidia.com/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\realworld-control",
+  "mock_notice": null,
+  "model_under_test": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "30b68e1e881462b2f4164ea09ab4c4f5699c7b0b",
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics.",
+  "totals": {
+    "claims": 16,
+    "toolkit": 4,
+    "naive": 12,
+    "judged": 16
+  },
+  "summary_by_arm": {
+    "naive": {
+      "claims": 12,
+      "judged": 12,
+      "real": 10,
+      "judgeGrounded": 9,
+      "mechGrounded": 0,
+      "mechUngrounded": 12,
+      "mismatch": 9,
+      "actionableSum": 51,
+      "actionableN": 12,
+      "security": 2,
+      "securityFn": 0,
+      "claimsWithCitations": 0,
+      "citationsTotal": 0,
+      "meanActionability": 4.25,
+      "precision": 0.833,
+      "judgeGroundedRate": 0.75
+    },
+    "toolkit": {
+      "claims": 4,
+      "judged": 4,
+      "real": 3,
+      "judgeGrounded": 2,
+      "mechGrounded": 2,
+      "mechUngrounded": 2,
+      "mismatch": 1,
+      "actionableSum": 16,
+      "actionableN": 4,
+      "security": 1,
+      "securityFn": 0,
+      "claimsWithCitations": 4,
+      "citationsTotal": 4,
+      "meanActionability": 4,
+      "precision": 0.75,
+      "judgeGroundedRate": 0.5
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. Incomplete Tag Service Test (`src/tests/services/tag.service.test.ts`)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "File exists in tree and claim describes specific incomplete test with TODO"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. Build Configuration (`project.json`)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "References non-existent claim #10 and lacks specific pattern details"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. Root Endpoint Mismatch (`src/main.ts` vs e2e test)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Both files exist in tree and claim shows exact code mismatch"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. ESLint Ignore Patterns (`.eslintrc.json` and `e2e/.eslintrc.json`)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Both config files exist and claim shows exact problematic pattern"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. Authentication Middleware Misconfiguration (`src/app/routes/auth/auth.ts`)",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Auth file exists and claim shows exact middleware configuration fix needed"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. Tag Service Filtering (`src/app/routes/tag/tag.service.ts`)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Tag service file exists and claim shows exact filtering bug and fix"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. Missing Article Existence Check (`src/app/routes/article/article.service.ts`)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Claim admits uncertainty with 'likely' and 'truncated in view'"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. Incomplete Article Interface (`src/app/routes/article/article.model.ts`)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Article model file exists and claim shows exact missing properties"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C9",
+      "arm": "toolkit",
+      "source_id": "code-any-type-6",
+      "title": "code-any-type-6",
+      "severity": "medium",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "article.mapper.ts not listed in file tree, cannot verify existence"
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/app/routes/article/article.mapper.ts",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 17,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C10",
+      "arm": "toolkit",
+      "source_id": "database-missing-index-fk-1",
+      "title": "database-missing-index-fk-1",
+      "severity": "high",
+      "module": "database",
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Prisma schema exists and missing indexes on foreign keys is a genuine performance risk"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/prisma/schema.prisma",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 57,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C11",
+      "arm": "toolkit",
+      "source_id": "security-jwt-weak-3",
+      "title": "security-jwt-weak-3",
+      "severity": "critical",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Auth file exists; hardcoded JWT secret is a security risk regardless of exact line"
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/app/routes/auth/auth.ts",
+            "line": 10,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 29,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. Incorrect Comment Filtering (`src/app/routes/article/article.service.ts`)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Article service file exists and claim shows exact comment filtering bug and fix"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. Asset Copy Pattern (`project.json`)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Project.json exists and claim shows exact redundant glob pattern"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. Dockerfile CMD Error (`Dockerfile`)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Dockerfile exists and claim shows exact incorrect entry point"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C15",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "Summary of Critical Fixes Required",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "real": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Meta-summary with no specific file citation; aggregates other claims"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C16",
+      "arm": "toolkit",
+      "source_id": "code-structural-duplication-medium-5",
+      "title": "code-structural-duplication-medium-5",
+      "severity": "low",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Claims duplication across files but only cites one file at line 0; no specific duplication shown"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/app/routes/article/article.service.ts",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 653,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

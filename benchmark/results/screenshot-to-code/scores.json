@@ -1,0 +1,223 @@
+{
+  "target": "screenshot-to-code",
+  "mock": false,
+  "created_at": "2026-10-02T23:17:27.437Z",
+  "judge_model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "judge_base_url": "https://integrate.api.nvidia.com/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\screenshot-to-code",
+  "mock_notice": null,
+  "model_under_test": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "d026163f586dfa8c5c10d28c36edd59a9d3b0e88",
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics.",
+  "totals": {
+    "claims": 6,
+    "toolkit": 3,
+    "naive": 3,
+    "judged": 6
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 3,
+      "judged": 3,
+      "real": 0,
+      "judgeGrounded": 0,
+      "mechGrounded": 3,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 5,
+      "actionableN": 3,
+      "security": 0,
+      "securityFn": 0,
+      "claimsWithCitations": 3,
+      "citationsTotal": 3,
+      "meanActionability": 1.67,
+      "precision": 0,
+      "judgeGroundedRate": 0
+    },
+    "naive": {
+      "claims": 3,
+      "judged": 3,
+      "real": 2,
+      "judgeGrounded": 2,
+      "mechGrounded": 0,
+      "mechUngrounded": 3,
+      "mismatch": 2,
+      "actionableSum": 9,
+      "actionableN": 3,
+      "security": 1,
+      "securityFn": 0,
+      "claimsWithCitations": 0,
+      "citationsTotal": 0,
+      "meanActionability": 3,
+      "precision": 0.667,
+      "judgeGroundedRate": 0.667
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "code-print-statement-5",
+      "title": "code-print-statement-5",
+      "severity": "low",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Cited location (provider.py:120) shows image block processing logic, not a print statement; claim mentions multiple files but citation doesn't support it."
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "backend/agent/providers/anthropic/provider.py",
+            "line": 120,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 509,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. Disabled Pre-Commit Hooks for Testing and Type Checking",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "File backend/.pre-commit-config.yaml exists in repo; disabling test/type-check hooks is a genuine risk; fix is concrete (uncomment hooks)."
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "performance-no-internal-compression-3",
+      "title": "performance-no-internal-compression-3",
+      "severity": "medium",
+      "module": "performance",
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Cited location (provider.py:140) shows OpenAI-to-Claude message conversion, not an image quality adjustment loop."
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "backend/agent/providers/anthropic/provider.py",
+            "line": 140,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 509,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "Additional Observations",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Verifiable observations: types.py exists with SSRF protection; engine.py content not visible; mostly observations not actionable fixes."
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. Unnecessary Print Statement in Anthropic Image Processing",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Repository structure lists provider.py but not image.py in anthropic/; cannot verify file or print statement exists."
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "toolkit",
+      "source_id": "performance-no-adaptive-concurrency-9",
+      "title": "performance-no-adaptive-concurrency-9",
+      "severity": "medium",
+      "module": "performance",
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Cited location (engine.py:100) shows _extract_input_images method, not a fixed maximum step configuration."
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "backend/agent/engine.py",
+            "line": 100,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 387,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

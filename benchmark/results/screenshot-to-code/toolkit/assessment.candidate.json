@@ -1,0 +1,173 @@
+{
+  "metadata": {
+    "repo": "screenshot-to-code",
+    "assessed_at": "2026-09-28T14:30:00Z",
+    "toolkit_version": "0.1.0",
+    "llm_used": "llm-synthesis-agent"
+  },
+  "summary": {
+    "overall_health": "B",
+    "total_findings": 7,
+    "critical_count": 0
+  },
+  "findings": [
+    {
+      "id": "security-cors-wildcard-2",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "backend/main.py",
+        "line": 1
+      },
+      "description": "CORS middleware allows all origins, posing a security risk",
+      "remediation": "Restrict CORS origins to specific trusted domains",
+      "effort": "XS",
+      "confidence": 0.65,
+      "evidence": {
+        "snippet": "No evidence of restricted CORS configuration in provided files",
+        "metric": 1
+      }
+    },
+    {
+      "id": "security-missing-headers-10",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "backend/main.py",
+        "line": 1
+      },
+      "description": "Missing security headers (HSTS, CSP, X-Frame-Options, etc.)",
+      "remediation": "Add security headers middleware to protect against common web vulnerabilities",
+      "effort": "S",
+      "confidence": 0.65,
+      "evidence": {
+        "snippet": "No evidence of security headers middleware in provided files",
+        "metric": 4
+      }
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "backend/fs_logging/agent_runs.py",
+        "line": 1
+      },
+      "description": "Application creates new SQLite connections per request instead of reusing connections",
+      "remediation": "Implement connection reuse or connection pooling for better performance under load",
+      "effort": "M",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "open_index_db() function creates a new connection each time it's called",
+        "metric": 1
+      }
+    },
+    {
+      "id": "code-extreme-length-6",
+      "module": "code",
+      "severity": "high",
+      "location": {
+        "file": "backend/agent/engine.py",
+        "line": 1
+      },
+      "description": "_run_with_session method exceeds 150 lines, indicating excessive complexity",
+      "remediation": "Break into smaller functions: handle_step, process_tool_call, manage_streaming",
+      "effort": "L",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "Method appears to exceed 150 lines based on file size and structure",
+        "metric": 200
+      }
+    },
+    {
+      "id": "code-long-parameter-list-8",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "backend/agent/engine.py",
+        "line": 1
+      },
+      "description": "AgentEngine.__init__ has 13 parameters which exceeds the recommended limit of 5",
+      "remediation": "Use parameter object or builder pattern to reduce parameter count",
+      "effort": "M",
+      "confidence": 0.9,
+      "evidence": {
+        "snippet": "AgentEngine.__init__ has 13 parameters: send_message, variant_index, recorder, openai_api_key, openai_base_url, anthropic_api_key, gemini_api_key, replicate_api_key, should_generate_images, should_extract_assets, asset_base_url, initial_file_state, option_codes",
+        "metric": 13
+      }
+    },
+    {
+      "id": "performance-no-compression-13",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "backend/main.py",
+        "line": 1
+      },
+      "description": "API responses lack compression, causing unnecessary bandwidth usage",
+      "remediation": "Add gzip or Brotli compression middleware to HTTP responses",
+      "effort": "M",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "No evidence of compression middleware in provided backend files",
+        "metric": 100
+      }
+    },
+    {
+      "id": "code-structural-duplication-high-4",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "backend/agent/providers/anthropic/provider.py",
+        "line": 1
+      },
+      "description": "AnthropicProviderSession, OpenAIProviderSession, and GeminiProviderSession classes have similar structure and methods",
+      "remediation": "Extract common functionality to a base ProviderSession class",
+      "effort": "M",
+      "confidence": 0.8,
+      "evidence": {
+        "snippet": "All three classes implement ProviderSession with similar method signatures and patterns",
+        "metric": 0.85
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-cors-wildcard-2",
+        "security-missing-headers-10"
+      ],
+      "60_days": [
+        "database-missing-app-pool-8",
+        "code-long-parameter-list-8",
+        "performance-no-compression-13",
+        "code-structural-duplication-high-4"
+      ],
+      "90_days": [
+        "code-extreme-length-6"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "database-missing-app-pool-8",
+        "to": "code-extreme-length-6",
+        "type": "blocks"
+      },
+      {
+        "from": "database-missing-app-pool-8",
+        "to": "code-long-parameter-list-8",
+        "type": "blocks"
+      },
+      {
+        "from": "database-missing-app-pool-8",
+        "to": "performance-no-compression-13",
+        "type": "blocks"
+      },
+      {
+        "from": "database-missing-app-pool-8",
+        "to": "code-structural-duplication-high-4",
+        "type": "blocks"
+      }
+    ]
+  }
+}

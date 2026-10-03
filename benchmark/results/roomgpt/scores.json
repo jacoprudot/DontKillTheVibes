@@ -1,0 +1,494 @@
+{
+  "target": "roomgpt",
+  "mock": false,
+  "created_at": "2026-10-02T23:16:13.773Z",
+  "judge_model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "judge_base_url": "https://integrate.api.nvidia.com/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\roomgpt",
+  "mock_notice": null,
+  "model_under_test": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "611398c78da64f1794df2d99018c3d02d3ab0048",
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics.",
+  "totals": {
+    "claims": 17,
+    "toolkit": 5,
+    "naive": 12,
+    "judged": 17
+  },
+  "summary_by_arm": {
+    "naive": {
+      "claims": 12,
+      "judged": 12,
+      "real": 11,
+      "judgeGrounded": 12,
+      "mechGrounded": 0,
+      "mechUngrounded": 12,
+      "mismatch": 12,
+      "actionableSum": 53,
+      "actionableN": 12,
+      "security": 3,
+      "securityFn": 0,
+      "claimsWithCitations": 0,
+      "citationsTotal": 0,
+      "meanActionability": 4.42,
+      "precision": 0.917,
+      "judgeGroundedRate": 1
+    },
+    "toolkit": {
+      "claims": 5,
+      "judged": 5,
+      "real": 5,
+      "judgeGrounded": 3,
+      "mechGrounded": 3,
+      "mechUngrounded": 2,
+      "mismatch": 0,
+      "actionableSum": 22,
+      "actionableN": 5,
+      "security": 0,
+      "securityFn": 0,
+      "claimsWithCitations": 5,
+      "citationsTotal": 5,
+      "meanActionability": 4.4,
+      "precision": 1,
+      "judgeGroundedRate": 0.6
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. Redundant Visibility Logic in Toggle Container",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Outer div already controls visibility; inner Toggle condition is redundant"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. Hardcoded Model Version",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Model version should be configurable via environment variable"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. Non-Standard Header Icon in Header Component",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Custom Github component inconsistent with Heroicons used elsewhere"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. Missing CSS Classes for Visibility Toggling",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": true,
+        "actionable": 1,
+        "reason": "Tailwind CSS includes visible/invisible utilities; classes are defined"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "toolkit",
+      "source_id": "code-missing-validation-4",
+      "title": "code-missing-validation-4",
+      "severity": "high",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "No validation of imageUrl, theme, room parameters before use"
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/generate/route.ts",
+            "line": 34,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 94,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. Unreliable Loading State Timeout",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Fixed 1300ms timeout doesn't match actual request duration"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. Incorrect Response Handling in `app/dream/page.tsx`",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Route returns string URL but client treats it as array"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. Filename Handling Bug in `appendNewToName`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "No-extension filenames produce '-newroom' instead of 'room-new'"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. Rate Limiter IP Identification Fragility",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "x-real-ip missing in local dev causes shared rate limit"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C10",
+      "arm": "toolkit",
+      "source_id": "code-unhandled-promise-4",
+      "title": "code-unhandled-promise-4",
+      "severity": "high",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Line 0 citation invalid; cannot verify location in generatePhoto function"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/dream/page.tsx",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 281,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. Infinite Polling Risk in Replicate Integration",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Polling loop has no timeout; can hang serverless function indefinitely"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C12",
+      "arm": "toolkit",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Line 0 not specific; security headers should be added but location vague"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "next.config.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 8,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. Missing Alt Text for SVG Icons",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "SVG icons lack aria-label/role for screen reader accessibility"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. Missing HTTP Status Check in Download Utility",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Error responses (404/500) processed as images without status check"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C15",
+      "arm": "toolkit",
+      "source_id": "flows-retry-no-max-5",
+      "title": "flows-retry-no-max-5",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Replicate polling loop has no max attempts; risks infinite loop"
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/generate/route.ts",
+            "line": 65,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 94,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. Poor Error Message Handling",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Error response object stringified as [object Object] in UI"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C17",
+      "arm": "toolkit",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Replicate API fetch has no timeout; risks indefinite hang"
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/generate/route.ts",
+            "line": 69,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 94,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,337 @@
+{
+  "target": "llamacoder",
+  "mock": false,
+  "created_at": "2026-10-02T23:17:53.074Z",
+  "judge_model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "judge_base_url": "https://integrate.api.nvidia.com/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\llamacoder",
+  "mock_notice": null,
+  "model_under_test": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "75a3a78e1fa080657b696b95e6d7e393dfa999a5",
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics.",
+  "totals": {
+    "claims": 11,
+    "toolkit": 3,
+    "naive": 8,
+    "judged": 11
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 3,
+      "judged": 3,
+      "real": 2,
+      "judgeGrounded": 1,
+      "mechGrounded": 2,
+      "mechUngrounded": 1,
+      "mismatch": 0,
+      "actionableSum": 9,
+      "actionableN": 3,
+      "security": 1,
+      "securityFn": 1,
+      "claimsWithCitations": 3,
+      "citationsTotal": 3,
+      "meanActionability": 3,
+      "precision": 0.667,
+      "judgeGroundedRate": 0.333
+    },
+    "naive": {
+      "claims": 8,
+      "judged": 8,
+      "real": 0,
+      "judgeGrounded": 0,
+      "mechGrounded": 0,
+      "mechUngrounded": 8,
+      "mismatch": 0,
+      "actionableSum": 25,
+      "actionableN": 8,
+      "security": 0,
+      "securityFn": 0,
+      "claimsWithCitations": 0,
+      "citationsTotal": 0,
+      "meanActionability": 3.13,
+      "precision": 0,
+      "judgeGroundedRate": 0
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Cited line 15 is only an import statement, not endpoint logic; cannot verify validation claims"
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/api/create-chat/route.ts",
+            "line": 15,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 222,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "Critical Bugs",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Specific fixes named but cited code not provided in digest for verification"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "Code Quality Issues",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Code quality claims unverifiable without access to cited source files"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "Configuration Issues",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Hardcoded value claim cannot be verified; cited code not in digest"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "Performance Issues",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Performance claims unverifiable; page.client.tsx and page.tsx code not provided"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "Type Safety Issues",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Type safety issues cited in files not present in tree or code not shown"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "Potential Bugs",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Potential bugs described but cited source code unavailable for review"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "Missing Error Handling",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Stream supervision claim ungrounded; route.ts code not in digest"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C9",
+      "arm": "toolkit",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": ".github/workflows directory absent from repo; citation path invalid"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/",
+            "line": 0,
+            "origin": "structured",
+            "status": "missing-file",
+            "reason": "file not found in the target repo"
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 1,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "Regex Issues",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "chat-title.ts exists but regex code not shown; other files not in tree"
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C11",
+      "arm": "toolkit",
+      "source_id": "structure-layer-violation-1",
+      "title": "structure-layer-violation-1",
+      "severity": "high",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "actions.ts:3 imports Prisma directly in server action, confirming direct DB access"
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/(main)/actions.ts",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 33,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}
