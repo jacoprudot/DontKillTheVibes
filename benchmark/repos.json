@@ -1,35 +1,35 @@
 {
-  "$comment": "Benchmark target list. Every entry was verified against the GitHub API on 2026-10-02: public, not archived, MIT-licensed, and small enough that the digest fits the context budget. 'realworld-control' is the labelled control because it is the repo already assessed by hand in examples/realworld-assessment. Commit SHAs are NEVER stored here: benchmark/run.mjs records the resolved commit (git rev-parse HEAD) into results/<name>/meta.json at run time, so a run is reproducible without pinning a SHA by hand. SAMPLING LIMITATION, stated up front: two of the four targets (roomGPT, llamacoder) are by the same author and share a Next.js house style, and three of four are TypeScript. This is a small, convenience sample of recognizable AI-built apps, not a representative one.",
+  "$comment": "Benchmark target list — ANONYMIZED (tracked). The four vibe-coding targets are labelled target-1..target-4; their real repo URLs, notes and provenance live in benchmark/repos.local.json (gitignored, available on request). run.mjs reads repos.local.json when it exists and falls back to this file, so a fresh checkout runs the anonymized list and the author's machine runs the real one. Commit SHAs are NEVER stored in either file: benchmark/run.mjs records the resolved commit (git rev-parse HEAD) into results/<name>/meta.json at run time. realworld-control stays NAMED (not anonymized) because it is already public via examples/realworld-assessment — the control must be independently reproducible, and naming it leaks nothing that is not already in the repo. SAMPLING LIMITATION, stated up front: two of the four anonymized targets are by the same author and share a Next.js house style, and three of four are TypeScript. This is a small, convenience sample, not a representative one. The mapping real-name -> label is defined ONCE in benchmark/anonymize-results.mjs (LABEL_MAP).",
   "targets": [
     {
       "name": "realworld-control",
-      "url": "https://github.com/gothinkster/realworld",
-      "note": "control: the repo already assessed by hand in examples/realworld-assessment",
+      "url": "https://github.com/gothinkster/node-express-realworld-example-app",
+      "note": "control: the Express+Prisma+Nx implementation assessed by hand in examples/realworld-assessment. NOT the gothinkster/realworld spec repo (docs only, no code to assess). Stays named because it is already public via examples/realworld-assessment.",
       "provenance": "Reference implementation (NestJS + Prisma + JWT). Control, not a vibe-coding sample."
     },
     {
-      "name": "roomgpt",
-      "url": "https://github.com/Nutlope/roomGPT",
-      "note": "AI-built weekend project: photo of a room in, redesigned room out",
-      "provenance": "TypeScript, MIT, 10679 stars, 22.7 MB, last push 2024-04-20. Author publicly documented building it in a weekend."
+      "name": "target-2",
+      "url": "",
+      "note": "recorded in benchmark/repos.local.json (gitignored) — available on request",
+      "provenance": ""
     },
     {
-      "name": "screenshot-to-code",
-      "url": "https://github.com/abi/screenshot-to-code",
-      "note": "Fast-built app: screenshot in, HTML/Tailwind/React out",
-      "provenance": "Python (FastAPI) + React, MIT, 79925 stars, 11.1 MB, last push 2026-09-29."
+      "name": "target-3",
+      "url": "",
+      "note": "recorded in benchmark/repos.local.json (gitignored) — available on request",
+      "provenance": ""
     },
     {
-      "name": "llamacoder",
-      "url": "https://github.com/Nutlope/llamacoder",
-      "note": "Open-source Claude Artifacts clone; serverless DB via Convex",
-      "provenance": "TypeScript + Convex, MIT, 7137 stars, 5.8 MB, last push 2026-09-15."
+      "name": "target-4",
+      "url": "",
+      "note": "recorded in benchmark/repos.local.json (gitignored) — available on request",
+      "provenance": ""
     },
     {
-      "name": "chatbot-ui",
-      "url": "https://github.com/mckaywrigley/chatbot-ui",
-      "note": "Popular AI chat UI with Supabase auth + database",
-      "provenance": "TypeScript/Next.js + Supabase, MIT, 33352 stars, 3.6 MB, last push 2024-08-03."
+      "name": "target-1",
+      "url": "",
+      "note": "recorded in benchmark/repos.local.json (gitignored) — available on request",
+      "provenance": ""
     }
   ]
 }

@@ -121,7 +121,8 @@ $env:LLM_MODEL   = "<model-id>"
 $env:LLM_API_KEY = "<key>"          # do not commit this, do not put it in shell history
 # optional: $env:LLM_BASE_URL = "https://integrate.api.nvidia.com/v1"
 
-# fill the four target slots in repos.json first (urls must be real)
+# fill the four target slots in repos.local.json first (urls must be real;
+# the tracked repos.json is the anonymized list — see "Target anonymity")
 node benchmark/run.mjs --only realworld-control     # control first
 node benchmark/run.mjs                              # everything else
 
@@ -139,8 +140,10 @@ output is reused), `--only <name>` runs one target, `--model`/`--base-url` overr
 
 ```
 benchmark/results/<name>/
-  meta.json            target, url, resolved commit SHA, model, base URL, ISO timestamp,
-                       digest stats, per-arm success, "mock": false
+  meta.json            target, resolved commit SHA, model, base URL, ISO timestamp,
+                       digest stats, per-arm success, "mock": false. url/target_dir
+                       are present during the run and REMOVED for anonymized
+                       targets by anonymize-results.mjs
   digest.json          the exact input both arms received
   naive.md             arm A raw response
   toolkit/
@@ -154,6 +157,35 @@ benchmark/results/<name>/
 **not** gitignored: it is the evidence and must be committed. `meta.json` records the
 commit resolved by `git rev-parse HEAD`, so a run is reproducible without anyone
 hand-pinning a SHA in `repos.json`.
+
+## 5b. Target anonymity
+
+The four vibe-coding targets are published under neutral labels:
+
+| Label | Real repo (gitignored) |
+|---|---|
+| target-1 | recorded in `benchmark/repos.local.json` |
+| target-2 | recorded in `benchmark/repos.local.json` |
+| target-3 | recorded in `benchmark/repos.local.json` |
+| target-4 | recorded in `benchmark/repos.local.json` |
+
+- The mapping lives in `benchmark/repos.local.json` (gitignored, author machine
+  only; available on request) and, once, in `benchmark/anonymize-results.mjs`
+  (`LABEL_MAP`), which renames `results/<real>` to `results/<label>` and scrubs
+  identifying strings from the artifacts.
+- `benchmark/repos.json` (tracked) carries the anonymized list: labels with
+  empty `url`s. `run.mjs` reads `repos.local.json` when it exists and falls
+  back to the tracked file, so the author's machine runs the real list and a
+  fresh clone runs the anonymized one.
+- `realworld-control` stays **named**: it is already public via
+  `examples/realworld-assessment`, so naming it leaks nothing that is not
+  already in this repo, and the control must be independently reproducible.
+- **Declared limitation:** code snippets inside the artifacts (`digest.json`,
+  `naive.md`, assessments) are NOT renamed — renaming code would break the
+  judge's evidence chain. The scrub only replaces project/repo/author names
+  and never repo-internal file paths (`app/api/...`). A dedicated reader could
+  still identify some targets from their code; the labels protect against
+  casual identification and search-engine indexing, not determined de-anonymization.
 
 ## 6. Results
 
