@@ -31,7 +31,7 @@ Mismo objetivo (`temp/realworld`, RealWorld API). Baseline:
 |---|---|---|
 | IDs `^[a-z-]+-\d+$` | ❌ `PERF-01` | ✅ |
 | Enum de módulos | ❌ "Performance" | ✅ |
-| Enum de effort | ✅ en este baseline — el `M/L` fuera de enum pertenece a otro baseline: `../gemini-baseline/assessment-chilo-legal-gemini-raw.md` | ✅ |
+| Enum de effort | ✅ en este baseline — el `M/L` fuera de enum pertenece a otro baseline: `../gemini-baseline/assessment-legal-rag-gemini-raw.md` | ✅ |
 | `confidence` 0–1 | ❌ ausente | ✅ en los 7 |
 | `assessment.json` | ❌ no generado | ✅ |
 | Algoritmo de priorización | ❌ contradicho | ✅ scores calculados, security primero |

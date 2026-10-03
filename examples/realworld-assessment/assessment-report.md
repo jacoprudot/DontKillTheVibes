@@ -1,9 +1,9 @@
 # Assessment Report: realworld (gothinkster RealWorld API, temp/realworld)
 
 ## Executive Summary
-- **Overall Health**: C+
+- **Overall Health**: C
 - **Critical Findings**: 1
-- **Estimated Total Effort**: S (2×XS, 4×S, 1×M)
+- **Estimated Total Effort**: S (3×XS, 3×S, 1×M)
 - **Top 3 Priorities**:
   - `security-jwt-weak-3` — JWT secret con fallback hardcodeado 'superSecret' (score 142.5)
   - `database-sequential-pagination-1` — count + findMany secuenciales (score 58.5)
@@ -18,7 +18,7 @@ oprime primero; el orden resultante coincide con la regla.
 ## Detailed Findings (by Priority)
 
 ### Priority 1: `security-jwt-weak-3`
-**Module**: security | **Severity**: critical | **Effort**: S | **Confidence**: 0.95
+**Module**: security | **Severity**: critical | **Effort**: XS | **Confidence**: 0.95
 **Location**: `src/app/routes/auth/auth.ts:16` (también :21, `token.utils.ts:4`)
 **Description**: El secreto JWT cae al default público `'superSecret'` si `JWT_SECRET`
 no está definido. Cualquier despliegue sin la env var acepta tokens firmados con un
@@ -90,7 +90,7 @@ rutas; tipar estrictamente las entradas de los servicios.
 ## 30/60/90 Day Plan
 
 ### 30 Days (Quick Wins)
-- `security-jwt-weak-3`: quitar fallback y validar env var (S)
+- `security-jwt-weak-3`: quitar fallback y validar env var (XS)
 - `security-cors-wildcard-2`: allowlist CORS (XS)
 - `security-error-detail-1`: mensaje genérico en 500 (XS)
 - `database-sequential-pagination-1`: paralelizar count+findMany (S)

@@ -1,4 +1,4 @@
-# Assessment Report: jacoprudot/chilo-legal
+# Assessment Report: [redacted]/legal-rag-app
 
 ## Executive Summary
 - **Overall Health**: C+
@@ -26,7 +26,7 @@
 **Module**: Security | **Severity**: Critical | **Effort**: XS
 **Location**: `docker-compose.yml:73`
 **Description**: El servicio `ingest` utiliza `network_mode: host`. Esto anula el aislamiento de red de Docker para este contenedor, exponiendo potencialmente servicios locales del servidor al contenedor.
-**Remediation**: Usar el enrutamiento interno nativo de Docker. Eliminar `network_mode: host` y hacer que `ingest` llame a `http://app:3003` utilizando el DNS interno de Docker Compose (`gael_marketing_network`).
+**Remediation**: Usar el enrutamiento interno nativo de Docker. Eliminar `network_mode: host` y hacer que `ingest` llame a `http://app:3003` utilizando el DNS interno de Docker Compose (`[internal-network]`).
 **Evidence**: Línea 73: `network_mode: host`
 **Depends On**: None
 **Blocks**: None
