@@ -38,16 +38,26 @@ import { join, resolve, basename } from 'node:path';
 import {
   BENCH_DIR, REPO_ROOT, WORK_DIR, RESULTS_DIR, TMP_DIR,
   MOCK_BANNER_MD, parseCli, isHelp, log, ok, warn, fail,
-  ensureDir, readJson, writeJson, writeText, run, gitHead, hasGit,
+  ensureDir, readJson, writeJson, writeText, run, gitHead, hasGit, hardExit,
 } from './lib.mjs';
 
 const HELP = `benchmark/run.mjs — two-arm benchmark runner (naive prompt vs. DontKillTheVibes toolkit)
 
 Usage:
-  node benchmark/run.mjs [--only <name>] [--force] [--model <id>] [--base-url <url>]
+  node benchmark/run.mjs [--all] [--only <name>] [--force] [--model <id>] [--base-url <url>]
                          [--fixture <dir>] [--mock] [--help]
 
-What it does, per target in benchmark/repos.json:
+Running with NO arguments prints this help. Otherwise every target in the
+target list is run unless --only narrows it; --all makes that explicit (and
+overrides a conflicting --only).
+
+Target list — local-first:
+  run.mjs reads benchmark/repos.local.json when it exists (gitignored, real
+  repo URLs, author machine only) and falls back to the tracked
+  benchmark/repos.json, which is the ANONYMIZED list (target-1..target-4 +
+  the named control). See benchmark/README.md, "Target anonymity".
+
+What it does, per target:
   1. shallow-clone the repo into benchmark/work/<name> (skipped with --mock)
   2. record the resolved commit (git rev-parse HEAD) for reproducibility
   3. write the shared digest: benchmark/results/<name>/digest.json
@@ -69,15 +79,17 @@ Environment:
   be verified offline. meta.json gets "mock": true and saved files carry a MOCK banner.
 
 Options:
-  --only <name>      only run this target from repos.json
+  --all              run every target (the default selection; overrides --only)
+  --only <name>      only run this target
   --force            re-run an arm even if its output already exists
   --model <id>       model id for BOTH arms
   --base-url <url>   OpenAI-compatible base URL for BOTH arms
   --fixture <dir>    fixture target for --mock (default examples/realworld-assessment)
   --help             show this help
 
-Safety: entries in repos.json with an empty "url" are skipped with a notice.
-Commits are resolved at run time; no SHA is ever taken from repos.json.
+Safety: entries with an empty "url" are skipped with a notice (that is the
+expected state of the anonymized target-N slots in the tracked repos.json).
+Commits are resolved at run time; no SHA is ever taken from the target list.
 `;
 
 /* ------------------------------------------------------------------ */
@@ -105,7 +117,11 @@ List the problems you find in this repository.`;
 /* ------------------------------------------------------------------ */
 /* LLM call (shared by both arms: same endpoint, same model)           */
 /* ------------------------------------------------------------------ */
-async function callChat({ baseUrl, apiKey, model }, messages, { jsonMode = false } = {}) {
+// NIM cold starts return 504 after ~2 minutes, and free tiers return 429/5xx.
+// None of that should kill a benchmark run.
+const MAX_TRANSPORT_RETRIES = 5;
+
+async function callChat({ baseUrl, apiKey, model }, messages, { jsonMode = false, transportAttempt = 1 } = {}) {
   const body = {
     model,
     messages,
@@ -116,21 +132,36 @@ async function callChat({ baseUrl, apiKey, model }, messages, { jsonMode = false
     max_tokens: Number(process.env.MAX_TOKENS || 16384),
     ...(jsonMode ? { response_format: { type: 'json_object' } } : {}),
   };
-  const res = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify(body),
-  });
+  let res;
+  try {
+    res = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify(body),
+    });
+  } catch (e) {
+    if (transportAttempt < MAX_TRANSPORT_RETRIES) {
+      const wait = Math.min(60, 5 * transportAttempt);
+      warn(`  network error (${e.message}) — retry ${transportAttempt}/${MAX_TRANSPORT_RETRIES - 1} in ${wait}s`);
+      await new Promise((r) => setTimeout(r, wait * 1000));
+      return callChat({ baseUrl, apiKey, model }, messages, { jsonMode, transportAttempt: transportAttempt + 1 });
+    }
+    throw e;
+  }
   if (res.status === 400 && jsonMode) {
     const text = await res.text();
-    if (/response_format|json/i.test(text)) return callChat({ baseUrl, apiKey, model }, messages, { jsonMode: false });
+    if (/response_format|json/i.test(text)) return callChat({ baseUrl, apiKey, model }, messages, { jsonMode: false, transportAttempt });
     throw new Error(`LLM HTTP 400: ${text.slice(0, 300)}`);
   }
-  if (res.status === 429) {
-    const wait = Number.parseInt(res.headers.get('retry-after') || '5', 10);
-    log(`  rate limited (429) — waiting ${wait}s`);
-    await new Promise((r) => setTimeout(r, wait * 1000));
-    return callChat({ baseUrl, apiKey, model }, messages, { jsonMode });
+  if (res.status === 429 || res.status >= 500) {
+    if (transportAttempt < MAX_TRANSPORT_RETRIES) {
+      const retryAfter = Number.parseInt(res.headers.get('retry-after') || '0', 10);
+      const wait = retryAfter > 0 ? retryAfter : Math.min(60, 5 * transportAttempt);
+      warn(`  HTTP ${res.status} (rate limit / cold-start gateway) — retry ${transportAttempt}/${MAX_TRANSPORT_RETRIES - 1} in ${wait}s`);
+      await new Promise((r) => setTimeout(r, wait * 1000));
+      return callChat({ baseUrl, apiKey, model }, messages, { jsonMode, transportAttempt: transportAttempt + 1 });
+    }
+    throw new Error(`LLM HTTP ${res.status} after ${MAX_TRANSPORT_RETRIES} transport attempts: ${(await res.text()).slice(0, 300)}`);
   }
   if (!res.ok) throw new Error(`LLM HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
   const data = await res.json();
@@ -337,6 +368,7 @@ async function main() {
   try {
     parsed = parseCli(argv, {
       only: 'string',
+      all: 'boolean',
       force: 'boolean',
       model: 'string',
       'base-url': 'string',
@@ -355,12 +387,20 @@ async function main() {
   const apiKey = process.env.LLM_API_KEY || null;
   const fixtureDir = resolve(parsed.fixture || join(REPO_ROOT, 'examples', 'realworld-assessment'));
 
-  const reposFile = join(BENCH_DIR, 'repos.json');
+  // Local-first target list: repos.local.json (gitignored, real URLs) wins when
+  // present; the tracked repos.json is the anonymized fallback for fresh clones.
+  const reposLocal = join(BENCH_DIR, 'repos.local.json');
+  const reposFile = existsSync(reposLocal) ? reposLocal : join(BENCH_DIR, 'repos.json');
   if (!existsSync(reposFile)) {
     fail(`missing ${reposFile}`);
     return 2;
   }
+  log(`targets: ${reposFile === reposLocal ? 'repos.local.json (local, gitignored)' : 'repos.json (tracked, anonymized)'}`);
   const targets = (readJson(reposFile).targets || []).filter((t) => t && t.name);
+  if (parsed.all) {
+    log(`--all: running every target (${targets.length})`);
+    parsed.only = null; // --all wins over a conflicting --only
+  }
 
   if (!mock) {
     if (!apiKey) {
@@ -424,7 +464,7 @@ async function main() {
 
     log(`\n=== ${name} ===`);
     if (!mock && (!url || !String(url).trim())) {
-      log(`  SKIP  url is empty — fill it in repos.json first.`);
+      log(`  SKIP  url is empty — fill it in repos.local.json (or the tracked repos.json) first.`);
       log(`        note: ${note || '(none)'}`);
       continue;
     }
@@ -615,8 +655,8 @@ function markAssessmentAsMock(file) {
 }
 
 main()
-  .then((code) => process.exit(code))
+  .then((code) => hardExit(code))
   .catch((e) => {
     fail(e.stack || String(e));
-    process.exit(1);
+    hardExit(1);
   });

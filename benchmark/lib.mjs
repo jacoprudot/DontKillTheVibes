@@ -106,6 +106,17 @@ export function parseCli(argv, spec) {
 let runCounter = 0;
 
 /**
+ * Exit with an explicit code after tearing down stdin. On Windows/Git Bash a
+ * process that exits while a stdio handle is still open can fast-fail with
+ * 0xC0000409 (-1073740791) instead of returning its real exit code — destroy
+ * stdin first so `echo $?` reports the code main() actually returned.
+ */
+export function hardExit(code) {
+  try { process.stdin.destroy(); } catch { /* already closed */ }
+  process.exit(code);
+}
+
+/**
  * Run a command with stdout+stderr redirected to a file (never a pipe).
  * Resolves with { status, signal, output, logFile } — it does NOT throw on a
  * non-zero exit, so callers decide what a failure means.
