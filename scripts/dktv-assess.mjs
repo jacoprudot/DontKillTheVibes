@@ -6,6 +6,10 @@
  * OpenAI-compatible chat endpoint (NVIDIA NIM by default), and enforces the
  * output contract by running validate-assessment.mjs after every candidate,
  * feeding validation errors back to the LLM (max --max-retries attempts).
+ * Before validation, severity/effort are STAMPED from the shared canonical
+ * registry (scripts/lib/canonical-registry.mjs) — they are properties of the
+ * rule, never an LLM judgement — and the run reports how many findings were
+ * corrected.
  *
  * Usage:
  *   node scripts/dktv-assess.mjs --target /path/to/repo [options]
@@ -33,11 +37,17 @@
  *                        byte-identical input.
  */
 import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync, existsSync, openSync, closeSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, resolve, join, relative, basename } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { loadRules, stampRuleFields, rulesetFingerprint } from './lib/canonical-registry.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+
+// The canonical rule contract lives in ONE module (shared with the validator and
+// the B2 orchestrator). Parsed once per process; severity/effort are properties
+// of the rule, never an LLM judgement.
+const canonicalRules = loadRules(join(root, 'skills'));
 
 /**
  * Exit with an explicit code after tearing down stdin. On Windows/Git Bash a
@@ -179,20 +189,15 @@ function buildDigest(target, budget) {
 
 /* ---------- prompts ---------- */
 /**
- * Every canonical rule id, harvested from the `→ FINDING: <id>` lines in
- * skills/*.skill.md. The decision trees define them, but they sit inside ~220k
- * chars of prose. A real NVIDIA NIM run showed the model inventing plausible-looking
- * ids (code-any-type-1, code-env-var-check-1, …) that the validator then rejected on
- * all five findings, so the runner now lists the registry explicitly.
+ * Every canonical rule id, from the SHARED registry (scripts/lib/canonical-registry.mjs —
+ * the same parse the validator enforces, so prompt and gate can never drift). The
+ * decision trees define the rules, but they sit inside ~220k chars of prose. A real
+ * NVIDIA NIM run showed the model inventing plausible-looking ids (code-any-type-1,
+ * code-env-var-check-1, …) that the validator then rejected on all five findings, so
+ * the runner lists the registry explicitly.
  */
-function loadCanonicalRegistry() {
-  const ids = new Set();
-  const dir = join(root, 'skills');
-  for (const f of readdirSync(dir).filter(n => n.endsWith('.skill.md'))) {
-    const content = readFileSync(join(dir, f), 'utf8');
-    for (const m of content.matchAll(/→\s*FINDING:\s*([A-Za-z0-9-]+)/g)) ids.add(m[1]);
-  }
-  return [...ids].sort();
+function canonicalRuleIds() {
+  return [...canonicalRules.keys()].sort();
 }
 
 function buildSystemPrompt(language) {
@@ -211,7 +216,7 @@ ${skills}
 
 # Canonical rule ID registry — the ONLY valid finding ids
 
-${loadCanonicalRegistry().join('\n')}
+${canonicalRuleIds().join('\n')}
 
 # Output contract (hard requirement)
 
@@ -375,6 +380,7 @@ const messages = [
 
 mkdirSync(opts.out, { recursive: true });
 let lastUsage = null;
+let lastCorrected = 0; // findings whose severity/effort the registry stamped this attempt
 for (let attempt = 1; attempt <= opts.maxRetries + 1; attempt++) {
   console.log(`Attempt ${attempt}/${opts.maxRetries + 1}: calling ${opts.model} ...`);
   const { content, usage, finishReason } = await callChat(opts, messages, true);
@@ -390,6 +396,47 @@ for (let attempt = 1; attempt <= opts.maxRetries + 1; attempt++) {
       : '';
     messages.push({ role: 'assistant', content }, { role: 'user', content: `Your response was not parseable JSON: ${e.message}.${hint} Return ONLY the JSON object.` });
     continue;
+  }
+  // Stamp the rule's declared severity/effort BEFORE validation and BEFORE saving.
+  // severity/effort are PROPERTIES OF THE RULE, not an LLM judgement — the same
+  // defect class as metadata.llm_used, which the model invented until the runner
+  // stamped it. A measured B2 run on the control had 14/21 findings (67%) carrying
+  // a contradicting severity; an invented severity silently rewrites the whole
+  // work plan (prioritization is severityWeight x moduleWeight x confidence).
+  // stampRuleFields never invents: it corrects only when the cited rule exists
+  // and declares the field, and never mutates the input.
+  lastCorrected = 0;
+  if (candidate && typeof candidate === 'object' && Array.isArray(candidate.findings)) {
+    candidate.findings = candidate.findings.map((f) => {
+      const stamped = stampRuleFields(f, canonicalRules);
+      if (stamped !== f
+        && (stamped.severity !== f?.severity || stamped.effort !== f?.effort)) {
+        lastCorrected++;
+      }
+      return stamped;
+    });
+    // The validator tallies summary.by_severity / effort_estimate against the
+    // findings, so the stamped values make the model's own counts stale — rebuild
+    // them from the stamped findings or the gate would burn retries on our fix.
+    if (candidate.summary && typeof candidate.summary === 'object') {
+      const bySeverity = {};
+      const byEffort = {};
+      for (const f of candidate.findings) {
+        if (f && typeof f.severity === 'string') bySeverity[f.severity] = (bySeverity[f.severity] || 0) + 1;
+        if (f && typeof f.effort === 'string') byEffort[f.effort] = (byEffort[f.effort] || 0) + 1;
+      }
+      candidate.summary.by_severity = bySeverity;
+      candidate.summary.effort_estimate = byEffort;
+    }
+  }
+  // Pin the rule contract to the document: the fingerprint changes on ANY rule
+  // add/remove/reclass/severity change, so a saved report can always be tied to
+  // the exact registry that produced (and stamped) it. Stamped only when the
+  // model produced a metadata object — creating one from nothing is the
+  // validator's job to reject, not ours to fabricate.
+  if (candidate && typeof candidate === 'object'
+    && candidate.metadata && typeof candidate.metadata === 'object') {
+    candidate.metadata.ruleset_version = rulesetFingerprint(canonicalRules);
   }
   const candidatePath = join(opts.out, 'assessment.candidate.json');
   writeFileSync(candidatePath, JSON.stringify(candidate, null, 2));
@@ -419,7 +466,35 @@ for (let attempt = 1; attempt <= opts.maxRetries + 1; attempt++) {
     const finalPath = join(opts.out, 'assessment.json');
     writeFileSync(finalPath, JSON.stringify(candidate, null, 2));
     console.log(`\nSaved ${finalPath}`);
+    // Live measurement of the invented-severity bug: how many findings the registry
+    // had to correct in the document that passed the gate. Target: 0 with the
+    // enriched prompt; anything persistently > 0 means the model ignores the registry.
+    console.log(`Rule fields stamped: ${lastCorrected} finding(s) had severity/effort corrected to the rule's declared values (ruleset ${rulesetFingerprint(canonicalRules)})`);
     if (lastUsage) console.log(`Tokens: ${lastUsage.prompt_tokens ?? '?'} in / ${lastUsage.completion_tokens ?? '?'} out`);
+    // Human-readable report, rendered deterministically (no LLM). The JSON above is
+    // the contract; the markdown is a convenience artifact. Wired against the shared
+    // renderer's fixed interface but guarded with existsSync until the module lands:
+    // a run must never fail because the renderer is missing, and a rendering error
+    // must never fail a run whose JSON is already valid and saved.
+    const rendererPath = join(root, 'scripts/lib/report-renderer.mjs');
+    if (existsSync(rendererPath)) {
+      try {
+        // Dynamic import needs a file:// URL on Windows (a bare C:\ path throws).
+        const { renderReport } = await import(pathToFileURL(rendererPath).href);
+        const reportPath = join(opts.out, 'assessment-report.md');
+        const md = renderReport(candidate, {
+          language: opts.language,
+          repo: basename(opts.target),
+          commit: null, // single-pass runner does not resolve the git commit
+          model: opts.model,
+          generatedAt: new Date().toISOString(),
+        });
+        writeFileSync(reportPath, md, 'utf8');
+        console.log(`Report: ${reportPath}`);
+      } catch (e) {
+        console.warn(`  report rendering failed (non-fatal, JSON is valid): ${e.message}`);
+      }
+    }
     hardExit(0);
   }
   const detail = verdict.trim()
