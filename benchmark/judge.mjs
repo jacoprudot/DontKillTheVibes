@@ -33,13 +33,13 @@ import { join, resolve, isAbsolute, relative } from 'node:path';
 import {
   BENCH_DIR, REPO_ROOT, WORK_DIR, RESULTS_DIR,
   parseCli, isHelp, log, ok, warn, fail,
-  readJson, writeJson, writeText, relPosix,
+  readJson, writeJson, writeText, relPosix, hardExit,
 } from './lib.mjs';
 
 const HELP = `benchmark/judge.mjs — blind scorer (naive arm vs. toolkit arm)
 
 Usage:
-  node benchmark/judge.mjs <results-dir> [--judge-model <id>] [--repo <dir>] [--mock] [--help]
+  node benchmark/judge.mjs <results-dir> [--judge-model <id>] [--repo <dir>] [--mock] [--force] [--help]
 
 Arguments:
   <results-dir>       benchmark/results/<name>, or just <name>
@@ -53,6 +53,11 @@ Options:
                       evidence that scoring was blind (no arm label appears in it).
   --mock              offline self-test: no network; obviously-fake judge answers.
                       The mechanical grounding check still really runs.
+  --force             re-judge even when scores.json already exists (default: reuse it).
+  --repeat <n>        judge the same prompt n times and take a majority vote per claim
+                      (default 1). Reports run agreement and per-arm precision range.
+                      Ties resolve conservatively: any tie with unverifiable ->
+                      unverifiable; a real/false tie -> false.
   --help
 
 What it does:
@@ -174,20 +179,26 @@ function claimsFromNaive(naiveFile, maxClaims = 60) {
     flush();
   }
 
-  return claims.slice(0, maxClaims).map((c, i) => {
-    const bodyText = c.body.join('\n').trim();
-    return {
-      arm: 'naive',
-      sourceId: `naive-claim-${i + 1}`,
-      kind: 'prose-claim',
-      title: c.title,
-      description: bodyText || c.title,
-      remediation: '',
-      severity: null,
-      module: null,
-      structuredLocation: null,
-    };
-  });
+  // A heading with an empty or trivial body (<40 chars) is a placeholder or a
+  // table-of-contents line, not a claim: drop it explicitly so it never shows
+  // up as an empty "omitted" claim in the scores.
+  return claims
+    .map((c) => {
+      const bodyText = c.body.join('\n').trim();
+      return {
+        arm: 'naive',
+        kind: 'prose-claim',
+        title: c.title,
+        description: bodyText || c.title,
+        remediation: '',
+        severity: null,
+        module: null,
+        structuredLocation: null,
+      };
+    })
+    .filter((c) => c.description.trim().length >= 40)
+    .slice(0, maxClaims)
+    .map((c, i) => ({ ...c, sourceId: `naive-claim-${i + 1}` }));
 }
 
 /* ------------------------------------------------------------------ */
@@ -312,15 +323,61 @@ function redactIdentifiers(text, claims) {
   return out;
 }
 
-function buildJudgePrompt(repoName, claims, treeSample) {
+/** First path:line citation mentioned in a claim's own text (naive arm). */
+function firstProseCitation(claim) {
+  const text = `${claim.title}\n${claim.description}\n${claim.remediation}`;
+  for (const re of CITATION_PATTERNS) {
+    re.lastIndex = 0;
+    const m = re.exec(text);
+    if (m) return { file: m[1], line: Number.parseInt(m[2], 10) };
+  }
+  return null;
+}
+
+/** The cited location of a claim, whichever arm produced it. */
+function citedLocation(c) {
+  if (c.structuredLocation?.file) {
+    return { file: c.structuredLocation.file, line: c.structuredLocation.line };
+  }
+  return firstProseCitation(c);
+}
+
+/**
+ * Real code lines around the cited location, read from the shared digest of the
+ * repo under assessment (never invented). Up to 11 lines centered on the cited
+ * line (±5), capped at 300 chars. null when the file is not in the digest or
+ * the cited line is outside the digest content.
+ */
+function codeSnippet(loc, digestFiles) {
+  if (!loc?.file || loc.line == null || loc.line < 1) return null;
+  const content = digestFiles?.get(normalizeRel(loc.file));
+  if (content == null) return null;
+  const lines = content.split('\n');
+  if (loc.line > lines.length) return null;
+  const start = Math.max(1, loc.line - 5);
+  const end = Math.min(lines.length, loc.line + 5);
+  let text = [];
+  for (let n = start; n <= end; n++) text.push(`${n}| ${lines[n - 1]}`);
+  let out = text.join('\n');
+  if (out.length > 300) out = `${out.slice(0, 300)} …`;
+  return { header: `Code at cited location (${loc.file}:${loc.line}):`, text: out };
+}
+
+function buildJudgePrompt(repoName, claims, treeSample, digestFiles) {
   const claimBlocks = claims
     .map((c) => {
       const claimText = redactIdentifiers(c.description || c.title, claims).slice(0, 2000);
       const fix = c.remediation ? redactIdentifiers(c.remediation, claims).slice(0, 800) : '';
+      const loc = citedLocation(c);
+      const location = loc ? `\nLocation: ${loc.file}${loc.line != null ? `:${loc.line}` : ''}` : '';
+      const snip = codeSnippet(loc, digestFiles);
+      const code = snip
+        ? `\n${snip.header}\n${snip.text}`
+        : '\nCode at cited location: (not available in digest)';
       return `### ${c.label}
 Title: ${anonymousTitle(c)}
 Severity (if stated): ${c.severity ?? 'not stated'}
-Claim: ${claimText}${fix ? `\nSuggested fix: ${fix}` : ''}`;
+Claim: ${claimText}${fix ? `\nSuggested fix: ${fix}` : ''}${location}${code}`;
     })
     .join('\n\n');
   return `You are a strict, skeptical code reviewer scoring claims about a repository.
@@ -342,6 +399,12 @@ For EACH claim, decide:
   true only if a competent engineer would agree the described problem is a real defect
   or real risk. If the claim is vague, speculative, generic advice, or unverifiable
   from what you can see, answer false.
+- "unverifiable": true when you CANNOT check the claim against the shown code —
+  either the block says "(not available in digest)" for the code, or the snippet
+  shown does not contain the code the claim is about. This is NOT the same as false:
+  the claim may well be true, you just cannot confirm it from the evidence shown.
+  Use it instead of guessing. A claim with "unverifiable": true MUST also have
+  "real": false — it is excluded from the precision denominator.
 - "grounded": does the claim cite a specific file (and line) that plausibly exists in
   this repository, and does that citation actually support the claim? A claim with no
   citation at all is NOT grounded.
@@ -350,7 +413,7 @@ For EACH claim, decide:
 - "reason": one short sentence. Keep it under 240 characters.
 
 Respond with ONLY a JSON object, no prose and no markdown fences:
-{"judgments":[{"label":"C1","real":true,"grounded":false,"actionable":2,"reason":"..."}]}
+{"judgments":[{"label":"C1","real":true,"unverifiable":false,"grounded":false,"actionable":2,"reason":"..."}]}
 Every label you were given must appear exactly once.`;
 }
 
@@ -365,14 +428,50 @@ function extractJson(text) {
   throw new Error('no JSON object in the judge response');
 }
 
-async function callJudge({ baseUrl, apiKey, model }, messages) {
+/**
+ * Judge responses arrive in more than one shape. Canonical:
+ *   {"judgments": [{"label": "C1", ...}]}
+ * but models also emit a top-level map ({"C1": {...}, ...}) or bury the array.
+ * Map every shape to a row list; label matching is case/whitespace-insensitive
+ * because a judge that lowercases "c1" must not silently drop the claim.
+ */
+function judgeRows(doc) {
+  if (!doc || typeof doc !== 'object') return [];
+  if (Array.isArray(doc.judgments)) return doc.judgments;
+  const fromMap = (obj) => Object.entries(obj)
+    .filter(([k, v]) => /^c\s?\d+$/i.test(k.trim()) && v && typeof v === 'object')
+    .map(([label, v]) => ({ label, ...v }));
+  const top = fromMap(doc);
+  if (top.length) return top;
+  for (const v of Object.values(doc)) {
+    if (!Array.isArray(v)) continue;
+    const rows = v.filter((r) => r && typeof r === 'object');
+    if (rows.length && rows.some((r) => r.label !== undefined || r.claim !== undefined)) return rows;
+  }
+  return [];
+}
+
+const MAX_TRANSPORT_RETRIES = 5;
+
+async function callJudge({ baseUrl, apiKey, model }, messages, transportAttempt = 1) {
   // See run.mjs: reasoning models need a bigger budget than the OpenAI default.
   const body = { model, messages, temperature: 0, max_tokens: Number(process.env.MAX_TOKENS || 16384), response_format: { type: 'json_object' } };
-  const res = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify(body),
-  });
+  let res;
+  try {
+    res = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify(body),
+    });
+  } catch (e) {
+    if (transportAttempt < MAX_TRANSPORT_RETRIES) {
+      const wait = Math.min(60, 5 * transportAttempt);
+      console.warn(`  judge network error (${e.message}) — retry ${transportAttempt}/${MAX_TRANSPORT_RETRIES - 1} in ${wait}s`);
+      await new Promise((r) => setTimeout(r, wait * 1000));
+      return callJudge({ baseUrl, apiKey, model }, messages, transportAttempt + 1);
+    }
+    throw e;
+  }
   if (res.status === 400) {
     const text = await res.text();
     if (/response_format|json/i.test(text)) {
@@ -387,6 +486,16 @@ async function callJudge({ baseUrl, apiKey, model }, messages) {
     }
     throw new Error(`judge HTTP 400: ${text.slice(0, 300)}`);
   }
+  if (res.status === 429 || res.status >= 500) {
+    if (transportAttempt < MAX_TRANSPORT_RETRIES) {
+      const retryAfter = Number.parseInt(res.headers.get('retry-after') || '0', 10);
+      const wait = retryAfter > 0 ? retryAfter : Math.min(60, 5 * transportAttempt);
+      console.warn(`  judge HTTP ${res.status} — retry ${transportAttempt}/${MAX_TRANSPORT_RETRIES - 1} in ${wait}s`);
+      await new Promise((r) => setTimeout(r, wait * 1000));
+      return callJudge({ baseUrl, apiKey, model }, messages, transportAttempt + 1);
+    }
+    throw new Error(`judge HTTP ${res.status} after ${MAX_TRANSPORT_RETRIES} transport attempts: ${(await res.text()).slice(0, 300)}`);
+  }
   if (!res.ok) throw new Error(`judge HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
   const data = await res.json();
   return data.choices?.[0]?.message?.content;
@@ -399,7 +508,7 @@ async function callJudge({ baseUrl, apiKey, model }, messages) {
  * the stub mimics those declared mock claims; otherwise it falls back to a
  * fixed pattern.
  */
-function mockJudgments(claims, mockSpec) {
+function mockJudgments(claims, mockSpec, runIndex = 1, totalRuns = 1) {
   const specClaims = mockSpec
     ? [
         ...(mockSpec.mockFindings || []).map((f) => ({ arm: 'toolkit', real: true, grounded: true, actionable: 4 })),
@@ -410,11 +519,15 @@ function mockJudgments(claims, mockSpec) {
   return claims.map((c, i) => {
     const fromSpec = specClaims ? specClaims.filter((s) => s.arm === c.arm)[byArm[c.arm].length] : null;
     byArm[c.arm].push(c.label);
-    void i;
     const shape = fromSpec ?? { real: c.arm === 'toolkit', grounded: c.arm === 'toolkit', actionable: c.arm === 'toolkit' ? 4 : 2 };
+    // Simulated judge instability: across repeated runs, flip a rotating subset of
+    // verdicts so the majority-vote / tie-break / agreement code is exercisable
+    // offline without an API.
+    const flipped = totalRuns > 1 && (i + runIndex) % totalRuns === 0;
     return {
       label: c.label,
-      real: shape.real,
+      real: flipped ? !shape.real : shape.real,
+      unverifiable: false,
       grounded: shape.grounded,
       actionable: shape.actionable,
       reason: `MOCK judge opinion for ${c.label} — offline stub, not a real judgement.`,
@@ -423,25 +536,158 @@ function mockJudgments(claims, mockSpec) {
 }
 
 /* ------------------------------------------------------------------ */
+/* multi-run aggregation (--repeat)                                    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Normalize one judge run into { label: { verdict, grounded, actionable,
+ * reason, provided } }. A claim whose code snippet was not available in the
+ * digest is FORCED to unverifiable: the judge was shown no code, so nothing
+ * else is defensible.
+ */
+function collectJudgments(parsedJudge, claims, snippetMissing) {
+  const canonicalLabels = new Map(claims.map((c) => [c.label.toUpperCase(), c.label]));
+  const list = judgeRows(parsedJudge);
+  const run = {};
+  for (const row of list) {
+    const rawLabel = String(row?.label ?? row?.claim ?? '').trim();
+    const label = canonicalLabels.get(rawLabel.toUpperCase());
+    if (!label || run[label]) continue;
+    const unverifiable = row.unverifiable === true || snippetMissing.has(label);
+    const actionable = Number(row.actionable);
+    run[label] = {
+      verdict: unverifiable ? 'unverifiable' : row.real === true ? 'real' : 'false',
+      grounded: row.grounded === true,
+      actionable: Number.isFinite(actionable) ? Math.min(5, Math.max(1, Math.round(actionable))) : null,
+      reason: String(row.reason ?? '').slice(0, 400),
+      provided: true,
+    };
+  }
+  return run;
+}
+
+/**
+ * Majority vote across runs. Ties resolve conservatively: any tie involving
+ * unverifiable -> unverifiable; a real/false tie -> false. Also computes the
+ * per-arm agreement rate (share of runs matching the final verdict) and the
+ * min–max precision range across runs.
+ */
+function aggregateRuns(runs, claims, repeat) {
+  const judgments = {};
+  const perArmAgreement = {};
+  const perArmRuns = {};
+  for (const c of claims) {
+    const votes = {};
+    let withVerdict = 0;
+    let agreeing = 0;
+    for (const run of runs) {
+      const v = run[c.label]?.verdict;
+      if (!v) continue;
+      votes[v] = (votes[v] ?? 0) + 1;
+      withVerdict++;
+    }
+    const entries = Object.entries(votes);
+    let verdict = null;
+    if (entries.length) {
+      const max = Math.max(...entries.map(([, n]) => n));
+      const top = entries.filter(([, n]) => n === max).map(([v]) => v);
+      verdict = top.includes('unverifiable') ? 'unverifiable' : top.includes('false') ? 'false' : top[0];
+      for (const run of runs) {
+        if (run[c.label]?.verdict === verdict) agreeing++;
+      }
+    }
+    if (!verdict) {
+      judgments[c.label] = {
+        label: c.label, verdict: 'omitted', grounded: null, actionable: null,
+        reason: 'judge returned no row for this claim in any run', provided: false, votes,
+      };
+      continue;
+    }
+    const donor = runs.map((r) => r[c.label]).find((j) => j && j.verdict === verdict);
+    judgments[c.label] = { label: c.label, verdict, grounded: donor.grounded, actionable: donor.actionable, reason: donor.reason, provided: true, votes };
+    const arm = c.arm;
+    perArmAgreement[arm] ??= { sum: 0, n: 0 };
+    perArmAgreement[arm].sum += withVerdict ? agreeing / withVerdict : 0;
+    perArmAgreement[arm].n++;
+  }
+  // Per-arm precision for each individual run -> min/max range.
+  const precisionRange = {};
+  for (const arm of [...new Set(claims.map((c) => c.arm))]) {
+    const armClaims = claims.filter((c) => c.arm === arm);
+    const perRun = runs.map((run) => {
+      let real = 0;
+      let falseCount = 0;
+      for (const c of armClaims) {
+        if (run[c.label]?.verdict === 'real') real++;
+        else if (run[c.label]?.verdict === 'false') falseCount++;
+      }
+      const decidable = real + falseCount;
+      return decidable ? real / decidable : null;
+    }).filter((p) => p !== null);
+    if (perRun.length) {
+      precisionRange[arm] = {
+        min: Number(Math.min(...perRun).toFixed(3)),
+        max: Number(Math.max(...perRun).toFixed(3)),
+      };
+    }
+    perArmRuns[arm] = armClaims.length;
+  }
+  const pct = (x) => `${Math.round(x * 100)}%`;
+  const agreement = Object.entries(perArmAgreement)
+    .map(([arm, a]) => `${arm} ${pct(a.sum / (a.n || 1))}`)
+    .join(', ');
+  return { judgments, repeatStats: { runs: repeat, agreement, precisionRange } };
+}
+
+/* ------------------------------------------------------------------ */
 /* reporting                                                           */
 /* ------------------------------------------------------------------ */
-function summarize(claims, judgments, mechanical) {
+/**
+ * True when the cited line carries no evidentiary weight: empty, a comment,
+ * an import/export-from line, or only braces/closers. This measures the
+ * product bug where findings cite the import block instead of the handler.
+ * Metric only — never affects verdicts.
+ */
+function isWeakCitedLine(digestFiles, loc) {
+  if (!loc?.file || loc.line == null || loc.line < 1) return false;
+  const content = digestFiles?.get(normalizeRel(loc.file));
+  if (content == null) return false;
+  const line = content.split('\n')[loc.line - 1];
+  if (line === undefined) return false;
+  const t = line.trim();
+  if (!t) return true;
+  if (/^(\/\/|\/\*|\*|\*\/|#|<!--)/.test(t)) return true;
+  if (/^(import\b|export\s[\w$*\s{},]*\sfrom\b)/.test(t)) return true;
+  if (/^[}\])>;,\s]*$/.test(t)) return true;
+  return false;
+}
+
+function summarize(claims, judgments, mechanical, digestFiles) {
   const byArm = {};
   for (const c of claims) {
     const j = judgments[c.label] || {};
     const m = mechanical[c.label] || {};
     const arm = c.arm;
     byArm[arm] ??= {
-      claims: 0, judged: 0, real: 0, judgeGrounded: 0, mechGrounded: 0, mechUngrounded: 0,
+      claims: 0, judged: 0, real: 0, falseCount: 0, unverifiable: 0, judgeGrounded: 0,
+      mechGrounded: 0, mechUngrounded: 0,
       mismatch: 0, actionableSum: 0, actionableN: 0, security: 0, securityFn: 0,
+      claimsWithCitations: 0, citationsTotal: 0, weakCitations: 0,
     };
     const a = byArm[arm];
     a.claims++;
-    if (j.label) a.judged++;
-    if (j.real) a.real++;
+    if (j.provided) a.judged++;
+    if (j.verdict === 'real') a.real++;
+    if (j.verdict === 'false') a.falseCount++;
+    if (j.verdict === 'unverifiable') a.unverifiable++;
     if (j.grounded) a.judgeGrounded++;
     if (m.verdict === 'grounded' || m.verdict === 'partially-grounded') a.mechGrounded++;
     if (m.verdict === 'ungrounded') a.mechUngrounded++;
+    if (m.citations?.length) {
+      a.claimsWithCitations++;
+      a.citationsTotal += m.citations.length;
+      if (isWeakCitedLine(digestFiles, citedLocation(c))) a.weakCitations++;
+    }
     if (j.grounded === true && m.verdict === 'ungrounded') a.mismatch++;
     if (typeof j.actionable === 'number') {
       a.actionableSum += j.actionable;
@@ -449,29 +695,34 @@ function summarize(claims, judgments, mechanical) {
     }
     if (c.securityRelevant) {
       a.security++;
-      if (j.real === false) a.securityFn++;
+      if (j.verdict === 'false') a.securityFn++;
     }
   }
   for (const a of Object.values(byArm)) {
     a.meanActionability = a.actionableN ? Number((a.actionableSum / a.actionableN).toFixed(2)) : null;
-    a.precision = a.judged ? Number((a.real / a.judged).toFixed(3)) : null;
+    // Precision excludes unverifiable claims from the denominator entirely:
+    // real / (real + false).
+    const decidable = a.real + a.falseCount;
+    a.precision = decidable ? Number((a.real / decidable).toFixed(3)) : null;
     a.judgeGroundedRate = a.judged ? Number((a.judgeGrounded / a.judged).toFixed(3)) : null;
   }
   return byArm;
 }
 
-function printTable(summary, targetName, mock, judgeModel) {
+function printTable(summary, targetName, mock, judgeModel, repeatStats = null) {
   const arms = Object.keys(summary).sort();
-  const cols = ['arm', 'claims', 'real', 'precision', 'grounded(judge)', 'grounded(mech)', 'meanAction', 'secRelevant', 'secFalseNeg'];
+  const cols = ['arm', 'claims', 'real', 'false', 'unverif', 'precision', 'grounded(judge)', 'grounded(mech)', 'meanAction', 'secRelevant', 'secFalseNeg'];
   const rows = arms.map((arm) => {
     const a = summary[arm];
     return [
       arm,
       a.claims,
       a.real,
+      a.falseCount,
+      a.unverifiable,
       a.precision === null ? 'n/a' : String(a.precision),
       a.judgeGrounded,
-      a.mechGrounded,
+      a.claimsWithCitations === 0 ? 'n/a*' : String(a.mechGrounded),
       a.meanActionability === null ? 'n/a' : String(a.meanActionability),
       a.security,
       a.securityFn,
@@ -481,13 +732,32 @@ function printTable(summary, targetName, mock, judgeModel) {
   const line = (cells) => `| ${cells.map((c, i) => String(c).padEnd(widths[i])).join(' | ')} |`;
   log('');
   log(`Summary — ${targetName}${mock ? '  [MOCK: judge answers are stub text]' : ''}`);
-  log(`judge model: ${judgeModel}`);
+  log(`judge model: ${judgeModel}${repeatStats ? `  (${repeatStats.runs} run(s), majority vote)` : ''}`);
   log(line(cols));
   log(`|${widths.map((w) => '-'.repeat(w + 2)).join('|')}|`);
   for (const r of rows) log(line(r));
+  const tk = summary.toolkit || {};
+  const nv = summary.naive || {};
   log('');
-  log('verdict columns: "real"/"precision"/"meanAction" are the judge\'s opinion;');
+  log(`unverifiable: ${tk.unverifiable ?? 0} (toolkit) / ${nv.unverifiable ?? 0} (naive)`);
+  for (const arm of arms) {
+    const a = summary[arm];
+    log(`weak citations: ${a.weakCitations}/${a.claimsWithCitations} ${arm}`);
+  }
+  if (repeatStats) {
+    log(`run agreement: ${repeatStats.agreement}`);
+    for (const arm of arms) {
+      const r = repeatStats.precisionRange[arm];
+      if (r) log(`precision range ${arm}: ${r.min}–${r.max} across ${repeatStats.runs} run(s)`);
+    }
+  }
+  log('');
+  log('verdict columns: "real"/"false"/"unverif" are the judge\'s opinion; precision =');
+  log('real / (real + false), excluding unverifiable from the denominator.');
   log('"grounded(mech)" is this script\'s own file:line check against the repo tree.');
+  log('"n/a*" = no claim in that arm cites a resolvable file:line, so mechanical');
+  log('grounding does not apply (not the same as "0 grounded"). Naive prose often');
+  log('names files without a line number; those citations cannot be checked mechanically.');
   log('secFalseNeg = security-relevant claims the judge called NOT real (missed vulnerabilities).');
 }
 
@@ -502,7 +772,7 @@ async function main() {
   }
   // Split argv ourselves so a flag VALUE is never mistaken for the positional
   // <results-dir> (e.g. `--judge-model X results/y` must yield positional [results/y]).
-  const cliSpec = { 'judge-model': 'string', repo: 'string', 'dump-prompt': 'string', mock: 'boolean' };
+  const cliSpec = { 'judge-model': 'string', repo: 'string', 'dump-prompt': 'string', mock: 'boolean', force: 'boolean', repeat: 'number' };
   const flagArgv = [];
   const positional = [];
   for (let i = 0; i < argv.length; i++) {
@@ -539,6 +809,11 @@ async function main() {
   }
 
   const mock = Boolean(parsed.mock);
+  const repeat = Number.isInteger(parsed.repeat) && parsed.repeat >= 1 ? parsed.repeat : 1;
+  if (parsed.repeat !== undefined && repeat !== parsed.repeat) {
+    fail(`--repeat must be an integer >= 1 (got ${parsed.repeat})`);
+    return 2;
+  }
   const baseUrl = process.env.LLM_BASE_URL || 'https://integrate.api.nvidia.com/v1';
   const apiKey = process.env.LLM_API_KEY || null;
   const rawArg = positional[0];
@@ -552,6 +827,12 @@ async function main() {
         join(RESULTS_DIR, rawArg),
       ].find((p) => existsSync(p)) ?? join(RESULTS_DIR, rawArg);
   const targetName = resultsDir.split(/[\\/]/).filter(Boolean).pop();
+
+  const scoresPath = join(resultsDir, 'scores.json');
+  if (existsSync(scoresPath) && !parsed.force) {
+    ok(`scores.json already present — reuse (use --force to re-judge)`);
+    return 0;
+  }
 
   const judgeModel = parsed['judge-model'] || process.env.LLM_JUDGE_MODEL || (mock ? 'MOCK-JUDGE (no model called)' : null);
   if (!mock && !apiKey) {
@@ -595,6 +876,18 @@ async function main() {
     warn(`looked in: ${repoCandidates.join(', ')}`);
   } else {
     ok(`grounding against repo tree: ${repoDir}`);
+  }
+
+  /* ---- digest: the code the judge sees at each cited location ---- */
+  const digestFile = join(resultsDir, 'digest.json');
+  let digestFiles = null;
+  if (existsSync(digestFile)) {
+    const d = readJson(digestFile);
+    if (Array.isArray(d.included)) {
+      digestFiles = new Map(d.included.map((f) => [normalizeRel(String(f.rel)), String(f.content ?? '')]));
+    }
+  } else {
+    warn('digest.json not found — code snippets will read "(not available in digest)" for every claim.');
   }
 
   /* ---- pool + shuffle + label ---- */
@@ -646,6 +939,11 @@ async function main() {
   for (const c of claims) mechanical[c.label] = mechanicalCheck(repoDir, c);
   const mechGrounded = Object.values(mechanical).filter((m) => m.verdict === 'grounded').length;
   log(`  mechanical grounding: ${mechGrounded}/${claims.length} claim(s) cite a file:line that really exists`);
+  for (const arm of [...new Set(claims.map((c) => c.arm))].sort()) {
+    const armClaims = claims.filter((c) => c.arm === arm);
+    const cited = armClaims.filter((c) => mechanical[c.label].citations.length > 0).length;
+    log(`    ${arm}: ${cited}/${armClaims.length} claim(s) carry a resolvable file:line citation`);
+  }
 
   /* ---- judge ---- */
   const treeSample = repoDir
@@ -668,7 +966,8 @@ async function main() {
         }
       })()
     : null;
-  const judgePrompt = buildJudgePrompt(targetName, claims, treeSample);
+  const judgePrompt = buildJudgePrompt(targetName, claims, treeSample, digestFiles);
+  log(`  judge prompt: ${judgePrompt.length} chars (${claims.length} claims, snippets read from digest.json)`);
 
   // Leak guard: the judge prompt must never reveal which arm a claim came from.
   // Source ids are redacted above, so any remaining hit is a real blindness bug.
@@ -691,50 +990,40 @@ async function main() {
   }
 
   let judgeRaw;
-  if (mock) {
-    judgeRaw = JSON.stringify({ mock: true, judgments: mockJudgments(claims, pointer) });
-    ok('judge stubbed (MOCK — no model was called)');
-  } else {
-    const content = await callJudge(
-      { baseUrl, apiKey, model: judgeModel },
-      [{ role: 'user', content: judgePrompt }],
-    );
-    judgeRaw = content;
+  const snippetMissing = new Set(
+    claims.filter((c) => !codeSnippet(citedLocation(c), digestFiles)).map((c) => c.label),
+  );
+  const runs = [];
+  for (let run = 1; run <= repeat; run++) {
+    if (mock) {
+      judgeRaw = JSON.stringify({ mock: true, judgments: mockJudgments(claims, pointer, run, repeat) });
+      if (run === 1) ok('judge stubbed (MOCK — no model was called)');
+    } else {
+      log(`  judge run ${run}/${repeat} ...`);
+      const content = await callJudge(
+        { baseUrl, apiKey, model: judgeModel },
+        [{ role: 'user', content: judgePrompt }],
+      );
+      judgeRaw = content;
+    }
+    let parsedJudge;
+    try {
+      parsedJudge = extractJson(judgeRaw);
+    } catch (e) {
+      fail(`could not parse the judge response as JSON (run ${run}): ${e.message}`);
+      writeJson(join(resultsDir, 'judge-raw.json'), { mock, run, raw: judgeRaw });
+      return 1;
+    }
+    runs.push(collectJudgments(parsedJudge, claims, snippetMissing));
   }
-
-  let parsedJudge;
-  try {
-    parsedJudge = extractJson(judgeRaw);
-  } catch (e) {
-    fail(`could not parse the judge response as JSON: ${e.message}`);
-    writeJson(join(resultsDir, 'judge-raw.json'), { mock, raw: judgeRaw });
-    return 1;
-  }
-  const list = Array.isArray(parsedJudge.judgments) ? parsedJudge.judgments : [];
-  const judgments = {};
-  for (const row of list) {
-    const label = String(row?.label ?? '').trim();
-    if (!label) continue;
-    const actionable = Number(row.actionable);
-    judgments[label] = {
-      label,
-      real: row.real === true,
-      grounded: row.grounded === true,
-      actionable: Number.isFinite(actionable) ? Math.min(5, Math.max(1, Math.round(actionable))) : null,
-      reason: String(row.reason ?? '').slice(0, 400),
-      provided: true,
-    };
-  }
-  const missing = claims.filter((c) => !judgments[c.label]);
+  const { judgments, repeatStats } = aggregateRuns(runs, claims, repeat);
+  const missing = claims.filter((c) => judgments[c.label].verdict === 'omitted');
   if (missing.length) {
     warn(`judge omitted ${missing.length} claim(s): ${missing.map((c) => c.label).join(', ')} — recorded as unscored, NOT as false.`);
-    for (const c of missing) {
-      judgments[c.label] = { label: c.label, real: null, grounded: null, actionable: null, reason: 'judge returned no row for this claim', provided: false };
-    }
   }
 
   /* ---- scores.json ---- */
-  const summary = summarize(claims, judgments, mechanical);
+  const summary = summarize(claims, judgments, mechanical, digestFiles);
   const scores = {
     target: targetName,
     mock,
@@ -745,12 +1034,15 @@ async function main() {
     mock_notice: mock ? 'MOCK RUN — judge answers are stub text, not a real judgement.' : null,
     model_under_test: meta?.model ?? null,
     commit: meta?.commit ?? null,
-    note: 'grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics.',
+    judge_runs: repeat,
+    run_agreement: repeat > 1 ? repeatStats.agreement : null,
+    note: 'grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.',
     totals: {
       claims: claims.length,
       toolkit: claims.filter((c) => c.arm === 'toolkit').length,
       naive: claims.filter((c) => c.arm === 'naive').length,
       judged: Object.values(judgments).filter((j) => j.provided).length,
+      unverifiable: Object.values(judgments).filter((j) => j.verdict === 'unverifiable').length,
     },
     summary_by_arm: summary,
     claims: claims.map((c) => {
@@ -764,8 +1056,17 @@ async function main() {
         severity: c.severity,
         module: c.module,
         security_relevant: c.securityRelevant,
-        judge: { real: j.real, grounded: j.grounded, actionable: j.actionable, reason: j.reason },
+        judge: {
+          verdict: j.verdict,
+          real: j.verdict === 'real',
+          unverifiable: j.verdict === 'unverifiable',
+          grounded: j.grounded,
+          actionable: j.actionable,
+          reason: j.reason,
+          votes: j.votes ?? null,
+        },
         grounded_mechanical: m.verdict,
+        weak_citation: m.citations?.length ? isWeakCitedLine(digestFiles, citedLocation(c)) : null,
         mechanical: {
           citations: m.citations,
           verified: m.verified,
@@ -778,13 +1079,13 @@ async function main() {
   };
   writeJson(join(resultsDir, 'scores.json'), scores);
   ok(`scores.json written: ${join(resultsDir, 'scores.json')}`);
-  printTable(summary, targetName, mock, judgeModel);
+  printTable(summary, targetName, mock, judgeModel, repeat > 1 ? repeatStats : null);
   return 0;
 }
 
 main()
-  .then((code) => process.exit(code))
+  .then((code) => hardExit(code))
   .catch((e) => {
     fail(e.stack || String(e));
-    process.exit(1);
+    hardExit(1);
   });
