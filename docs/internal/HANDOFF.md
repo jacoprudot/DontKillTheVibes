@@ -110,6 +110,49 @@ el validador como subproceso) ni el harness puede clonar. Ambos funcionan en una
 terminal normal. Esta verificación se hizo invocando el prompt exacto del `--dry-run` y
 el validador real por separado.
 
+## B2 — orquestador multi-agente (2026-10-03)
+
+**Qué es.** `scripts/dktv-orchestrate.mjs` + `scripts/lib/repo-files.mjs` (nuevos). Hace
+correr de verdad a los **8 especialistas** de `agents/*-analyst.md`, que hasta ahora no
+se ejecutaban en ninguna ruta del producto: cada módulo hace 2 rondas (ronda 1 = pide
+los archivos que necesita viendo solo el árbol; ronda 2 = emite hallazgos con el
+contenido real). Síntesis **determinista en código** (merge, dedupe, score
+severidad × módulo × confianza, fases). 16 llamadas por repo, cero para la síntesis.
+
+**Verificado.** P0–P4 offline (aislamiento, help, dry-run sin key, mock + validador, y
+**prueba de fuga con señuelos reales**: `.env` y `.pem` retenidos, 0 coincidencias en
+todas las salidas). Corrida real sobre el control: **21 findings, `VALID`, 16 llamadas,
+exit 0**, 8 `modules/*.json`.
+
+**Lo que salió bien:**
+- `security` pidió `src/app/routes/auth/auth.ts` **por sí solo** — el punto entero de B2.
+- `metadata` lo estampa el runner: `llm_used: nvidia/nemotron-3-super-120b-a12b`. Se
+  acabaron los nombres de agente inventados (`synthesis-agent-v1`, etc.).
+- Recall 4/7 exactos vs 2/7 del single-pass, y el JWT recuperado **en sustancia**.
+
+**Los dos defectos que B2 destapó (lo importante):**
+1. **Citas débiles: 9/21 (43%)**, peor que el 33% del single-pass. Y no es falta de
+   acceso: los agentes **leyeron** los archivos correctos y aun así citaron imports,
+   llaves sueltas, `*/` o líneas vacías. **Diagnóstico: es selección de línea, no de
+   archivo → B3 (MCPs) NO arreglaría esto.** Ese hallazgo es lo que justificó hacer B2
+   antes que B3.
+2. **Severidad subvalorada por regla genérica:** el JWT se reportó como
+   `security-secret-in-code-1` (high) en vez de `security-jwt-weak-3` (critical), con la
+   línea correcta y la evidencia en el snippet. En una auditoría que se cobra, subvalorar
+   un bypass de auth es grave → hace falta la regla "gana la más específica".
+
+**Consecuencia para B3 (decisión de negocio).** B3 sigue valiendo, pero por **cobertura
+de datos**, no por citas: el módulo `github` produce 0–1 findings porque sin API solo
+infiere del árbol (sus reglas tech-stack pasaron a `→ PROFILE:`), y `performance` no
+puede medir runtime sin `benchmark-mcp`. Frontera open-core: **B2 público** (cumple la
+promesa del README y da el benchmark medible) y **B3 privado** (el producto que se
+cobra). Consecuencia documental: el README no puede insinuar que el CLI usa los MCPs —
+hoy `git-mcp` y `benchmark-mcp` son código muerto en la ruta del CLI.
+
+**Siguiente:** clasificador post-hoc de línea + reintento dirigido (en curso), y después
+integrar B2 como brazo C del benchmark **cuando Kimi cierre** su ronda del harness. Plan
+completo de validación en `docs/internal/B2_VALIDATION_PLAN.md`.
+
 ## Mapa de verificación (todo debe seguir pasando)
 
 | Chequeo | Comando | Esperado |

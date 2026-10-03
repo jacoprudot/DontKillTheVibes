@@ -70,6 +70,8 @@ As teams increasingly rely on AI to write code, several critical risks emerge. *
 
 [`examples/realworld-assessment/`](examples/realworld-assessment/) is a complete end-to-end run: 7 findings traced to canonical rule IDs, prioritized with the severity × module-weight algorithm, and enforced by the validator. The raw `assessment.json` and the human report are both checked in — including the critical JWT-secret fallback that a plain LLM pass had missed.
 
+The automated pipeline emits `assessment.json` plus a generated `assessment-report.md` covering findings, severities, priority scores and the 30/60/90-day plan. The checked-in report additionally carries hand-written prose: that part is authored by a human, not generated, and the tool does not claim to produce it.
+
 Want that for your codebase? → [Request a free 15-minute audit](mailto:jaco@leongael.xyz?subject=Repo%20audit&body=Repo%20URL%3A%20%0ATech%20stack%3A%20%0AWhat%20worries%20me%20most%3A%20)
 
 ## Architecture
