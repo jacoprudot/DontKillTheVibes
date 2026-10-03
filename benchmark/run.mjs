@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * benchmark/run.mjs — reproducible two-arm benchmark runner for DontKillTheVibes.
+ * benchmark/run.mjs — reproducible three-arm benchmark runner for DontKillTheVibes.
  *
  * ARM A (naive)  : the repo digest + a bare "review this repo" prompt, sent to the
  *                  same endpoint/model as arm B. No toolkit skills, no synthesis
@@ -19,6 +19,10 @@
  * Options:
  *   --only <name>        Run just one target from repos.json
  *   --force              Re-run arms whose output already exists
+ *   --arm-c              Also run ARM C (orchestrated/B2, scripts/dktv-orchestrate.mjs)
+ *                        against the same clone. Opt-in: pending the shared
+ *                        canonical-registry fix, arm C output is not comparable.
+ *                        (env ARM_C=1 also works)
  *   --model <id>         Model id (env LLM_MODEL)
  *   --base-url <url>     OpenAI-compatible base (env LLM_BASE_URL,
  *                        default https://integrate.api.nvidia.com/v1)
@@ -41,7 +45,7 @@ import {
   ensureDir, readJson, writeJson, writeText, run, gitHead, hasGit, hardExit,
 } from './lib.mjs';
 
-const HELP = `benchmark/run.mjs — two-arm benchmark runner (naive prompt vs. DontKillTheVibes toolkit)
+const HELP = `benchmark/run.mjs — three-arm benchmark runner (naive prompt vs. DontKillTheVibes single-pass toolkit vs. B2 orchestrator)
 
 Usage:
   node benchmark/run.mjs [--all] [--only <name>] [--force] [--model <id>] [--base-url <url>]
@@ -65,6 +69,10 @@ What it does, per target:
       for BOTH arms)
   4. ARM B  -> benchmark/results/<name>/toolkit/assessment.json
      ARM A  -> benchmark/results/<name>/naive.md
+     ARM C (only with --arm-c) -> benchmark/results/<name>/orchestrated/assessment.json
+     via scripts/dktv-orchestrate.mjs (B2): same clone, but the orchestrator picks
+     its own files per module instead of sharing the digest, so its input differs
+     from arms A/B by design
   5. benchmark/results/<name>/meta.json  (target, commit, model, base URL,
      ISO timestamp, digest stats, per-arm success)
 
@@ -82,8 +90,12 @@ Options:
   --all              run every target (the default selection; overrides --only)
   --only <name>      only run this target
   --force            re-run an arm even if its output already exists
-  --model <id>       model id for BOTH arms
-  --base-url <url>   OpenAI-compatible base URL for BOTH arms
+  --arm-c            also run ARM C (B2 orchestrated, scripts/dktv-orchestrate.mjs)
+                     against the same clone. Opt-in: pending the shared
+                     canonical-registry fix, arm C output is not comparable yet.
+                     (env ARM_C=1 also works)
+  --model <id>       model id for ALL arms
+  --base-url <url>   OpenAI-compatible base URL for ALL arms
   --fixture <dir>    fixture target for --mock (default examples/realworld-assessment)
   --help             show this help
 
@@ -370,6 +382,7 @@ async function main() {
       only: 'string',
       all: 'boolean',
       force: 'boolean',
+      'arm-c': 'boolean',
       model: 'string',
       'base-url': 'string',
       fixture: 'string',
@@ -382,6 +395,7 @@ async function main() {
   }
 
   const mock = Boolean(parsed.mock);
+  const armC = Boolean(parsed['arm-c'] || process.env.ARM_C);
   const model = parsed.model || process.env.LLM_MODEL || null;
   const baseUrl = parsed['base-url'] || process.env.LLM_BASE_URL || 'https://integrate.api.nvidia.com/v1';
   const apiKey = process.env.LLM_API_KEY || null;
@@ -525,6 +539,7 @@ async function main() {
       digest: false,
       toolkit: false,
       naive: false,
+      orchestrated: false,
     };
 
     /* ---- 3. shared digest (both arms get byte-identical input) ---- */
@@ -602,7 +617,43 @@ async function main() {
       }
     }
 
-    /* ---- 5. meta.json ---- */
+    /* ---- 4c. ARM C: orchestrated (B2) — opt-in; pending shared-registry fix ---- */
+    const orchDir = join(targetResults, 'orchestrated');
+    const orchFile = join(orchDir, 'assessment.json');
+    const orchMetricsFile = join(orchDir, 'metrics.json');
+    let orchMetrics = null;
+    if (!armC) {
+      log('  ARM C (orchestrated): skipped (pass --arm-c to run it)');
+    } else if (existsSync(orchFile) && !parsed.force) {
+      armStatus.orchestrated = true;
+      log('  ARM C (orchestrated): output exists — skip (use --force to redo)');
+    } else if (mock) {
+      // Full mock document (not just findings: []) so the future three-arm judge
+      // has claims to exercise offline, same as arms A and B.
+      const mockDoc = buildMockAssessment(mockTargetDoc);
+      writeJson(orchFile, {
+        mock: true,
+        mock_notice: 'MOCK OUTPUT - NOT A REAL ASSESSMENT. Produced by --mock --arm-c. No LLM called.',
+        ...mockDoc,
+      });
+      armStatus.orchestrated = true;
+      ok('ARM C output written (MOCK placeholder, no LLM called)');
+    } else {
+      log('  ARM C (orchestrated): running scripts/dktv-orchestrate.mjs (B2) ...');
+      const orchRunner = join(REPO_ROOT, 'scripts', 'dktv-orchestrate.mjs');
+      const args = [orchRunner, '--target', targetDir, '--out', orchDir];
+      if (model) args.push('--model', model);
+      if (baseUrl) args.push('--base-url', baseUrl);
+      const r = await run(process.execPath, args, { cwd: REPO_ROOT });
+      if (r.status === 0 && existsSync(orchFile)) {
+        armStatus.orchestrated = true;
+        ok('ARM C output written');
+        if (existsSync(orchMetricsFile)) orchMetrics = readJson(orchMetricsFile);
+      } else {
+        const tail = r.output.trim().split('\n').slice(-12).join('\n');
+        fail(`ARM C failed (exit ${r.status}). Last output:\n${tail}`);
+      }
+    }
     const meta = {
       mock,
       target: name,
@@ -623,24 +674,39 @@ async function main() {
       arms: {
         toolkit: { ok: armStatus.toolkit, output: 'toolkit/assessment.json' },
         naive: { ok: armStatus.naive, output: 'naive.md' },
+        orchestrated: { ok: armStatus.orchestrated, requested: armC, output: 'orchestrated/assessment.json' },
+      },
+      // Arm C (B2) runs with its own defaults because run.mjs does not pass
+      // --max-files/--max-chars; record them so the run is reproducible.
+      arm_c: {
+        requested: armC,
+        runner: 'scripts/dktv-orchestrate.mjs',
+        max_files: 25,
+        max_chars: 200000,
+        // B2 reads MAX_TOKENS from the env, default 32768; record what applied so
+        // a changed env can never silently change a pinned run.
+        max_tokens: Number(process.env.MAX_TOKENS || 32768),
+        metrics: orchMetrics,
       },
       note: mock
         ? 'MOCK RUN — no clone, no network, no LLM. Placeholder output only; not evidence.'
-        : 'Digest was produced once and passed to both arms; the only difference is prompt/tooling.',
+        : 'Arms A and B share one digest (identical input, different prompt/tooling). ' +
+          'Arm C (B2) does its own per-module file selection, so its input differs by design.',
       api_key_recorded: false,
     };
     writeJson(metaFile, meta);
-    ok(`meta.json written (arm B ok=${meta.arms.toolkit.ok}, arm A ok=${meta.arms.naive.ok})`);
+    ok(`meta.json written (arm B ok=${meta.arms.toolkit.ok}, arm A ok=${meta.arms.naive.ok}, arm C ok=${meta.arms.orchestrated.ok} requested=${armC})`);
 
-    if (meta.arms.toolkit.ok && meta.arms.naive.ok) ran++;
+    const armsOk = meta.arms.toolkit.ok && meta.arms.naive.ok && (!armC || meta.arms.orchestrated.ok);
+    if (armsOk) ran++;
     else failures++;
   }
 
-  log(`\nDone. ${ran} target(s) with both arms complete, ${failures} with a failure or skip that needs attention.`);
+  log(`\nDone. ${ran} target(s) complete for all requested arms, ${failures} with a failure or skip that needs attention.`);
   if (mock) {
     log('MOCK RUN COMPLETE — every file produced is labelled MOCK. Re-run without --mock for real results.');
   }
-  return failures > 0 && ran === 0 ? 1 : 0;
+  return failures > 0 ? 1 : 0;
 }
 
 /* helpers used only by the mock path */

@@ -1,11 +1,16 @@
 #!/usr/bin/env node
 /**
- * benchmark/judge.mjs — blind scorer for the two-arm benchmark.
+ * benchmark/judge.mjs — blind scorer for the three-arm benchmark.
  *
- * Blind: claims from both arms are pooled, shuffled, relabelled C1..Cn, and the
+ * Blind: claims from all arms are pooled, shuffled, relabelled C1..Cn, and the
  * judge prompt NEVER sees which arm produced a claim. The label -> (arm, source
  * id) mapping is written to mapping.json so the scores can be re-aggregated
  * afterwards, and it is deliberately NOT sent to the judge.
+ *
+ * Arms: A = naive free-form review (naive.md); B = single-pass toolkit
+ * (toolkit/assessment.json); C = B2 orchestrator (orchestrated/assessment.json,
+ * present only when the run passed --arm-c). Arms B and C share the finding
+ * schema; A is parsed out of Markdown.
  *
  * Two independent reality signals are recorded for every claim:
  *   1. JUDGE    — the judge model's opinion (real / grounded / actionable 1-5).
@@ -36,7 +41,7 @@ import {
   readJson, writeJson, writeText, relPosix, hardExit,
 } from './lib.mjs';
 
-const HELP = `benchmark/judge.mjs — blind scorer (naive arm vs. toolkit arm)
+const HELP = `benchmark/judge.mjs — blind scorer (naive arm vs. toolkit arm vs. B2 orchestrator)
 
 Usage:
   node benchmark/judge.mjs <results-dir> [--judge-model <id>] [--repo <dir>] [--mock] [--force] [--help]
@@ -62,7 +67,9 @@ Options:
 
 What it does:
   1. pools claims: arm B = findings in toolkit/assessment.json (id + description +
-     location); arm A = candidate claims parsed out of naive.md (no toolkit schema)
+     location); arm C = findings in orchestrated/assessment.json (same schema, only
+     when the run used --arm-c); arm A = candidate claims parsed out of naive.md
+     (no toolkit schema)
   2. shuffles them, labels C1..Cn, writes the label->source mapping to mapping.json
      WITHOUT telling the judge which arm each claim is from
   3. asks the judge for strict JSON per claim: {"real","grounded","actionable","reason"}
@@ -88,12 +95,12 @@ const SECURITY_PATTERNS = [
 /* claim parsing                                                       */
 /* ------------------------------------------------------------------ */
 
-/** Arm B: one claim per finding, from the toolkit's own schema. */
-function claimsFromToolkit(assessmentFile) {
+/** Arms B and C: one claim per finding, from the toolkit's own schema. */
+function claimsFromToolkit(assessmentFile, arm = 'toolkit') {
   const doc = readJson(assessmentFile);
   const findings = Array.isArray(doc.findings) ? doc.findings : [];
   return findings.map((f, i) => ({
-    arm: 'toolkit',
+    arm,
     sourceId: String(f.id ?? `finding-${i + 1}`),
     kind: 'finding',
     title: String(f.id ?? `finding-${i + 1}`),
@@ -315,7 +322,7 @@ function anonymousTitle(claim) {
 /** Remove known arm/source identifiers from text before it reaches the judge. */
 function redactIdentifiers(text, claims) {
   let out = String(text ?? '');
-  const identifiers = new Set(['toolkit', ...claims.map((c) => c.sourceId)]);
+  const identifiers = new Set(['toolkit', 'orchestrated', ...claims.map((c) => c.sourceId)]);
   for (const id of identifiers) {
     if (!id || id.length < 3) continue;
     out = out.split(id).join('[redacted-identifier]');
@@ -371,8 +378,13 @@ function buildJudgePrompt(repoName, claims, treeSample, digestFiles) {
       const loc = citedLocation(c);
       const location = loc ? `\nLocation: ${loc.file}${loc.line != null ? `:${loc.line}` : ''}` : '';
       const snip = codeSnippet(loc, digestFiles);
+      // The snippet is repo code shown to the judge, so provenance identifiers must
+      // be redacted here too: a real target could literally contain a source-id
+      // string (the --mock fixture does, inside its reference assessment.json), and
+      // any channel that leaks it breaks blinding. The leak-guard needles and
+      // checks are unchanged — this closes the snippet channel they would flag.
       const code = snip
-        ? `\n${snip.header}\n${snip.text}`
+        ? `\n${snip.header}\n${redactIdentifiers(snip.text, claims)}`
         : '\nCode at cited location: (not available in digest)';
       return `### ${c.label}
 Title: ${anonymousTitle(c)}
@@ -515,11 +527,12 @@ function mockJudgments(claims, mockSpec, runIndex = 1, totalRuns = 1) {
         ...(mockSpec.mockNaiveClaims || []).map((c) => ({ arm: 'naive', real: false, grounded: Boolean(c.grounded), actionable: 2 })),
       ]
     : null;
-  const byArm = { toolkit: [], naive: [] };
+  const byArm = { toolkit: [], naive: [], orchestrated: [] };
   return claims.map((c, i) => {
     const fromSpec = specClaims ? specClaims.filter((s) => s.arm === c.arm)[byArm[c.arm].length] : null;
     byArm[c.arm].push(c.label);
-    const shape = fromSpec ?? { real: c.arm === 'toolkit', grounded: c.arm === 'toolkit', actionable: c.arm === 'toolkit' ? 4 : 2 };
+    // Structured arms (toolkit, orchestrated) mock as accurate; naive mock as noise.
+    const shape = fromSpec ?? { real: c.arm !== 'naive', grounded: c.arm !== 'naive', actionable: c.arm !== 'naive' ? 4 : 2 };
     // Simulated judge instability: across repeated runs, flip a rotating subset of
     // verdicts so the majority-vote / tie-break / agreement code is exercisable
     // offline without an API.
@@ -736,10 +749,8 @@ function printTable(summary, targetName, mock, judgeModel, repeatStats = null) {
   log(line(cols));
   log(`|${widths.map((w) => '-'.repeat(w + 2)).join('|')}|`);
   for (const r of rows) log(line(r));
-  const tk = summary.toolkit || {};
-  const nv = summary.naive || {};
   log('');
-  log(`unverifiable: ${tk.unverifiable ?? 0} (toolkit) / ${nv.unverifiable ?? 0} (naive)`);
+  log(`unverifiable: ${arms.map((a) => `${summary[a].unverifiable ?? 0} (${a})`).join(' / ')}`);
   for (const arm of arms) {
     const a = summary[arm];
     log(`weak citations: ${a.weakCitations}/${a.claimsWithCitations} ${arm}`);
@@ -847,10 +858,11 @@ async function main() {
   }
 
   const toolkitFile = join(resultsDir, 'toolkit', 'assessment.json');
+  const orchestratedFile = join(resultsDir, 'orchestrated', 'assessment.json');
   const naiveFile = join(resultsDir, 'naive.md');
   const metaFile = join(resultsDir, 'meta.json');
-  if (!existsSync(toolkitFile) && !existsSync(naiveFile)) {
-    fail(`no claims found: neither ${toolkitFile} nor ${naiveFile} exists.`);
+  if (!existsSync(toolkitFile) && !existsSync(naiveFile) && !existsSync(orchestratedFile)) {
+    fail(`no claims found: none of ${toolkitFile}, ${orchestratedFile}, ${naiveFile} exists.`);
     return 2;
   }
 
@@ -892,10 +904,15 @@ async function main() {
 
   /* ---- pool + shuffle + label ---- */
   const claims = [
-    ...(existsSync(toolkitFile) ? claimsFromToolkit(toolkitFile) : []),
+    ...(existsSync(toolkitFile) ? claimsFromToolkit(toolkitFile, 'toolkit') : []),
+    ...(existsSync(orchestratedFile) ? claimsFromToolkit(orchestratedFile, 'orchestrated') : []),
     ...(existsSync(naiveFile) ? claimsFromNaive(naiveFile) : []),
   ].map((c) => ({ ...c, securityRelevant: isSecurityRelevant(c) }));
   if (!existsSync(toolkitFile)) warn('toolkit/assessment.json missing — arm B contributes no claims.');
+  // Arm C is opt-in: only warn about its absence when the run actually requested it.
+  if (!existsSync(orchestratedFile) && meta?.arms?.orchestrated?.requested) {
+    warn('orchestrated/assessment.json missing — arm C was requested but contributes no claims.');
+  }
   if (!existsSync(naiveFile)) warn('naive.md missing — arm A contributes no claims.');
   if (claims.length === 0) {
     fail('both arms produced zero claims — nothing to judge.');
@@ -932,7 +949,8 @@ async function main() {
     })),
   };
   writeJson(join(resultsDir, 'mapping.json'), mapping);
-  ok(`mapping.json written (${claims.length} claims: ${claims.filter((c) => c.arm === 'toolkit').length} toolkit, ${claims.filter((c) => c.arm === 'naive').length} naive)`);
+  const perArmCount = (arm) => `${claims.filter((c) => c.arm === arm).length} ${arm}`;
+  ok(`mapping.json written (${claims.length} claims: ${[...new Set(claims.map((c) => c.arm))].sort().map(perArmCount).join(', ')})`);
 
   /* ---- mechanical grounding (always real, even in --mock) ---- */
   const mechanical = {};
@@ -975,8 +993,9 @@ async function main() {
   // what must never appear is a PROVENANCE phrase naming the arms or the pipeline.
   const leakNeedles = [
     { what: 'the word "toolkit"', needle: /\btoolkit\b/i },
+    { what: 'the word "orchestrated"', needle: /\borchestrated\b/i },
     { what: 'an arm label', needle: /\b(naive|baseline|control)\s+(arm|prompt|run)\b/i },
-    { what: 'an arm label', needle: /\barm\s*[ab]\b/i },
+    { what: 'an arm label', needle: /\barm\s*[abc]\b/i },
     ...claims.map((c) => ({ what: `source id ${c.sourceId}`, needle: new RegExp(c.sourceId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') })),
   ];
   const leaks = leakNeedles.filter(({ needle }) => needle.test(judgePrompt)).map(({ what }) => what);
@@ -1040,6 +1059,7 @@ async function main() {
     totals: {
       claims: claims.length,
       toolkit: claims.filter((c) => c.arm === 'toolkit').length,
+      orchestrated: claims.filter((c) => c.arm === 'orchestrated').length,
       naive: claims.filter((c) => c.arm === 'naive').length,
       judged: Object.values(judgments).filter((j) => j.provided).length,
       unverifiable: Object.values(judgments).filter((j) => j.verdict === 'unverifiable').length,
