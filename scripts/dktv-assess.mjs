@@ -21,22 +21,34 @@
  *                        default https://integrate.api.nvidia.com/v1)
  *   --api-key <key>      API key (env LLM_API_KEY). Not needed with --dry-run.
  *   --language <code>    Report language, e.g. es/en (default: es)
- *   --context-chars <n>  Total file-content budget in chars (default: 120000)
+ *   --context-chars <n>  Total file-content budget in chars
+ *                        (default: DIGEST_CONTEXT_CHARS env, else 180000)
  *   --max-retries <n>    Validation retry attempts (default: 3)
- *   --max-tokens <n>     Completion token budget (default: 8192). Reasoning models
- *                        (e.g. NVIDIA Nemotron) spend part of this on hidden
- *                        reasoning, so raise it if responses come back truncated.
+ *   --max-tokens <n>     Completion token budget (default: MAX_TOKENS env, else 8192).
+ *                        Reasoning models (e.g. NVIDIA Nemotron) spend part of this on
+ *                        hidden reasoning — set MAX_TOKENS=32768 for large digests.
  *   --dry-run            Build the prompt, print stats, do not call the API
  *   --emit-digest <file> Write the exact repo digest (JSON) that would be sent, then exit.
  *                        Used by benchmark/run.mjs so both comparison arms get
  *                        byte-identical input.
  */
-import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync, existsSync, openSync, closeSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve, join, relative, basename } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+
+/**
+ * Exit with an explicit code after tearing down stdin. On Windows/Git Bash a
+ * process that exits while a stdio handle is still open can fast-fail with
+ * 0xC0000409 (-1073740791) instead of returning its real exit code — destroy
+ * stdin first so `echo $?` reports the code the script actually decided.
+ */
+function hardExit(code) {
+  try { process.stdin.destroy(); } catch { /* already closed */ }
+  process.exit(code);
+}
 
 /* ---------- args ---------- */
 function parseArgs(argv) {
@@ -47,9 +59,12 @@ function parseArgs(argv) {
     baseUrl: process.env.LLM_BASE_URL || 'https://integrate.api.nvidia.com/v1',
     apiKey: process.env.LLM_API_KEY,
     language: 'es',
-    contextChars: 120_000,
+    contextChars: Number(process.env.DIGEST_CONTEXT_CHARS) || 180_000,
     maxRetries: 3,
-    maxTokens: 8192,
+    // Reasoning models spend thousands of tokens on hidden reasoning before emitting
+    // any content: a real run against a 94k-token digest burned all 8192 tokens on
+    // reasoning and returned an empty message. Override with MAX_TOKENS or --max-tokens.
+    maxTokens: Number(process.env.MAX_TOKENS) || 8192,
     dryRun: false,
     emitDigest: null,
   };
@@ -67,8 +82,8 @@ function parseArgs(argv) {
     else if (a === '--max-tokens') opts.maxTokens = parseInt(next(), 10);
     else if (a === '--dry-run') opts.dryRun = true;
     else if (a === '--emit-digest') opts.emitDigest = resolve(next());
-    else if (a === '--help' || a === '-h') { console.log('See header comment in scripts/dktv-assess.mjs'); process.exit(0); }
-    else { console.error(`Unknown arg: ${a}`); process.exit(2); }
+    else if (a === '--help' || a === '-h') { console.log('See header comment in scripts/dktv-assess.mjs'); hardExit(0); }
+    else { console.error(`Unknown arg: ${a}`); hardExit(2); }
   }
   opts.target = resolve(opts.target);
   opts.out = opts.out || join(opts.target, '.dontkillthevibes');
@@ -218,6 +233,7 @@ Rules for each finding:
 - severity ∈ critical|high|medium|low|info; effort ∈ XS|S|M|L|XL
 - confidence: number 0.0-1.0 (use < 0.6 only for genuinely uncertain findings)
 - location: { "file": "<repo-relative path>", "line": <n> } — line 0 only for file-level findings
+- location.line MUST be the line of the code that evidences the finding (the handler, the query, the config value, the call); never the file header, license block, or import section. If the snippet at the cited line shows imports, you cited the wrong line — move it to the line that actually demonstrates the problem.
 - remediation must be specific and actionable (min ~20 chars)
 - Every finding MUST be grounded in file content present in the digest below. Do not invent file paths or line numbers you did not see. Cite real line numbers from the snippets.
 - Apply the priority algorithm from the Synthesis Agent definition (severity weight x module weight x confidence) and the dependency mapping rules.
@@ -248,7 +264,12 @@ Assess this repository now. Return ONLY the assessment JSON per the output contr
 }
 
 /* ---------- LLM call ---------- */
-async function callChat(opts, messages, useJsonMode) {
+// Free-tier endpoints fail transiently: NVIDIA NIM returns HTTP 504 after a ~2 minute
+// cold start, and a bare throw there loses the whole run. 429, every 5xx and network
+// errors are retried with backoff before giving up.
+const MAX_TRANSPORT_RETRIES = 5;
+
+async function callChat(opts, messages, useJsonMode, transportAttempt = 1) {
   const body = {
     model: opts.model,
     messages,
@@ -256,21 +277,36 @@ async function callChat(opts, messages, useJsonMode) {
     max_tokens: opts.maxTokens,
     ...(useJsonMode ? { response_format: { type: 'json_object' } } : {}),
   };
-  const res = await fetch(`${opts.baseUrl.replace(/\/$/, '')}/chat/completions`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${opts.apiKey}` },
-    body: JSON.stringify(body),
-  });
+  let res;
+  try {
+    res = await fetch(`${opts.baseUrl.replace(/\/$/, '')}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${opts.apiKey}` },
+      body: JSON.stringify(body),
+    });
+  } catch (e) {
+    if (transportAttempt < MAX_TRANSPORT_RETRIES) {
+      const wait = Math.min(60, 5 * transportAttempt);
+      console.warn(`  network error (${e.message}) — retry ${transportAttempt}/${MAX_TRANSPORT_RETRIES - 1} in ${wait}s`);
+      await new Promise(r => setTimeout(r, wait * 1000));
+      return callChat(opts, messages, useJsonMode, transportAttempt + 1);
+    }
+    throw e;
+  }
   if (res.status === 400 && useJsonMode) {
     const text = await res.text();
-    if (/response_format|json/i.test(text)) return callChat(opts, messages, false); // model lacks json mode
+    if (/response_format|json/i.test(text)) return callChat(opts, messages, false, transportAttempt); // model lacks json mode
     throw new Error(`LLM HTTP 400: ${text.slice(0, 300)}`);
   }
-  if (res.status === 429) {
-    const wait = parseInt(res.headers.get('retry-after') || '5', 10);
-    console.log(`  rate limited (429) — waiting ${wait}s`);
-    await new Promise(r => setTimeout(r, wait * 1000));
-    return callChat(opts, messages, useJsonMode);
+  if (res.status === 429 || res.status >= 500) {
+    if (transportAttempt < MAX_TRANSPORT_RETRIES) {
+      const retryAfter = parseInt(res.headers.get('retry-after') || '0', 10);
+      const wait = retryAfter > 0 ? retryAfter : Math.min(60, 5 * transportAttempt);
+      console.warn(`  HTTP ${res.status} (rate limit / cold-start gateway) — retry ${transportAttempt}/${MAX_TRANSPORT_RETRIES - 1} in ${wait}s`);
+      await new Promise(r => setTimeout(r, wait * 1000));
+      return callChat(opts, messages, useJsonMode, transportAttempt + 1);
+    }
+    throw new Error(`LLM HTTP ${res.status} after ${MAX_TRANSPORT_RETRIES} transport attempts: ${(await res.text()).slice(0, 300)}`);
   }
   if (!res.ok) throw new Error(`LLM HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
   const data = await res.json();
@@ -299,11 +335,11 @@ function extractJson(text) {
 
 /* ---------- main ---------- */
 const opts = parseArgs(process.argv.slice(2));
-if (!existsSync(opts.target)) { console.error(`--target not found: ${opts.target}`); process.exit(2); }
-if (!opts.dryRun && !opts.emitDigest && !opts.apiKey) { console.error('Missing API key: set LLM_API_KEY or pass --api-key (or use --dry-run)'); process.exit(2); }
+if (!existsSync(opts.target)) { console.error(`--target not found: ${opts.target}`); hardExit(2); }
+if (!opts.dryRun && !opts.emitDigest && !opts.apiKey) { console.error('Missing API key: set LLM_API_KEY or pass --api-key (or use --dry-run)'); hardExit(2); }
 if (!opts.dryRun && !opts.emitDigest && !opts.model) {
   console.error('Missing model: set LLM_MODEL or pass --model. NIM examples: moonshotai/kimi-k2-instruct-0905, deepseek-ai/deepseek-v3.1, zai-org/glm-4.6-air, nvidia/llama-3.1-nemotron-70b-instruct');
-  process.exit(2);
+  hardExit(2);
 }
 
 console.log(`Digesting ${opts.target} ...`);
@@ -322,14 +358,14 @@ if (opts.emitDigest) {
   mkdirSync(dirname(opts.emitDigest), { recursive: true });
   writeFileSync(opts.emitDigest, JSON.stringify(digest, null, 2), 'utf8');
   console.log(`Digest written to ${opts.emitDigest}`);
-  process.exit(0);
+  hardExit(0);
 }
 
 if (opts.dryRun) {
   mkdirSync(opts.out, { recursive: true });
   writeFileSync(join(opts.out, 'dktv-prompt-preview.txt'), `${systemPrompt}\n\n--- USER ---\n\n${userPrompt}`);
   console.log(`Dry run — prompt written to ${join(opts.out, 'dktv-prompt-preview.txt')}`);
-  process.exit(0);
+  hardExit(0);
 }
 
 const messages = [
@@ -357,20 +393,42 @@ for (let attempt = 1; attempt <= opts.maxRetries + 1; attempt++) {
   }
   const candidatePath = join(opts.out, 'assessment.candidate.json');
   writeFileSync(candidatePath, JSON.stringify(candidate, null, 2));
-  const v = spawnSync(process.execPath, [join(root, 'scripts/validate-assessment.mjs'), candidatePath], { encoding: 'utf8' });
-  process.stdout.write(v.stdout);
+
+  // Capture the validator through a FILE, not a pipe. Piped stdio for child processes
+  // is denied in confined environments (Windows sandbox → EPERM), which made every
+  // validation look like a failure and burned the whole retry budget on real LLM
+  // calls. File redirection works everywhere and yields byte-identical verdicts.
+  const validationPath = join(opts.out, 'validation.txt');
+  let v;
+  try {
+    const fd = openSync(validationPath, 'w');
+    try {
+      v = spawnSync(process.execPath, [join(root, 'scripts/validate-assessment.mjs'), candidatePath], {
+        stdio: ['ignore', fd, fd],
+      });
+    } finally {
+      closeSync(fd);
+    }
+  } catch (e) {
+    v = { status: null, error: e };
+  }
+  const verdict = existsSync(validationPath) ? readFileSync(validationPath, 'utf8') : '';
+  process.stdout.write(verdict);
+
   if (v.status === 0) {
     const finalPath = join(opts.out, 'assessment.json');
     writeFileSync(finalPath, JSON.stringify(candidate, null, 2));
     console.log(`\nSaved ${finalPath}`);
     if (lastUsage) console.log(`Tokens: ${lastUsage.prompt_tokens ?? '?'} in / ${lastUsage.completion_tokens ?? '?'} out`);
-    process.exit(0);
+    hardExit(0);
   }
+  const detail = verdict.trim()
+    || (v.error ? `validator could not run: ${v.error.message}` : 'validator produced no output');
   messages.push(
     { role: 'assistant', content },
-    { role: 'user', content: `The assessment failed validation. Fix ONLY these issues and return the complete corrected JSON object:\n${v.stdout || v.stderr}` },
+    { role: 'user', content: `The assessment failed validation. Fix ONLY these issues and return the complete corrected JSON object:\n${detail}` },
   );
   await new Promise(r => setTimeout(r, 1000)); // be kind to rate limits
 }
 console.error(`\nFAILED: assessment did not pass validation after ${opts.maxRetries + 1} attempts.`);
-process.exit(1);
+hardExit(1);
