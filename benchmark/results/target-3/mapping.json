@@ -1,0 +1,50 @@
+{
+  "target": "target-3",
+  "mock": false,
+  "created_at": "2026-10-02T23:16:13.842Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "code-print-statement-5",
+      "title": "code-print-statement-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. Disabled Pre-Commit Hooks for Testing and Type Checking",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "performance-no-internal-compression-3",
+      "title": "performance-no-internal-compression-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "Additional Observations",
+      "security_relevant": true
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. Unnecessary Print Statement in Anthropic Image Processing",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "toolkit",
+      "source_id": "performance-no-adaptive-concurrency-9",
+      "title": "performance-no-adaptive-concurrency-9",
+      "security_relevant": false
+    }
+  ]
+}

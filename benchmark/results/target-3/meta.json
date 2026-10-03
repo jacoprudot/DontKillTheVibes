@@ -1,0 +1,30 @@
+{
+  "mock": false,
+  "target": "target-3",
+  "url": "https://github.com/target-3/target-3",
+  "commit": "d026163f586dfa8c5c10d28c36edd59a9d3b0e88",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "base_url": "https://integrate.api.nvidia.com/v1",
+  "target_dir": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\target-3",
+  "timestamp": "2026-10-02T20:29:54.940Z",
+  "digest": {
+    "file": "digest.json",
+    "tree_files": 314,
+    "included_files": 56,
+    "chars": 180034,
+    "skipped_content": 258,
+    "skipped_sensitive": 2
+  },
+  "arms": {
+    "toolkit": {
+      "ok": true,
+      "output": "toolkit/assessment.json"
+    },
+    "naive": {
+      "ok": true,
+      "output": "naive.md"
+    }
+  },
+  "note": "Digest was produced once and passed to both arms; the only difference is prompt/tooling.",
+  "api_key_recorded": false
+}

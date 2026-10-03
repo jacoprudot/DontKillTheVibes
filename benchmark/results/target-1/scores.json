@@ -1,0 +1,529 @@
+{
+  "target": "target-1",
+  "mock": false,
+  "created_at": "2026-10-02T23:19:00.268Z",
+  "judge_model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "judge_base_url": "https://integrate.api.nvidia.com/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\target-1",
+  "mock_notice": null,
+  "model_under_test": "nvidia/nemotron-3-super-120b-a12b",
+  "commit": "81328b61d2a4ab597a7a057be70e785cf756d9f8",
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics.",
+  "totals": {
+    "claims": 17,
+    "toolkit": 9,
+    "naive": 8,
+    "judged": 17
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 9,
+      "judged": 9,
+      "real": 1,
+      "judgeGrounded": 1,
+      "mechGrounded": 8,
+      "mechUngrounded": 1,
+      "mismatch": 0,
+      "actionableSum": 28,
+      "actionableN": 9,
+      "security": 2,
+      "securityFn": 2,
+      "claimsWithCitations": 9,
+      "citationsTotal": 9,
+      "meanActionability": 3.11,
+      "precision": 0.111,
+      "judgeGroundedRate": 0.111
+    },
+    "naive": {
+      "claims": 8,
+      "judged": 8,
+      "real": 0,
+      "judgeGrounded": 0,
+      "mechGrounded": 0,
+      "mechUngrounded": 8,
+      "mismatch": 0,
+      "actionableSum": 30,
+      "actionableN": 8,
+      "security": 1,
+      "securityFn": 1,
+      "claimsWithCitations": 0,
+      "citationsTotal": 0,
+      "meanActionability": 3.75,
+      "precision": 0,
+      "judgeGroundedRate": 0
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "performance-long-critical-path-1",
+      "title": "performance-long-critical-path-1",
+      "severity": "high",
+      "module": "performance",
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Citation shows only imports, not the tool call flow; claim unverifiable from given code."
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/api/chat/tools/route.ts",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 219,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "- `app/api/chat/openai/route.ts`  ",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Code not provided in digest; cannot verify TODO comment exists."
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "code-extreme-length-6",
+      "title": "code-extreme-length-6",
+      "severity": "high",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Citation points to imports, not the POST handler; length unverifiable."
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/api/chat/tools/route.ts",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 219,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "toolkit",
+      "source_id": "cost-api-no-response-cache-5",
+      "title": "cost-api-no-response-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Citation shows schema conversion loop, not tool API execution; claim about external calls unsupported."
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/api/chat/tools/route.ts",
+            "line": 30,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 219,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "**File:** `components/chat/chat-settings.tsx`  ",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Code not provided; cannot verify useEffect implementation."
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "toolkit",
+      "source_id": "cost-api-in-loop-3",
+      "title": "cost-api-in-loop-3",
+      "severity": "high",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Citation shows schema conversion, not external tool service calls; different operation."
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/api/chat/tools/route.ts",
+            "line": 30,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 219,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "**File:** `components/chat/chat-ui.tsx`  ",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Code not provided; cannot verify fetchMessages behavior."
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "**File:** `components/chat/chat-input.tsx`  ",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Code not provided; cannot verify duplicate key handlers."
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C9",
+      "arm": "toolkit",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "real": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "OpenAI client instantiated without timeout parameters in cited code, risking hangs."
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/api/chat/openai/route.ts",
+            "line": 20,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 59,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "**File:** `app/api/chat/groq/route.ts`  ",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Code not provided; cannot verify checkApiKey argument."
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "**File:** `app/api/chat/openrouter/route.ts`  ",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Code not provided; cannot verify undefined usage."
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C12",
+      "arm": "toolkit",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Citation shows OpenAI call with tools, not schema URL fetching/validation."
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/api/chat/tools/route.ts",
+            "line": 65,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 219,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "**File:** `app/api/chat/tools/route.ts`  ",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Code not provided; cannot verify requestInBody logic."
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "**File:** `__tests__/playwright-test/tests/login.spec.ts`  ",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Code not provided; cannot verify test expectation string."
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C15",
+      "arm": "toolkit",
+      "source_id": "performance-http-no-pooling-2",
+      "title": "performance-http-no-pooling-2",
+      "severity": "medium",
+      "module": "performance",
+      "security_relevant": true,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Citation shows request parsing, not OpenAI client instantiation."
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/api/chat/tools/route.ts",
+            "line": 15,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 219,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C16",
+      "arm": "toolkit",
+      "source_id": "flows-missing-circuit-breaker-7",
+      "title": "flows-missing-circuit-breaker-7",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Claim is generic architectural advice; no evidence of actual resource exhaustion in cited code."
+      },
+      "grounded_mechanical": "grounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/api/chat/openai/route.ts",
+            "line": 20,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 59,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C17",
+      "arm": "toolkit",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "real": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Cited file app/layout.tsx not in repository; security headers typically set in middleware or next.config.js."
+      },
+      "grounded_mechanical": "ungrounded",
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/layout.tsx",
+            "line": 0,
+            "origin": "structured",
+            "status": "missing-file",
+            "reason": "file not found in the target repo"
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 1,
+        "repo_available": true
+      }
+    }
+  ]
+}

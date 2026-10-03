@@ -1,0 +1,127 @@
+{
+  "target": "target-2",
+  "mock": false,
+  "created_at": "2026-10-02T23:14:48.467Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. Redundant Visibility Logic in Toggle Container",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. Hardcoded Model Version",
+      "security_relevant": true
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. Non-Standard Header Icon in Header Component",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. Missing CSS Classes for Visibility Toggling",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "toolkit",
+      "source_id": "code-missing-validation-4",
+      "title": "code-missing-validation-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. Unreliable Loading State Timeout",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. Incorrect Response Handling in `app/dream/page.tsx`",
+      "security_relevant": true
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. Filename Handling Bug in `appendNewToName`",
+      "security_relevant": false
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. Rate Limiter IP Identification Fragility",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "toolkit",
+      "source_id": "code-unhandled-promise-4",
+      "title": "code-unhandled-promise-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. Infinite Polling Risk in Replicate Integration",
+      "security_relevant": false
+    },
+    {
+      "label": "C12",
+      "arm": "toolkit",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. Missing Alt Text for SVG Icons",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. Missing HTTP Status Check in Download Utility",
+      "security_relevant": true
+    },
+    {
+      "label": "C15",
+      "arm": "toolkit",
+      "source_id": "flows-retry-no-max-5",
+      "title": "flows-retry-no-max-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. Poor Error Message Handling",
+      "security_relevant": false
+    },
+    {
+      "label": "C17",
+      "arm": "toolkit",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "security_relevant": false
+    }
+  ]
+}
