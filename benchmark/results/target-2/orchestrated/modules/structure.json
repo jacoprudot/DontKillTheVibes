@@ -1,0 +1,173 @@
+{
+  "module": "structure",
+  "skill_file": "skills/structure-assessment.skill.md",
+  "agent_file": "agents/structure-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 0,
+    "weak_after": 0,
+    "repaired": 0,
+    "repair_failed": 0,
+    "repair_calls": 0,
+    "weak_over_cap": 0,
+    "stamped_total": 0,
+    "stamped_severity": 0,
+    "stamped_effort": 0,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 25624,
+    "usage": {
+      "prompt_tokens": 6572,
+      "completion_tokens": 2075,
+      "total_tokens": 8647,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 1947,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "app/dream/page.tsx",
+      "app/generate/route.ts",
+      "app/layout.tsx",
+      "app/page.tsx",
+      "components/CompareSlider.tsx",
+      "components/DropDown.tsx",
+      "components/Footer.tsx",
+      "components/Header.tsx",
+      "components/LoadingDots.tsx",
+      "components/ResizablePanel.tsx",
+      "components/SquigglyLines.tsx",
+      "components/Toggle.tsx",
+      "utils/appendNewToName.ts",
+      "utils/downloadPhoto.ts",
+      "utils/dropdownTypes.ts",
+      "utils/redis.ts",
+      "tsconfig.json",
+      "next.config.js",
+      "package.json"
+    ],
+    "requested_in_tree": [
+      "app/dream/page.tsx",
+      "app/generate/route.ts",
+      "app/layout.tsx",
+      "app/page.tsx",
+      "components/CompareSlider.tsx",
+      "components/DropDown.tsx",
+      "components/Footer.tsx",
+      "components/Header.tsx",
+      "components/LoadingDots.tsx",
+      "components/ResizablePanel.tsx",
+      "components/SquigglyLines.tsx",
+      "components/Toggle.tsx",
+      "utils/appendNewToName.ts",
+      "utils/downloadPhoto.ts",
+      "utils/dropdownTypes.ts",
+      "utils/redis.ts",
+      "tsconfig.json",
+      "next.config.js",
+      "package.json"
+    ],
+    "requested_not_in_tree": [],
+    "requested_over_cap": [],
+    "files_read": [
+      "app/dream/page.tsx",
+      "app/generate/route.ts",
+      "app/layout.tsx",
+      "app/page.tsx",
+      "components/CompareSlider.tsx",
+      "components/DropDown.tsx",
+      "components/Footer.tsx",
+      "components/Header.tsx",
+      "components/LoadingDots.tsx",
+      "components/ResizablePanel.tsx",
+      "components/SquigglyLines.tsx",
+      "components/Toggle.tsx",
+      "utils/appendNewToName.ts",
+      "utils/downloadPhoto.ts",
+      "utils/dropdownTypes.ts",
+      "utils/redis.ts",
+      "tsconfig.json",
+      "next.config.js",
+      "package.json"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 46432,
+    "content_chars": 32894,
+    "usage": {
+      "prompt_tokens": 16056,
+      "completion_tokens": 5936,
+      "total_tokens": 21992,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 5804,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": [{\"id\": \"structure-layer-violation-1\", \"module\": \"structure\", \"severity\": \"high\", \"location\": {\"file\": \"app/dream/page.tsx\", \"line\": 47}, \"description\": \"The component defines controller logic (the generatePhoto function) inside the view component, violating the separation of concerns between view and controller layers.\", \"remediation\": \"Move the generatePhoto function to a separate service or custom hook, and call it from the component via an event handler or useEffect.\", \"effort\": \"M\", \"confidence\": 0.9}]}",
+    "findings_raw": [
+      {
+        "id": "structure-layer-violation-1",
+        "module": "structure",
+        "severity": "high",
+        "location": {
+          "file": "app/dream/page.tsx",
+          "line": 47
+        },
+        "description": "The component defines controller logic (the generatePhoto function) inside the view component, violating the separation of concerns between view and controller layers.",
+        "remediation": "Move the generatePhoto function to a separate service or custom hook, and call it from the component via an event handler or useEffect.",
+        "effort": "M",
+        "confidence": 0.9
+      }
+    ],
+    "findings_kept": [
+      {
+        "id": "structure-layer-violation-1",
+        "module": "structure",
+        "severity": "high",
+        "location": {
+          "file": "app/dream/page.tsx",
+          "line": 47
+        },
+        "description": "The component defines controller logic (the generatePhoto function) inside the view component, violating the separation of concerns between view and controller layers.",
+        "remediation": "Move the generatePhoto function to a separate service or custom hook, and call it from the component via an event handler or useEffect.",
+        "effort": "M",
+        "confidence": 0.9
+      }
+    ],
+    "findings_dropped": []
+  },
+  "repair": {
+    "candidates": [],
+    "over_cap_ids": [],
+    "weak_before_ids": [],
+    "weak_after_ids": [],
+    "prompt_chars": 0,
+    "prompt_budget_skipped": [],
+    "usage": null,
+    "raw_response": null,
+    "applied": [],
+    "failed": [],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 0,
+    "stamped_severity": 0,
+    "stamped_effort": 0,
+    "rules_unknown": 0,
+    "changes": []
+  }
+}

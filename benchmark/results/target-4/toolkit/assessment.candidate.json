@@ -1,65 +1,163 @@
 {
   "metadata": {
-    "repo": "[redacted-author]/target-4",
+    "repo": "target-4",
     "assessed_at": "2026-09-28T14:30:00Z",
     "toolkit_version": "0.1.0-beta",
-    "llm_used": "claude-3-5-sonnet-20241022"
+    "llm_used": "claude-3-5-sonnet-20241022",
+    "ruleset_version": "368-6e180554"
   },
   "summary": {
     "overall_health": "D",
-    "total_findings": 3,
-    "critical_count": 0
+    "total_findings": 9,
+    "critical_count": 0,
+    "by_severity": {
+      "high": 5,
+      "medium": 2,
+      "low": 1,
+      "critical": 1
+    },
+    "effort_estimate": {
+      "S": 4,
+      "M": 3,
+      "L": 1,
+      "XS": 1
+    }
   },
   "findings": [
     {
-      "id": "security-no-input-validation-14",
-      "module": "security",
+      "id": "database-missing-index-fk-1",
+      "module": "database",
       "severity": "high",
       "location": {
-        "file": "app/api/create-chat/route.ts",
+        "file": "prisma/schema.prisma",
         "line": 15
       },
-      "description": "El endpoint de API acepta entrada de usuario sin validación o sanitización",
-      "remediation": "Implementar validación integral de entrada en todos los límites de confianza (por ejemplo, validar los parámetros prompt, model, screenshotToken)",
+      "description": "Columna de clave foreign key falta índice, lo que puede causar escaneos completos de tabla en operaciones de join",
+      "remediation": "Agregar índice explícito en la columna de clave foreign key en el esquema de Prisma",
+      "effort": "S",
+      "confidence": 0.9
+    },
+    {
+      "id": "database-n-plus-one-risk-1",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "app/(main)/chats/[id]/page.tsx",
+        "line": 40
+      },
+      "description": "Riesgo de consulta N+1 al cargar chats y mensajes por separado en lugar de usar una consulta unida",
+      "remediation": "Utilizar carga eager o consultas unidas para obtener chats y sus mensajes en una sola operación de base de datos",
       "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "performance-external-api-8",
+      "module": "performance",
+      "severity": "high",
+      "location": {
+        "file": "app/api/get-next-completion-stream-promise/route.ts",
+        "line": 50
+      },
+      "description": "Llamada a API externa (Together AI) contribuye significativamente a la latencia sin optimización",
+      "remediation": "Implementar caché o procesamiento asíncrono para llamadas a API de Together AI",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "performance-cpu-hotspot-1",
+      "module": "performance",
+      "severity": "high",
+      "location": {
+        "file": "components/code-runner-react.tsx",
+        "line": 1000
+      },
+      "description": "Punto caliente de CPU en el proceso de empaquetado de código en el corredor de código",
+      "remediation": "Optimizar el algoritmo de empaquetado o considerar almacenamiento en caché de resultados de empaquetado frecuentes",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "code-extreme-length-6",
+      "module": "code",
+      "severity": "high",
+      "location": {
+        "file": "components/code-runner-react.tsx",
+        "line": 1
+      },
+      "description": "Función o archivo excesivamente largo (31541 bytes) que dificulta la mantenibilidad y comprensión",
+      "remediation": "Refactorizar el archivo dividiéndolo en módulos más pequeños y enfocados por responsabilidad",
+      "effort": "L",
       "confidence": 0.95
     },
     {
-      "id": "structure-layer-violation-1",
-      "module": "structure",
-      "severity": "high",
+      "id": "security-missing-headers-10",
+      "module": "security",
+      "severity": "medium",
       "location": {
-        "file": "app/(main)/actions.ts",
+        "file": "app/(main)/layout.tsx",
         "line": 1
       },
-      "description": "Las acciones del servidor acceden directamente a la base de datos evitando la capa de servicio",
-      "remediation": "Extraer las operaciones de base de datos a una capa de servicio",
-      "effort": "M",
+      "description": "Falta de encabezados de seguridad (HSTS, CSP, X-Frame-Options) que deja la aplicación vulnerable a ataques comunes",
+      "remediation": "Agregar middleware de encabezados de seguridad para proteger contra ataques de tipo XSS, clickjacking, etc.",
+      "effort": "S",
       "confidence": 0.9
     },
     {
-      "id": "cost-no-automated-tests-4",
-      "module": "cost",
-      "severity": "high",
+      "id": "security-cors-wildcard-2",
+      "module": "security",
+      "severity": "medium",
       "location": {
-        "file": ".github/workflows/",
-        "line": 0
+        "file": "app/api/create-chat/route.ts",
+        "line": 10
       },
-      "description": "La pipeline de CI/CD no ejecuta pruebas automatizadas",
-      "remediation": "Configurar una pipeline de CI/CD con pruebas automatizadas (por ejemplo, GitHub Actions)",
-      "effort": "M",
+      "description": "Configuración CORS que permite todos los orígenes, aumentando el riesgo de ataques de origen cruzado",
+      "remediation": "Restringir la configuración CORS a orígenes específicos y confiables",
+      "effort": "XS",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "app/(main)/providers.tsx",
+        "line": 10
+      },
+      "description": "Falta de middleware de ID de solicitud para rastreo distribuido, dificultando la depuración de solicitudes entre servicios",
+      "remediation": "Agregar middleware de ID de solicitud para generar y propagar IDs de correlación únicos para cada solicitud",
+      "effort": "S",
       "confidence": 0.9
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "module": "flows",
+      "severity": "critical",
+      "location": {
+        "file": "app/api/create-chat/route.ts",
+        "line": 30
+      },
+      "description": "Endpoint de creación de chat falta verificación de idempotencia, riesgo de operaciones duplicadas",
+      "remediation": "Implementar verificación de clave de idempotencia para prevenir creación duplicada de chats",
+      "effort": "S",
+      "confidence": 0.7
     }
   ],
   "work_plan": {
     "phases": {
-      "30_days": [],
-      "60_days": [
-        "security-no-input-validation-14",
-        "structure-layer-violation-1",
-        "cost-no-automated-tests-4"
+      "30_days": [
+        "security-cors-wildcard-2",
+        "security-missing-headers-10",
+        "flows-missing-request-id-7",
+        "flows-missing-idempotency-3"
       ],
-      "90_days": []
+      "60_days": [
+        "database-n-plus-one-risk-1",
+        "performance-external-api-8"
+      ],
+      "90_days": [
+        "performance-cpu-hotspot-1",
+        "code-extreme-length-6"
+      ]
     },
     "dependencies": []
   }

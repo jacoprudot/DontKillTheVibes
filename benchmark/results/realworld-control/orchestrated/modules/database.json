@@ -1,0 +1,169 @@
+{
+  "module": "database",
+  "skill_file": "skills/database-assessment.skill.md",
+  "agent_file": "agents/database-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 0,
+    "weak_after": 0,
+    "repaired": 0,
+    "repair_failed": 0,
+    "repair_calls": 0,
+    "weak_over_cap": 0,
+    "stamped_total": 1,
+    "stamped_severity": 1,
+    "stamped_effort": 0,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 24546,
+    "usage": {
+      "prompt_tokens": 6426,
+      "completion_tokens": 893,
+      "total_tokens": 7319,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 768,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "src/prisma/schema.prisma",
+      "src/prisma/migrations/20210924225358_initial/migration.sql",
+      "src/prisma/migrations/20211001143221_implicit_tags/migration.sql",
+      "src/prisma/migrations/20211105153605_api_url/migration.sql",
+      "src/prisma/migrations/20211221184529_deprecated_preview/migration.sql"
+    ],
+    "requested_in_tree": [
+      "src/prisma/schema.prisma",
+      "src/prisma/migrations/20210924225358_initial/migration.sql",
+      "src/prisma/migrations/20211001143221_implicit_tags/migration.sql",
+      "src/prisma/migrations/20211105153605_api_url/migration.sql",
+      "src/prisma/migrations/20211221184529_deprecated_preview/migration.sql"
+    ],
+    "requested_not_in_tree": [],
+    "requested_over_cap": [],
+    "files_read": [
+      "src/prisma/schema.prisma",
+      "src/prisma/migrations/20210924225358_initial/migration.sql",
+      "src/prisma/migrations/20211001143221_implicit_tags/migration.sql",
+      "src/prisma/migrations/20211105153605_api_url/migration.sql",
+      "src/prisma/migrations/20211221184529_deprecated_preview/migration.sql"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 19846,
+    "content_chars": 6625,
+    "usage": {
+      "prompt_tokens": 6187,
+      "completion_tokens": 9858,
+      "total_tokens": 16045,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 9594,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": [{\"id\": \"database-irreversible-migration-1\", \"module\": \"database\", \"severity\": \"critical\", \"location\": {\"file\": \"src/prisma/migrations/20211001143221_implicit_tags/migration.sql\", \"line\": 15}, \"description\": \"The migration drops the ArticleTags table without migrating its data to the new _ArticleToTag table, causing irreversible data loss.\", \"remediation\": \"Migrate the data from the old table to the new table before dropping the old table.\", \"effort\": \"L\", \"confidence\": 0.9}, {\"id\": \"database-missing-index-fk-1\", \"module\": \"database\", \"severity\": \"medium\", \"location\": {\"file\": \"src/prisma/migrations/20210924225358_initial/migration.sql\", \"line\": 90}, \"description\": \"Missing index on foreign key column \\\"authorId\\\" in table \\\"Article\\\".\", \"remediation\": \"Add an index on the foreign key column to improve join performance.\", \"effort\": \"S\", \"confidence\": 0.9}]}",
+    "findings_raw": [
+      {
+        "id": "database-irreversible-migration-1",
+        "module": "database",
+        "severity": "critical",
+        "location": {
+          "file": "src/prisma/migrations/20211001143221_implicit_tags/migration.sql",
+          "line": 15
+        },
+        "description": "The migration drops the ArticleTags table without migrating its data to the new _ArticleToTag table, causing irreversible data loss.",
+        "remediation": "Migrate the data from the old table to the new table before dropping the old table.",
+        "effort": "L",
+        "confidence": 0.9
+      },
+      {
+        "id": "database-missing-index-fk-1",
+        "module": "database",
+        "severity": "medium",
+        "location": {
+          "file": "src/prisma/migrations/20210924225358_initial/migration.sql",
+          "line": 90
+        },
+        "description": "Missing index on foreign key column \"authorId\" in table \"Article\".",
+        "remediation": "Add an index on the foreign key column to improve join performance.",
+        "effort": "S",
+        "confidence": 0.9
+      }
+    ],
+    "findings_kept": [
+      {
+        "id": "database-irreversible-migration-1",
+        "module": "database",
+        "severity": "critical",
+        "location": {
+          "file": "src/prisma/migrations/20211001143221_implicit_tags/migration.sql",
+          "line": 15
+        },
+        "description": "The migration drops the ArticleTags table without migrating its data to the new _ArticleToTag table, causing irreversible data loss.",
+        "remediation": "Migrate the data from the old table to the new table before dropping the old table.",
+        "effort": "L",
+        "confidence": 0.9
+      },
+      {
+        "id": "database-missing-index-fk-1",
+        "module": "database",
+        "severity": "high",
+        "location": {
+          "file": "src/prisma/migrations/20210924225358_initial/migration.sql",
+          "line": 90
+        },
+        "description": "Missing index on foreign key column \"authorId\" in table \"Article\".",
+        "remediation": "Add an index on the foreign key column to improve join performance.",
+        "effort": "S",
+        "confidence": 0.9
+      }
+    ],
+    "findings_dropped": []
+  },
+  "repair": {
+    "candidates": [],
+    "over_cap_ids": [],
+    "weak_before_ids": [],
+    "weak_after_ids": [],
+    "prompt_chars": 0,
+    "prompt_budget_skipped": [],
+    "usage": null,
+    "raw_response": null,
+    "applied": [],
+    "failed": [],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 1,
+    "stamped_severity": 1,
+    "stamped_effort": 0,
+    "rules_unknown": 0,
+    "changes": [
+      {
+        "id": "database-missing-index-fk-1",
+        "from": {
+          "severity": "medium",
+          "effort": "S"
+        },
+        "to": {
+          "severity": "high",
+          "effort": "S"
+        }
+      }
+    ]
+  }
+}

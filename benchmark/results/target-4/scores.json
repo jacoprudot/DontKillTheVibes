@@ -1,79 +1,288 @@
 {
   "target": "target-4",
   "mock": false,
-  "created_at": "2026-10-02T23:17:53.074Z",
+  "created_at": "2026-10-03T21:58:39.336Z",
   "judge_model": "nvidia/nemotron-3-ultra-550b-a55b",
   "judge_base_url": "https://integrate.api.nvidia.com/v1",
   "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\target-4",
   "mock_notice": null,
   "model_under_test": "nvidia/nemotron-3-super-120b-a12b",
   "commit": "75a3a78e1fa080657b696b95e6d7e393dfa999a5",
-  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics.",
+  "judge_runs": 3,
+  "run_agreement": "naive 100%, toolkit 83%, orchestrated 100%",
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
   "totals": {
-    "claims": 11,
-    "toolkit": 3,
-    "naive": 8,
-    "judged": 11
+    "claims": 24,
+    "toolkit": 9,
+    "orchestrated": 6,
+    "naive": 9,
+    "judged": 24,
+    "unverifiable": 20
   },
   "summary_by_arm": {
-    "toolkit": {
-      "claims": 3,
-      "judged": 3,
-      "real": 2,
-      "judgeGrounded": 1,
-      "mechGrounded": 2,
-      "mechUngrounded": 1,
-      "mismatch": 0,
-      "actionableSum": 9,
-      "actionableN": 3,
-      "security": 1,
-      "securityFn": 1,
-      "claimsWithCitations": 3,
-      "citationsTotal": 3,
-      "meanActionability": 3,
-      "precision": 0.667,
-      "judgeGroundedRate": 0.333
-    },
     "naive": {
-      "claims": 8,
-      "judged": 8,
+      "claims": 9,
+      "judged": 9,
       "real": 0,
+      "falseCount": 0,
+      "unverifiable": 9,
       "judgeGrounded": 0,
       "mechGrounded": 0,
-      "mechUngrounded": 8,
+      "mechUngrounded": 9,
       "mismatch": 0,
-      "actionableSum": 25,
-      "actionableN": 8,
-      "security": 0,
+      "actionableSum": 17,
+      "actionableN": 9,
+      "security": 4,
       "securityFn": 0,
       "claimsWithCitations": 0,
       "citationsTotal": 0,
-      "meanActionability": 3.13,
-      "precision": 0,
+      "weakCitations": 0,
+      "meanActionability": 1.89,
+      "precision": null,
       "judgeGroundedRate": 0
+    },
+    "toolkit": {
+      "claims": 9,
+      "judged": 9,
+      "real": 1,
+      "falseCount": 2,
+      "unverifiable": 6,
+      "judgeGrounded": 2,
+      "mechGrounded": 8,
+      "mechUngrounded": 1,
+      "mismatch": 0,
+      "actionableSum": 24,
+      "actionableN": 9,
+      "security": 2,
+      "securityFn": 1,
+      "claimsWithCitations": 9,
+      "citationsTotal": 9,
+      "weakCitations": 2,
+      "meanActionability": 2.67,
+      "precision": 0.333,
+      "judgeGroundedRate": 0.222
+    },
+    "orchestrated": {
+      "claims": 6,
+      "judged": 6,
+      "real": 1,
+      "falseCount": 0,
+      "unverifiable": 5,
+      "judgeGrounded": 1,
+      "mechGrounded": 6,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 19,
+      "actionableN": 6,
+      "security": 1,
+      "securityFn": 0,
+      "claimsWithCitations": 6,
+      "citationsTotal": 6,
+      "weakCitations": 0,
+      "meanActionability": 3.17,
+      "precision": 1,
+      "judgeGroundedRate": 0.167
     }
   },
   "claims": [
     {
       "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "Security Concerns",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Code not available to verify missing rel attributes, rate limiting, or XSS risks",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "Code Quality Issues",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Code not available to verify file sizes, magic numbers, or duplication",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
       "arm": "toolkit",
-      "source_id": "security-no-input-validation-14",
-      "title": "security-no-input-validation-14",
+      "source_id": "database-missing-index-fk-1",
+      "title": "database-missing-index-fk-1",
       "severity": "high",
+      "module": "database",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Prisma schema line 15 not shown to verify missing FK index",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "prisma/schema.prisma",
+            "line": 15,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 49,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "security-cors-wildcard-2",
+      "title": "security-cors-wildcard-2",
+      "severity": "medium",
       "module": "security",
       "security_relevant": true,
       "judge": {
+        "verdict": "unverifiable",
         "real": false,
+        "unverifiable": true,
         "grounded": false,
-        "actionable": 2,
-        "reason": "Cited line 15 is only an import statement, not endpoint logic; cannot verify validation claims"
+        "actionable": 3,
+        "reason": "next.config.ts line 42 not shown to verify CORS wildcard",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "next.config.ts",
+            "line": 42,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 92,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-client-rate-limit-4",
+      "title": "cost-api-no-client-rate-limit-4",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "lib/generation.ts line 65 not shown to verify Together AI client config",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "lib/generation.ts",
+            "line": 65,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 281,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "orchestrated",
+      "source_id": "structure-controller-logic-6",
+      "title": "structure-controller-logic-6",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Shown code has nested createChat function in route handler violating separation of concerns",
+        "votes": {
+          "real": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
       "mechanical": {
         "citations": [
           {
             "file": "app/api/create-chat/route.ts",
-            "line": 15,
+            "line": 25,
             "origin": "structured",
             "status": "ok",
             "fileLines": 222,
@@ -87,138 +296,39 @@
       }
     },
     {
-      "label": "C2",
-      "arm": "naive",
-      "source_id": "naive-claim-1",
-      "title": "Critical Bugs",
-      "severity": null,
-      "module": null,
-      "security_relevant": false,
-      "judge": {
-        "real": false,
-        "grounded": false,
-        "actionable": 4,
-        "reason": "Specific fixes named but cited code not provided in digest for verification"
-      },
-      "grounded_mechanical": "ungrounded",
-      "mechanical": {
-        "citations": [],
-        "verified": 0,
-        "unverified": 0,
-        "mismatched": 0,
-        "repo_available": true
-      }
-    },
-    {
-      "label": "C3",
-      "arm": "naive",
-      "source_id": "naive-claim-3",
-      "title": "Code Quality Issues",
-      "severity": null,
-      "module": null,
-      "security_relevant": false,
-      "judge": {
-        "real": false,
-        "grounded": false,
-        "actionable": 3,
-        "reason": "Code quality claims unverifiable without access to cited source files"
-      },
-      "grounded_mechanical": "ungrounded",
-      "mechanical": {
-        "citations": [],
-        "verified": 0,
-        "unverified": 0,
-        "mismatched": 0,
-        "repo_available": true
-      }
-    },
-    {
-      "label": "C4",
-      "arm": "naive",
-      "source_id": "naive-claim-7",
-      "title": "Configuration Issues",
-      "severity": null,
-      "module": null,
-      "security_relevant": false,
-      "judge": {
-        "real": false,
-        "grounded": false,
-        "actionable": 3,
-        "reason": "Hardcoded value claim cannot be verified; cited code not in digest"
-      },
-      "grounded_mechanical": "ungrounded",
-      "mechanical": {
-        "citations": [],
-        "verified": 0,
-        "unverified": 0,
-        "mismatched": 0,
-        "repo_available": true
-      }
-    },
-    {
-      "label": "C5",
-      "arm": "naive",
-      "source_id": "naive-claim-2",
-      "title": "Performance Issues",
-      "severity": null,
-      "module": null,
-      "security_relevant": false,
-      "judge": {
-        "real": false,
-        "grounded": false,
-        "actionable": 3,
-        "reason": "Performance claims unverifiable; page.client.tsx and page.tsx code not provided"
-      },
-      "grounded_mechanical": "ungrounded",
-      "mechanical": {
-        "citations": [],
-        "verified": 0,
-        "unverified": 0,
-        "mismatched": 0,
-        "repo_available": true
-      }
-    },
-    {
-      "label": "C6",
-      "arm": "naive",
-      "source_id": "naive-claim-6",
-      "title": "Type Safety Issues",
-      "severity": null,
-      "module": null,
-      "security_relevant": false,
-      "judge": {
-        "real": false,
-        "grounded": false,
-        "actionable": 3,
-        "reason": "Type safety issues cited in files not present in tree or code not shown"
-      },
-      "grounded_mechanical": "ungrounded",
-      "mechanical": {
-        "citations": [],
-        "verified": 0,
-        "unverified": 0,
-        "mismatched": 0,
-        "repo_available": true
-      }
-    },
-    {
       "label": "C7",
-      "arm": "naive",
-      "source_id": "naive-claim-4",
-      "title": "Potential Bugs",
-      "severity": null,
-      "module": null,
+      "arm": "toolkit",
+      "source_id": "database-n-plus-one-risk-1",
+      "title": "database-n-plus-one-risk-1",
+      "severity": "high",
+      "module": "database",
       "security_relevant": false,
       "judge": {
+        "verdict": "unverifiable",
         "real": false,
+        "unverifiable": true,
         "grounded": false,
         "actionable": 3,
-        "reason": "Potential bugs described but cited source code unavailable for review"
+        "reason": "Snippet only shows chat fetch, not message loading to confirm N+1",
+        "votes": {
+          "unverifiable": 1,
+          "real": 1
+        }
       },
-      "grounded_mechanical": "ungrounded",
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
       "mechanical": {
-        "citations": [],
-        "verified": 0,
+        "citations": [
+          {
+            "file": "app/(main)/chats/[id]/page.tsx",
+            "line": 40,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 125,
+            "reason": null
+          }
+        ],
+        "verified": 1,
         "unverified": 0,
         "mismatched": 0,
         "repo_available": true
@@ -226,22 +336,37 @@
     },
     {
       "label": "C8",
-      "arm": "naive",
-      "source_id": "naive-claim-8",
-      "title": "Missing Error Handling",
-      "severity": null,
-      "module": null,
-      "security_relevant": false,
+      "arm": "toolkit",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
       "judge": {
+        "verdict": "false",
         "real": false,
+        "unverifiable": false,
         "grounded": false,
-        "actionable": 2,
-        "reason": "Stream supervision claim ungrounded; route.ts code not in digest"
+        "actionable": 1,
+        "reason": "Security headers belong in middleware/next.config.ts, not layout.tsx",
+        "votes": {
+          "false": 2
+        }
       },
-      "grounded_mechanical": "ungrounded",
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
       "mechanical": {
-        "citations": [],
-        "verified": 0,
+        "citations": [
+          {
+            "file": "app/(main)/layout.tsx",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 19,
+            "reason": null
+          }
+        ],
+        "verified": 1,
         "unverified": 0,
         "mismatched": 0,
         "repo_available": true
@@ -250,26 +375,436 @@
     {
       "label": "C9",
       "arm": "toolkit",
-      "source_id": "cost-no-automated-tests-4",
-      "title": "cost-no-automated-tests-4",
-      "severity": "high",
-      "module": "cost",
+      "source_id": "flows-missing-idempotency-3",
+      "title": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
       "security_relevant": false,
       "judge": {
+        "verdict": "real",
         "real": true,
-        "grounded": false,
-        "actionable": 3,
-        "reason": ".github/workflows directory absent from repo; citation path invalid"
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Route creates chat without idempotency key check shown in snippet",
+        "votes": {
+          "real": 2
+        }
       },
-      "grounded_mechanical": "ungrounded",
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
       "mechanical": {
         "citations": [
           {
-            "file": ".github/workflows/",
-            "line": 0,
+            "file": "app/api/create-chat/route.ts",
+            "line": 30,
             "origin": "structured",
-            "status": "missing-file",
-            "reason": "file not found in the target repo"
+            "status": "ok",
+            "fileLines": 222,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C10",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-idempotency-7",
+      "title": "cost-api-no-idempotency-7",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "lib/generation.ts line 75 not shown to verify idempotency keys",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "lib/generation.ts",
+            "line": 75,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 281,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "Specific File Issues",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "No code snippets provided for any of the 5 specific file issues",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "Configuration and Deployment Issues",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "No code shown for env validation, asset loading, or gitignore patterns",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "Testing Concerns",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Test files not shown to verify test quality issues",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "Error Handling Gaps",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Error boundary and handling code not shown to verify gaps",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C15",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-response-cache-5",
+      "title": "cost-api-no-response-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "lib/generation.ts line 75 not shown to verify caching",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "lib/generation.ts",
+            "line": 75,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 281,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "Critical Issues",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "README.md exists in file tree; unstable API claims unverified",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C17",
+      "arm": "toolkit",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "providers.tsx is React context, not middleware location for request IDs",
+        "votes": {
+          "false": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/(main)/providers.tsx",
+            "line": 10,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 19,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C18",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-retry-strategy-8",
+      "title": "cost-api-no-retry-strategy-8",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "lib/generation.ts line 75 not shown to verify retry strategy",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "lib/generation.ts",
+            "line": 75,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 281,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C19",
+      "arm": "toolkit",
+      "source_id": "security-cors-wildcard-2",
+      "title": "security-cors-wildcard-2",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Snippet shows imports only, no CORS configuration visible",
+        "votes": {
+          "unverifiable": 1,
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/api/create-chat/route.ts",
+            "line": 10,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 222,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "Accessibility Issues",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Component code not shown to verify ARIA labels or keyboard navigation",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C21",
+      "arm": "toolkit",
+      "source_id": "performance-cpu-hotspot-1",
+      "title": "performance-cpu-hotspot-1",
+      "severity": "high",
+      "module": "performance",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "components/code-runner-react.tsx line 1000 not shown",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "components/code-runner-react.tsx",
+            "line": 1000,
+            "origin": "structured",
+            "status": "line-out-of-range",
+            "fileLines": 882,
+            "reason": null
           }
         ],
         "verified": 0,
@@ -279,20 +814,65 @@
       }
     },
     {
-      "label": "C10",
+      "label": "C22",
+      "arm": "toolkit",
+      "source_id": "code-extreme-length-6",
+      "title": "code-extreme-length-6",
+      "severity": "high",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "File exists at location but 31541 byte size not verifiable from snippet",
+        "votes": {
+          "unverifiable": 1,
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "components/code-runner-react.tsx",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 882,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C23",
       "arm": "naive",
-      "source_id": "naive-claim-5",
-      "title": "Regex Issues",
+      "source_id": "naive-claim-2",
+      "title": "Performance Issues",
       "severity": null,
       "module": null,
       "security_relevant": false,
       "judge": {
+        "verdict": "unverifiable",
         "real": false,
+        "unverifiable": true,
         "grounded": false,
-        "actionable": 4,
-        "reason": "chat-title.ts exists but regex code not shown; other files not in tree"
+        "actionable": 2,
+        "reason": "Code for deep cloning, virtualization, debouncing not shown",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
       "mechanical": {
         "citations": [],
         "verified": 0,
@@ -302,28 +882,34 @@
       }
     },
     {
-      "label": "C11",
+      "label": "C24",
       "arm": "toolkit",
-      "source_id": "structure-layer-violation-1",
-      "title": "structure-layer-violation-1",
+      "source_id": "performance-external-api-8",
+      "title": "performance-external-api-8",
       "severity": "high",
-      "module": "structure",
+      "module": "performance",
       "security_relevant": false,
       "judge": {
-        "real": true,
-        "grounded": true,
-        "actionable": 4,
-        "reason": "actions.ts:3 imports Prisma directly in server action, confirming direct DB access"
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Together AI call not shown in snippet to verify latency",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "grounded",
+      "weak_citation": false,
       "mechanical": {
         "citations": [
           {
-            "file": "app/(main)/actions.ts",
-            "line": 1,
+            "file": "app/api/get-next-completion-stream-promise/route.ts",
+            "line": 50,
             "origin": "structured",
             "status": "ok",
-            "fileLines": 33,
+            "fileLines": 288,
             "reason": null
           }
         ],

@@ -1,0 +1,160 @@
+{
+  "module": "cost",
+  "skill_file": "skills/cost-analysis.skill.md",
+  "agent_file": "agents/cost-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 0,
+    "weak_after": 0,
+    "repaired": 0,
+    "repair_failed": 0,
+    "repair_calls": 0,
+    "weak_over_cap": 0,
+    "stamped_total": 0,
+    "stamped_severity": 0,
+    "stamped_effort": 0,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 33967,
+    "usage": {
+      "prompt_tokens": 9225,
+      "completion_tokens": 5658,
+      "total_tokens": 14883,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 5480,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "Dockerfile",
+      "package.json",
+      "package-lock.json",
+      "src/prisma/schema.prisma",
+      "src/app/routes/article/article.service.ts",
+      "src/app/routes/auth/auth.service.ts",
+      "src/app/routes/profile/profile.service.ts",
+      "src/app/routes/tag/tag.service.ts",
+      "jest.config.ts",
+      "tsconfig.json",
+      "src/main.ts",
+      "nx.json",
+      "project.json",
+      "README.md",
+      "src/tests/services/article.service.test.ts",
+      "tsconfig.app.json",
+      "tsconfig.spec.json",
+      "src/app/routes/routes.ts",
+      "jest.preset.js",
+      "src/app/routes/auth/auth.ts",
+      "e2e/src/support/test-setup.ts",
+      "e2e/src/server/server.spec.ts",
+      "e2e/tsconfig.json",
+      "e2e/tsconfig.spec.json"
+    ],
+    "requested_in_tree": [
+      "Dockerfile",
+      "package.json",
+      "package-lock.json",
+      "src/prisma/schema.prisma",
+      "src/app/routes/article/article.service.ts",
+      "src/app/routes/auth/auth.service.ts",
+      "src/app/routes/profile/profile.service.ts",
+      "src/app/routes/tag/tag.service.ts",
+      "jest.config.ts",
+      "tsconfig.json",
+      "src/main.ts",
+      "nx.json",
+      "project.json",
+      "README.md",
+      "src/tests/services/article.service.test.ts",
+      "tsconfig.app.json",
+      "tsconfig.spec.json",
+      "src/app/routes/routes.ts",
+      "jest.preset.js",
+      "src/app/routes/auth/auth.ts",
+      "e2e/src/support/test-setup.ts",
+      "e2e/src/server/server.spec.ts",
+      "e2e/tsconfig.json",
+      "e2e/tsconfig.spec.json"
+    ],
+    "requested_not_in_tree": [],
+    "requested_over_cap": [],
+    "files_read": [
+      "Dockerfile",
+      "package.json",
+      "package-lock.json",
+      "src/prisma/schema.prisma",
+      "src/app/routes/article/article.service.ts",
+      "src/app/routes/auth/auth.service.ts",
+      "src/app/routes/profile/profile.service.ts",
+      "src/app/routes/tag/tag.service.ts",
+      "jest.config.ts",
+      "tsconfig.json",
+      "src/main.ts",
+      "nx.json",
+      "project.json",
+      "README.md",
+      "src/tests/services/article.service.test.ts",
+      "tsconfig.app.json",
+      "tsconfig.spec.json",
+      "src/app/routes/routes.ts",
+      "jest.preset.js",
+      "src/app/routes/auth/auth.ts",
+      "e2e/src/support/test-setup.ts",
+      "e2e/src/server/server.spec.ts",
+      "e2e/tsconfig.json",
+      "e2e/tsconfig.spec.json"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 58227,
+    "content_chars": 44496,
+    "usage": {
+      "prompt_tokens": 20268,
+      "completion_tokens": 4244,
+      "total_tokens": 24512,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 4236,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": []}",
+    "findings_raw": [],
+    "findings_kept": [],
+    "findings_dropped": []
+  },
+  "repair": {
+    "candidates": [],
+    "over_cap_ids": [],
+    "weak_before_ids": [],
+    "weak_after_ids": [],
+    "prompt_chars": 0,
+    "prompt_budget_skipped": [],
+    "usage": null,
+    "raw_response": null,
+    "applied": [],
+    "failed": [],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 0,
+    "stamped_severity": 0,
+    "stamped_effort": 0,
+    "rules_unknown": 0,
+    "changes": []
+  }
+}

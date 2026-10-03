@@ -1,0 +1,293 @@
+{
+  "module": "flows",
+  "skill_file": "skills/flows-assessment.skill.md",
+  "agent_file": "agents/flows-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 1,
+    "weak_after": 0,
+    "repaired": 1,
+    "repair_failed": 0,
+    "repair_calls": 1,
+    "weak_over_cap": 0,
+    "stamped_total": 3,
+    "stamped_severity": 2,
+    "stamped_effort": 3,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 42818,
+    "usage": {
+      "prompt_tokens": 10853,
+      "completion_tokens": 3791,
+      "total_tokens": 14644,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 3617,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "backend/main.py",
+      "backend/routes/agent_runs.py",
+      "backend/routes/capabilities.py",
+      "backend/routes/design_systems.py",
+      "backend/routes/eval_sets.py",
+      "backend/routes/evals.py",
+      "backend/routes/export.py",
+      "backend/routes/generate_code.py",
+      "backend/routes/home.py",
+      "backend/routes/model_choice_sets.py",
+      "backend/routes/prompt_reports.py",
+      "backend/routes/screenshot.py",
+      "backend/config.py",
+      "backend/agent/engine.py",
+      "backend/agent/runner.py",
+      "backend/llm.py",
+      "backend/image_generation/core.py",
+      "backend/agent/providers/openai.py",
+      "backend/agent/tools/runtime.py",
+      "backend/utils.py",
+      "frontend/src/store/app-store.ts",
+      "frontend/src/store/project-store.ts"
+    ],
+    "requested_in_tree": [
+      "backend/main.py",
+      "backend/routes/agent_runs.py",
+      "backend/routes/capabilities.py",
+      "backend/routes/design_systems.py",
+      "backend/routes/eval_sets.py",
+      "backend/routes/evals.py",
+      "backend/routes/export.py",
+      "backend/routes/generate_code.py",
+      "backend/routes/home.py",
+      "backend/routes/model_choice_sets.py",
+      "backend/routes/prompt_reports.py",
+      "backend/routes/screenshot.py",
+      "backend/config.py",
+      "backend/agent/engine.py",
+      "backend/agent/runner.py",
+      "backend/llm.py",
+      "backend/image_generation/core.py",
+      "backend/agent/providers/openai.py",
+      "backend/agent/tools/runtime.py",
+      "backend/utils.py",
+      "frontend/src/store/app-store.ts",
+      "frontend/src/store/project-store.ts"
+    ],
+    "requested_not_in_tree": [],
+    "requested_over_cap": [],
+    "files_read": [
+      "backend/main.py",
+      "backend/routes/agent_runs.py",
+      "backend/routes/capabilities.py",
+      "backend/routes/design_systems.py",
+      "backend/routes/eval_sets.py",
+      "backend/routes/evals.py",
+      "backend/routes/export.py",
+      "backend/routes/generate_code.py",
+      "backend/routes/home.py",
+      "backend/routes/model_choice_sets.py",
+      "backend/routes/prompt_reports.py",
+      "backend/routes/screenshot.py",
+      "backend/config.py",
+      "backend/agent/engine.py",
+      "backend/agent/runner.py",
+      "backend/llm.py",
+      "backend/image_generation/core.py",
+      "backend/agent/providers/openai.py",
+      "backend/agent/tools/runtime.py",
+      "backend/utils.py",
+      "frontend/src/store/app-store.ts",
+      "frontend/src/store/project-store.ts"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 141705,
+    "content_chars": 127509,
+    "usage": {
+      "prompt_tokens": 42214,
+      "completion_tokens": 10985,
+      "total_tokens": 53199,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 10627,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": [{\"id\": \"flows-missing-security-headers-10\", \"module\": \"flows\", \"severity\": \"high\", \"location\": {\"file\": \"backend/routes/home.py\", \"line\": 8}, \"description\": \"No security headers are set in the HTTP responses, exposing the application to various security risks such as XSS, clickjacking, etc.\", \"remediation\": \"Add security headers middleware to set headers like Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, etc.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"flows-missing-request-id-7\", \"module\": \"flows\", \"severity\": \"medium\", \"location\": {\"file\": \"backend/routes/home.py\", \"line\": 8}, \"description\": \"No request ID is generated or propagated for tracing HTTP requests, making it difficult to trace requests across services.\", \"remediation\": \"Implement middleware to generate a unique request ID for each incoming request and include it in the response headers and logs.\", \"effort\": \"M\", \"confidence\": 0.8}, {\"id\": \"flows-retry-no-backoff-4\", \"module\": \"flows\", \"severity\": \"medium\", \"location\": {\"file\": \"backend/routes/screenshot.py\", \"line\": 67}, \"description\": \"External HTTP calls to screenshotone.com lack retry mechanism with backoff, leading to potential failures due to transient errors.\", \"remediation\": \"Implement retry logic with exponential backoff for external HTTP calls to improve resilience.\", \"effort\": \"M\", \"confidence\": 0.85}]}",
+    "findings_raw": [
+      {
+        "id": "flows-missing-security-headers-10",
+        "module": "flows",
+        "severity": "high",
+        "location": {
+          "file": "backend/routes/home.py",
+          "line": 8
+        },
+        "description": "No security headers are set in the HTTP responses, exposing the application to various security risks such as XSS, clickjacking, etc.",
+        "remediation": "Add security headers middleware to set headers like Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, etc.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "flows-missing-request-id-7",
+        "module": "flows",
+        "severity": "medium",
+        "location": {
+          "file": "backend/routes/home.py",
+          "line": 8
+        },
+        "description": "No request ID is generated or propagated for tracing HTTP requests, making it difficult to trace requests across services.",
+        "remediation": "Implement middleware to generate a unique request ID for each incoming request and include it in the response headers and logs.",
+        "effort": "M",
+        "confidence": 0.8
+      },
+      {
+        "id": "flows-retry-no-backoff-4",
+        "module": "flows",
+        "severity": "medium",
+        "location": {
+          "file": "backend/routes/screenshot.py",
+          "line": 67
+        },
+        "description": "External HTTP calls to screenshotone.com lack retry mechanism with backoff, leading to potential failures due to transient errors.",
+        "remediation": "Implement retry logic with exponential backoff for external HTTP calls to improve resilience.",
+        "effort": "M",
+        "confidence": 0.85
+      }
+    ],
+    "findings_kept": [
+      {
+        "id": "flows-missing-security-headers-10",
+        "module": "flows",
+        "severity": "low",
+        "location": {
+          "file": "backend/routes/home.py",
+          "line": 8
+        },
+        "description": "No security headers are set in the HTTP responses, exposing the application to various security risks such as XSS, clickjacking, etc.",
+        "remediation": "Add security headers middleware to set headers like Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, etc.",
+        "effort": "S",
+        "confidence": 0.9
+      },
+      {
+        "id": "flows-missing-request-id-7",
+        "module": "flows",
+        "severity": "low",
+        "location": {
+          "file": "backend/routes/home.py",
+          "line": 8
+        },
+        "description": "No request ID is generated or propagated for tracing HTTP requests, making it difficult to trace requests across services.",
+        "remediation": "Implement middleware to generate a unique request ID for each incoming request and include it in the response headers and logs.",
+        "effort": "S",
+        "confidence": 0.8
+      },
+      {
+        "id": "flows-retry-no-backoff-4",
+        "module": "flows",
+        "severity": "medium",
+        "location": {
+          "file": "backend/routes/screenshot.py",
+          "line": 69
+        },
+        "description": "External HTTP calls to screenshotone.com lack retry mechanism with backoff, leading to potential failures due to transient errors.",
+        "remediation": "Implement retry logic with exponential backoff for external HTTP calls to improve resilience.",
+        "effort": "XS",
+        "confidence": 0.85
+      }
+    ],
+    "findings_dropped": []
+  },
+  "repair": {
+    "candidates": [
+      "flows-retry-no-backoff-4"
+    ],
+    "over_cap_ids": [],
+    "weak_before_ids": [
+      "flows-retry-no-backoff-4"
+    ],
+    "weak_after_ids": [],
+    "prompt_chars": 4504,
+    "prompt_budget_skipped": [],
+    "usage": {
+      "prompt_tokens": 1418,
+      "completion_tokens": 317,
+      "total_tokens": 1735,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 289,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"fixes\": [{\"id\": \"flows-retry-no-backoff-4\", \"line\": 69}]}",
+    "applied": [
+      {
+        "id": "flows-retry-no-backoff-4",
+        "file": "backend/routes/screenshot.py",
+        "from": 67,
+        "to": 69
+      }
+    ],
+    "failed": [],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 3,
+    "stamped_severity": 2,
+    "stamped_effort": 3,
+    "rules_unknown": 0,
+    "changes": [
+      {
+        "id": "flows-missing-security-headers-10",
+        "from": {
+          "severity": "high",
+          "effort": "M"
+        },
+        "to": {
+          "severity": "low",
+          "effort": "S"
+        }
+      },
+      {
+        "id": "flows-missing-request-id-7",
+        "from": {
+          "severity": "medium",
+          "effort": "M"
+        },
+        "to": {
+          "severity": "low",
+          "effort": "S"
+        }
+      },
+      {
+        "id": "flows-retry-no-backoff-4",
+        "from": {
+          "severity": "medium",
+          "effort": "M"
+        },
+        "to": {
+          "severity": "medium",
+          "effort": "XS"
+        }
+      }
+    ]
+  }
+}

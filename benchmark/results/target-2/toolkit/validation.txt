@@ -1,1 +1,1 @@
-VALID: 6 findings, 0 warning(s)
+VALID: 7 findings, 0 warning(s)

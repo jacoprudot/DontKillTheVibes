@@ -1,0 +1,382 @@
+{
+  "metadata": {
+    "repo": "target-2",
+    "assessed_at": "2026-10-03T20:15:02.453Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "nvidia/nemotron-3-super-120b-a12b",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 19,
+    "findings_raw": 15,
+    "findings_dropped": 0,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "B",
+    "total_findings": 14,
+    "by_severity": {
+      "high": 5,
+      "medium": 8,
+      "low": 1
+    },
+    "by_module": {
+      "code": 3,
+      "structure": 1,
+      "security": 1,
+      "cost": 7,
+      "performance": 2
+    },
+    "effort_estimate": {
+      "S": 2,
+      "M": 12
+    }
+  },
+  "findings": [
+    {
+      "id": "security-no-input-validation-14",
+      "module": "security",
+      "severity": "high",
+      "location": {
+        "file": "app/generate/route.ts",
+        "line": 37
+      },
+      "description": "Missing input validation for imageUrl, theme, and room parameters. This could lead to SSRF or other injection attacks.",
+      "remediation": "Validate that imageUrl is a valid URL and that theme and room are one of the allowed values from the dropdowns.",
+      "effort": "M",
+      "confidence": 1
+    },
+    {
+      "id": "structure-layer-violation-1",
+      "module": "structure",
+      "severity": "high",
+      "location": {
+        "file": "app/dream/page.tsx",
+        "line": 47
+      },
+      "description": "The component defines controller logic (the generatePhoto function) inside the view component, violating the separation of concerns between view and controller layers.",
+      "remediation": "Move the generatePhoto function to a separate service or custom hook, and call it from the component via an event handler or useEffect.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "code-missing-validation-4",
+      "module": "code",
+      "severity": "high",
+      "location": {
+        "file": "utils/appendNewToName.ts",
+        "line": 4
+      },
+      "description": "The function does not validate that the input string contains a dot, leading to incorrect behavior for filenames without extensions.",
+      "remediation": "Add a check for the presence of a dot and handle the case appropriately (e.g., append \"-new\" at the end if no dot is found).",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "code-unhandled-promise-4",
+      "module": "code",
+      "severity": "high",
+      "location": {
+        "file": "app/generate/route.ts",
+        "line": 40
+      },
+      "description": "Missing error handling for asynchronous operations may lead to unhandled promise rejections and crashes.",
+      "remediation": "Wrap the asynchronous code in a try/catch block and return an appropriate error response.",
+      "effort": "S",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-api-in-loop-3",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "app/generate/route.ts",
+        "line": 69
+      },
+      "description": "The API route makes repeated GET requests to the Replicate API in a while loop to poll for the result, which can lead to excessive API usage and increased costs.",
+      "remediation": "Consider implementing a webhook-based notification system from Replicate to avoid polling, or implement exponential backoff and a maximum number of retries to limit the number of API calls.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "performance-no-adaptive-timeout-6",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "app/generate/route.ts",
+        "line": 86
+      },
+      "description": "The code uses a fixed timeout interval for polling the Replicate API, which does not adapt to the expected completion time or system load, potentially causing unnecessary requests or delayed response.",
+      "remediation": "Implement an exponential backoff strategy or use a webhook-based notification system to avoid fixed-interval polling.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "performance-no-request-collapsing-4",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "app/generate/route.ts",
+        "line": 40
+      },
+      "description": "Identical requests for image generation (same imageUrl, theme, and room) are not collapsed, leading to redundant work and increased load on the Replicate API.",
+      "remediation": "Implement request collapsing by caching promises for identical requests so that concurrent requests for the same input share the same prediction.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "app/generate/route.ts",
+        "line": 72
+      },
+      "description": "The API calls to the Replicate service (both the initial POST and the GET requests in the polling loop) lack a retry strategy for handling transient failures, which may lead to failed image generations and the need for manual retries, increasing operational costs.",
+      "remediation": "Implement a retry mechanism with exponential backoff for the fetch calls to the Replicate API, using a library like retry-as-promised or implementing a custom retry function with a maximum number of attempts.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "app/generate/route.ts",
+        "line": 69
+      },
+      "description": "There is no monitoring or logging of the usage of the Replicate API, making it difficult to track costs and detect unexpected spikes in usage.",
+      "remediation": "Add logging for each request to the Replicate API (including the initial POST and each GET in the polling loop) that records the timestamp, endpoint, and response status, and consider integrating with a monitoring service to track API usage and costs.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-license-attribution-missing-2",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "LICENSE",
+        "line": 0
+      },
+      "description": "The project uses third-party dependencies but does not provide attribution for their licenses in the distributed software, which may violate the terms of some licenses.",
+      "remediation": "Generate a notice file (e.g., NOTICE or THIRD-PARTY-LICENSES) that lists the licenses of all dependencies and include it in the distribution of the software.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-no-http-compression-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "next.config.js",
+        "line": 2
+      },
+      "description": "The Next.js application does not enable HTTP compression for API responses, which can increase bandwidth usage and costs, especially for larger responses.",
+      "remediation": "Enable HTTP compression in the Next.js server by installing and configuring a compression middleware (such as compression) or using the built-in compression in Next.js (if available) by setting the 'compress' option in next.config.js to true.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "package.json",
+        "line": 0
+      },
+      "description": "The project does not have a mechanism for tracking the licenses of its dependencies, which can lead to unintentional use of incompatible or restricted licenses.",
+      "remediation": "Implement a license checking tool (such as license-checker or fossa) in the build process to automatically detect and report the licenses of all dependencies.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-no-oss-policy-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "LICENSE",
+        "line": 0
+      },
+      "description": "The project does not have an open source software (OSS) policy that governs the use, contribution, and maintenance of open source dependencies.",
+      "remediation": "Create an OSS policy document that outlines the procedures for approving, using, and maintaining open source software in the project.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "code-console-log-7",
+      "module": "code",
+      "severity": "low",
+      "location": {
+        "file": "app/generate/route.ts",
+        "line": 68
+      },
+      "description": "Console.log statements in production code can leak information and are not recommended.",
+      "remediation": "Remove the console.log statement or replace it with proper logging in a production environment.",
+      "effort": "S",
+      "confidence": 0.9
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "security-no-input-validation-14",
+          "structure-layer-violation-1",
+          "code-missing-validation-4",
+          "code-unhandled-promise-4",
+          "cost-api-in-loop-3"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "performance-no-adaptive-timeout-6",
+          "performance-no-request-collapsing-4",
+          "cost-api-no-retry-strategy-8"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "cost-api-no-usage-monitoring-9",
+          "cost-license-attribution-missing-2",
+          "cost-no-http-compression-9",
+          "cost-no-license-tracking-5",
+          "cost-no-oss-policy-9",
+          "code-console-log-7"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {}
+  },
+  "priority_scores": [
+    {
+      "id": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "confidence": 1,
+      "score": 75,
+      "canonical_rule": "security-no-input-validation-14"
+    },
+    {
+      "id": "structure-layer-violation-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.9,
+      "score": 49.5,
+      "canonical_rule": "structure-layer-violation-1"
+    },
+    {
+      "id": "code-missing-validation-4",
+      "severity": "high",
+      "module": "code",
+      "confidence": 0.9,
+      "score": 45,
+      "canonical_rule": "code-missing-validation-4"
+    },
+    {
+      "id": "code-unhandled-promise-4",
+      "severity": "high",
+      "module": "code",
+      "confidence": 0.9,
+      "score": 45,
+      "canonical_rule": "code-unhandled-promise-4"
+    },
+    {
+      "id": "cost-api-in-loop-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 36,
+      "canonical_rule": "cost-api-in-loop-3"
+    },
+    {
+      "id": "performance-no-adaptive-timeout-6",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.9,
+      "score": 21.6,
+      "canonical_rule": "performance-no-adaptive-timeout-6"
+    },
+    {
+      "id": "performance-no-request-collapsing-4",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.9,
+      "score": 21.6,
+      "canonical_rule": "performance-no-request-collapsing-4"
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-api-no-retry-strategy-8"
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-api-no-usage-monitoring-9"
+    },
+    {
+      "id": "cost-license-attribution-missing-2",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-license-attribution-missing-2"
+    },
+    {
+      "id": "cost-no-http-compression-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-no-http-compression-9"
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-no-license-tracking-5"
+    },
+    {
+      "id": "cost-no-oss-policy-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-no-oss-policy-9"
+    },
+    {
+      "id": "code-console-log-7",
+      "severity": "low",
+      "module": "code",
+      "confidence": 0.9,
+      "score": 4.5,
+      "canonical_rule": "code-console-log-7"
+    }
+  ]
+}

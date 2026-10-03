@@ -1,127 +1,211 @@
 {
   "target": "target-1",
   "mock": false,
-  "created_at": "2026-10-02T23:17:53.140Z",
+  "created_at": "2026-10-03T21:25:27.886Z",
   "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
   "labels": [
     {
       "label": "C1",
-      "arm": "toolkit",
-      "source_id": "performance-long-critical-path-1",
-      "title": "performance-long-critical-path-1",
-      "security_relevant": false
-    },
-    {
-      "label": "C2",
       "arm": "naive",
-      "source_id": "naive-claim-8",
-      "title": "- `app/api/chat/openai/route.ts`  ",
-      "security_relevant": false
-    },
-    {
-      "label": "C3",
-      "arm": "toolkit",
-      "source_id": "code-extreme-length-6",
-      "title": "code-extreme-length-6",
-      "security_relevant": false
-    },
-    {
-      "label": "C4",
-      "arm": "toolkit",
-      "source_id": "cost-api-no-response-cache-5",
-      "title": "cost-api-no-response-cache-5",
-      "security_relevant": false
-    },
-    {
-      "label": "C5",
-      "arm": "naive",
-      "source_id": "naive-claim-6",
-      "title": "**File:** `components/chat/chat-settings.tsx`  ",
-      "security_relevant": false
-    },
-    {
-      "label": "C6",
-      "arm": "toolkit",
-      "source_id": "cost-api-in-loop-3",
-      "title": "cost-api-in-loop-3",
-      "security_relevant": false
-    },
-    {
-      "label": "C7",
-      "arm": "naive",
-      "source_id": "naive-claim-7",
+      "source_id": "naive-claim-19",
       "title": "**File:** `components/chat/chat-ui.tsx`  ",
       "security_relevant": false
     },
     {
-      "label": "C8",
-      "arm": "naive",
-      "source_id": "naive-claim-5",
-      "title": "**File:** `components/chat/chat-input.tsx`  ",
-      "security_relevant": false
-    },
-    {
-      "label": "C9",
-      "arm": "toolkit",
+      "label": "C2",
+      "arm": "orchestrated",
       "source_id": "flows-missing-timeout-6",
       "title": "flows-missing-timeout-6",
       "security_relevant": false
     },
     {
-      "label": "C10",
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-idempotency-7",
+      "title": "cost-api-no-idempotency-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
       "arm": "naive",
-      "source_id": "naive-claim-2",
+      "source_id": "naive-claim-5",
       "title": "**File:** `app/api/chat/groq/route.ts`  ",
       "security_relevant": false
     },
     {
-      "label": "C11",
+      "label": "C5",
       "arm": "naive",
-      "source_id": "naive-claim-3",
-      "title": "**File:** `app/api/chat/openrouter/route.ts`  ",
+      "source_id": "naive-claim-11",
+      "title": "**File:** `app/api/retrieval/retrieve/route.ts`  ",
       "security_relevant": false
     },
     {
-      "label": "C12",
-      "arm": "toolkit",
-      "source_id": "security-no-input-validation-14",
-      "title": "security-no-input-validation-14",
-      "security_relevant": true
-    },
-    {
-      "label": "C13",
+      "label": "C6",
       "arm": "naive",
-      "source_id": "naive-claim-4",
+      "source_id": "naive-claim-7",
       "title": "**File:** `app/api/chat/tools/route.ts`  ",
       "security_relevant": false
     },
     {
-      "label": "C14",
+      "label": "C7",
       "arm": "naive",
-      "source_id": "naive-claim-1",
-      "title": "**File:** `__tests__/playwright-test/tests/login.spec.ts`  ",
+      "source_id": "naive-claim-9",
+      "title": "**File:** `app/api/command/route.ts`  ",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "**File:** `components/chat/chat-hooks/use-prompt-and-command.tsx`  ",
+      "security_relevant": false
+    },
+    {
+      "label": "C9",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-response-cache-5",
+      "title": "cost-api-no-response-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-client-rate-limit-4",
+      "title": "cost-api-no-client-rate-limit-4",
       "security_relevant": true
     },
     {
-      "label": "C15",
-      "arm": "toolkit",
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "**File:** `app/[locale]/[workspaceid]/layout.tsx`  ",
+      "security_relevant": false
+    },
+    {
+      "label": "C12",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-retry-strategy-8",
+      "title": "cost-api-no-retry-strategy-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "**File:** `components/chat/chat-hooks/use-select-file-handler.tsx`  ",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "orchestrated",
       "source_id": "performance-http-no-pooling-2",
       "title": "performance-http-no-pooling-2",
       "security_relevant": true
     },
     {
+      "label": "C15",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "**File:** `app/[locale]/setup/page.tsx`  ",
+      "security_relevant": false
+    },
+    {
       "label": "C16",
-      "arm": "toolkit",
-      "source_id": "flows-missing-circuit-breaker-7",
-      "title": "flows-missing-circuit-breaker-7",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "**File:** `components/chat/chat-help.tsx`  ",
       "security_relevant": false
     },
     {
       "label": "C17",
-      "arm": "toolkit",
-      "source_id": "security-missing-headers-10",
-      "title": "security-missing-headers-10",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "**File:** `components/chat/chat-input.tsx`  ",
       "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "**File:** `app/[locale]/layout.tsx` (root layout)  ",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "**File:** `app/api/retrieval/process/route.ts`  ",
+      "security_relevant": false
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "**File:** `app/auth/callback/route.ts`  ",
+      "security_relevant": true
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "**File:** `app/api/chat/openai/route.ts`  ",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "orchestrated",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "**File:** `components/chat/chat-hooks/use-chat-history.tsx`  ",
+      "security_relevant": false
+    },
+    {
+      "label": "C24",
+      "arm": "orchestrated",
+      "source_id": "code-missing-validation-4",
+      "title": "code-missing-validation-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C25",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "**File:** `components/chat/chat-hooks/use-chat-handler.tsx`  ",
+      "security_relevant": true
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "- No handling for tools with empty route arrays, causing `convertedSchema.routes[0]` to be `undefined`.",
+      "security_relevant": false
+    },
+    {
+      "label": "C27",
+      "arm": "orchestrated",
+      "source_id": "flows-inconsistent-response-4",
+      "title": "flows-inconsistent-response-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C28",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "**File:** `app/[locale]/login/page.tsx`  ",
+      "security_relevant": true
+    },
+    {
+      "label": "C29",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-usage-monitoring-9",
+      "title": "cost-api-no-usage-monitoring-9",
+      "security_relevant": true
     }
   ]
 }

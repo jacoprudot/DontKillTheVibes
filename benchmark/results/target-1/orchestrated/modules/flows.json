@@ -1,0 +1,263 @@
+{
+  "module": "flows",
+  "skill_file": "skills/flows-assessment.skill.md",
+  "agent_file": "agents/flows-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 0,
+    "weak_after": 0,
+    "repaired": 0,
+    "repair_failed": 0,
+    "repair_calls": 0,
+    "weak_over_cap": 0,
+    "stamped_total": 2,
+    "stamped_severity": 2,
+    "stamped_effort": 0,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 41949,
+    "usage": {
+      "prompt_tokens": 11100,
+      "completion_tokens": 2814,
+      "total_tokens": 13914,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 2567,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "middleware.ts",
+      "app/api/assistants/openai/route.ts",
+      "app/api/chat/anthropic/route.ts",
+      "app/api/chat/azure/route.ts",
+      "app/api/chat/custom/route.ts",
+      "app/api/chat/google/route.ts",
+      "app/api/chat/groq/route.ts",
+      "app/api/chat/mistral/route.ts",
+      "app/api/chat/openai/route.ts",
+      "app/api/chat/openrouter/route.ts",
+      "app/api/chat/perplexity/route.ts",
+      "app/api/chat/tools/route.ts",
+      "app/api/command/route.ts",
+      "app/api/keys/route.ts",
+      "app/api/retrieval/process/docx/route.ts",
+      "app/api/retrieval/process/route.ts",
+      "app/api/retrieval/retrieve/route.ts",
+      "app/api/username/available/route.ts",
+      "app/api/username/get/route.ts",
+      "app/auth/callback/route.ts",
+      "lib/server/server-chat-helpers.ts",
+      "lib/server/server-utils.ts",
+      "lib/retrieval/processing/index.ts",
+      "lib/retrieval/processing/docx.ts"
+    ],
+    "requested_in_tree": [
+      "middleware.ts",
+      "app/api/assistants/openai/route.ts",
+      "app/api/chat/anthropic/route.ts",
+      "app/api/chat/azure/route.ts",
+      "app/api/chat/custom/route.ts",
+      "app/api/chat/google/route.ts",
+      "app/api/chat/groq/route.ts",
+      "app/api/chat/mistral/route.ts",
+      "app/api/chat/openai/route.ts",
+      "app/api/chat/openrouter/route.ts",
+      "app/api/chat/perplexity/route.ts",
+      "app/api/chat/tools/route.ts",
+      "app/api/command/route.ts",
+      "app/api/keys/route.ts",
+      "app/api/retrieval/process/docx/route.ts",
+      "app/api/retrieval/process/route.ts",
+      "app/api/retrieval/retrieve/route.ts",
+      "app/api/username/available/route.ts",
+      "app/api/username/get/route.ts",
+      "app/auth/callback/route.ts",
+      "lib/server/server-chat-helpers.ts",
+      "lib/server/server-utils.ts",
+      "lib/retrieval/processing/index.ts",
+      "lib/retrieval/processing/docx.ts"
+    ],
+    "requested_not_in_tree": [],
+    "requested_over_cap": [],
+    "files_read": [
+      "middleware.ts",
+      "app/api/assistants/openai/route.ts",
+      "app/api/chat/anthropic/route.ts",
+      "app/api/chat/azure/route.ts",
+      "app/api/chat/custom/route.ts",
+      "app/api/chat/google/route.ts",
+      "app/api/chat/groq/route.ts",
+      "app/api/chat/mistral/route.ts",
+      "app/api/chat/openai/route.ts",
+      "app/api/chat/openrouter/route.ts",
+      "app/api/chat/perplexity/route.ts",
+      "app/api/chat/tools/route.ts",
+      "app/api/command/route.ts",
+      "app/api/keys/route.ts",
+      "app/api/retrieval/process/docx/route.ts",
+      "app/api/retrieval/process/route.ts",
+      "app/api/retrieval/retrieve/route.ts",
+      "app/api/username/available/route.ts",
+      "app/api/username/get/route.ts",
+      "app/auth/callback/route.ts",
+      "lib/server/server-chat-helpers.ts",
+      "lib/server/server-utils.ts",
+      "lib/retrieval/processing/index.ts",
+      "lib/retrieval/processing/docx.ts"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 63846,
+    "content_chars": 49508,
+    "usage": {
+      "prompt_tokens": 19018,
+      "completion_tokens": 11593,
+      "total_tokens": 30611,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 11202,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": [{\"id\": \"code-missing-validation-4\", \"module\": \"flows\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/openai/route.ts\", \"line\": 12}, \"description\": \"The API route does not validate the incoming request body; it only uses a type assertion which does not prevent runtime errors from invalid data.\", \"remediation\": \"Add input validation using a schema validator (e.g., zod) to ensure chatSettings and messages conform to expected structure before processing.\", \"effort\": \"M\", \"confidence\": 0.6}, {\"id\": \"flows-inconsistent-response-4\", \"module\": \"flows\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/tools/route.ts\", \"line\": 64}, \"description\": \"The API route returns a plain string with Content-Type: application/json in the no-tool-call case, while other routes return JSON objects or streams, leading to inconsistent response format.\", \"remediation\": \"Wrap the message.content in a JSON object, e.g., return new Response(JSON.stringify({ content: message.content }), { ... })\", \"effort\": \"M\", \"confidence\": 0.6}, {\"id\": \"flows-missing-timeout-6\", \"module\": \"flows\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/openai/route.ts\", \"line\": 27}, \"description\": \"The OpenAI API request is made without setting a timeout, which could lead to indefinite hanging of the request.\", \"remediation\": \"Add a timeout parameter to the OpenAI request, e.g., by setting the timeout option in the OpenAI constructor or in the request call.\", \"effort\": \"M\", \"confidence\": 0.6}]}",
+    "findings_raw": [
+      {
+        "id": "code-missing-validation-4",
+        "module": "flows",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 12
+        },
+        "description": "The API route does not validate the incoming request body; it only uses a type assertion which does not prevent runtime errors from invalid data.",
+        "remediation": "Add input validation using a schema validator (e.g., zod) to ensure chatSettings and messages conform to expected structure before processing.",
+        "effort": "M",
+        "confidence": 0.6
+      },
+      {
+        "id": "flows-inconsistent-response-4",
+        "module": "flows",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/tools/route.ts",
+          "line": 64
+        },
+        "description": "The API route returns a plain string with Content-Type: application/json in the no-tool-call case, while other routes return JSON objects or streams, leading to inconsistent response format.",
+        "remediation": "Wrap the message.content in a JSON object, e.g., return new Response(JSON.stringify({ content: message.content }), { ... })",
+        "effort": "M",
+        "confidence": 0.6
+      },
+      {
+        "id": "flows-missing-timeout-6",
+        "module": "flows",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 27
+        },
+        "description": "The OpenAI API request is made without setting a timeout, which could lead to indefinite hanging of the request.",
+        "remediation": "Add a timeout parameter to the OpenAI request, e.g., by setting the timeout option in the OpenAI constructor or in the request call.",
+        "effort": "M",
+        "confidence": 0.6
+      }
+    ],
+    "findings_kept": [
+      {
+        "id": "code-missing-validation-4",
+        "module": "flows",
+        "severity": "high",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 12
+        },
+        "description": "The API route does not validate the incoming request body; it only uses a type assertion which does not prevent runtime errors from invalid data.",
+        "remediation": "Add input validation using a schema validator (e.g., zod) to ensure chatSettings and messages conform to expected structure before processing.",
+        "effort": "M",
+        "confidence": 0.6
+      },
+      {
+        "id": "flows-inconsistent-response-4",
+        "module": "flows",
+        "severity": "low",
+        "location": {
+          "file": "app/api/chat/tools/route.ts",
+          "line": 64
+        },
+        "description": "The API route returns a plain string with Content-Type: application/json in the no-tool-call case, while other routes return JSON objects or streams, leading to inconsistent response format.",
+        "remediation": "Wrap the message.content in a JSON object, e.g., return new Response(JSON.stringify({ content: message.content }), { ... })",
+        "effort": "M",
+        "confidence": 0.6
+      },
+      {
+        "id": "flows-missing-timeout-6",
+        "module": "flows",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 27
+        },
+        "description": "The OpenAI API request is made without setting a timeout, which could lead to indefinite hanging of the request.",
+        "remediation": "Add a timeout parameter to the OpenAI request, e.g., by setting the timeout option in the OpenAI constructor or in the request call.",
+        "effort": "M",
+        "confidence": 0.6
+      }
+    ],
+    "findings_dropped": []
+  },
+  "repair": {
+    "candidates": [],
+    "over_cap_ids": [],
+    "weak_before_ids": [],
+    "weak_after_ids": [],
+    "prompt_chars": 0,
+    "prompt_budget_skipped": [],
+    "usage": null,
+    "raw_response": null,
+    "applied": [],
+    "failed": [],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 2,
+    "stamped_severity": 2,
+    "stamped_effort": 0,
+    "rules_unknown": 0,
+    "changes": [
+      {
+        "id": "code-missing-validation-4",
+        "from": {
+          "severity": "medium",
+          "effort": "M"
+        },
+        "to": {
+          "severity": "high",
+          "effort": "M"
+        }
+      },
+      {
+        "id": "flows-inconsistent-response-4",
+        "from": {
+          "severity": "medium",
+          "effort": "M"
+        },
+        "to": {
+          "severity": "low",
+          "effort": "M"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,204 @@
+{
+  "metadata": {
+    "repo": "target-4",
+    "assessed_at": "2026-10-03T20:48:03.144Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "nvidia/nemotron-3-super-120b-a12b",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 17,
+    "findings_raw": 10,
+    "findings_dropped": 0,
+    "sensitive_files_withheld": 1,
+    "files_withheld_sensitive": [
+      ".npmrc"
+    ],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "B",
+    "total_findings": 6,
+    "by_severity": {
+      "medium": 6
+    },
+    "by_module": {
+      "structure": 1,
+      "security": 1,
+      "cost": 4
+    },
+    "effort_estimate": {
+      "XS": 1,
+      "M": 5
+    }
+  },
+  "findings": [
+    {
+      "id": "security-cors-wildcard-2",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "next.config.ts",
+        "line": 42
+      },
+      "description": "The CORS header Access-Control-Allow-Origin is set to a wildcard (*) for the route /preview-vendor/:path*, allowing any origin to access the resource. This can lead to security risks if the resource is sensitive.",
+      "remediation": "Replace the wildcard origin with a specific list of trusted origins. If the resource is intended to be public and does not require authentication, consider whether CORS is necessary. If the resource is public and does not expose sensitive data, the wildcard may be acceptable, but note that it still poses a risk for certain attacks (e.g., if combined with other vulnerabilities).",
+      "effort": "XS",
+      "confidence": 0.9
+    },
+    {
+      "id": "structure-controller-logic-6",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "app/api/create-chat/route.ts",
+        "line": 25
+      },
+      "description": "The API route (controller) contains excessive logic, including nested functions and direct service calls, violating separation of concerns.",
+      "remediation": "Extract the business logic into a service layer, leaving the controller to handle only request/response concerns.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-api-no-client-rate-limit-4",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "lib/generation.ts",
+        "line": 65
+      },
+      "description": "Together AI client is created without rate limit configuration, which could lead to excessive requests and higher costs.",
+      "remediation": "Configure rate limiting on the Together AI client to control the request rate and avoid unexpected costs.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-api-no-idempotency-7",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "lib/generation.ts",
+        "line": 75
+      },
+      "description": "Together AI API calls lack idempotency keys, which could result in duplicate charges if requests are retried.",
+      "remediation": "Add idempotency keys to Together AI API requests to prevent duplicate operations.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "lib/generation.ts",
+        "line": 75
+      },
+      "description": "Together AI API responses are not cached, leading to repeated computation for identical requests and increased costs.",
+      "remediation": "Implement caching for Together AI API responses to reduce redundant calls and lower costs.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "lib/generation.ts",
+        "line": 75
+      },
+      "description": "Together AI API calls lack a retry strategy, which could lead to failed requests not being retried and increased operational costs due to manual intervention or failed generations.",
+      "remediation": "Add a retry strategy with exponential backoff to Together AI API calls to handle transient failures gracefully.",
+      "effort": "M",
+      "confidence": 0.9
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "security-cors-wildcard-2",
+          "structure-controller-logic-6"
+        ],
+        "total_effort": "L"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "cost-api-no-client-rate-limit-4",
+          "cost-api-no-idempotency-7"
+        ],
+        "total_effort": "L"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "cost-api-no-response-cache-5",
+          "cost-api-no-retry-strategy-8"
+        ],
+        "total_effort": "L"
+      }
+    ],
+    "dependencies": {}
+  },
+  "priority_scores": [
+    {
+      "id": "security-cors-wildcard-2",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.9,
+      "score": 27,
+      "canonical_rule": "security-cors-wildcard-2"
+    },
+    {
+      "id": "structure-controller-logic-6",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.9,
+      "score": 19.8,
+      "canonical_rule": "structure-controller-logic-6"
+    },
+    {
+      "id": "cost-api-no-client-rate-limit-4",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-api-no-client-rate-limit-4"
+    },
+    {
+      "id": "cost-api-no-idempotency-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-api-no-idempotency-7"
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-api-no-response-cache-5"
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-api-no-retry-strategy-8"
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "module": "structure",
+  "skill_file": "skills/structure-assessment.skill.md",
+  "agent_file": "agents/structure-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 0,
+    "weak_after": 0,
+    "repaired": 0,
+    "repair_failed": 0,
+    "repair_calls": 0,
+    "weak_over_cap": 0,
+    "stamped_total": 1,
+    "stamped_severity": 1,
+    "stamped_effort": 0,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 33043,
+    "usage": {
+      "prompt_tokens": 8585,
+      "completion_tokens": 3458,
+      "total_tokens": 12043,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 3273,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "app/layout.tsx",
+      "app/page.tsx",
+      "app/(main)/layout.tsx",
+      "app/(main)/page.tsx",
+      "app/(main)/prompt-form.tsx",
+      "app/(main)/providers.tsx",
+      "app/api/create-chat/route.ts",
+      "app/api/generate-chat-title/route.ts",
+      "app/api/s3-upload/route.ts",
+      "app/api/og/route.tsx",
+      "lib/domain.ts",
+      "lib/prisma.ts",
+      "lib/generation.ts",
+      "lib/image-upload.ts",
+      "lib/s3.ts",
+      "lib/chat-auto-fix.ts",
+      "lib/utils.ts",
+      "components/header.tsx",
+      "components/code-runner.tsx",
+      "components/ui/drawer.tsx",
+      "preview-kits/baseui/components/ui/button.tsx",
+      "prisma/schema.prisma",
+      "next.config.ts",
+      "tsconfig.json",
+      "package.json"
+    ],
+    "requested_in_tree": [
+      "app/layout.tsx",
+      "app/(main)/layout.tsx",
+      "app/(main)/page.tsx",
+      "app/(main)/prompt-form.tsx",
+      "app/(main)/providers.tsx",
+      "app/api/create-chat/route.ts",
+      "app/api/generate-chat-title/route.ts",
+      "app/api/s3-upload/route.ts",
+      "app/api/og/route.tsx",
+      "lib/domain.ts",
+      "lib/prisma.ts",
+      "lib/generation.ts",
+      "lib/image-upload.ts",
+      "lib/s3.ts",
+      "lib/chat-auto-fix.ts",
+      "lib/utils.ts",
+      "components/header.tsx",
+      "components/code-runner.tsx",
+      "components/ui/drawer.tsx",
+      "preview-kits/baseui/components/ui/button.tsx",
+      "prisma/schema.prisma",
+      "next.config.ts",
+      "tsconfig.json",
+      "package.json"
+    ],
+    "requested_not_in_tree": [
+      "app/page.tsx"
+    ],
+    "requested_over_cap": [],
+    "files_read": [
+      "app/layout.tsx",
+      "app/(main)/layout.tsx",
+      "app/(main)/page.tsx",
+      "app/(main)/prompt-form.tsx",
+      "app/(main)/providers.tsx",
+      "app/api/create-chat/route.ts",
+      "app/api/generate-chat-title/route.ts",
+      "app/api/s3-upload/route.ts",
+      "app/api/og/route.tsx",
+      "lib/domain.ts",
+      "lib/prisma.ts",
+      "lib/generation.ts",
+      "lib/image-upload.ts",
+      "lib/s3.ts",
+      "lib/chat-auto-fix.ts",
+      "lib/utils.ts",
+      "components/header.tsx",
+      "components/code-runner.tsx",
+      "components/ui/drawer.tsx",
+      "preview-kits/baseui/components/ui/button.tsx",
+      "prisma/schema.prisma",
+      "next.config.ts",
+      "tsconfig.json",
+      "package.json"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 91119,
+    "content_chars": 76972,
+    "usage": {
+      "prompt_tokens": 29019,
+      "completion_tokens": 7602,
+      "total_tokens": 36621,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 7479,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": [{\"id\": \"structure-controller-logic-6\", \"module\": \"structure\", \"severity\": \"high\", \"location\": {\"file\": \"app/api/create-chat/route.ts\", \"line\": 25}, \"description\": \"The API route (controller) contains excessive logic, including nested functions and direct service calls, violating separation of concerns.\", \"remediation\": \"Extract the business logic into a service layer, leaving the controller to handle only request/response concerns.\", \"effort\": \"M\", \"confidence\": 0.9}]}",
+    "findings_raw": [
+      {
+        "id": "structure-controller-logic-6",
+        "module": "structure",
+        "severity": "high",
+        "location": {
+          "file": "app/api/create-chat/route.ts",
+          "line": 25
+        },
+        "description": "The API route (controller) contains excessive logic, including nested functions and direct service calls, violating separation of concerns.",
+        "remediation": "Extract the business logic into a service layer, leaving the controller to handle only request/response concerns.",
+        "effort": "M",
+        "confidence": 0.9
+      }
+    ],
+    "findings_kept": [
+      {
+        "id": "structure-controller-logic-6",
+        "module": "structure",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/create-chat/route.ts",
+          "line": 25
+        },
+        "description": "The API route (controller) contains excessive logic, including nested functions and direct service calls, violating separation of concerns.",
+        "remediation": "Extract the business logic into a service layer, leaving the controller to handle only request/response concerns.",
+        "effort": "M",
+        "confidence": 0.9
+      }
+    ],
+    "findings_dropped": []
+  },
+  "repair": {
+    "candidates": [],
+    "over_cap_ids": [],
+    "weak_before_ids": [],
+    "weak_after_ids": [],
+    "prompt_chars": 0,
+    "prompt_budget_skipped": [],
+    "usage": null,
+    "raw_response": null,
+    "applied": [],
+    "failed": [],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 1,
+    "stamped_severity": 1,
+    "stamped_effort": 0,
+    "rules_unknown": 0,
+    "changes": [
+      {
+        "id": "structure-controller-logic-6",
+        "from": {
+          "severity": "high",
+          "effort": "M"
+        },
+        "to": {
+          "severity": "medium",
+          "effort": "M"
+        }
+      }
+    ]
+  }
+}

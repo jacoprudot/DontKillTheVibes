@@ -1,0 +1,151 @@
+{
+  "module": "structure",
+  "skill_file": "skills/structure-assessment.skill.md",
+  "agent_file": "agents/structure-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 0,
+    "weak_after": 0,
+    "repaired": 0,
+    "repair_failed": 0,
+    "repair_calls": 0,
+    "weak_over_cap": 0,
+    "stamped_total": 0,
+    "stamped_severity": 0,
+    "stamped_effort": 0,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 35148,
+    "usage": {
+      "prompt_tokens": 9234,
+      "completion_tokens": 3274,
+      "total_tokens": 12508,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 3109,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "app/api/chat/openai/route.ts",
+      "app/api/command/route.ts",
+      "app/api/keys/route.ts",
+      "lib/server/server-chat-helpers.ts",
+      "lib/server/server-utils.ts",
+      "lib/openapi-conversion.ts",
+      "lib/retrieval/processing/index.ts",
+      "lib/retrieval/processing/docx.ts",
+      "db/index.ts",
+      "db/assistants.ts",
+      "db/chats.ts",
+      "db/messages.ts",
+      "db/storage/files.ts",
+      "components/chat/chat-input.tsx",
+      "components/chat/chat-messages.tsx",
+      "components/sidebar/sidebar.tsx",
+      "tsconfig.json",
+      "next.config.js",
+      "types/chat-message.ts",
+      "lib/hooks/use-chat-handler.tsx",
+      "context/context.tsx"
+    ],
+    "requested_in_tree": [
+      "app/api/chat/openai/route.ts",
+      "app/api/command/route.ts",
+      "app/api/keys/route.ts",
+      "lib/server/server-chat-helpers.ts",
+      "lib/server/server-utils.ts",
+      "lib/openapi-conversion.ts",
+      "lib/retrieval/processing/index.ts",
+      "lib/retrieval/processing/docx.ts",
+      "db/index.ts",
+      "db/assistants.ts",
+      "db/chats.ts",
+      "db/messages.ts",
+      "db/storage/files.ts",
+      "components/chat/chat-input.tsx",
+      "components/chat/chat-messages.tsx",
+      "components/sidebar/sidebar.tsx",
+      "tsconfig.json",
+      "next.config.js",
+      "types/chat-message.ts",
+      "context/context.tsx"
+    ],
+    "requested_not_in_tree": [
+      "lib/hooks/use-chat-handler.tsx"
+    ],
+    "requested_over_cap": [],
+    "files_read": [
+      "app/api/chat/openai/route.ts",
+      "app/api/command/route.ts",
+      "app/api/keys/route.ts",
+      "lib/server/server-chat-helpers.ts",
+      "lib/server/server-utils.ts",
+      "lib/openapi-conversion.ts",
+      "lib/retrieval/processing/index.ts",
+      "lib/retrieval/processing/docx.ts",
+      "db/index.ts",
+      "db/assistants.ts",
+      "db/chats.ts",
+      "db/messages.ts",
+      "db/storage/files.ts",
+      "components/chat/chat-input.tsx",
+      "components/chat/chat-messages.tsx",
+      "components/sidebar/sidebar.tsx",
+      "tsconfig.json",
+      "next.config.js",
+      "types/chat-message.ts",
+      "context/context.tsx"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 60270,
+    "content_chars": 46221,
+    "usage": {
+      "prompt_tokens": 18904,
+      "completion_tokens": 2241,
+      "total_tokens": 21145,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 2233,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": []}",
+    "findings_raw": [],
+    "findings_kept": [],
+    "findings_dropped": []
+  },
+  "repair": {
+    "candidates": [],
+    "over_cap_ids": [],
+    "weak_before_ids": [],
+    "weak_after_ids": [],
+    "prompt_chars": 0,
+    "prompt_budget_skipped": [],
+    "usage": null,
+    "raw_response": null,
+    "applied": [],
+    "failed": [],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 0,
+    "stamped_severity": 0,
+    "stamped_effort": 0,
+    "rules_unknown": 0,
+    "changes": []
+  }
+}

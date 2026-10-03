@@ -1,14 +1,27 @@
 {
   "metadata": {
     "repo": "realworld-control",
-    "assessed_at": "2024-06-15T12:00:00Z",
+    "assessed_at": "2026-09-28T14:30:00Z",
     "toolkit_version": "0.1.0-beta",
-    "llm_used": "dontkillthevibes-synthesis-agent"
+    "llm_used": "synthesis-agent",
+    "ruleset_version": "368-6e180554"
   },
   "summary": {
     "overall_health": "C",
-    "total_findings": 6,
-    "critical_count": 1
+    "total_findings": 9,
+    "critical_count": 1,
+    "by_severity": {
+      "critical": 1,
+      "high": 3,
+      "medium": 4,
+      "low": 1
+    },
+    "effort_estimate": {
+      "XS": 2,
+      "S": 4,
+      "L": 1,
+      "M": 2
+    }
   },
   "findings": [
     {
@@ -19,21 +32,10 @@
         "file": "src/app/routes/auth/auth.ts",
         "line": 16
       },
-      "description": "JWT secret fallback to weak hardcoded value 'superSecret'",
-      "remediation": "Remove the fallback and require JWT_SECRET environment variable to be set in production",
+      "description": "El secreto de JWT está establecido en un valor predeterminado débil ('superSecret')",
+      "remediation": "Eliminar el valor predeterminado y asegurarse de que JWT_SECRET esté establecido en el entorno",
       "effort": "XS",
-      "confidence": 0.9,
-      "evidence": {
-        "snippet": "secret: process.env.JWT_SECRET || 'superSecret',",
-        "metric": 11,
-        "benchmark": "Should be a strong random string of at least 32 bytes"
-      },
-      "tags": [
-        "secret",
-        "jwt",
-        "authentication"
-      ],
-      "relatedFindings": []
+      "confidence": 0.9
     },
     {
       "id": "database-sequential-pagination-1",
@@ -41,24 +43,25 @@
       "severity": "high",
       "location": {
         "file": "src/app/routes/article/article.service.ts",
-        "line": 3
+        "line": 72
       },
-      "description": "Sequential execution of count and findMany queries for the same filter, causing extra database load",
-      "remediation": "Run both queries concurrently using Promise.all to reduce database roundtrips",
+      "description": "Consultas separadas de count y findMany para endpoints paginados (getArticles y getFeed)",
+      "remediation": "Ejecutar ambas consultas concurrentemente usando Promise.all para reducir la latencia de las consultas",
       "effort": "S",
-      "confidence": 0.9,
-      "evidence": {
-        "snippet": "const articlesCount = await prisma.article.count({ ... });\nconst articles = await prisma.article.findMany({ ... });",
-        "metric": 1,
-        "benchmark": "Could reduce database load by up to 50% for read operations"
+      "confidence": 0.9
+    },
+    {
+      "id": "database-irreversible-migration-2",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "src/prisma/migrations/20211001143221_implicit_tags/migration.sql",
+        "line": 13
       },
-      "tags": [
-        "database",
-        "performance",
-        "query",
-        "pagination"
-      ],
-      "relatedFindings": []
+      "description": "La migración elimina la tabla ArticleTags sin preservar los datos, causando pérdida de datos",
+      "remediation": "Agregar un paso de migración de datos para preservar los datos de ArticleTags en _ArticleToTag antes de eliminar la tabla",
+      "effort": "L",
+      "confidence": 0.9
     },
     {
       "id": "code-missing-validation-4",
@@ -66,47 +69,12 @@
       "severity": "high",
       "location": {
         "file": "src/app/routes/article/article.controller.ts",
-        "line": 30
+        "line": 32
       },
-      "description": "API endpoint lacks input validation at the boundary (controller), relying on service-layer validation",
-      "remediation": "Add input validation middleware or controller-level validation for request body",
+      "description": "Los puntos de entrada de la API aceptan la entrada del usuario sin validación a nivel del controlador (la validación se realiza en la capa de servicio)",
+      "remediation": "Mover la validación de entrada al nivel del controlador o usar middleware para validación temprana",
       "effort": "M",
-      "confidence": 0.9,
-      "evidence": {
-        "snippet": "const article = await createArticle(req.body.article, req.auth?.user?.id);",
-        "metric": 1,
-        "benchmark": "Should validate request body before processing"
-      },
-      "tags": [
-        "validation",
-        "api",
-        "input"
-      ],
-      "relatedFindings": []
-    },
-    {
-      "id": "security-cors-wildcard-2",
-      "module": "security",
-      "severity": "medium",
-      "location": {
-        "file": "src/main.ts",
-        "line": 7
-      },
-      "description": "CORS middleware configured to allow all origins, posing a security risk",
-      "remediation": "Restrict CORS origins to specific domains in production",
-      "effort": "XS",
-      "confidence": 0.9,
-      "evidence": {
-        "snippet": "app.use(cors());",
-        "metric": 1,
-        "benchmark": "Should specify allowed origins array"
-      },
-      "tags": [
-        "cors",
-        "security",
-        "middleware"
-      ],
-      "relatedFindings": []
+      "confidence": 0.8
     },
     {
       "id": "security-missing-headers-10",
@@ -114,23 +82,38 @@
       "severity": "medium",
       "location": {
         "file": "src/main.ts",
-        "line": 10
+        "line": 7
       },
-      "description": "Missing security headers (HSTS, CSP, X-Frame-Options, etc.) to protect against common web vulnerabilities",
-      "remediation": "Add security headers middleware (e.g., helmet) to set protective HTTP headers",
+      "description": "Falta el middleware de encabezados de seguridad (por ejemplo, helmet) para protegerse contra ataques comunes",
+      "remediation": "Agregar un middleware de encabezados de seguridad como helmet.js",
       "effort": "S",
-      "confidence": 0.9,
-      "evidence": {
-        "snippet": "Missing headers in HTTP responses",
-        "metric": 4,
-        "benchmark": "Should include headers like Strict-Transport-Security, Content-Security-Policy, etc."
+      "confidence": 0.9
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "src/main.ts",
+        "line": 13
       },
-      "tags": [
-        "security",
-        "headers",
-        "middleware"
-      ],
-      "relatedFindings": []
+      "description": "El middleware de CORS está configurado para permitir todos los orígenes (por defecto)",
+      "remediation": "Restringir CORS a orígenes específicos en producción",
+      "effort": "XS",
+      "confidence": 0.9
+    },
+    {
+      "id": "security-rate-limit-weak-6",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "src/app/routes/auth/auth.controller.ts",
+        "line": 14
+      },
+      "description": "Falta la limitación de tasa en los endpoints de autenticación para prevenir ataques de fuerza bruta",
+      "remediation": "Agregar middleware de limitación de tasa (por ejemplo, express-rate-limit) a los endpoints de autenticación",
+      "effort": "M",
+      "confidence": 0.8
     },
     {
       "id": "code-any-type-6",
@@ -138,38 +121,44 @@
       "severity": "medium",
       "location": {
         "file": "src/app/routes/article/article.service.ts",
-        "line": 10
+        "line": 70
       },
-      "description": "Use of 'any' type in public API functions compromises type safety",
-      "remediation": "Replace 'any' with specific types or interfaces for better type safety",
+      "description": "El parámetro de función 'query' es de tipo 'cualquiera', lo que pierde la seguridad de tipos",
+      "remediation": "Reemplazar 'cualquiera' con un tipo específico o interfaz para el objeto de consulta",
       "effort": "S",
-      "confidence": 0.9,
-      "evidence": {
-        "snippet": "const buildFindAllQuery = (query: any, id: number | undefined) => {",
-        "metric": 1,
-        "benchmark": "Should use explicit types for all public API parameters"
+      "confidence": 0.9
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/main.ts",
+        "line": 16
       },
-      "tags": [
-        "typescript",
-        "type-safety",
-        "any-type"
-      ],
-      "relatedFindings": []
+      "description": "Falta el middleware de ID de solicitud para rastrear solicitudes entre servicios",
+      "remediation": "Agregar middleware de ID de solicitud (por ejemplo, usando uuid) para generar y propagar los IDs de solicitud",
+      "effort": "S",
+      "confidence": 0.8
     }
   ],
   "work_plan": {
     "phases": {
       "30_days": [
         "security-jwt-weak-3",
-        "security-cors-wildcard-2",
         "database-sequential-pagination-1",
-        "security-missing-headers-10",
-        "code-any-type-6"
+        "database-irreversible-migration-2"
       ],
       "60_days": [
-        "code-missing-validation-4"
+        "code-missing-validation-4",
+        "security-missing-headers-10",
+        "security-cors-wildcard-2"
       ],
-      "90_days": []
+      "90_days": [
+        "security-rate-limit-weak-6",
+        "code-any-type-6",
+        "flows-missing-request-id-7"
+      ]
     },
     "dependencies": []
   }

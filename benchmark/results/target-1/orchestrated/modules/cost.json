@@ -1,0 +1,555 @@
+{
+  "module": "cost",
+  "skill_file": "skills/cost-analysis.skill.md",
+  "agent_file": "agents/cost-analyst.md",
+  "run_mode": "real",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "metrics": {
+    "weak_before": 0,
+    "weak_after": 0,
+    "repaired": 0,
+    "repair_failed": 0,
+    "repair_calls": 0,
+    "weak_over_cap": 0,
+    "stamped_total": 0,
+    "stamped_severity": 0,
+    "stamped_effort": 0,
+    "rules_unknown": 0
+  },
+  "round1": {
+    "prompt_chars": 42355,
+    "usage": {
+      "prompt_tokens": 11564,
+      "completion_tokens": 6094,
+      "total_tokens": 17658,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 5894,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "requested_raw": [
+      "app/api/chat/anthropic/route.ts",
+      "app/api/chat/custom/route.ts",
+      "app/api/chat/openai/route.ts",
+      "components/utility/global-state.tsx",
+      "jest.config.ts",
+      "lib/build-prompt.ts",
+      "lib/envs.ts",
+      "lib/models/llm/openai-llm-list.ts",
+      "lib/retrieval/processing/docx.ts",
+      "lib/retrieval/processing/pdf.ts",
+      "lib/server/server-chat-helpers.ts",
+      "lib/server/server-utils.ts",
+      "lib/supabase/client.ts",
+      "lib/supabase/server.ts",
+      "lib/utils.ts",
+      "license",
+      "middleware.ts",
+      "next.config.js",
+      "package.json",
+      "package-lock.json",
+      "README.md",
+      "supabase/config.toml",
+      "supabase/migrations/20240108234549_add_messages.sql",
+      "tsconfig.json",
+      "worker/index.js"
+    ],
+    "requested_in_tree": [
+      "app/api/chat/anthropic/route.ts",
+      "app/api/chat/custom/route.ts",
+      "app/api/chat/openai/route.ts",
+      "components/utility/global-state.tsx",
+      "jest.config.ts",
+      "lib/build-prompt.ts",
+      "lib/envs.ts",
+      "lib/models/llm/openai-llm-list.ts",
+      "lib/retrieval/processing/docx.ts",
+      "lib/retrieval/processing/pdf.ts",
+      "lib/server/server-chat-helpers.ts",
+      "lib/server/server-utils.ts",
+      "lib/supabase/client.ts",
+      "lib/supabase/server.ts",
+      "lib/utils.ts",
+      "license",
+      "middleware.ts",
+      "next.config.js",
+      "package.json",
+      "package-lock.json",
+      "README.md",
+      "supabase/config.toml",
+      "supabase/migrations/20240108234549_add_messages.sql",
+      "tsconfig.json",
+      "worker/index.js"
+    ],
+    "requested_not_in_tree": [],
+    "requested_over_cap": [],
+    "files_read": [
+      "app/api/chat/anthropic/route.ts",
+      "app/api/chat/custom/route.ts",
+      "app/api/chat/openai/route.ts",
+      "components/utility/global-state.tsx",
+      "jest.config.ts",
+      "lib/build-prompt.ts",
+      "lib/envs.ts",
+      "lib/models/llm/openai-llm-list.ts",
+      "lib/retrieval/processing/docx.ts",
+      "lib/retrieval/processing/pdf.ts",
+      "lib/server/server-chat-helpers.ts",
+      "lib/server/server-utils.ts",
+      "lib/supabase/client.ts",
+      "lib/supabase/server.ts",
+      "lib/utils.ts",
+      "license",
+      "middleware.ts",
+      "next.config.js",
+      "package.json",
+      "package-lock.json",
+      "README.md",
+      "supabase/config.toml",
+      "supabase/migrations/20240108234549_add_messages.sql",
+      "tsconfig.json",
+      "worker/index.js"
+    ]
+  },
+  "round2": {
+    "prompt_chars": 84442,
+    "content_chars": 70250,
+    "usage": {
+      "prompt_tokens": 28074,
+      "completion_tokens": 10248,
+      "total_tokens": 38322,
+      "prompt_tokens_details": {
+        "audio_tokens": null,
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 8684,
+        "rejected_prediction_tokens": null
+      }
+    },
+    "raw_response": "{\"findings\": [{\"id\": \"cost-api-no-retry-strategy-8\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/anthropic/route.ts\", \"line\": 63}, \"description\": \"Missing retry strategy for Anthropic API calls\", \"remediation\": \"Implement a retry strategy with exponential backoff for Anthropic API calls to handle transient errors.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"cost-api-no-idempotency-7\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/anthropic/route.ts\", \"line\": 63}, \"description\": \"Missing idempotency key in Anthropic API calls\", \"remediation\": \"Add an idempotency key to Anthropic API requests to prevent duplicate charges from retries.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"cost-api-no-response-cache-5\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/anthropic/route.ts\", \"line\": 63}, \"description\": \"Missing response caching for Anthropic API calls\", \"remediation\": \"Implement caching of Anthropic API responses to reduce repeated calls for identical requests.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"cost-api-no-usage-monitoring-9\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/anthropic/route.ts\", \"line\": 63}, \"description\": \"Missing usage monitoring for Anthropic API calls\", \"remediation\": \"Add logging and monitoring of Anthropic API usage (token count, cost) to track and control expenses.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"cost-api-no-client-rate-limit-4\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/anthropic/route.ts\", \"line\": 63}, \"description\": \"Missing client-side rate limiting for Anthropic API calls\", \"remediation\": \"Implement a client-side rate limiter (e.g., token bucket) to prevent exceeding Anthropic API rate limits.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"cost-api-no-retry-strategy-8\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/custom/route.ts\", \"line\": 40}, \"description\": \"Missing retry strategy for custom API calls\", \"remediation\": \"Implement a retry strategy with exponential backoff for custom API calls to handle transient errors.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"cost-api-no-idempotency-7\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/custom/route.ts\", \"line\": 40}, \"description\": \"Missing idempotency key in custom API calls\", \"remediation\": \"Add an idempotency key to custom API requests to prevent duplicate charges from retries.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"cost-api-no-response-cache-5\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/custom/route.ts\", \"line\": 40}, \"description\": \"Missing response caching for custom API calls\", \"remediation\": \"Implement caching of custom API responses to reduce repeated calls for identical requests.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"cost-api-no-usage-monitoring-9\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/custom/route.ts\", \"line\": 40}, \"description\": \"Missing usage monitoring for custom API calls\", \"remediation\": \"Add logging and monitoring of custom API usage (token count, cost) to track and control expenses.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"cost-api-no-client-rate-limit-4\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/custom/route.ts\", \"line\": 40}, \"description\": \"Missing client-side rate limiting for custom API calls\", \"remediation\": \"Implement a client-side rate limiter (e.g., token bucket) to prevent exceeding custom API rate limits.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"cost-api-no-retry-strategy-8\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/openai/route.ts\", \"line\": 27}, \"description\": \"Missing retry strategy for OpenAI API calls\", \"remediation\": \"Implement a retry strategy with exponential backoff for OpenAI API calls to handle transient errors.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"cost-api-no-idempotency-7\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/openai/route.ts\", \"line\": 27}, \"description\": \"Missing idempotency key in OpenAI API calls\", \"remediation\": \"Add an idempotency key to OpenAI API requests to prevent duplicate charges from retries.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"cost-api-no-response-cache-5\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/openai/route.ts\", \"line\": 27}, \"description\": \"Missing response caching for OpenAI API calls\", \"remediation\": \"Implement caching of OpenAI API responses to reduce repeated calls for identical requests.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"cost-api-no-usage-monitoring-9\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/openai/route.ts\", \"line\": 27}, \"description\": \"Missing usage monitoring for OpenAI API calls\", \"remediation\": \"Add logging and monitoring of OpenAI API usage (token count, cost) to track and control expenses.\", \"effort\": \"M\", \"confidence\": 0.9}, {\"id\": \"cost-api-no-client-rate-limit-4\", \"module\": \"cost\", \"severity\": \"medium\", \"location\": {\"file\": \"app/api/chat/openai/route.ts\", \"line\": 27}, \"description\": \"Missing client-side rate limiting for OpenAI API calls\", \"remediation\": \"Implement a client-side rate limiter (e.g., token bucket) to prevent exceeding OpenAI API rate limits.\", \"effort\": \"M\", \"confidence\": 0.9}]}",
+    "findings_raw": [
+      {
+        "id": "cost-api-no-retry-strategy-8",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/anthropic/route.ts",
+          "line": 63
+        },
+        "description": "Missing retry strategy for Anthropic API calls",
+        "remediation": "Implement a retry strategy with exponential backoff for Anthropic API calls to handle transient errors.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-idempotency-7",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/anthropic/route.ts",
+          "line": 63
+        },
+        "description": "Missing idempotency key in Anthropic API calls",
+        "remediation": "Add an idempotency key to Anthropic API requests to prevent duplicate charges from retries.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-response-cache-5",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/anthropic/route.ts",
+          "line": 63
+        },
+        "description": "Missing response caching for Anthropic API calls",
+        "remediation": "Implement caching of Anthropic API responses to reduce repeated calls for identical requests.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-usage-monitoring-9",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/anthropic/route.ts",
+          "line": 63
+        },
+        "description": "Missing usage monitoring for Anthropic API calls",
+        "remediation": "Add logging and monitoring of Anthropic API usage (token count, cost) to track and control expenses.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-client-rate-limit-4",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/anthropic/route.ts",
+          "line": 63
+        },
+        "description": "Missing client-side rate limiting for Anthropic API calls",
+        "remediation": "Implement a client-side rate limiter (e.g., token bucket) to prevent exceeding Anthropic API rate limits.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-retry-strategy-8",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/custom/route.ts",
+          "line": 40
+        },
+        "description": "Missing retry strategy for custom API calls",
+        "remediation": "Implement a retry strategy with exponential backoff for custom API calls to handle transient errors.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-idempotency-7",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/custom/route.ts",
+          "line": 40
+        },
+        "description": "Missing idempotency key in custom API calls",
+        "remediation": "Add an idempotency key to custom API requests to prevent duplicate charges from retries.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-response-cache-5",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/custom/route.ts",
+          "line": 40
+        },
+        "description": "Missing response caching for custom API calls",
+        "remediation": "Implement caching of custom API responses to reduce repeated calls for identical requests.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-usage-monitoring-9",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/custom/route.ts",
+          "line": 40
+        },
+        "description": "Missing usage monitoring for custom API calls",
+        "remediation": "Add logging and monitoring of custom API usage (token count, cost) to track and control expenses.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-client-rate-limit-4",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/custom/route.ts",
+          "line": 40
+        },
+        "description": "Missing client-side rate limiting for custom API calls",
+        "remediation": "Implement a client-side rate limiter (e.g., token bucket) to prevent exceeding custom API rate limits.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-retry-strategy-8",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 27
+        },
+        "description": "Missing retry strategy for OpenAI API calls",
+        "remediation": "Implement a retry strategy with exponential backoff for OpenAI API calls to handle transient errors.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-idempotency-7",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 27
+        },
+        "description": "Missing idempotency key in OpenAI API calls",
+        "remediation": "Add an idempotency key to OpenAI API requests to prevent duplicate charges from retries.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-response-cache-5",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 27
+        },
+        "description": "Missing response caching for OpenAI API calls",
+        "remediation": "Implement caching of OpenAI API responses to reduce repeated calls for identical requests.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-usage-monitoring-9",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 27
+        },
+        "description": "Missing usage monitoring for OpenAI API calls",
+        "remediation": "Add logging and monitoring of OpenAI API usage (token count, cost) to track and control expenses.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-client-rate-limit-4",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 27
+        },
+        "description": "Missing client-side rate limiting for OpenAI API calls",
+        "remediation": "Implement a client-side rate limiter (e.g., token bucket) to prevent exceeding OpenAI API rate limits.",
+        "effort": "M",
+        "confidence": 0.9
+      }
+    ],
+    "findings_kept": [
+      {
+        "id": "cost-api-no-retry-strategy-8",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/anthropic/route.ts",
+          "line": 63
+        },
+        "description": "Missing retry strategy for Anthropic API calls",
+        "remediation": "Implement a retry strategy with exponential backoff for Anthropic API calls to handle transient errors.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-idempotency-7",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/anthropic/route.ts",
+          "line": 63
+        },
+        "description": "Missing idempotency key in Anthropic API calls",
+        "remediation": "Add an idempotency key to Anthropic API requests to prevent duplicate charges from retries.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-response-cache-5",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/anthropic/route.ts",
+          "line": 63
+        },
+        "description": "Missing response caching for Anthropic API calls",
+        "remediation": "Implement caching of Anthropic API responses to reduce repeated calls for identical requests.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-usage-monitoring-9",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/anthropic/route.ts",
+          "line": 63
+        },
+        "description": "Missing usage monitoring for Anthropic API calls",
+        "remediation": "Add logging and monitoring of Anthropic API usage (token count, cost) to track and control expenses.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-client-rate-limit-4",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/anthropic/route.ts",
+          "line": 63
+        },
+        "description": "Missing client-side rate limiting for Anthropic API calls",
+        "remediation": "Implement a client-side rate limiter (e.g., token bucket) to prevent exceeding Anthropic API rate limits.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-retry-strategy-8",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/custom/route.ts",
+          "line": 40
+        },
+        "description": "Missing retry strategy for custom API calls",
+        "remediation": "Implement a retry strategy with exponential backoff for custom API calls to handle transient errors.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-idempotency-7",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/custom/route.ts",
+          "line": 40
+        },
+        "description": "Missing idempotency key in custom API calls",
+        "remediation": "Add an idempotency key to custom API requests to prevent duplicate charges from retries.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-response-cache-5",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/custom/route.ts",
+          "line": 40
+        },
+        "description": "Missing response caching for custom API calls",
+        "remediation": "Implement caching of custom API responses to reduce repeated calls for identical requests.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-usage-monitoring-9",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/custom/route.ts",
+          "line": 40
+        },
+        "description": "Missing usage monitoring for custom API calls",
+        "remediation": "Add logging and monitoring of custom API usage (token count, cost) to track and control expenses.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-client-rate-limit-4",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/custom/route.ts",
+          "line": 40
+        },
+        "description": "Missing client-side rate limiting for custom API calls",
+        "remediation": "Implement a client-side rate limiter (e.g., token bucket) to prevent exceeding custom API rate limits.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-retry-strategy-8",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 27
+        },
+        "description": "Missing retry strategy for OpenAI API calls",
+        "remediation": "Implement a retry strategy with exponential backoff for OpenAI API calls to handle transient errors.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-idempotency-7",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 27
+        },
+        "description": "Missing idempotency key in OpenAI API calls",
+        "remediation": "Add an idempotency key to OpenAI API requests to prevent duplicate charges from retries.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-response-cache-5",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 27
+        },
+        "description": "Missing response caching for OpenAI API calls",
+        "remediation": "Implement caching of OpenAI API responses to reduce repeated calls for identical requests.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-usage-monitoring-9",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 27
+        },
+        "description": "Missing usage monitoring for OpenAI API calls",
+        "remediation": "Add logging and monitoring of OpenAI API usage (token count, cost) to track and control expenses.",
+        "effort": "M",
+        "confidence": 0.9
+      },
+      {
+        "id": "cost-api-no-client-rate-limit-4",
+        "module": "cost",
+        "severity": "medium",
+        "location": {
+          "file": "app/api/chat/openai/route.ts",
+          "line": 27
+        },
+        "description": "Missing client-side rate limiting for OpenAI API calls",
+        "remediation": "Implement a client-side rate limiter (e.g., token bucket) to prevent exceeding OpenAI API rate limits.",
+        "effort": "M",
+        "confidence": 0.9
+      }
+    ],
+    "findings_dropped": []
+  },
+  "repair": {
+    "candidates": [],
+    "over_cap_ids": [],
+    "weak_before_ids": [],
+    "weak_after_ids": [],
+    "prompt_chars": 0,
+    "prompt_budget_skipped": [],
+    "usage": null,
+    "raw_response": null,
+    "applied": [],
+    "failed": [],
+    "error": null
+  },
+  "stamp": {
+    "stamped_total": 0,
+    "stamped_severity": 0,
+    "stamped_effort": 0,
+    "rules_unknown": 0,
+    "changes": []
+  }
+}

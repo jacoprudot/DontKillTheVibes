@@ -92,4 +92,6 @@ yarn.lock
 # Internal plans and documents
 BUILD_PLAN.md
 SOUL.md
-PROMPT_NEMO_*.mddocs/internal/
+PROMPT_NEMO_*.md
+docs/internal/
+

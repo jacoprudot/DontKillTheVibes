@@ -1,173 +1,104 @@
 {
   "metadata": {
     "repo": "target-3",
-    "assessed_at": "2026-09-28T14:30:00Z",
+    "assessed_at": "2024-12-01T10:30:00Z",
     "toolkit_version": "0.1.0",
-    "llm_used": "llm-synthesis-agent"
+    "llm_used": "claude-3-5-sonnet-20241022",
+    "ruleset_version": "368-6e180554"
   },
   "summary": {
     "overall_health": "B",
-    "total_findings": 7,
-    "critical_count": 0
+    "total_findings": 5,
+    "critical_count": 0,
+    "by_severity": {
+      "high": 2,
+      "medium": 2,
+      "low": 1
+    },
+    "effort_estimate": {
+      "M": 5
+    }
   },
   "findings": [
     {
-      "id": "security-cors-wildcard-2",
-      "module": "security",
-      "severity": "medium",
-      "location": {
-        "file": "backend/main.py",
-        "line": 1
-      },
-      "description": "CORS middleware allows all origins, posing a security risk",
-      "remediation": "Restrict CORS origins to specific trusted domains",
-      "effort": "XS",
-      "confidence": 0.65,
-      "evidence": {
-        "snippet": "No evidence of restricted CORS configuration in provided files",
-        "metric": 1
-      }
-    },
-    {
-      "id": "security-missing-headers-10",
-      "module": "security",
-      "severity": "medium",
-      "location": {
-        "file": "backend/main.py",
-        "line": 1
-      },
-      "description": "Missing security headers (HSTS, CSP, X-Frame-Options, etc.)",
-      "remediation": "Add security headers middleware to protect against common web vulnerabilities",
-      "effort": "S",
-      "confidence": 0.65,
-      "evidence": {
-        "snippet": "No evidence of security headers middleware in provided files",
-        "metric": 4
-      }
-    },
-    {
-      "id": "database-missing-app-pool-8",
-      "module": "database",
-      "severity": "high",
-      "location": {
-        "file": "backend/fs_logging/agent_runs.py",
-        "line": 1
-      },
-      "description": "Application creates new SQLite connections per request instead of reusing connections",
-      "remediation": "Implement connection reuse or connection pooling for better performance under load",
-      "effort": "M",
-      "confidence": 0.85,
-      "evidence": {
-        "snippet": "open_index_db() function creates a new connection each time it's called",
-        "metric": 1
-      }
-    },
-    {
-      "id": "code-extreme-length-6",
+      "id": "code-high-complexity-2",
       "module": "code",
       "severity": "high",
       "location": {
         "file": "backend/agent/engine.py",
-        "line": 1
+        "line": 150
       },
-      "description": "_run_with_session method exceeds 150 lines, indicating excessive complexity",
-      "remediation": "Break into smaller functions: handle_step, process_tool_call, manage_streaming",
-      "effort": "L",
-      "confidence": 0.7,
-      "evidence": {
-        "snippet": "Method appears to exceed 150 lines based on file size and structure",
-        "metric": 200
-      }
+      "description": "Function _extract_input_images has high cyclomatic complexity due to nested loops and multiple conditionals",
+      "remediation": "Refactor to extract inner loops into helper functions and reduce nesting depth",
+      "effort": "M",
+      "confidence": 0.85
     },
     {
-      "id": "code-long-parameter-list-8",
+      "id": "code-long-function-7",
       "module": "code",
       "severity": "medium",
       "location": {
         "file": "backend/agent/engine.py",
-        "line": 1
+        "line": 250
       },
-      "description": "AgentEngine.__init__ has 13 parameters which exceeds the recommended limit of 5",
-      "remediation": "Use parameter object or builder pattern to reduce parameter count",
+      "description": "Function _run_with_session exceeds 100 lines, making it difficult to read and maintain",
+      "remediation": "Break into smaller functions: one for processing steps, one for handling events, one for tool execution",
       "effort": "M",
-      "confidence": 0.9,
-      "evidence": {
-        "snippet": "AgentEngine.__init__ has 13 parameters: send_message, variant_index, recorder, openai_api_key, openai_base_url, anthropic_api_key, gemini_api_key, replicate_api_key, should_generate_images, should_extract_assets, asset_base_url, initial_file_state, option_codes",
-        "metric": 13
-      }
+      "confidence": 0.9
     },
     {
-      "id": "performance-no-compression-13",
-      "module": "performance",
-      "severity": "medium",
-      "location": {
-        "file": "backend/main.py",
-        "line": 1
-      },
-      "description": "API responses lack compression, causing unnecessary bandwidth usage",
-      "remediation": "Add gzip or Brotli compression middleware to HTTP responses",
-      "effort": "M",
-      "confidence": 0.7,
-      "evidence": {
-        "snippet": "No evidence of compression middleware in provided backend files",
-        "metric": 100
-      }
-    },
-    {
-      "id": "code-structural-duplication-high-4",
+      "id": "code-structural-duplication-medium-5",
       "module": "code",
+      "severity": "low",
+      "location": {
+        "file": "backend/agent/providers/",
+        "line": 0
+      },
+      "description": "Provider implementations (Anthropic, Gemini, OpenAI) share similar structures for tool handling and event streaming",
+      "remediation": "Extract common functionality into a base provider class to reduce duplication",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "cost-api-in-loop-3",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "backend/agent/tools/runtime.py",
+        "line": 20
+      },
+      "description": "Fixed batch size of 20 for image processing tools may not be optimal for all use cases, potentially causing inefficient API usage",
+      "remediation": "Make batch size configurable based on workload characteristics or implement dynamic batching",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "module": "flows",
       "severity": "medium",
       "location": {
-        "file": "backend/agent/providers/anthropic/provider.py",
-        "line": 1
+        "file": "backend/agent/engine.py",
+        "line": 240
       },
-      "description": "AnthropicProviderSession, OpenAIProviderSession, and GeminiProviderSession classes have similar structure and methods",
-      "remediation": "Extract common functionality to a base ProviderSession class",
+      "description": "Agent processing lacks overall timeout, relying only on max_steps limit which may not prevent excessively long runs",
+      "remediation": "Add configurable timeout for overall agent processing in addition to max_steps limit",
       "effort": "M",
-      "confidence": 0.8,
-      "evidence": {
-        "snippet": "All three classes implement ProviderSession with similar method signatures and patterns",
-        "metric": 0.85
-      }
+      "confidence": 0.65
     }
   ],
   "work_plan": {
     "phases": {
       "30_days": [
-        "security-cors-wildcard-2",
-        "security-missing-headers-10"
+        "flows-missing-timeout-6"
       ],
       "60_days": [
-        "database-missing-app-pool-8",
-        "code-long-parameter-list-8",
-        "performance-no-compression-13",
-        "code-structural-duplication-high-4"
+        "code-high-complexity-2",
+        "code-long-function-7",
+        "code-structural-duplication-medium-5",
+        "cost-api-in-loop-3"
       ],
-      "90_days": [
-        "code-extreme-length-6"
-      ]
+      "90_days": []
     },
-    "dependencies": [
-      {
-        "from": "database-missing-app-pool-8",
-        "to": "code-extreme-length-6",
-        "type": "blocks"
-      },
-      {
-        "from": "database-missing-app-pool-8",
-        "to": "code-long-parameter-list-8",
-        "type": "blocks"
-      },
-      {
-        "from": "database-missing-app-pool-8",
-        "to": "performance-no-compression-13",
-        "type": "blocks"
-      },
-      {
-        "from": "database-missing-app-pool-8",
-        "to": "code-structural-duplication-high-4",
-        "type": "blocks"
-      }
-    ]
+    "dependencies": []
   }
 }

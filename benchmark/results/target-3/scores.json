@@ -1,86 +1,114 @@
 {
   "target": "target-3",
   "mock": false,
-  "created_at": "2026-10-02T23:17:27.437Z",
+  "created_at": "2026-10-03T21:23:22.310Z",
   "judge_model": "nvidia/nemotron-3-ultra-550b-a55b",
   "judge_base_url": "https://integrate.api.nvidia.com/v1",
   "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\target-3",
   "mock_notice": null,
   "model_under_test": "nvidia/nemotron-3-super-120b-a12b",
   "commit": "d026163f586dfa8c5c10d28c36edd59a9d3b0e88",
-  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics.",
+  "judge_runs": 3,
+  "run_agreement": "naive 100%, toolkit 100%, orchestrated 100%",
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
   "totals": {
-    "claims": 6,
-    "toolkit": 3,
-    "naive": 3,
-    "judged": 6
+    "claims": 22,
+    "toolkit": 5,
+    "orchestrated": 5,
+    "naive": 12,
+    "judged": 22,
+    "unverifiable": 21
   },
   "summary_by_arm": {
-    "toolkit": {
-      "claims": 3,
-      "judged": 3,
-      "real": 0,
-      "judgeGrounded": 0,
-      "mechGrounded": 3,
-      "mechUngrounded": 0,
-      "mismatch": 0,
-      "actionableSum": 5,
-      "actionableN": 3,
-      "security": 0,
-      "securityFn": 0,
-      "claimsWithCitations": 3,
-      "citationsTotal": 3,
-      "meanActionability": 1.67,
-      "precision": 0,
-      "judgeGroundedRate": 0
-    },
     "naive": {
-      "claims": 3,
-      "judged": 3,
-      "real": 2,
-      "judgeGrounded": 2,
+      "claims": 12,
+      "judged": 12,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 12,
+      "judgeGrounded": 7,
       "mechGrounded": 0,
-      "mechUngrounded": 3,
-      "mismatch": 2,
-      "actionableSum": 9,
-      "actionableN": 3,
-      "security": 1,
+      "mechUngrounded": 12,
+      "mismatch": 7,
+      "actionableSum": 33,
+      "actionableN": 12,
+      "security": 0,
       "securityFn": 0,
       "claimsWithCitations": 0,
       "citationsTotal": 0,
-      "meanActionability": 3,
-      "precision": 0.667,
-      "judgeGroundedRate": 0.667
+      "weakCitations": 0,
+      "meanActionability": 2.75,
+      "precision": null,
+      "judgeGroundedRate": 0.583
+    },
+    "toolkit": {
+      "claims": 5,
+      "judged": 5,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 5,
+      "judgeGrounded": 3,
+      "mechGrounded": 4,
+      "mechUngrounded": 1,
+      "mismatch": 1,
+      "actionableSum": 9,
+      "actionableN": 5,
+      "security": 0,
+      "securityFn": 0,
+      "claimsWithCitations": 5,
+      "citationsTotal": 5,
+      "weakCitations": 0,
+      "meanActionability": 1.8,
+      "precision": null,
+      "judgeGroundedRate": 0.6
+    },
+    "orchestrated": {
+      "claims": 5,
+      "judged": 5,
+      "real": 1,
+      "falseCount": 0,
+      "unverifiable": 4,
+      "judgeGrounded": 5,
+      "mechGrounded": 5,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 13,
+      "actionableN": 5,
+      "security": 3,
+      "securityFn": 0,
+      "claimsWithCitations": 5,
+      "citationsTotal": 5,
+      "weakCitations": 0,
+      "meanActionability": 2.6,
+      "precision": 1,
+      "judgeGroundedRate": 1
     }
   },
   "claims": [
     {
       "label": "C1",
-      "arm": "toolkit",
-      "source_id": "code-print-statement-5",
-      "title": "code-print-statement-5",
-      "severity": "low",
-      "module": "code",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "**Example:** Input `\"hello\"` produces `\"hello</html>\"`, which is not valid HTML.",
+      "severity": null,
+      "module": null,
       "security_relevant": false,
       "judge": {
+        "verdict": "unverifiable",
         "real": false,
+        "unverifiable": true,
         "grounded": false,
-        "actionable": 2,
-        "reason": "Cited location (provider.py:120) shows image block processing logic, not a print statement; claim mentions multiple files but citation doesn't support it."
+        "actionable": 1,
+        "reason": "Example claim without code to verify",
+        "votes": {
+          "unverifiable": 2
+        }
       },
-      "grounded_mechanical": "grounded",
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
       "mechanical": {
-        "citations": [
-          {
-            "file": "backend/agent/providers/anthropic/provider.py",
-            "line": 120,
-            "origin": "structured",
-            "status": "ok",
-            "fileLines": 509,
-            "reason": null
-          }
-        ],
-        "verified": 1,
+        "citations": [],
+        "verified": 0,
         "unverified": 0,
         "mismatched": 0,
         "repo_available": true
@@ -89,18 +117,24 @@
     {
       "label": "C2",
       "arm": "naive",
-      "source_id": "naive-claim-2",
-      "title": "2. Disabled Pre-Commit Hooks for Testing and Type Checking",
+      "source_id": "naive-claim-4",
+      "title": "The pre-commit configuration does not enforce these checks, allowing code to be committed without passing tests or type ",
       "severity": null,
       "module": null,
       "security_relevant": false,
       "judge": {
-        "real": true,
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
         "grounded": true,
-        "actionable": 4,
-        "reason": "File backend/.pre-commit-config.yaml exists in repo; disabling test/type-check hooks is a genuine risk; fix is concrete (uncomment hooks)."
+        "actionable": 1,
+        "reason": "Pre-commit config not shown to verify",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
       "mechanical": {
         "citations": [],
         "verified": 0,
@@ -111,31 +145,28 @@
     },
     {
       "label": "C3",
-      "arm": "toolkit",
-      "source_id": "performance-no-internal-compression-3",
-      "title": "performance-no-internal-compression-3",
-      "severity": "medium",
-      "module": "performance",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "**Note:** Several critical files were truncated in the provided content (e.g., `backend/agent/engine.py`, `backend/agent",
+      "severity": null,
+      "module": null,
       "security_relevant": false,
       "judge": {
+        "verdict": "unverifiable",
         "real": false,
+        "unverifiable": true,
         "grounded": false,
         "actionable": 1,
-        "reason": "Cited location (provider.py:140) shows OpenAI-to-Claude message conversion, not an image quality adjustment loop."
+        "reason": "Meta-comment about provided content, not repository issue",
+        "votes": {
+          "unverifiable": 2
+        }
       },
-      "grounded_mechanical": "grounded",
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
       "mechanical": {
-        "citations": [
-          {
-            "file": "backend/agent/providers/anthropic/provider.py",
-            "line": 140,
-            "origin": "structured",
-            "status": "ok",
-            "fileLines": 509,
-            "reason": null
-          }
-        ],
-        "verified": 1,
+        "citations": [],
+        "verified": 0,
         "unverified": 0,
         "mismatched": 0,
         "repo_available": true
@@ -144,18 +175,24 @@
     {
       "label": "C4",
       "arm": "naive",
-      "source_id": "naive-claim-3",
-      "title": "Additional Observations",
+      "source_id": "naive-claim-12",
+      "title": "The repository maintains good practices in most areas, but the two identified issues should be addressed to align with t",
       "severity": null,
       "module": null,
-      "security_relevant": true,
+      "security_relevant": false,
       "judge": {
-        "real": true,
-        "grounded": true,
-        "actionable": 2,
-        "reason": "Verifiable observations: types.py exists with SSRF protection; engine.py content not visible; mostly observations not actionable fixes."
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Opinion summary, not verifiable claim",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
       "mechanical": {
         "citations": [],
         "verified": 0,
@@ -167,18 +204,24 @@
     {
       "label": "C5",
       "arm": "naive",
-      "source_id": "naive-claim-1",
-      "title": "1. Unnecessary Print Statement in Anthropic Image Processing",
+      "source_id": "naive-claim-6",
+      "title": "**File:** `backend/debug/DebugFileWriter.py`  ",
       "severity": null,
       "module": null,
       "security_relevant": false,
       "judge": {
+        "verdict": "unverifiable",
         "real": false,
-        "grounded": false,
-        "actionable": 3,
-        "reason": "Repository structure lists provider.py but not image.py in anthropic/; cannot verify file or print statement exists."
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "extract_html_content adds </html> to text without HTML tags, producing invalid HTML",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
       "mechanical": {
         "citations": [],
         "verified": 0,
@@ -189,27 +232,577 @@
     },
     {
       "label": "C6",
-      "arm": "toolkit",
-      "source_id": "performance-no-adaptive-concurrency-9",
-      "title": "performance-no-adaptive-concurrency-9",
-      "severity": "medium",
-      "module": "performance",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "- `[0]` gives the original `text`",
+      "severity": null,
+      "module": null,
       "security_relevant": false,
       "judge": {
+        "verdict": "unverifiable",
         "real": false,
-        "grounded": false,
-        "actionable": 2,
-        "reason": "Cited location (engine.py:100) shows _extract_input_images method, not a fixed maximum step configuration."
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Correctly explains why extract_html_content produces invalid HTML",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "toolkit",
+      "source_id": "code-long-function-7",
+      "title": "code-long-function-7",
+      "severity": "medium",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Function length claim not verifiable from 7-line snippet",
+        "votes": {
+          "unverifiable": 2
+        }
       },
       "grounded_mechanical": "grounded",
+      "weak_citation": false,
       "mechanical": {
         "citations": [
           {
             "file": "backend/agent/engine.py",
-            "line": 100,
+            "line": 250,
             "origin": "structured",
             "status": "ok",
             "fileLines": 387,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-security-headers-10",
+      "title": "flows-missing-security-headers-10",
+      "severity": "low",
+      "module": "flows",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "No code shown to verify missing security headers",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "backend/routes/home.py",
+            "line": 8,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 12,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C9",
+      "arm": "toolkit",
+      "source_id": "code-structural-duplication-medium-5",
+      "title": "code-structural-duplication-medium-5",
+      "severity": "low",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Provider code not shown to verify duplication",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "backend/agent/providers/",
+            "line": 0,
+            "origin": "structured",
+            "status": "missing-file",
+            "reason": "not a regular file"
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 1,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "**Recommendation:** Add a check for the presence of HTML tags before attempting extraction, or return the original text ",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Specific fix for verified extract_html_content bug",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C11",
+      "arm": "toolkit",
+      "source_id": "code-high-complexity-2",
+      "title": "code-high-complexity-2",
+      "severity": "high",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Cited line 150 shows _stream_code_preview, not _extract_input_images",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "backend/agent/engine.py",
+            "line": 150,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 387,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "**File:** `backend/.pre-commit-config.yaml`  ",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Pre-commit config and AGENTS.md not shown",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C13",
+      "arm": "toolkit",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Snippet doesn't show timeout configuration",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "backend/agent/engine.py",
+            "line": 240,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 387,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "- `[-1]` gives the original `text`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Explains rsplit behavior in extract_html_content bug",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C15",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "No middleware code shown to verify",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "backend/routes/home.py",
+            "line": 8,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 12,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "- Running type checking after every code change: `cd backend && poetry run pyright`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "States a command, not a repository issue",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C17",
+      "arm": "orchestrated",
+      "source_id": "flows-retry-no-backoff-4",
+      "title": "flows-retry-no-backoff-4",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Screenshot route code not shown",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "backend/routes/screenshot.py",
+            "line": 69,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 108,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "Based on the provided files, I've identified the following specific issues:",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Introductory statement, not specific claim",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C19",
+      "arm": "toolkit",
+      "source_id": "cost-api-in-loop-3",
+      "title": "cost-api-in-loop-3",
+      "severity": "high",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Line 20 shows imports, not batch size configuration",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "backend/agent/tools/runtime.py",
+            "line": 20,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 590,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C20",
+      "arm": "orchestrated",
+      "source_id": "cost-unoptimized-images-8",
+      "title": "cost-unoptimized-images-8",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "CLAUDE_MAX_IMAGE_DIMENSION=7990 exceeds recommended 1568 per comment",
+        "votes": {
+          "real": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "backend/agent/providers/anthropic/image.py",
+            "line": 41,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 119,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "**Recommendation:** Add hooks for running `poetry run pytest` and `poetry run pyright` to the pre-commit configuration.",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Specific hooks to add for pytest and pyright",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C22",
+      "arm": "orchestrated",
+      "source_id": "code-print-statement-5",
+      "title": "code-print-statement-5",
+      "severity": "low",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Main.py line 31 not shown",
+        "votes": {
+          "unverifiable": 2
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "backend/main.py",
+            "line": 31,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 62,
             "reason": null
           }
         ],
