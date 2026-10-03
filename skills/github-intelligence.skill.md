@@ -70,109 +70,113 @@ Combine all findings into a project-profile.json that summarizes:
 ## Decision Trees
 
 ### Tech Stack Inference
+> The rules below detect technology and infrastructure signals. They are **profile
+> metadata** only: emit each match as part of `project-profile.json` (techStack /
+> infrastructure / ciCd) to inform the other trees. They are **never** emitted as
+> findings, and they never appear in the `findings[]` array.
 ```markdown
 1. IF package.json exists
-   → FINDING: github-tech-stack-1 (severity: info, effort: XS)
+   → PROFILE: github-tech-stack-1 (severity: info, effort: XS)
    - Evidence: "package.json present at repository root"
    - Remediation: "No action required — confirms the Node.js runtime; scope JS/TS checks accordingly"
 2. IF package.json AND express in deps
-   → FINDING: github-tech-stack-2 (severity: info, effort: XS)
+   → PROFILE: github-tech-stack-2 (severity: info, effort: XS)
    - Evidence: "express listed in package.json dependencies"
    - Remediation: "No action required — informs request-flow and middleware review"
 3. IF package.json AND next in deps
-   → FINDING: github-tech-stack-3 (severity: info, effort: XS)
+   → PROFILE: github-tech-stack-3 (severity: info, effort: XS)
    - Evidence: "next listed in package.json dependencies"
    - Remediation: "No action required — informs routing and build review"
 4. IF package.json AND nest in deps
-   → FINDING: github-tech-stack-4 (severity: info, effort: XS)
+   → PROFILE: github-tech-stack-4 (severity: info, effort: XS)
    - Evidence: "nest listed in package.json dependencies"
    - Remediation: "No action required — informs module and DI structure review"
 5. IF package.json AND react in deps
-   → FINDING: github-tech-stack-5 (severity: info, effort: XS)
+   → PROFILE: github-tech-stack-5 (severity: info, effort: XS)
    - Evidence: "react listed in package.json dependencies"
    - Remediation: "No action required — informs frontend review"
 6. IF package.json AND typescript in deps
-   → FINDING: github-tech-stack-6 (severity: info, effort: XS)
+   → PROFILE: github-tech-stack-6 (severity: info, effort: XS)
    - Evidence: "typescript listed in package.json dependencies"
    - Remediation: "No action required — enables the code-quality TypeScript rules"
 7. IF requirements.txt OR pyproject.toml exists
-   → FINDING: github-tech-stack-7 (severity: info, effort: XS)
+   → PROFILE: github-tech-stack-7 (severity: info, effort: XS)
    - Evidence: "requirements.txt or pyproject.toml present at repository root"
    - Remediation: "No action required — confirms the Python runtime; scope Python checks accordingly"
 8. IF project_is_python AND django in deps
-   → FINDING: github-tech-stack-8 (severity: info, effort: XS)
+   → PROFILE: github-tech-stack-8 (severity: info, effort: XS)
    - Evidence: "django declared in requirements.txt or pyproject.toml"
    - Remediation: "No action required — informs ORM and security review"
 9. IF project_is_python AND fastapi in deps
-   → FINDING: github-tech-stack-9 (severity: info, effort: XS)
+   → PROFILE: github-tech-stack-9 (severity: info, effort: XS)
    - Evidence: "fastapi declared in requirements.txt or pyproject.toml"
    - Remediation: "No action required — informs request-flow review"
 10. IF project_is_python AND flask in deps
-    → FINDING: github-tech-stack-10 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-10 (severity: info, effort: XS)
     - Evidence: "flask declared in requirements.txt or pyproject.toml"
     - Remediation: "No action required — informs request-flow review"
 11. IF project_is_python AND (pandas OR numpy) in deps
-    → FINDING: github-tech-stack-11 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-11 (severity: info, effort: XS)
     - Evidence: "pandas or numpy declared in the dependency manifest"
     - Remediation: "No action required — flags a data-science workload for memory and IO review"
 12. IF pom.xml OR build.gradle exists
-    → FINDING: github-tech-stack-12 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-12 (severity: info, effort: XS)
     - Evidence: "pom.xml or build.gradle present at repository root"
     - Remediation: "No action required — confirms the Java runtime and build tool"
 13. IF project_is_java AND spring-boot in deps
-    → FINDING: github-tech-stack-13 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-13 (severity: info, effort: XS)
     - Evidence: "spring-boot declared in pom.xml or build.gradle"
     - Remediation: "No action required — informs configuration and security review"
 14. IF project_is_java AND maven build
-    → FINDING: github-tech-stack-14 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-14 (severity: info, effort: XS)
     - Evidence: "pom.xml present with Maven plugin configuration"
     - Remediation: "No action required — informs CI and dependency review"
 15. IF project_is_java AND gradle build
-    → FINDING: github-tech-stack-15 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-15 (severity: info, effort: XS)
     - Evidence: "build.gradle present with Gradle configuration"
     - Remediation: "No action required — informs CI and dependency review"
 16. IF go.mod exists
-    → FINDING: github-tech-stack-16 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-16 (severity: info, effort: XS)
     - Evidence: "go.mod present at repository root"
     - Remediation: "No action required — confirms the Go runtime"
 17. IF Cargo.toml exists
-    → FINDING: github-tech-stack-17 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-17 (severity: info, effort: XS)
     - Evidence: "Cargo.toml present at repository root"
     - Remediation: "No action required — confirms the Rust runtime"
 18. IF composer.json exists
-    → FINDING: github-tech-stack-18 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-18 (severity: info, effort: XS)
     - Evidence: "composer.json present at repository root"
     - Remediation: "No action required — confirms the PHP runtime"
 19. IF Dockerfile exists
-    → FINDING: github-tech-stack-19 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-19 (severity: info, effort: XS)
     - Evidence: "Dockerfile present at repository root"
     - Remediation: "No action required — informs deployment and image-hardening review"
 20. IF Dockerfile exists AND docker-compose.yml exists
-    → FINDING: github-tech-stack-20 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-20 (severity: info, effort: XS)
     - Evidence: "docker-compose.yml defines more than one service"
     - Remediation: "No action required — informs service-topology and network review"
 21. IF k8s/ OR kubernetes/ directory exists
-    → FINDING: github-tech-stack-21 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-21 (severity: info, effort: XS)
     - Evidence: "Kubernetes manifests present under k8s/ or kubernetes/"
     - Remediation: "No action required — informs capacity and configuration review"
 22. IF .github/workflows/ exists
-    → FINDING: github-tech-stack-22 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-22 (severity: info, effort: XS)
     - Evidence: ".github/workflows contains one or more workflow files"
     - Remediation: "No action required — enables the GitHub Actions security tree"
 23. IF .gitlab-ci.yml exists
-    → FINDING: github-tech-stack-23 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-23 (severity: info, effort: XS)
     - Evidence: ".gitlab-ci.yml present at repository root"
     - Remediation: "No action required — CI runs outside GitHub Actions"
 24. IF jenkins/ directory exists
-    → FINDING: github-tech-stack-24 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-24 (severity: info, effort: XS)
     - Evidence: "Jenkinsfile or jenkins/ configuration present"
     - Remediation: "No action required — CI runs outside GitHub Actions"
 25. IF README.md contains badges
-    → FINDING: github-tech-stack-25 (severity: info, effort: XS)
+    → PROFILE: github-tech-stack-25 (severity: info, effort: XS)
     - Evidence: "README.md renders status badges (CI, coverage, version)"
     - Remediation: "No action required — badge ecosystem is a maturity signal"
 26. IF multiple language manifests detected
-    → FINDING: github-tech-stack-26 (severity: low, effort: S)
+    → PROFILE: github-tech-stack-26 (severity: low, effort: S)
     - Evidence: "Two or more of package.json, requirements.txt, pom.xml, go.mod present"
     - Remediation: "Confirm each language keeps its own lint/test pipeline; a polyglot repo hides untested surfaces"
 ```
@@ -384,10 +388,11 @@ Each finding must conform to the finding-schema.json with:
 - Issues: median response 4h, closure rate 75%, PR review depth 8 comments
 - No logs found in repository (expected for API service)
 **Output**:
-- findings[]: 
-  - github-tech-stack-1 (severity: info, effort: XS): "Node.js project (package.json) with Express in dependencies"
+- findings[]:
   - github-commit-history-2 (severity: info, effort: XS): "Highly active project (15 commits/week)"
   - github-issue-health-2 (severity: info, effort: XS): "Responsive team (median first response 4h)"
+- project-profile signals (metadata only, never findings):
+  - github-tech-stack-1 (severity: info, effort: XS): "Node.js project (package.json) with Express in dependencies"
 - project-profile.json: 
 ```json
   {
@@ -434,10 +439,11 @@ Each finding must conform to the finding-schema.json with:
 - README.md outdated, missing installation instructions (no canonical rule for documentation quality yet — recorded only in project-profile.json repositoryHealth.documentationQuality)
 **Output**:
 - findings[]:
-  - github-tech-stack-7 (severity: info, effort: XS): "Python project (requirements.txt) running unsupported Django 1.8"
   - github-commit-history-1 (severity: medium, effort: M): "Stale project with low activity (0.5 commits/week)"
   - github-issue-health-1 (severity: medium, effort: M): "Slow triage (median first response 30 days)"
   - github-issue-health-3 (severity: high, effort: M): "Backlog growing (issue closure rate 20%)"
+- project-profile signals (metadata only, never findings):
+  - github-tech-stack-7 (severity: info, effort: XS): "Python project (requirements.txt) running unsupported Django 1.8"
 - project-profile.json:
 ```json
   {
@@ -489,11 +495,12 @@ Each finding must conform to the finding-schema.json with:
 - Issues: median response 2h, closure rate 92%, PR review depth 15 comments
 - No logs found (expected for compiled binary service)
 **Output**:
-- findings[]: 
-  - github-tech-stack-16 (severity: info, effort: XS): "Go project (go.mod) using Gin and Gorilla WebSocket"
+- findings[]:
   - github-commit-history-2 (severity: info, effort: XS): "Extremely active project (45 commits/week, 50% refactors)"
   - github-issue-health-2 (severity: info, effort: XS): "Elite team with rapid first response (median 2h)"
   - github-issue-health-6 (severity: info, effort: XS): "Deep review process (15 comments per PR)"
+- project-profile signals (metadata only, never findings):
+  - github-tech-stack-16 (severity: info, effort: XS): "Go project (go.mod) using Gin and Gorilla WebSocket"
 - project-profile.json: 
 ```json
   {
