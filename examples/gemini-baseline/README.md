@@ -1,15 +1,20 @@
 # Gemini Baseline — real Gemini run, verbatim, NON-CONFORMANT
 
-Estos dos reportes son la **salida cruda y sin editar** de Gemini (Antigravity IDE
+Estos dos reportes son la **salida cruda de Gemini** (Antigravity IDE
 Synthesis Agent) del 2026-09-29 contra `temp/realworld/` (gothinkster RealWorld API)
-y `temp/chilo-legal/`.
+y un proyecto legal privado con RAG (`legal-rag-app`, nombre anonimizado).
+
+> **Redacción de identificadores:** el reporte de `legal-rag-app` tuvo su nombre de
+> repo y el nombre de su red interna Docker redactados (el proyecto es privado y
+> el assessment contenía un hallazgo de seguridad localizable). El resto se conserva
+> tal cual lo emitió Gemini.
 
 > **Sobre la palabra "simulated":** los apéndices de los propios reportes dicen
 > *"Full deep-dive simulated run"*, pero eso se refiere a que **los MCPs no estaban
 > conectados**, no a que los hallazgos fueran inventados. Las afirmaciones factuales
 > son reales y verificables contra el código; lo que se improvisó fue el **formato**,
-> no el contenido. Los archivos se conservan tal cual los emitió Gemini: si se
-> editaran, dejarían de ser evidencia.
+> no el contenido. Los archivos se conservan tal cual los emitió Gemini, salvo la
+> redacción de identificadores en `legal-rag-app` ya descrita.
 
 ## Por qué se conservan
 

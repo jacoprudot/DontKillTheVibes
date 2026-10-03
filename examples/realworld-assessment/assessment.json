@@ -8,10 +8,11 @@
     "notes": "Rules applied from skills: security-assessment (Configuration Security, GHA N/A), database-assessment (Query Anti-Patterns), code-quality-assessment (TS rules), performance-assessment (static review only). Every finding id below is a canonical `→ FINDING:` rule id from skills/*.skill.md."
   },
   "summary": {
+    "overall_health": "C",
     "total_findings": 7,
     "by_severity": { "critical": 1, "high": 3, "medium": 2, "low": 0, "info": 1 },
     "by_module": { "security": 3, "database": 2, "code": 2 },
-    "effort_estimate": { "XS": 2, "S": 4, "M": 1 }
+    "effort_estimate": { "XS": 3, "S": 3, "M": 1 }
   },
   "findings": [
     {
@@ -21,7 +22,7 @@
       "location": { "file": "src/app/routes/auth/auth.ts", "line": 16, "function": "required/optional jwt middleware" },
       "description": "JWT secret falls back to the hardcoded default 'superSecret' when JWT_SECRET is not set (also at auth.ts:21 and token.utils.ts:4). Any deployment missing the env var accepts tokens signed with a publicly known secret — full auth bypass. Rule: security-assessment Configuration Security (jwt_secret_default_or_short → security-jwt-weak-3, critical).",
       "remediation": "Remove the fallback: throw at boot if JWT_SECRET is unset. Rotate any token signed with 'superSecret'. Add a startup validation step (e.g. envalid/zod) for required env vars.",
-      "effort": "S",
+      "effort": "XS",
       "confidence": 0.95,
       "tags": ["jwt", "auth", "secret-management"],
       "evidence": { "snippet": "secret: process.env.JWT_SECRET || 'superSecret'" }
@@ -103,7 +104,7 @@
   ],
   "work_plan": {
     "phases": [
-      { "name": "30 Days (Quick Wins)", "findings": ["security-jwt-weak-3", "security-cors-wildcard-2", "security-error-detail-1", "database-sequential-pagination-1", "database-overfetch-relation-1"], "total_effort": "S" },
+      { "name": "30 Days (Quick Wins)", "findings": ["security-jwt-weak-3", "security-cors-wildcard-2", "security-error-detail-1", "database-sequential-pagination-1", "database-overfetch-relation-1"], "total_effort": "L" },
       { "name": "60 Days (Core Fixes)", "findings": ["code-any-type-6"], "total_effort": "S" },
       { "name": "90 Days (Strategic)", "findings": ["code-missing-validation-4"], "total_effort": "M" }
     ],
@@ -111,5 +112,63 @@
       "database-overfetch-relation-1": ["database-sequential-pagination-1"],
       "code-any-type-6": ["code-missing-validation-4"]
     }
-  }
+  },
+  "priority_scores": [
+    {
+      "id": "security-jwt-weak-3",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.95,
+      "score": 142.5,
+      "canonical_rule": "security-jwt-weak-3"
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.9,
+      "score": 58.5,
+      "canonical_rule": "database-sequential-pagination-1"
+    },
+    {
+      "id": "database-overfetch-relation-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.85,
+      "score": 55.25,
+      "canonical_rule": "database-overfetch-relation-1"
+    },
+    {
+      "id": "code-missing-validation-4",
+      "severity": "high",
+      "module": "code",
+      "confidence": 0.9,
+      "score": 45,
+      "canonical_rule": "code-missing-validation-4"
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.9,
+      "score": 27,
+      "canonical_rule": "security-cors-wildcard-2"
+    },
+    {
+      "id": "code-any-type-6",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.85,
+      "score": 17,
+      "canonical_rule": "code-any-type-6"
+    },
+    {
+      "id": "security-error-detail-1",
+      "severity": "info",
+      "module": "security",
+      "confidence": 0.7,
+      "score": 1.05,
+      "canonical_rule": "security-error-detail-1"
+    }
+  ]
 }
