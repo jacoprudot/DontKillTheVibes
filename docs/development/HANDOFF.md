@@ -151,7 +151,7 @@ hoy `git-mcp` y `benchmark-mcp` son código muerto en la ruta del CLI.
 
 **Siguiente:** clasificador post-hoc de línea + reintento dirigido (en curso), y después
 integrar B2 como brazo C del benchmark **cuando Kimi cierre** su ronda del harness. Plan
-completo de validación en `docs/internal/B2_VALIDATION_PLAN.md`.
+completo de validación en `docs/development/B2_VALIDATION_PLAN.md`.
 
 ## Mapa de verificación (todo debe seguir pasando)
 
