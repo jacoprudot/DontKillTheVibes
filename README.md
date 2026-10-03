@@ -2,6 +2,8 @@
 
 # DontKillTheVibes (DKTV) 🚀
 
+![CI](https://github.com/jacoprudot/DontKillTheVibes/actions/workflows/ci.yml/badge.svg)
+
 The LLM-orchestrated assessment toolkit for vibe coders, scale-ups, and fast-moving engineering teams.
 
 > **Want this run on *your* repo, read by a human?**
