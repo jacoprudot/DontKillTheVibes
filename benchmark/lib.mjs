@@ -30,7 +30,12 @@ import { dirname, resolve, join, relative } from 'node:path';
 export const BENCH_DIR = resolve(dirname(fileURLToPath(import.meta.url)));
 export const REPO_ROOT = resolve(BENCH_DIR, '..');
 export const WORK_DIR = join(BENCH_DIR, 'work');
-export const RESULTS_DIR = join(BENCH_DIR, 'results');
+// Env override so pilot/adversarial runs write to a separate evidence dir
+// (e.g. BENCH_RESULTS_DIR=benchmark/results-local-qwen) instead of clobbering
+// the shipped benchmark/results evidence. Default unchanged.
+export const RESULTS_DIR = process.env.BENCH_RESULTS_DIR
+  ? resolve(REPO_ROOT, process.env.BENCH_RESULTS_DIR)
+  : join(BENCH_DIR, 'results');
 export const TMP_DIR = join(BENCH_DIR, 'tmp');
 
 export const MOCK_BANNER_MD = [
