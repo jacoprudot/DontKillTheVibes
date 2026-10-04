@@ -51,14 +51,21 @@ One digest, one LLM call, automatic validation retries. Needs any OpenAI-compati
 
 ```bash
 pnpm install && pnpm build
-LLM_API_KEY=xxx LLM_MODEL=moonshotai/kimi-k2-instruct-0905 pnpm run dktv:assess --target /path/to/repo
+LLM_API_KEY=xxx LLM_MODEL=nvidia/nemotron-3-super-120b-a12b pnpm run dktv:assess --target /path/to/repo
 ```
 
-**Reasoning models need a bigger completion budget.** Nemotron-class models spend thousands of tokens on hidden reasoning before emitting anything — with the default budget a medium repo can come back *empty* with `finish_reason: length`:
+**Reasoning models need a bigger completion budget — and a smaller digest.** Nemotron-class models spend thousands of tokens on hidden reasoning before emitting anything. Two failure modes we hit on a real run against a 319-file vibe-coded target (verified Oct 2026):
+
+- **Default budget (8192):** empty response, `finish_reason: length` — all tokens burned on reasoning.
+- **Large digest (~107k tokens):** empty response, `finish_reason: stop` — reasoning ends without emitting anything. Even a *valid* JSON can come back with **0 findings**, which the validator accepts silently. If you get "VALID: 0 findings" on a repo that clearly has issues, the model gave up — re-run with a smaller digest.
+
+What worked end-to-end on that target:
 
 ```bash
-MAX_TOKENS=65536 LLM_API_KEY=xxx LLM_MODEL=nvidia/nemotron-3-super-120b-a12b pnpm run dktv:assess --target /path/to/repo
+MAX_TOKENS=65536 DIGEST_CONTEXT_CHARS=40000 LLM_API_KEY=xxx LLM_MODEL=nvidia/nemotron-3-super-120b-a12b pnpm run dktv:assess --target /path/to/repo
 ```
+
+Model IDs move: NIM retires IDs (`moonshotai/kimi-k2-instruct-0905` now 404s) and gates some models per account ("Function not found for account"). Check current IDs on build.nvidia.com; list what your key can actually call with `curl -H "Authorization: Bearer $LLM_API_KEY" https://integrate.api.nvidia.com/v1/models`.
 
 ### Path C — 8-agent orchestrator (best recall)
 
@@ -80,7 +87,7 @@ Enforces the document shape, every field type from `templates/finding-schema.jso
 
 ## Measured results (not claimed)
 
-5 real public repos (RealWorld API, target-2, target-3, target-4, target-1) × 3 approaches × a **blind judge** (a different model, 3 runs per target — we publish ranges, not decimals):
+5 real public repos — the RealWorld API control (named; already public via `examples/`) plus 4 vibe-coded targets published under neutral labels target-1..target-4 (nobody wants their repo on a public scoreboard) — × 3 approaches × a **blind judge** (a different model, 3 runs per target — we publish ranges, not decimals):
 
 | Arm | What it is | Verified findings |
 |---|---|---|

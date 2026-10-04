@@ -17,10 +17,13 @@
  * Options:
  *   --target <dir>       Repository to assess (default: cwd)
  *   --out <dir>          Output dir for assessment.json (default: <target>/.dontkillthevibes)
- *   --model <id>         LLM model id (or env LLM_MODEL). NIM examples:
- *                        moonshotai/kimi-k2-instruct-0905, deepseek-ai/deepseek-v3.1,
- *                        zai-org/glm-4.6-air, nvidia/llama-3.1-nemotron-70b-instruct
- *                        (check current ids on build.nvidia.com)
+ *   --model <id>         LLM model id (or env LLM_MODEL). Verified on NIM (Oct 2026):
+ *                        nvidia/nemotron-3-super-120b-a12b — a reasoning model; pair
+ *                        it with MAX_TOKENS=65536 and a reduced DIGEST_CONTEXT_CHARS.
+ *                        IDs rotate and some are gated per account ("Function not
+ *                        found for account") — list what your key can call:
+ *                        curl -H "Authorization: Bearer $LLM_API_KEY" \
+ *                          https://integrate.api.nvidia.com/v1/models
  *   --base-url <url>     OpenAI-compatible base (env LLM_BASE_URL,
  *                        default https://integrate.api.nvidia.com/v1)
  *   --api-key <key>      API key (env LLM_API_KEY). Not needed with --dry-run.
@@ -30,7 +33,9 @@
  *   --max-retries <n>    Validation retry attempts (default: 3)
  *   --max-tokens <n>     Completion token budget (default: MAX_TOKENS env, else 8192).
  *                        Reasoning models (e.g. NVIDIA Nemotron) spend part of this on
- *                        hidden reasoning — set MAX_TOKENS=32768 for large digests.
+ *                        hidden reasoning — set MAX_TOKENS=65536. If a large digest
+ *                        (~100k+ tokens) still returns empty or 0 findings, also reduce
+ *                        --context-chars (reasoning can end with finish_reason "stop").
  *   --dry-run            Build the prompt, print stats, do not call the API
  *   --emit-digest <file> Write the exact repo digest (JSON) that would be sent, then exit.
  *                        Used by benchmark/run.mjs so both comparison arms get

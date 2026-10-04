@@ -1,11 +1,9 @@
 {
   "mock": false,
   "target": "target-2",
-  "url": "https://github.com/[redacted-author]/target-2",
   "commit": "611398c78da64f1794df2d99018c3d02d3ab0048",
   "model": "nvidia/nemotron-3-super-120b-a12b",
   "base_url": "https://integrate.api.nvidia.com/v1",
-  "target_dir": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\target-2",
   "timestamp": "2026-10-03T20:32:19.924Z",
   "digest": {
     "file": "digest.json",
@@ -165,5 +163,7 @@
     }
   },
   "note": "Arms A and B share one digest (identical input, different prompt/tooling). Arm C (B2) does its own per-module file selection, so its input differs by design.",
-  "api_key_recorded": false
+  "api_key_recorded": false,
+  "anonymized": true,
+  "label": "target-2"
 }
