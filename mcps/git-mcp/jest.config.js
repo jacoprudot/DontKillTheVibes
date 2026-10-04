@@ -15,6 +15,10 @@ export default {
     '!src/index.ts'
   ],
   coverageDirectory: 'coverage',
+  // Default jest cache lives in the shared OS temp dir; two turbo-parallel jest
+  // processes on Windows race on it (EPERM writing haste-map). Per-package cache
+  // keeps `turbo run test` deterministic locally. CI (Linux) is unaffected either way.
+  cacheDirectory: '<rootDir>/.jest-cache',
   coverageReporters: ['text', 'lcov', 'html'],
   coverageThreshold: {
     global: {

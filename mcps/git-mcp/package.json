@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build",
-    "test": "jest",
+    "test": "node test/run-tests.mjs",
     "security:audit": "node ../../scripts/security-audit.mjs ."
   },
   "dependencies": {

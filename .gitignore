@@ -68,6 +68,8 @@ Thumbs.db
 
 # Test cache
 jest-cache/
+.jest-cache/
+.test-tmp/
 .nyc_output/
 .coverage
 
