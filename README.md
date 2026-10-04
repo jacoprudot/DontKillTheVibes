@@ -4,81 +4,95 @@
 
 ![CI](https://github.com/jacoprudot/DontKillTheVibes/actions/workflows/ci.yml/badge.svg)
 
-The LLM-orchestrated assessment toolkit for vibe coders, scale-ups, and fast-moving engineering teams.
+Turn an LLM loose on your repo and get a **structured, validated 30/60/90-day plan** — not another wall of confident prose.
 
-> **Want this run on *your* repo, read by a human?**
-> I audit codebases like yours and hand you the 30/60/90-day plan, finding by finding, with the noise removed.
-> → [Request a free 15-minute audit](mailto:jaco@leongael.xyz?subject=Repo%20audit&body=Repo%20URL%3A%20%0ATech%20stack%3A%20%0AWhat%20worries%20me%20most%3A%20)
+Free, MIT, LLM-agnostic. Works with Claude Code, Cursor, Gemini, or any OpenAI-compatible endpoint.
+
+**[👉 See a real assessment on a real repository](examples/realworld-assessment-en/)** — raw pipeline output: findings with file:line citations, priority scores, and the plan. Judge for yourself before installing anything.
 
 ## Overview
 
-When you're scaling fast, the codebase can quickly turn into a bottleneck. **DontKillTheVibes** provides a set of highly opinionated *Skills*, *MCPs* (Model Context Protocol servers), and *Agent definitions* that enable your favorite LLMs (Claude Code, Gemini, Cursor) to assess your repository and generate actionable 30/60/90-day work plans.
+**DontKillTheVibes** is a toolkit of opinionated *Skills* (decision-tree analysis), *MCPs* (Model Context Protocol servers), and *Agent definitions* that let your LLM audit a repository and emit an actionable 30/60/90-day work plan.
 
-It's completely LLM-agnostic: strict decision-trees and math-based prioritization constrain the analysis, and a validator enforces the output contract. The LLM proposes findings; the validator disposes — malformed structure, unknown rule IDs, dangling cross-references and inconsistent tallies never survive validation.
+The LLM proposes findings; **the toolkit disposes**. 368 canonical rules own their own severity and effort — the model can never inflate or invent them. A strict validator enforces the output contract: malformed structure, unknown rule IDs, dangling cross-references and inconsistent tallies never survive validation. That contract is what separates this from "just ask ChatGPT to review my code."
 
-What the validator does **not** do: confirm that a cited line number still matches the code. Grounding is a prompt-level obligation, not a runtime check.
+What the validator does **not** do: confirm that a cited line still matches the code. Citation repair is the runner's job (see [Measured results](#measured-results-not-claimed) for how well that works today).
 
 ## 🎯 The Vibe Coding Problems We Solve
 
-As teams increasingly rely on AI to write code, several critical risks emerge. **DontKillTheVibes** is explicitly designed to solve them:
+As teams increasingly rely on AI to write code, several critical risks emerge. DKTV is explicitly designed to catch them:
 
-1. **Silent Tech Debt Accumulation (Patches over Patches)**
-   *The Problem:* LLMs with limited context windows duplicate logic and apply superficial fixes instead of designing global systems.
-   *Our Solution:* The `structure-assessment` and `code-quality-assessment` skills (driven by the `structure-analyst` and `code-quality-analyst` agents) look at the macro-architecture, detecting coupling, dependency cycles, and duplication.
-2. **Critical Security Vulnerabilities**
-   *The Problem:* Iterative AI bug-fixing often introduces or inherits insecure patterns (open databases, data leaks).
-   *Our Solution:* The `security-analyst` enforces strict security reviews on inputs, secrets, and cloud configurations.
-3. **Loss of Control (The Black Box Effect)**
-   *The Problem:* Without senior supervision, AI-generated code becomes unmaintainable. When a production crash happens, no one knows how to debug it.
-   *Our Solution:* The `Synthesis Agent` returns control to the developer by outputting a structured, human-readable 30/60/90-day architectural roadmap. It maps dependencies so you understand *exactly* what the code is doing.
-4. **Hidden Costs & Professional Stagnation**
-   *The Problem:* Massive token consumption via endless prompt regeneration, coupled with developers losing their analytical edge.
-   *Our Solution:* The `cost-analyst` identifies infrastructure and API bloat, while the toolkit as a whole explains the *why* behind architectural decisions, acting as an automated senior mentor.
+1. **Silent tech debt accumulation** — LLMs with limited context duplicate logic and patch superficially. The `structure` and `code-quality` skills look at macro-architecture: coupling, dependency cycles, duplication.
+2. **Critical security vulnerabilities** — iterative AI bug-fixing inherits insecure patterns (hardcoded secrets, open CORS, leaked errors). The `security` skill is the strongest module: 45 rules, hand-verified ground truth.
+3. **Loss of control (black box effect)** — the Synthesis Agent returns control by outputting a structured, prioritized roadmap: what to fix in 30/60/90 days, what blocks what, and *why*.
+4. **Hidden costs** — the `cost` and `performance` skills flag API-call-in-loop, missing caches, and sequential-where-parallel patterns.
 
-## ⚡ 30-Second Start
+## ⚡ Quick Start
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/jacoprudot/dontkillthevibes.git
-   cd dontkillthevibes
-   ```
-2. **Install dependencies & Build:**
-   ```bash
-   npm install -g pnpm
-   pnpm install
-   pnpm build
-   ```
-3. **Configure MCPs:**
-   The framework uses official MCP servers for GitHub and Filesystem, plus custom ones for Git Blame and Benchmarking (registered in `mcp_config.json`; build with `pnpm build` before connecting). Ensure your environment has the required tokens (e.g., `GITHUB_PERSONAL_ACCESS_TOKEN`) set if you plan to use the GitHub MCP.
+Three ways to run it, from zero-config to full pipeline:
 
-4. **Run the assessment (LLM-orchestrated):**
-   Open your preferred AI terminal tool (like Claude Code) inside the repository you want to assess, and feed it the Synthesis Agent prompt along with the path to the skills:
-   
-   > "Act as the Synthesis Agent defined in `/path/to/dontkillthevibes/agents/synthesis-agent.md`. Read the skills from `/path/to/dontkillthevibes/skills/` and audit this repository. Generate the `assessment-report.md` and `assessment.json`."
-   
-   Note: this path is orchestrated by *your* LLM following the skill and agent definitions. Alternatively, use the bundled CLI runner (single-pass: one LLM call plus automatic validation retries) against any OpenAI-compatible endpoint, e.g. NVIDIA NIM:
-   ```bash
-   LLM_API_KEY=xxx LLM_MODEL=moonshotai/kimi-k2-instruct-0905 pnpm run dktv:assess --target /path/to/repo
-   ```
-   **Reasoning models need a bigger completion budget.** Nemotron-class models spend thousands of tokens on hidden reasoning before emitting anything — with the default 8k budget a medium repo (~180k chars of digest) can come back *empty* with `finish_reason: length`. The runner warns when that happens; set `MAX_TOKENS=32768` (or `65536` for large repos) and the same call completes:
-   ```bash
-   MAX_TOKENS=65536 LLM_API_KEY=xxx LLM_MODEL=nvidia/nemotron-3-super-120b-a12b pnpm run dktv:assess --target /path/to/repo
-   ```
-   The decision-trees are deterministic logic with explicit thresholds, but their interpretation against your code is done by the LLM.
+### Path A — inside your AI agent (zero config, no API key needed)
 
-5. **Validate the output:**
-   ```bash
-   node scripts/validate-assessment.mjs assessment.json
-   ```
-   It enforces the document shape, every field type from `templates/finding-schema.json`, unique finding IDs, that every ID exists as a canonical rule in `skills/*.skill.md`, that `work_plan` and `relatedFindings` reference only real findings, and that `summary` tallies match the findings. If it passes, you have a structured report free of format hallucinations — if it fails, feed the validation error back to the LLM and have it fix the JSON until the validator accepts it. Pass `--no-registry` if you are validating against a custom skill set.
+The toolkit is skills + agents + MCPs: your existing agent subscription does the work.
+
+```bash
+git clone https://github.com/jacoprudot/dontkillthevibes.git
+```
+
+Then, inside the repository you want to assess, tell your agent (Claude Code, Cursor, …):
+
+> "Act as the Synthesis Agent defined in `/path/to/dontkillthevibes/agents/synthesis-agent.md`. Read the skills from `/path/to/dontkillthevibes/skills/` and audit this repository. Generate `assessment.json` and `assessment-report.md`."
+
+Optional power-ups: register the custom MCPs from `mcp_config.json` (deep Git analysis + local benchmarking) — `pnpm install && pnpm build` first, plus a `GITHUB_PERSONAL_ACCESS_TOKEN` if you want the GitHub MCP.
+
+### Path B — CLI runner, single pass
+
+One digest, one LLM call, automatic validation retries. Needs any OpenAI-compatible endpoint (NVIDIA NIM, OpenRouter, …):
+
+```bash
+pnpm install && pnpm build
+LLM_API_KEY=xxx LLM_MODEL=moonshotai/kimi-k2-instruct-0905 pnpm run dktv:assess --target /path/to/repo
+```
+
+**Reasoning models need a bigger completion budget.** Nemotron-class models spend thousands of tokens on hidden reasoning before emitting anything — with the default budget a medium repo can come back *empty* with `finish_reason: length`:
+
+```bash
+MAX_TOKENS=65536 LLM_API_KEY=xxx LLM_MODEL=nvidia/nemotron-3-super-120b-a12b pnpm run dktv:assess --target /path/to/repo
+```
+
+### Path C — 8-agent orchestrator (best recall)
+
+Each of the 8 specialist agents picks the files it needs (round 1), reads them (round 2), reports findings; a deterministic synthesis merges, dedupes, scores and plans. This is the runner that won the benchmark below.
+
+```bash
+node scripts/dktv-orchestrate.mjs --target /path/to/repo --out /path/to/repo/.dontkillthevibes
+```
+
+Same key/env as Path B. `--dry-run` shows the plan and budgets without calling the API; `--mock` runs fully offline with labelled mock findings.
+
+### Validate the output (all paths)
+
+```bash
+node scripts/validate-assessment.mjs assessment.json
+```
+
+Enforces the document shape, every field type from `templates/finding-schema.json`, unique finding IDs, that every ID exists as a canonical rule in `skills/*.skill.md`, that `work_plan`/`relatedFindings` reference only real findings, and that `summary` tallies match the findings. If it fails, feed the error back to the LLM and have it fix the JSON until the validator accepts it.
+
+## Measured results (not claimed)
+
+5 real public repos (RealWorld API, target-2, target-3, target-4, target-1) × 3 approaches × a **blind judge** (a different model, 3 runs per target — we publish ranges, not decimals):
+
+| Arm | What it is | Verified findings |
+|---|---|---|
+| **A — free prose** | "Audit this repo" in a plain prompt | 64 claims, **0 mechanically decidable** — confident prose with no file:line anchor |
+| **B — this toolkit, single pass (Path B)** | Digest in, one validated call | 9/14 real where the judge could verify (range 0.2–1.0) |
+| **C — this toolkit, 8-agent orchestrator (Path C)** | Specialists + deterministic synthesis | **22/25 real (range 0.84–1.0)** — wins or ties in 4/5 repos |
+
+Structural findings beat free prose not because the model is smarter, but because the contract makes every claim checkable. Honest caveats: convenience sample (not representative), judge has run-to-run variance, recall against ground truth is measured only on the control repo. Full evidence is versioned in [`benchmark/results/`](benchmark/results/) and reproducible from [`benchmark/run.mjs`](benchmark/run.mjs) + [`benchmark/judge.mjs`](benchmark/judge.mjs).
 
 ## See it on a real repository
 
-[`examples/realworld-assessment/`](examples/realworld-assessment/) is a complete end-to-end run: 7 findings traced to canonical rule IDs, prioritized with the severity × module-weight algorithm, and enforced by the validator. The raw `assessment.json` and the human report are both checked in — including the critical JWT-secret fallback that a plain LLM pass had missed.
-
-Prefer English? [`examples/realworld-assessment-en/`](examples/realworld-assessment-en/) is the **raw pipeline output** for the same control repo, generated with `--language en` — no hand-tuning, exactly what the tool emits, validator verdict included.
-
-The automated pipeline emits `assessment.json` plus a generated `assessment-report.md` covering findings, severities, priority scores and the 30/60/90-day plan. The checked-in report additionally carries hand-written prose: that part is authored by a human, not generated, and the tool does not claim to produce it.
+[`examples/realworld-assessment/`](examples/realworld-assessment/) — a complete run on the RealWorld API repo: 7 findings traced to canonical rule IDs, including the critical JWT-secret fallback that a plain LLM pass missed. [`examples/realworld-assessment-en/`](examples/realworld-assessment-en/) is the raw English pipeline output for the same repo — exactly what the tool emits, no hand-tuning, validator verdict included.
 
 What the output looks like, end to end:
 
@@ -103,27 +117,25 @@ VALID: 7 findings, 0 warning(s)
 
 Every finding carries its canonical rule ID, severity, effort, confidence, priority score and a file:line citation — the excerpt above is from the checked-in English example, exactly as the tool emitted it.
 
-Want that for your codebase? → [Request a free 15-minute audit](mailto:jaco@leongael.xyz?subject=Repo%20audit&body=Repo%20URL%3A%20%0ATech%20stack%3A%20%0AWhat%20worries%20me%20most%3A%20)
-
 ## Architecture
 
-- **Skills (`skills/`)**: Decision-tree analysis capabilities for Database, Code, Structure, Flows, GitHub, Security, Cost, and Performance (8 skills, each with explicit thresholds and canonical finding IDs).
-- **MCPs (`mcps/`)**: Tools for your LLM. Includes custom servers for deep Git analysis and localized code benchmarking.
-- **Agents (`agents/`)**: 8 specialist analyst roles + 1 **Synthesis Agent** that prioritizes findings using a severity × module-weight algorithm.
+- **Skills (`skills/`)**: 8 decision-tree modules (database, code, structure, flows, github, security, cost, performance) declaring **368 canonical rules**, each with owned severity/effort and a fingerprinted registry (`scripts/lib/canonical-registry.mjs`) — the single source of truth for runners *and* validator.
+- **MCPs (`mcps/`)**: tools for your LLM — deep Git analysis (blame, diff, branch tree, large files) and localized benchmarking (wrk/k6/perf) that never send your code anywhere.
+- **Agents (`agents/`)**: 8 specialist analyst roles + 1 Synthesis Agent (priority = severity × module-weight × confidence).
+- **Runners**: single-pass CLI (`scripts/dktv-assess.mjs`) and the 8-agent orchestrator (`scripts/dktv-orchestrate.mjs`), both stamping rule fields from the registry instead of trusting the model.
 
 ## Status (honest)
 
-- **MCPs are tested, not just smoke-tested:** 244 unit tests across both custom MCPs, with branch coverage in the mid-80s — above the enforced 80% threshold (coverage collection is on by default; the only exclusions are each server's `src/index.ts` stdio wiring, `*.d.ts` and the test files themselves).
-- **Security has its own gates:** `pnpm security:audit` fails on `shell: true`, `execSync`/`exec`/`spawn`, `eval` and `...process.env` spreads under `mcps/*/src`, and `scripts/mcp-smoke.mjs` drives the real servers over stdio to assert the injection guards fire (`INVALID_COMMIT`, `BINARY_NOT_ALLOWED`). Every invocation appends a hash-only line to `.dontkillthevibes/audit.log`. What is *not* enforced is listed explicitly in `templates/security-model.md`.
-- **CI runs all of it** on every push: `.github/workflows/ci.yml` does install → build → test (80% gate) → security audit → skills/MCP validation → assessment-contract validation → MCP smoke tests.
-- **Output contract is enforceable:** `scripts/validate-assessment.mjs` validates `assessment.json` against `templates/finding-schema.json` and additionally rejects unknown rule IDs, dangling `work_plan`/`relatedFindings` references and summary tallies that disagree with the findings. A real end-to-end run against the RealWorld API ships in `examples/realworld-assessment/`.
-- **Known gaps:** the CLI runner is single-pass (repo digest in, one LLM call, validation retries) — it does not yet replicate the full 8-agent parallel pipeline with MCP-driven file reading; the "Data Availability" rules (cost/performance analysts without runtime metrics) are documented in 5 of the 8 skills but not yet measured in a real run; the benchmark MCP was not exercised against a live server in the shipped example; an empty assessment (zero findings) still passes the contract; a one-command executable demo is pending.
+- **MCPs are tested, not just smoke-tested:** 244 unit tests across both custom MCPs, branch coverage in the mid-80s, enforced 80% gate in CI.
+- **Security has its own gates:** `pnpm security:audit` fails on `shell: true`, `execSync`/`exec`/`spawn`, `eval` and `...process.env` spreads under `mcps/*/src`; `scripts/mcp-smoke.mjs` drives the real servers to assert injection guards fire. Every invocation appends a hash-only line to `.dontkillthevibes/audit.log`. What is *not* enforced is listed in `templates/security-model.md`.
+- **CI runs all of it** on every push: install → build → test (80% gate) → security audit → skills/MCP validation → assessment-contract validation (both shipped examples) → MCP smoke tests.
+- **Known gaps:** the single-pass CLI's recall is capped by the digest budget (that's what the orchestrator exists for); the "Data Availability" rules (cost/performance without runtime metrics) are documented in 5 of the 8 skills but not yet measured against a live server; the benchmark MCP was not exercised live in the shipped example; an empty assessment (zero findings) still passes the contract; a one-command Docker demo is pending.
 
 > Note: commit timestamps reflect the author's system clock.
 
 ## Philosophy
 
-Speed shouldn't kill the vibe. This toolkit embodies the "dontkillthevibes" philosophy: provide powerful, automated assessment capabilities that help developers maintain their creative flow while proactively paying down technical debt.
+Speed shouldn't kill the vibe. This toolkit embodies the "dontkillthevibes" philosophy: give developers powerful, automated assessment that maintains creative flow while proactively paying down technical debt. Free to use, free to adapt (MIT) — fork it, add your own rules, run it on everything.
 
 ## Work with me
 
@@ -135,4 +147,5 @@ The toolkit is free and stays free. What it can't do is decide *what matters for
 → **[jaco@leongael.xyz](mailto:jaco@leongael.xyz?subject=Repo%20audit&body=Repo%20URL%3A%20%0ATech%20stack%3A%20%0AWhat%20worries%20me%20most%3A%20)**
 
 ## License & Contributing
-MIT License. See [CONTRIBUTING.md](CONTRIBUTING.md) for details on adding new skills or MCPs.
+
+MIT License. See [CONTRIBUTING.md](CONTRIBUTING.md) for details on adding new skills or MCPs — the registry gate in CI will ask you for a changelog entry and a fingerprint update; that's on purpose.
