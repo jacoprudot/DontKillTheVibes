@@ -1,0 +1,123 @@
+{
+  "metadata": {
+    "repo": "realworld-control",
+    "assessed_at": "2026-09-28T12:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "unknown",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "D",
+    "total_findings": 6,
+    "critical_count": 2,
+    "by_severity": {
+      "critical": 2,
+      "high": 1,
+      "medium": 2,
+      "low": 1
+    },
+    "effort_estimate": {
+      "XS": 1,
+      "L": 1,
+      "S": 3,
+      "M": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "security-jwt-weak-3",
+      "module": "security",
+      "severity": "critical",
+      "location": {
+        "file": "src/app/routes/auth/auth.ts",
+        "line": 16
+      },
+      "description": "JWT secret has a default weak value 'superSecret'",
+      "remediation": "Remove the default value and require JWT_SECRET to be set in environment variables",
+      "effort": "XS",
+      "confidence": 0.9
+    },
+    {
+      "id": "database-irreversible-migration-1",
+      "module": "database",
+      "severity": "critical",
+      "location": {
+        "file": "src/prisma/migrations/20211001143221_implicit_tags/migration.sql",
+        "line": 13
+      },
+      "description": "Migration drops the ArticleTags table without data backup strategy",
+      "remediation": "Add a data migration step to preserve data before dropping the table, or avoid dropping tables in production",
+      "effort": "L",
+      "confidence": 0.9
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "src/app/routes/article/article.service.ts",
+        "line": 20
+      },
+      "description": "Sequential count and findMany queries in getArticles and getFeed functions causing extra database roundtrip",
+      "remediation": "Execute count and findMany queries concurrently using Promise.all in both functions",
+      "effort": "S",
+      "confidence": 0.9
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/app/routes/auth/auth.controller.ts",
+        "line": 29
+      },
+      "description": "Public login endpoint lacks rate limiting enabling brute force attacks",
+      "remediation": "Add rate limiting middleware to the login endpoint",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "code-any-type-6",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "src/app/routes/article/article.service.ts",
+        "line": 15
+      },
+      "description": "Use of 'any' type in function parameter loses type safety",
+      "remediation": "Replace 'any' with a specific type, e.g., define a Query interface for the query object",
+      "effort": "S",
+      "confidence": 0.9
+    },
+    {
+      "id": "code-missing-return-type-8",
+      "module": "code",
+      "severity": "low",
+      "location": {
+        "file": "src/app/routes/article/article.mapper.ts",
+        "line": 3
+      },
+      "description": "Missing return type on function",
+      "remediation": "Add return type annotation",
+      "effort": "S",
+      "confidence": 0.9
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-jwt-weak-3",
+        "database-sequential-pagination-1",
+        "code-any-type-6",
+        "code-missing-return-type-8"
+      ],
+      "60_days": [
+        "flows-missing-rate-limit-8"
+      ],
+      "90_days": [
+        "database-irreversible-migration-1"
+      ]
+    },
+    "dependencies": []
+  }
+}

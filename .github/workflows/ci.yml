@@ -62,6 +62,9 @@ jobs:
     - name: Validate the shipped assessment example
       run: node scripts/validate-assessment.mjs examples/realworld-assessment/assessment.json
 
+    - name: Validate the English assessment example
+      run: node scripts/validate-assessment.mjs examples/realworld-assessment-en/assessment.json
+
     - name: Ruleset changelog gate (undeclared rule changes fail CI)
       shell: bash
       run: |

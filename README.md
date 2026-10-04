@@ -60,6 +60,10 @@ As teams increasingly rely on AI to write code, several critical risks emerge. *
    ```bash
    LLM_API_KEY=xxx LLM_MODEL=moonshotai/kimi-k2-instruct-0905 pnpm run dktv:assess --target /path/to/repo
    ```
+   **Reasoning models need a bigger completion budget.** Nemotron-class models spend thousands of tokens on hidden reasoning before emitting anything — with the default 8k budget a medium repo (~180k chars of digest) can come back *empty* with `finish_reason: length`. The runner warns when that happens; set `MAX_TOKENS=32768` (or `65536` for large repos) and the same call completes:
+   ```bash
+   MAX_TOKENS=65536 LLM_API_KEY=xxx LLM_MODEL=nvidia/nemotron-3-super-120b-a12b pnpm run dktv:assess --target /path/to/repo
+   ```
    The decision-trees are deterministic logic with explicit thresholds, but their interpretation against your code is done by the LLM.
 
 5. **Validate the output:**
@@ -71,6 +75,8 @@ As teams increasingly rely on AI to write code, several critical risks emerge. *
 ## See it on a real repository
 
 [`examples/realworld-assessment/`](examples/realworld-assessment/) is a complete end-to-end run: 7 findings traced to canonical rule IDs, prioritized with the severity × module-weight algorithm, and enforced by the validator. The raw `assessment.json` and the human report are both checked in — including the critical JWT-secret fallback that a plain LLM pass had missed.
+
+Prefer English? [`examples/realworld-assessment-en/`](examples/realworld-assessment-en/) is the **raw pipeline output** for the same control repo, generated with `--language en` — no hand-tuning, exactly what the tool emits, validator verdict included.
 
 The automated pipeline emits `assessment.json` plus a generated `assessment-report.md` covering findings, severities, priority scores and the 30/60/90-day plan. The checked-in report additionally carries hand-written prose: that part is authored by a human, not generated, and the tool does not claim to produce it.
 
@@ -88,7 +94,7 @@ Want that for your codebase? → [Request a free 15-minute audit](mailto:jaco@le
 - **Security has its own gates:** `pnpm security:audit` fails on `shell: true`, `execSync`/`exec`/`spawn`, `eval` and `...process.env` spreads under `mcps/*/src`, and `scripts/mcp-smoke.mjs` drives the real servers over stdio to assert the injection guards fire (`INVALID_COMMIT`, `BINARY_NOT_ALLOWED`). Every invocation appends a hash-only line to `.dontkillthevibes/audit.log`. What is *not* enforced is listed explicitly in `templates/security-model.md`.
 - **CI runs all of it** on every push: `.github/workflows/ci.yml` does install → build → test (80% gate) → security audit → skills/MCP validation → assessment-contract validation → MCP smoke tests.
 - **Output contract is enforceable:** `scripts/validate-assessment.mjs` validates `assessment.json` against `templates/finding-schema.json` and additionally rejects unknown rule IDs, dangling `work_plan`/`relatedFindings` references and summary tallies that disagree with the findings. A real end-to-end run against the RealWorld API ships in `examples/realworld-assessment/`.
-- **Known gaps:** the CLI runner is single-pass (repo digest in, one LLM call, validation retries) — it does not yet replicate the full 8-agent parallel pipeline with MCP-driven file reading; the "Data Availability" rules (cost/performance analysts without runtime metrics) are documented in 5 of the 8 skills but not yet measured in a real run; the benchmark MCP was not exercised against a live server in the shipped example; a second versioned example and a one-command executable demo are pending.
+- **Known gaps:** the CLI runner is single-pass (repo digest in, one LLM call, validation retries) — it does not yet replicate the full 8-agent parallel pipeline with MCP-driven file reading; the "Data Availability" rules (cost/performance analysts without runtime metrics) are documented in 5 of the 8 skills but not yet measured in a real run; the benchmark MCP was not exercised against a live server in the shipped example; an empty assessment (zero findings) still passes the contract; a one-command executable demo is pending.
 
 > Note: commit timestamps reflect the author's system clock.
 
