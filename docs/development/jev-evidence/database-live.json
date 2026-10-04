@@ -1,0 +1,735 @@
+{
+  "generated_at": "2026-10-03T23:55:38.795Z",
+  "mode": "LIVE",
+  "endpoint": "https://api.typesafe.ai/v1/systemone",
+  "model": "jev-latest",
+  "target": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\realworld-control",
+  "file": "src/app/routes/article/article.service.ts",
+  "file_lines": 652,
+  "provenance": {
+    "node": "v24.14.1",
+    "commit": "30b68e1"
+  },
+  "module_mapping": {
+    "requested_module": "database",
+    "skill_file": "skills/database-assessment.skill.md",
+    "declared_modules": [
+      "code",
+      "cost",
+      "database",
+      "flows",
+      "github",
+      "performance",
+      "security",
+      "structure"
+    ]
+  },
+  "ground_truth": {
+    "expect_id": "database-sequential-pagination-1",
+    "expect_id_present": true,
+    "expect_line": 71,
+    "accepted_lines": [
+      71
+    ],
+    "evidence_lines_from_locator": [],
+    "window_start": 1,
+    "window_end": 75,
+    "window_options": 75,
+    "choice_max_options": 255
+  },
+  "registry": {
+    "canonical_rule_count": 368,
+    "fingerprint": "368-6e180554",
+    "module": "database",
+    "module_rule_count": 32,
+    "expected_rule_id": "database-sequential-pagination-1",
+    "expected_rule_present": true,
+    "options": {
+      "database-missing-index-fk-1": {
+        "severity": "high",
+        "effort": "S",
+        "description": "IF foreign key column AND NOT index exists(fk column) — Column user_id in orders table has FK but no index"
+      },
+      "database-missing-index-hot-path-2": {
+        "severity": "medium",
+        "effort": "S",
+        "description": "IF join column in slow query log AND NOT index exists(join column) — Join on product_id in order_items table appears frequently in slow queries"
+      },
+      "database-full-table-scan-3": {
+        "severity": "critical",
+        "effort": "M",
+        "description": "IF table rows > 1 000 000 AND seq scan in explain plan — Large table user_sessions (2.1M rows) shows sequential scan in EXPLAIN"
+      },
+      "database-missing-index-where-4": {
+        "severity": "medium",
+        "effort": "S",
+        "description": "IF where column used frequently AND NOT index exists(where column) — Column status in jobs table used in WHERE clauses but not indexed"
+      },
+      "database-missing-composite-index-5": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF composite where conditions AND NOT composite index exists — Queries frequently filter on (user_id, created_at) but no composite index"
+      },
+      "database-irreversible-migration-1": {
+        "severity": "critical",
+        "effort": "L",
+        "description": "IF migration drops column AND NOT has rollback — Migration V2__drop_unused_column.sql drops column without backup strategy"
+      },
+      "database-irreversible-migration-2": {
+        "severity": "high",
+        "effort": "L",
+        "description": "IF migration renames table AND NOT has rollback — Migration renames users to legacy_users without data preservation plan"
+      },
+      "database-risky-migration-3": {
+        "severity": "high",
+        "effort": "M",
+        "description": "IF migration changes column type AND data loss possible AND NOT has rollback — Changing VARCHAR(255) to VARCHAR(50) may truncate existing data"
+      },
+      "database-not-null-violation-4": {
+        "severity": "high",
+        "effort": "M",
+        "description": "IF migration adds not null without default — Adding NOT NULL column without DEFAULT value will fail on existing rows"
+      },
+      "database-heavy-migration-5": {
+        "severity": "medium",
+        "effort": "L",
+        "description": "IF migration performs heavy operation on large table — Adding index on large table during peak hours may cause downtime"
+      },
+      "database-n-plus-one-risk-1": {
+        "severity": "high",
+        "effort": "M",
+        "description": "IF orm loop detected AND relation not eager loaded — User.orders accessed in loop without include/join in UserService.java"
+      },
+      "database-n-plus-one-confirmed-2": {
+        "severity": "critical",
+        "effort": "M",
+        "description": "IF query count in logs > 100 per request AND same table — Application logs show 150 SELECT queries to orders_per_user per request"
+      },
+      "database-lazy-loading-danger-3": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF orm lazy loading enabled AND high traffic endpoints — Lazy loading enabled on User.orders in API endpoint with 1000 RPM"
+      },
+      "database-missing-prefetch-4": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF missing select related or prefetch related — Django ORM access to related objects without select_related/prefetch_related"
+      },
+      "database-iteration-overload-5": {
+        "severity": "high",
+        "effort": "M",
+        "description": "IF orm iteration over large resultset — Code iterates over QuerySet without pagination or chunking"
+      },
+      "database-sequential-pagination-1": {
+        "severity": "high",
+        "effort": "S",
+        "description": "IF sequential count and findmany on paginated endpoint — prisma.article.count() awaited immediately before prisma.article.findMany() on the same list endpoint"
+      },
+      "database-overfetch-relation-1": {
+        "severity": "high",
+        "effort": "S",
+        "description": "IF full relation included to derive single flag — include: { favoritedBy: true } loads the entire many-to-many relation only to compute favoritedBy.some(f => f.id === id)"
+      },
+      "database-oversized-pool-1": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF pool size > cpu cores * 4 — Connection pool set to 100 on 4-core CPU"
+      },
+      "database-undersized-pool-2": {
+        "severity": "high",
+        "effort": "XS",
+        "description": "IF pool size < 2 AND concurrent requests > 10 — Pool size of 1 with expected 50 concurrent users"
+      },
+      "database-connection-timeout-high-3": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF connection timeout > 30 seconds — Connection timeout set to 120 seconds masks pool exhaustion"
+      },
+      "database-idle-timeout-missing-4": {
+        "severity": "low",
+        "effort": "XS",
+        "description": "IF idle timeout not configured — Connections may remain idle indefinitely consuming resources"
+      },
+      "database-max-lifetime-missing-5": {
+        "severity": "low",
+        "effort": "XS",
+        "description": "IF max lifetime not configured — Connections may accumulate metadata over time"
+      },
+      "database-pg-stat-statements-disabled-1": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF pg stat statements not enabled — pg_stat_statements extension not enabled in shared_preload_libraries"
+      },
+      "database-work-mem-too-low-2": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF work mem too low — work_mem setting of 4MB may cause excessive disk sorting"
+      },
+      "database-maintenance-work-mem-too-low-3": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF maintenance work mem too low — maintenance_work_mem of 16MB slows VACUUM and index creation"
+      },
+      "database-effective-cache-misconfigured-4": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF effective cache poorly configured — effective_cache_value should reflect OS + DB cache availability"
+      },
+      "database-missing-bloat-monitoring-5": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF missing pg bloat monitoring — No monitoring for table/index bloat which degrades performance over time"
+      },
+      "database-unused-indexes-6": {
+        "severity": "low",
+        "effort": "S",
+        "description": "IF unused indexes detected — Index idx_old_column shows zero scans over monitoring period"
+      },
+      "database-index-bloat-7": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF index bloat significant — Index bloat > 30% indicates maintenance opportunity"
+      },
+      "database-missing-app-pool-8": {
+        "severity": "high",
+        "effort": "M",
+        "description": "IF missing connection pooling in application — Application creates new connections per request instead of pooling"
+      },
+      "database-statement-timeout-missing-9": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF statement timeout not configured — Long-running queries can block resources indefinitely"
+      },
+      "database-lock-timeout-missing-10": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF lock timeout not configured — Row locks can block transactions indefinitely"
+      }
+    }
+  },
+  "budget": {
+    "state_question_limit": 32000,
+    "context_limit_total": 64000,
+    "per_request": [
+      {
+        "kind": "H1",
+        "state_tokens": 3704,
+        "longest_question_tokens": 1239,
+        "total_tokens": 4943,
+        "fits": true
+      },
+      {
+        "kind": "H2",
+        "state_tokens": 484,
+        "longest_question_tokens": 252,
+        "total_tokens": 736,
+        "fits": true
+      },
+      {
+        "kind": "H3",
+        "state_tokens": 3704,
+        "longest_question_tokens": 99,
+        "total_tokens": 3803,
+        "fits": true
+      }
+    ],
+    "single_pass": {
+      "configured_digest_chars": 180000,
+      "configured_digest_tokens": 45000,
+      "configured_digest_total_tokens": 45099,
+      "configured_digest_fits": false,
+      "measured_digest_chars": 80688,
+      "measured_digest_tokens": 20172,
+      "skills_chars": 216697,
+      "skills_tokens": 54175,
+      "full_single_pass_tokens": 74347,
+      "full_single_pass_fits": false
+    }
+  },
+  "requests": [
+    {
+      "kind": "H1",
+      "size": {
+        "kind": "H1",
+        "stateChars": 14814,
+        "stateTokens": 3704,
+        "questions": [
+          {
+            "id": "rule_id",
+            "chars": 4954,
+            "tokens": 1239,
+            "options": 32
+          }
+        ],
+        "longest": {
+          "id": "rule_id",
+          "chars": 4954,
+          "tokens": 1239,
+          "options": 32
+        },
+        "totalTokens": 4943,
+        "limit": 32000,
+        "headroom": 27057,
+        "fits": true,
+        "bodyChars": 19824
+      },
+      "body": {
+        "state": {
+          "repository": "realworld-control",
+          "path": "src/app/routes/article/article.service.ts",
+          "language": "typescript",
+          "content": "import slugify from 'slugify';\r\nimport prisma from '../../../prisma/prisma-client';\r\nimport HttpException from '../../models/http-exception.model';\r\nimport profileMapper from '../profile/profile.utils';\r\nimport articleMapper from './article.mapper';\r\nimport { Tag } from '../tag/tag.model';\r\n\r\nconst buildFindAllQuery = (query: any, id: number | undefined) => {\r\n  const queries: any = [];\r\n  const orAuthorQuery = [];\r\n  const andAuthorQuery = [];\r\n\r\n  orAuthorQuery.push({\r\n    demo: {\r\n      equals: true,\r\n    },\r\n  });\r\n\r\n  if (id) {\r\n    orAuthorQuery.push({\r\n      id: {\r\n        equals: id,\r\n      },\r\n    });\r\n  }\r\n\r\n  if ('author' in query) {\r\n    andAuthorQuery.push({\r\n      username: {\r\n        equals: query.author,\r\n      },\r\n    });\r\n  }\r\n\r\n  const authorQuery = {\r\n    author: {\r\n      OR: orAuthorQuery,\r\n      AND: andAuthorQuery,\r\n    },\r\n  };\r\n\r\n  queries.push(authorQuery);\r\n\r\n  if ('tag' in query) {\r\n    queries.push({\r\n      tagList: {\r\n        some: {\r\n          name: query.tag,\r\n        },\r\n      },\r\n    });\r\n  }\r\n\r\n  if ('favorited' in query) {\r\n    queries.push({\r\n      favoritedBy: {\r\n        some: {\r\n          username: {\r\n            equals: query.favorited,\r\n          },\r\n        },\r\n      },\r\n    });\r\n  }\r\n\r\n  return queries;\r\n};\r\n\r\nexport const getArticles = async (query: any, id?: number) => {\r\n  const andQueries = buildFindAllQuery(query, id);\r\n  const articlesCount = await prisma.article.count({\r\n    where: {\r\n      AND: andQueries,\r\n    },\r\n  });\r\n\r\n  const articles = await prisma.article.findMany({\r\n    where: { AND: andQueries },\r\n    orderBy: {\r\n      createdAt: 'desc',\r\n    },\r\n    skip: Number(query.offset) || 0,\r\n    take: Number(query.limit) || 10,\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return {\r\n    articles: articles.map((article: any) => articleMapper(article, id)),\r\n    articlesCount,\r\n  };\r\n};\r\n\r\nexport const getFeed = async (offset: number, limit: number, id: number) => {\r\n  const articlesCount = await prisma.article.count({\r\n    where: {\r\n      author: {\r\n        followedBy: { some: { id: id } },\r\n      },\r\n    },\r\n  });\r\n\r\n  const articles = await prisma.article.findMany({\r\n    where: {\r\n      author: {\r\n        followedBy: { some: { id: id } },\r\n      },\r\n    },\r\n    orderBy: {\r\n      createdAt: 'desc',\r\n    },\r\n    skip: offset || 0,\r\n    take: limit || 10,\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return {\r\n    articles: articles.map((article: any) => articleMapper(article, id)),\r\n    articlesCount,\r\n  };\r\n};\r\n\r\nexport const createArticle = async (article: any, id: number) => {\r\n  const { title, description, body, tagList } = article;\r\n  const tags = Array.isArray(tagList) ? tagList : [];\r\n\r\n  if (!title) {\r\n    throw new HttpException(422, { errors: { title: [\"can't be blank\"] } });\r\n  }\r\n\r\n  if (!description) {\r\n    throw new HttpException(422, { errors: { description: [\"can't be blank\"] } });\r\n  }\r\n\r\n  if (!body) {\r\n    throw new HttpException(422, { errors: { body: [\"can't be blank\"] } });\r\n  }\r\n\r\n  const slug = `${slugify(title)}-${id}`;\r\n\r\n  const existingTitle = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      slug: true,\r\n    },\r\n  });\r\n\r\n  if (existingTitle) {\r\n    throw new HttpException(422, { errors: { title: ['must be unique'] } });\r\n  }\r\n\r\n  const {\r\n    authorId,\r\n    id: articleId,\r\n    ...createdArticle\r\n  } = await prisma.article.create({\r\n    data: {\r\n      title,\r\n      description,\r\n      body,\r\n      slug,\r\n      tagList: {\r\n        connectOrCreate: tags.map((tag: string) => ({\r\n          create: { name: tag },\r\n          where: { name: tag },\r\n        })),\r\n      },\r\n      author: {\r\n        connect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return articleMapper(createdArticle, id);\r\n};\r\n\r\nexport const getArticle = async (slug: string, id?: number) => {\r\n  const article = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!article) {\r\n    throw new HttpException(404, { errors: { article: ['not found'] } });\r\n  }\r\n\r\n  return articleMapper(article, id);\r\n};\r\n\r\nconst disconnectArticlesTags = async (slug: string) => {\r\n  await prisma.article.update({\r\n    where: {\r\n      slug,\r\n    },\r\n    data: {\r\n      tagList: {\r\n        set: [],\r\n      },\r\n    },\r\n  });\r\n};\r\n\r\nexport const updateArticle = async (article: any, slug: string, id: number) => {\r\n  let newSlug = null;\r\n\r\n  const existingArticle = await await prisma.article.findFirst({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      author: {\r\n        select: {\r\n          id: true,\r\n          username: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!existingArticle) {\r\n    throw new HttpException(404, {});\r\n  }\r\n\r\n  if (existingArticle.author.id !== id) {\r\n    throw new HttpException(403, {\r\n      message: 'You are not authorized to update this article',\r\n    });\r\n  }\r\n\r\n  if (article.title) {\r\n    newSlug = `${slugify(article.title)}-${id}`;\r\n\r\n    if (newSlug !== slug) {\r\n      const existingTitle = await prisma.article.findFirst({\r\n        where: {\r\n          slug: newSlug,\r\n        },\r\n        select: {\r\n          slug: true,\r\n        },\r\n      });\r\n\r\n      if (existingTitle) {\r\n        throw new HttpException(422, { errors: { title: ['must be unique'] } });\r\n      }\r\n    }\r\n  }\r\n\r\n  const tagList =\r\n    Array.isArray(article.tagList) && article.tagList?.length\r\n      ? article.tagList.map((tag: string) => ({\r\n          create: { name: tag },\r\n          where: { name: tag },\r\n        }))\r\n      : [];\r\n\r\n  await disconnectArticlesTags(slug);\r\n\r\n  const updatedArticle = await prisma.article.update({\r\n    where: {\r\n      slug,\r\n    },\r\n    data: {\r\n      ...(article.title ? { title: article.title } : {}),\r\n      ...(article.body ? { body: article.body } : {}),\r\n      ...(article.description ? { description: article.description } : {}),\r\n      ...(newSlug ? { slug: newSlug } : {}),\r\n      updatedAt: new Date(),\r\n      tagList: {\r\n        connectOrCreate: tagList,\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return articleMapper(updatedArticle, id);\r\n};\r\n\r\nexport const deleteArticle = async (slug: string, id: number) => {\r\n  const existingArticle = await await prisma.article.findFirst({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      author: {\r\n        select: {\r\n          id: true,\r\n          username: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!existingArticle) {\r\n    throw new HttpException(404, {});\r\n  }\r\n\r\n  if (existingArticle.author.id !== id) {\r\n    throw new HttpException(403, {\r\n      message: 'You are not authorized to delete this article',\r\n    });\r\n  }\r\n  await prisma.article.delete({\r\n    where: {\r\n      slug,\r\n    },\r\n  });\r\n};\r\n\r\nexport const getCommentsByArticle = async (slug: string, id?: number) => {\r\n  const queries = [];\r\n\r\n  queries.push({\r\n    author: {\r\n      demo: true,\r\n    },\r\n  });\r\n\r\n  if (id) {\r\n    queries.push({\r\n      author: {\r\n        id,\r\n      },\r\n    });\r\n  }\r\n\r\n  const comments = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    include: {\r\n      comments: {\r\n        where: {\r\n          OR: queries,\r\n        },\r\n        select: {\r\n          id: true,\r\n          createdAt: true,\r\n          updatedAt: true,\r\n          body: true,\r\n          author: {\r\n            select: {\r\n              username: true,\r\n              bio: true,\r\n              image: true,\r\n              followedBy: true,\r\n            },\r\n          },\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  const result = comments?.comments.map((comment: any) => ({\r\n    ...comment,\r\n    author: {\r\n      username: comment.author.username,\r\n      bio: comment.author.bio,\r\n      image: comment.author.image,\r\n      following: comment.author.followedBy.some((follow: any) => follow.id === id),\r\n    },\r\n  }));\r\n\r\n  return result;\r\n};\r\n\r\nexport const addComment = async (body: string, slug: string, id: number) => {\r\n  if (!body) {\r\n    throw new HttpException(422, { errors: { body: [\"can't be blank\"] } });\r\n  }\r\n\r\n  const article = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      id: true,\r\n    },\r\n  });\r\n\r\n  const comment = await prisma.comment.create({\r\n    data: {\r\n      body,\r\n      article: {\r\n        connect: {\r\n          id: article?.id,\r\n        },\r\n      },\r\n      author: {\r\n        connect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return {\r\n    id: comment.id,\r\n    createdAt: comment.createdAt,\r\n    updatedAt: comment.updatedAt,\r\n    body: comment.body,\r\n    author: {\r\n      username: comment.author.username,\r\n      bio: comment.author.bio,\r\n      image: comment.author.image,\r\n      following: comment.author.followedBy.some((follow: any) => follow.id === id),\r\n    },\r\n  };\r\n};\r\n\r\nexport const deleteComment = async (id: number, userId: number) => {\r\n  const comment = await prisma.comment.findFirst({\r\n    where: {\r\n      id,\r\n      author: {\r\n        id: userId,\r\n      },\r\n    },\r\n    select: {\r\n      author: {\r\n        select: {\r\n          id: true,\r\n          username: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!comment) {\r\n    throw new HttpException(404, {});\r\n  }\r\n\r\n  if (comment.author.id !== userId) {\r\n    throw new HttpException(403, {\r\n      message: 'You are not authorized to delete this comment',\r\n    });\r\n  }\r\n\r\n  await prisma.comment.delete({\r\n    where: {\r\n      id,\r\n    },\r\n  });\r\n};\r\n\r\nexport const favoriteArticle = async (slugPayload: string, id: number) => {\r\n  const { _count, ...article } = await prisma.article.update({\r\n    where: {\r\n      slug: slugPayload,\r\n    },\r\n    data: {\r\n      favoritedBy: {\r\n        connect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  const result = {\r\n    ...article,\r\n    author: profileMapper(article.author, id),\r\n    tagList: article?.tagList.map((tag: Tag) => tag.name),\r\n    favorited: article.favoritedBy.some((favorited: any) => favorited.id === id),\r\n    favoritesCount: _count?.favoritedBy,\r\n  };\r\n\r\n  return result;\r\n};\r\n\r\nexport const unfavoriteArticle = async (slugPayload: string, id: number) => {\r\n  const { _count, ...article } = await prisma.article.update({\r\n    where: {\r\n      slug: slugPayload,\r\n    },\r\n    data: {\r\n      favoritedBy: {\r\n        disconnect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  const result = {\r\n    ...article,\r\n    author: profileMapper(article.author, id),\r\n    tagList: article?.tagList.map((tag: Tag) => tag.name),\r\n    favorited: article.favoritedBy.some((favorited: any) => favorited.id === id),\r\n    favoritesCount: _count?.favoritedBy,\r\n  };\r\n\r\n  return result;\r\n};\r\n"
+        },
+        "model": "jev-latest",
+        "questions": {
+          "rule_id": {
+            "type": "choice",
+            "instructions": "Which ONE canonical database rule from the module rule list is violated by the file in the state? Pick the single best-matching rule id as the option key. Judge only against the code shown.",
+            "criteria": {
+              "database-missing-index-fk-1": "IF foreign key column AND NOT index exists(fk column) — Column user_id in orders table has FK but no index",
+              "database-missing-index-hot-path-2": "IF join column in slow query log AND NOT index exists(join column) — Join on product_id in order_items table appears frequently in slow queries",
+              "database-full-table-scan-3": "IF table rows > 1 000 000 AND seq scan in explain plan — Large table user_sessions (2.1M rows) shows sequential scan in EXPLAIN",
+              "database-missing-index-where-4": "IF where column used frequently AND NOT index exists(where column) — Column status in jobs table used in WHERE clauses but not indexed",
+              "database-missing-composite-index-5": "IF composite where conditions AND NOT composite index exists — Queries frequently filter on (user_id, created_at) but no composite index",
+              "database-irreversible-migration-1": "IF migration drops column AND NOT has rollback — Migration V2__drop_unused_column.sql drops column without backup strategy",
+              "database-irreversible-migration-2": "IF migration renames table AND NOT has rollback — Migration renames users to legacy_users without data preservation plan",
+              "database-risky-migration-3": "IF migration changes column type AND data loss possible AND NOT has rollback — Changing VARCHAR(255) to VARCHAR(50) may truncate existing data",
+              "database-not-null-violation-4": "IF migration adds not null without default — Adding NOT NULL column without DEFAULT value will fail on existing rows",
+              "database-heavy-migration-5": "IF migration performs heavy operation on large table — Adding index on large table during peak hours may cause downtime",
+              "database-n-plus-one-risk-1": "IF orm loop detected AND relation not eager loaded — User.orders accessed in loop without include/join in UserService.java",
+              "database-n-plus-one-confirmed-2": "IF query count in logs > 100 per request AND same table — Application logs show 150 SELECT queries to orders_per_user per request",
+              "database-lazy-loading-danger-3": "IF orm lazy loading enabled AND high traffic endpoints — Lazy loading enabled on User.orders in API endpoint with 1000 RPM",
+              "database-missing-prefetch-4": "IF missing select related or prefetch related — Django ORM access to related objects without select_related/prefetch_related",
+              "database-iteration-overload-5": "IF orm iteration over large resultset — Code iterates over QuerySet without pagination or chunking",
+              "database-sequential-pagination-1": "IF sequential count and findmany on paginated endpoint — prisma.article.count() awaited immediately before prisma.article.findMany() on the same list endpoint",
+              "database-overfetch-relation-1": "IF full relation included to derive single flag — include: { favoritedBy: true } loads the entire many-to-many relation only to compute favoritedBy.some(f => f.id === id)",
+              "database-oversized-pool-1": "IF pool size > cpu cores * 4 — Connection pool set to 100 on 4-core CPU",
+              "database-undersized-pool-2": "IF pool size < 2 AND concurrent requests > 10 — Pool size of 1 with expected 50 concurrent users",
+              "database-connection-timeout-high-3": "IF connection timeout > 30 seconds — Connection timeout set to 120 seconds masks pool exhaustion",
+              "database-idle-timeout-missing-4": "IF idle timeout not configured — Connections may remain idle indefinitely consuming resources",
+              "database-max-lifetime-missing-5": "IF max lifetime not configured — Connections may accumulate metadata over time",
+              "database-pg-stat-statements-disabled-1": "IF pg stat statements not enabled — pg_stat_statements extension not enabled in shared_preload_libraries",
+              "database-work-mem-too-low-2": "IF work mem too low — work_mem setting of 4MB may cause excessive disk sorting",
+              "database-maintenance-work-mem-too-low-3": "IF maintenance work mem too low — maintenance_work_mem of 16MB slows VACUUM and index creation",
+              "database-effective-cache-misconfigured-4": "IF effective cache poorly configured — effective_cache_value should reflect OS + DB cache availability",
+              "database-missing-bloat-monitoring-5": "IF missing pg bloat monitoring — No monitoring for table/index bloat which degrades performance over time",
+              "database-unused-indexes-6": "IF unused indexes detected — Index idx_old_column shows zero scans over monitoring period",
+              "database-index-bloat-7": "IF index bloat significant — Index bloat > 30% indicates maintenance opportunity",
+              "database-missing-app-pool-8": "IF missing connection pooling in application — Application creates new connections per request instead of pooling",
+              "database-statement-timeout-missing-9": "IF statement timeout not configured — Long-running queries can block resources indefinitely",
+              "database-lock-timeout-missing-10": "IF lock timeout not configured — Row locks can block transactions indefinitely"
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "H2",
+      "size": {
+        "kind": "H2",
+        "stateChars": 1934,
+        "stateTokens": 484,
+        "questions": [
+          {
+            "id": "evidence_line",
+            "chars": 1006,
+            "tokens": 252,
+            "options": 75
+          }
+        ],
+        "longest": {
+          "id": "evidence_line",
+          "chars": 1006,
+          "tokens": 252,
+          "options": 75
+        },
+        "totalTokens": 736,
+        "limit": 32000,
+        "headroom": 31264,
+        "fits": true,
+        "bodyChars": 3002
+      },
+      "body": {
+        "state": {
+          "repository": "realworld-control",
+          "path": "src/app/routes/article/article.service.ts",
+          "language": "typescript",
+          "line_window": "1-75 of 652",
+          "lines": "1: import slugify from 'slugify';\n2: import prisma from '../../../prisma/prisma-client';\n3: import HttpException from '../../models/http-exception.model';\n4: import profileMapper from '../profile/profile.utils';\n5: import articleMapper from './article.mapper';\n6: import { Tag } from '../tag/tag.model';\n7: \n8: const buildFindAllQuery = (query: any, id: number | undefined) => {\n9:   const queries: any = [];\n10:   const orAuthorQuery = [];\n11:   const andAuthorQuery = [];\n12: \n13:   orAuthorQuery.push({\n14:     demo: {\n15:       equals: true,\n16:     },\n17:   });\n18: \n19:   if (id) {\n20:     orAuthorQuery.push({\n21:       id: {\n22:         equals: id,\n23:       },\n24:     });\n25:   }\n26: \n27:   if ('author' in query) {\n28:     andAuthorQuery.push({\n29:       username: {\n30:         equals: query.author,\n31:       },\n32:     });\n33:   }\n34: \n35:   const authorQuery = {\n36:     author: {\n37:       OR: orAuthorQuery,\n38:       AND: andAuthorQuery,\n39:     },\n40:   };\n41: \n42:   queries.push(authorQuery);\n43: \n44:   if ('tag' in query) {\n45:     queries.push({\n46:       tagList: {\n47:         some: {\n48:           name: query.tag,\n49:         },\n50:       },\n51:     });\n52:   }\n53: \n54:   if ('favorited' in query) {\n55:     queries.push({\n56:       favoritedBy: {\n57:         some: {\n58:           username: {\n59:             equals: query.favorited,\n60:           },\n61:         },\n62:       },\n63:     });\n64:   }\n65: \n66:   return queries;\n67: };\n68: \n69: export const getArticles = async (query: any, id?: number) => {\n70:   const andQueries = buildFindAllQuery(query, id);\n71:   const articlesCount = await prisma.article.count({\n72:     where: {\n73:       AND: andQueries,\n74:     },\n75:   });"
+        },
+        "model": "jev-latest",
+        "questions": {
+          "evidence_line": {
+            "type": "choice",
+            "instructions": "Which single numbered line of the state contains the code that EVIDENCES the database rule database-sequential-pagination-1 in src/app/routes/article/article.service.ts? Answer with the option key of that line number.",
+            "criteria": {
+              "1": null,
+              "2": null,
+              "3": null,
+              "4": null,
+              "5": null,
+              "6": null,
+              "7": null,
+              "8": null,
+              "9": null,
+              "10": null,
+              "11": null,
+              "12": null,
+              "13": null,
+              "14": null,
+              "15": null,
+              "16": null,
+              "17": null,
+              "18": null,
+              "19": null,
+              "20": null,
+              "21": null,
+              "22": null,
+              "23": null,
+              "24": null,
+              "25": null,
+              "26": null,
+              "27": null,
+              "28": null,
+              "29": null,
+              "30": null,
+              "31": null,
+              "32": null,
+              "33": null,
+              "34": null,
+              "35": null,
+              "36": null,
+              "37": null,
+              "38": null,
+              "39": null,
+              "40": null,
+              "41": null,
+              "42": null,
+              "43": null,
+              "44": null,
+              "45": null,
+              "46": null,
+              "47": null,
+              "48": null,
+              "49": null,
+              "50": null,
+              "51": null,
+              "52": null,
+              "53": null,
+              "54": null,
+              "55": null,
+              "56": null,
+              "57": null,
+              "58": null,
+              "59": null,
+              "60": null,
+              "61": null,
+              "62": null,
+              "63": null,
+              "64": null,
+              "65": null,
+              "66": null,
+              "67": null,
+              "68": null,
+              "69": null,
+              "70": null,
+              "71": null,
+              "72": null,
+              "73": null,
+              "74": null,
+              "75": null
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "H3",
+      "size": {
+        "kind": "H3",
+        "stateChars": 14814,
+        "stateTokens": 3704,
+        "questions": [
+          {
+            "id": "statement_a",
+            "chars": 370,
+            "tokens": 93,
+            "options": 2
+          },
+          {
+            "id": "statement_b",
+            "chars": 394,
+            "tokens": 99,
+            "options": 2
+          }
+        ],
+        "longest": {
+          "id": "statement_b",
+          "chars": 394,
+          "tokens": 99,
+          "options": 2
+        },
+        "totalTokens": 3803,
+        "limit": 32000,
+        "headroom": 28197,
+        "fits": true,
+        "bodyChars": 15653
+      },
+      "body": {
+        "state": {
+          "repository": "realworld-control",
+          "path": "src/app/routes/article/article.service.ts",
+          "language": "typescript",
+          "content": "import slugify from 'slugify';\r\nimport prisma from '../../../prisma/prisma-client';\r\nimport HttpException from '../../models/http-exception.model';\r\nimport profileMapper from '../profile/profile.utils';\r\nimport articleMapper from './article.mapper';\r\nimport { Tag } from '../tag/tag.model';\r\n\r\nconst buildFindAllQuery = (query: any, id: number | undefined) => {\r\n  const queries: any = [];\r\n  const orAuthorQuery = [];\r\n  const andAuthorQuery = [];\r\n\r\n  orAuthorQuery.push({\r\n    demo: {\r\n      equals: true,\r\n    },\r\n  });\r\n\r\n  if (id) {\r\n    orAuthorQuery.push({\r\n      id: {\r\n        equals: id,\r\n      },\r\n    });\r\n  }\r\n\r\n  if ('author' in query) {\r\n    andAuthorQuery.push({\r\n      username: {\r\n        equals: query.author,\r\n      },\r\n    });\r\n  }\r\n\r\n  const authorQuery = {\r\n    author: {\r\n      OR: orAuthorQuery,\r\n      AND: andAuthorQuery,\r\n    },\r\n  };\r\n\r\n  queries.push(authorQuery);\r\n\r\n  if ('tag' in query) {\r\n    queries.push({\r\n      tagList: {\r\n        some: {\r\n          name: query.tag,\r\n        },\r\n      },\r\n    });\r\n  }\r\n\r\n  if ('favorited' in query) {\r\n    queries.push({\r\n      favoritedBy: {\r\n        some: {\r\n          username: {\r\n            equals: query.favorited,\r\n          },\r\n        },\r\n      },\r\n    });\r\n  }\r\n\r\n  return queries;\r\n};\r\n\r\nexport const getArticles = async (query: any, id?: number) => {\r\n  const andQueries = buildFindAllQuery(query, id);\r\n  const articlesCount = await prisma.article.count({\r\n    where: {\r\n      AND: andQueries,\r\n    },\r\n  });\r\n\r\n  const articles = await prisma.article.findMany({\r\n    where: { AND: andQueries },\r\n    orderBy: {\r\n      createdAt: 'desc',\r\n    },\r\n    skip: Number(query.offset) || 0,\r\n    take: Number(query.limit) || 10,\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return {\r\n    articles: articles.map((article: any) => articleMapper(article, id)),\r\n    articlesCount,\r\n  };\r\n};\r\n\r\nexport const getFeed = async (offset: number, limit: number, id: number) => {\r\n  const articlesCount = await prisma.article.count({\r\n    where: {\r\n      author: {\r\n        followedBy: { some: { id: id } },\r\n      },\r\n    },\r\n  });\r\n\r\n  const articles = await prisma.article.findMany({\r\n    where: {\r\n      author: {\r\n        followedBy: { some: { id: id } },\r\n      },\r\n    },\r\n    orderBy: {\r\n      createdAt: 'desc',\r\n    },\r\n    skip: offset || 0,\r\n    take: limit || 10,\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return {\r\n    articles: articles.map((article: any) => articleMapper(article, id)),\r\n    articlesCount,\r\n  };\r\n};\r\n\r\nexport const createArticle = async (article: any, id: number) => {\r\n  const { title, description, body, tagList } = article;\r\n  const tags = Array.isArray(tagList) ? tagList : [];\r\n\r\n  if (!title) {\r\n    throw new HttpException(422, { errors: { title: [\"can't be blank\"] } });\r\n  }\r\n\r\n  if (!description) {\r\n    throw new HttpException(422, { errors: { description: [\"can't be blank\"] } });\r\n  }\r\n\r\n  if (!body) {\r\n    throw new HttpException(422, { errors: { body: [\"can't be blank\"] } });\r\n  }\r\n\r\n  const slug = `${slugify(title)}-${id}`;\r\n\r\n  const existingTitle = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      slug: true,\r\n    },\r\n  });\r\n\r\n  if (existingTitle) {\r\n    throw new HttpException(422, { errors: { title: ['must be unique'] } });\r\n  }\r\n\r\n  const {\r\n    authorId,\r\n    id: articleId,\r\n    ...createdArticle\r\n  } = await prisma.article.create({\r\n    data: {\r\n      title,\r\n      description,\r\n      body,\r\n      slug,\r\n      tagList: {\r\n        connectOrCreate: tags.map((tag: string) => ({\r\n          create: { name: tag },\r\n          where: { name: tag },\r\n        })),\r\n      },\r\n      author: {\r\n        connect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return articleMapper(createdArticle, id);\r\n};\r\n\r\nexport const getArticle = async (slug: string, id?: number) => {\r\n  const article = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!article) {\r\n    throw new HttpException(404, { errors: { article: ['not found'] } });\r\n  }\r\n\r\n  return articleMapper(article, id);\r\n};\r\n\r\nconst disconnectArticlesTags = async (slug: string) => {\r\n  await prisma.article.update({\r\n    where: {\r\n      slug,\r\n    },\r\n    data: {\r\n      tagList: {\r\n        set: [],\r\n      },\r\n    },\r\n  });\r\n};\r\n\r\nexport const updateArticle = async (article: any, slug: string, id: number) => {\r\n  let newSlug = null;\r\n\r\n  const existingArticle = await await prisma.article.findFirst({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      author: {\r\n        select: {\r\n          id: true,\r\n          username: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!existingArticle) {\r\n    throw new HttpException(404, {});\r\n  }\r\n\r\n  if (existingArticle.author.id !== id) {\r\n    throw new HttpException(403, {\r\n      message: 'You are not authorized to update this article',\r\n    });\r\n  }\r\n\r\n  if (article.title) {\r\n    newSlug = `${slugify(article.title)}-${id}`;\r\n\r\n    if (newSlug !== slug) {\r\n      const existingTitle = await prisma.article.findFirst({\r\n        where: {\r\n          slug: newSlug,\r\n        },\r\n        select: {\r\n          slug: true,\r\n        },\r\n      });\r\n\r\n      if (existingTitle) {\r\n        throw new HttpException(422, { errors: { title: ['must be unique'] } });\r\n      }\r\n    }\r\n  }\r\n\r\n  const tagList =\r\n    Array.isArray(article.tagList) && article.tagList?.length\r\n      ? article.tagList.map((tag: string) => ({\r\n          create: { name: tag },\r\n          where: { name: tag },\r\n        }))\r\n      : [];\r\n\r\n  await disconnectArticlesTags(slug);\r\n\r\n  const updatedArticle = await prisma.article.update({\r\n    where: {\r\n      slug,\r\n    },\r\n    data: {\r\n      ...(article.title ? { title: article.title } : {}),\r\n      ...(article.body ? { body: article.body } : {}),\r\n      ...(article.description ? { description: article.description } : {}),\r\n      ...(newSlug ? { slug: newSlug } : {}),\r\n      updatedAt: new Date(),\r\n      tagList: {\r\n        connectOrCreate: tagList,\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return articleMapper(updatedArticle, id);\r\n};\r\n\r\nexport const deleteArticle = async (slug: string, id: number) => {\r\n  const existingArticle = await await prisma.article.findFirst({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      author: {\r\n        select: {\r\n          id: true,\r\n          username: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!existingArticle) {\r\n    throw new HttpException(404, {});\r\n  }\r\n\r\n  if (existingArticle.author.id !== id) {\r\n    throw new HttpException(403, {\r\n      message: 'You are not authorized to delete this article',\r\n    });\r\n  }\r\n  await prisma.article.delete({\r\n    where: {\r\n      slug,\r\n    },\r\n  });\r\n};\r\n\r\nexport const getCommentsByArticle = async (slug: string, id?: number) => {\r\n  const queries = [];\r\n\r\n  queries.push({\r\n    author: {\r\n      demo: true,\r\n    },\r\n  });\r\n\r\n  if (id) {\r\n    queries.push({\r\n      author: {\r\n        id,\r\n      },\r\n    });\r\n  }\r\n\r\n  const comments = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    include: {\r\n      comments: {\r\n        where: {\r\n          OR: queries,\r\n        },\r\n        select: {\r\n          id: true,\r\n          createdAt: true,\r\n          updatedAt: true,\r\n          body: true,\r\n          author: {\r\n            select: {\r\n              username: true,\r\n              bio: true,\r\n              image: true,\r\n              followedBy: true,\r\n            },\r\n          },\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  const result = comments?.comments.map((comment: any) => ({\r\n    ...comment,\r\n    author: {\r\n      username: comment.author.username,\r\n      bio: comment.author.bio,\r\n      image: comment.author.image,\r\n      following: comment.author.followedBy.some((follow: any) => follow.id === id),\r\n    },\r\n  }));\r\n\r\n  return result;\r\n};\r\n\r\nexport const addComment = async (body: string, slug: string, id: number) => {\r\n  if (!body) {\r\n    throw new HttpException(422, { errors: { body: [\"can't be blank\"] } });\r\n  }\r\n\r\n  const article = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      id: true,\r\n    },\r\n  });\r\n\r\n  const comment = await prisma.comment.create({\r\n    data: {\r\n      body,\r\n      article: {\r\n        connect: {\r\n          id: article?.id,\r\n        },\r\n      },\r\n      author: {\r\n        connect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return {\r\n    id: comment.id,\r\n    createdAt: comment.createdAt,\r\n    updatedAt: comment.updatedAt,\r\n    body: comment.body,\r\n    author: {\r\n      username: comment.author.username,\r\n      bio: comment.author.bio,\r\n      image: comment.author.image,\r\n      following: comment.author.followedBy.some((follow: any) => follow.id === id),\r\n    },\r\n  };\r\n};\r\n\r\nexport const deleteComment = async (id: number, userId: number) => {\r\n  const comment = await prisma.comment.findFirst({\r\n    where: {\r\n      id,\r\n      author: {\r\n        id: userId,\r\n      },\r\n    },\r\n    select: {\r\n      author: {\r\n        select: {\r\n          id: true,\r\n          username: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!comment) {\r\n    throw new HttpException(404, {});\r\n  }\r\n\r\n  if (comment.author.id !== userId) {\r\n    throw new HttpException(403, {\r\n      message: 'You are not authorized to delete this comment',\r\n    });\r\n  }\r\n\r\n  await prisma.comment.delete({\r\n    where: {\r\n      id,\r\n    },\r\n  });\r\n};\r\n\r\nexport const favoriteArticle = async (slugPayload: string, id: number) => {\r\n  const { _count, ...article } = await prisma.article.update({\r\n    where: {\r\n      slug: slugPayload,\r\n    },\r\n    data: {\r\n      favoritedBy: {\r\n        connect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  const result = {\r\n    ...article,\r\n    author: profileMapper(article.author, id),\r\n    tagList: article?.tagList.map((tag: Tag) => tag.name),\r\n    favorited: article.favoritedBy.some((favorited: any) => favorited.id === id),\r\n    favoritesCount: _count?.favoritedBy,\r\n  };\r\n\r\n  return result;\r\n};\r\n\r\nexport const unfavoriteArticle = async (slugPayload: string, id: number) => {\r\n  const { _count, ...article } = await prisma.article.update({\r\n    where: {\r\n      slug: slugPayload,\r\n    },\r\n    data: {\r\n      favoritedBy: {\r\n        disconnect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  const result = {\r\n    ...article,\r\n    author: profileMapper(article.author, id),\r\n    tagList: article?.tagList.map((tag: Tag) => tag.name),\r\n    favorited: article.favoritedBy.some((favorited: any) => favorited.id === id),\r\n    favoritesCount: _count?.favoritedBy,\r\n  };\r\n\r\n  return result;\r\n};\r\n"
+        },
+        "model": "jev-latest",
+        "questions": {
+          "statement_a": {
+            "type": "noul",
+            "instructions": "src/app/routes/article/article.service.ts genuinely violates the canonical database rule database-sequential-pagination-1, which the hand-verified assessment cites at line 71 of this file.",
+            "criteria": {
+              "true": "The code in the state confirms the statement",
+              "false": "The code in the state contradicts the statement, or does not support it"
+            }
+          },
+          "statement_b": {
+            "type": "noul",
+            "instructions": "The code at src/app/routes/article/article.service.ts:71 only looks like a database-sequential-pagination-1 violation: the value is guarded by a branch elsewhere in the file, so the rule is not actually violated.",
+            "criteria": {
+              "true": "The code in the state confirms the statement",
+              "false": "The code in the state contradicts the statement, or does not support it"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "kind": "H1",
+      "branch": null,
+      "question_id": "rule_id",
+      "verdict": "FAIL — chose database-overfetch-relation-1 (high/S), a real rule, but not database-sequential-pagination-1; note the expected id is #2 in the top-3 probability list",
+      "check": {
+        "chosen": "database-overfetch-relation-1",
+        "inList": true,
+        "expected": "database-sequential-pagination-1",
+        "matched": false,
+        "confidence": 0.63,
+        "chosenProbability": 0.65,
+        "topProbabilities": [
+          [
+            "database-overfetch-relation-1",
+            0.65
+          ],
+          [
+            "database-sequential-pagination-1",
+            0.35000000000000003
+          ],
+          [
+            "database-lock-timeout-missing-10",
+            0
+          ]
+        ],
+        "runnerUp": {
+          "id": "database-sequential-pagination-1",
+          "probability": 0.35000000000000003,
+          "inList": true,
+          "severity": "high",
+          "effort": "S",
+          "isExpected": true
+        },
+        "probabilitySum": 1,
+        "stampedSeverity": "high",
+        "stampedEffort": "S",
+        "expectedSeverity": "high",
+        "expectedEffort": "S",
+        "modelReported": "jev-1.13.0"
+      },
+      "raw_answer": {
+        "type": "choice",
+        "choice": "database-overfetch-relation-1",
+        "confidence": 0.63,
+        "probabilities": {
+          "database-lock-timeout-missing-10": 0,
+          "database-missing-index-hot-path-2": 0,
+          "database-missing-index-fk-1": 0,
+          "database-iteration-overload-5": 0,
+          "database-not-null-violation-4": 0,
+          "database-effective-cache-misconfigured-4": 0,
+          "database-work-mem-too-low-2": 0,
+          "database-index-bloat-7": 0,
+          "database-idle-timeout-missing-4": 0,
+          "database-connection-timeout-high-3": 0,
+          "database-full-table-scan-3": 0,
+          "database-missing-index-where-4": 0,
+          "database-irreversible-migration-1": 0,
+          "database-unused-indexes-6": 0,
+          "database-overfetch-relation-1": 0.65,
+          "database-missing-composite-index-5": 0,
+          "database-statement-timeout-missing-9": 0,
+          "database-n-plus-one-risk-1": 0,
+          "database-n-plus-one-confirmed-2": 0,
+          "database-missing-bloat-monitoring-5": 0,
+          "database-undersized-pool-2": 0,
+          "database-oversized-pool-1": 0,
+          "database-sequential-pagination-1": 0.35000000000000003,
+          "database-missing-prefetch-4": 0,
+          "database-irreversible-migration-2": 0,
+          "database-maintenance-work-mem-too-low-3": 0,
+          "database-pg-stat-statements-disabled-1": 0,
+          "database-missing-app-pool-8": 0,
+          "database-risky-migration-3": 0,
+          "database-max-lifetime-missing-5": 0,
+          "database-lazy-loading-danger-3": 0,
+          "database-heavy-migration-5": 0
+        }
+      }
+    },
+    {
+      "kind": "H2",
+      "branch": null,
+      "question_id": "evidence_line",
+      "verdict": "FAIL — line 75 is \"  });\", which is not ground truth (--expect-line 71)",
+      "check": {
+        "chosen": "75",
+        "lineNumber": 75,
+        "inWindow": true,
+        "lineText": "  });",
+        "expectedLine": 71,
+        "evidenceLines": [],
+        "acceptedLines": [
+          71
+        ],
+        "matchesExpectedLine": false,
+        "accepted": false,
+        "chosenProbability": 0.3,
+        "confidence": 0.28,
+        "topProbabilities": [
+          [
+            "75",
+            0.3
+          ],
+          [
+            "2",
+            0.17
+          ],
+          [
+            "70",
+            0.13
+          ]
+        ]
+      },
+      "raw_answer": {
+        "type": "choice",
+        "choice": "75",
+        "confidence": 0.28,
+        "probabilities": {
+          "1": 0,
+          "2": 0.17,
+          "3": 0,
+          "4": 0,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0.02,
+          "9": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0.01,
+          "15": 0.03,
+          "16": 0,
+          "17": 0,
+          "18": 0,
+          "19": 0.01,
+          "20": 0,
+          "21": 0,
+          "22": 0,
+          "23": 0,
+          "24": 0,
+          "25": 0,
+          "26": 0,
+          "27": 0,
+          "28": 0,
+          "29": 0,
+          "30": 0,
+          "31": 0,
+          "32": 0,
+          "33": 0,
+          "34": 0,
+          "35": 0,
+          "36": 0,
+          "37": 0,
+          "38": 0.01,
+          "39": 0,
+          "40": 0,
+          "41": 0,
+          "42": 0,
+          "43": 0,
+          "44": 0,
+          "45": 0,
+          "46": 0,
+          "47": 0,
+          "48": 0,
+          "49": 0,
+          "50": 0,
+          "51": 0,
+          "52": 0,
+          "53": 0.01,
+          "54": 0,
+          "55": 0,
+          "56": 0,
+          "57": 0,
+          "58": 0,
+          "59": 0,
+          "60": 0,
+          "61": 0,
+          "62": 0,
+          "63": 0,
+          "64": 0,
+          "65": 0,
+          "66": 0,
+          "67": 0,
+          "68": 0,
+          "69": 0.03,
+          "70": 0.13,
+          "71": 0.12,
+          "72": 0.06999999999999999,
+          "73": 0.03,
+          "74": 0.05,
+          "75": 0.3
+        }
+      }
+    },
+    {
+      "kind": "H3",
+      "branch": null,
+      "question_id": "statement_a / statement_b",
+      "verdict": "DOES NOT SEPARATE — true 0.28 vs false 0.19",
+      "check": {
+        "trueValue": 0.28,
+        "falseValue": 0.19,
+        "separation": 0.09,
+        "trueCalledTrue": false,
+        "falseCalledFalse": true,
+        "clean": false
+      },
+      "raw_answer": {
+        "statement_a": {
+          "type": "noul",
+          "noul": 0.28
+        },
+        "statement_b": {
+          "type": "noul",
+          "noul": 0.19
+        }
+      }
+    }
+  ],
+  "usage": {
+    "input_tokens": 11820,
+    "cost_usd": 0.00049644
+  }
+}

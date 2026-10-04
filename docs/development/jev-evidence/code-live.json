@@ -1,0 +1,920 @@
+{
+  "generated_at": "2026-10-03T23:55:39.821Z",
+  "mode": "LIVE",
+  "endpoint": "https://api.typesafe.ai/v1/systemone",
+  "model": "jev-latest",
+  "target": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\realworld-control",
+  "file": "src/app/routes/article/article.service.ts",
+  "file_lines": 652,
+  "provenance": {
+    "node": "v24.14.1",
+    "commit": "30b68e1"
+  },
+  "module_mapping": {
+    "requested_module": "code",
+    "skill_file": "skills/code-quality-assessment.skill.md",
+    "declared_modules": [
+      "code",
+      "cost",
+      "database",
+      "flows",
+      "github",
+      "performance",
+      "security",
+      "structure"
+    ]
+  },
+  "ground_truth": {
+    "expect_id": "code-missing-validation-4",
+    "expect_id_present": true,
+    "expect_line": 69,
+    "accepted_lines": [
+      69
+    ],
+    "evidence_lines_from_locator": [],
+    "window_start": 1,
+    "window_end": 73,
+    "window_options": 73,
+    "choice_max_options": 255
+  },
+  "registry": {
+    "canonical_rule_count": 368,
+    "fingerprint": "368-6e180554",
+    "module": "code",
+    "module_rule_count": 59,
+    "expected_rule_id": "code-missing-validation-4",
+    "expected_rule_present": true,
+    "options": {
+      "code-extreme-complexity-1": {
+        "severity": "critical",
+        "effort": "L",
+        "description": "IF cyclomatic complexity > 20 → FINDING: code-extreme-complexity-1 (severity: critical, effort: L) — Function processOrder has 25 paths through nested conditionals and loops"
+      },
+      "code-high-complexity-2": {
+        "severity": "high",
+        "effort": "M",
+        "description": "IF cyclomatic complexity > 15 → FINDING: code-high-complexity-2 (severity: high, effort: M) — Function handleUserLogin has 18 distinct paths"
+      },
+      "code-moderate-complexity-3": {
+        "severity": "medium",
+        "effort": "S",
+        "description": "IF cyclomatic complexity > 10 → FINDING: code-moderate-complexity-3 (severity: medium, effort: S) — Function formatAddress has 12 paths through conditional formatting"
+      },
+      "code-extreme-nesting-4": {
+        "severity": "high",
+        "effort": "M",
+        "description": "IF nesting depth > 5 → FINDING: code-extreme-nesting-4 (severity: high, effort: M) — 5 levels of nested if/else in data validation function"
+      },
+      "code-high-nesting-5": {
+        "severity": "medium",
+        "effort": "S",
+        "description": "IF nesting depth > 4 → FINDING: code-high-nesting-5 (severity: medium, effort: S) — 4 levels of nesting in nested loop processing matrix"
+      },
+      "code-extreme-length-6": {
+        "severity": "high",
+        "effort": "L",
+        "description": "IF function lines > 150 → FINDING: code-extreme-length-6 (severity: high, effort: L) — Component render method spans 200 lines with mixed concerns"
+      },
+      "code-long-function-7": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF function lines > 100 → FINDING: code-long-function-7 (severity: medium, effort: M) — Helper function utilityFormatData is 120 lines doing multiple transformations"
+      },
+      "code-medium-length-8": {
+        "severity": "low",
+        "effort": "S",
+        "description": "IF function lines > 50 → FINDING: code-medium-length-8 (severity: low, effort: S) — Several utility functions in 60-80 line range"
+      },
+      "code-too-many-params-9": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF parameter count > 7 → FINDING: code-too-many-params-9 (severity: medium, effort: M) — Function createUser requires 9 parameters for configuration"
+      },
+      "code-many-params-10": {
+        "severity": "low",
+        "effort": "S",
+        "description": "IF parameter count > 5 → FINDING: code-many-params-10 (severity: low, effort: S) — Function connectToDatabase takes host, port, db, user, password, timeout"
+      },
+      "code-boolean-parameter-plague-11": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF boolean parameter count > 3 — Function processPayment(true, false, true) - what do booleans mean?"
+      },
+      "code-multiple-return-points-12": {
+        "severity": "low",
+        "effort": "S",
+        "description": "IF return statement count > 6 — Function has 8 return statements scattered through logic"
+      },
+      "code-exact-duplication-massive-1": {
+        "severity": "high",
+        "effort": "L",
+        "description": "IF exact duplicate lines >= 30 IN different files — 30-line validation block copied in 5 different service files"
+      },
+      "code-exact-duplication-significant-2": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF exact duplicate lines >= 20 IN different files — 20-line API response formatter duplicated in 3 controllers"
+      },
+      "code-exact-duplication-minor-3": {
+        "severity": "low",
+        "effort": "S",
+        "description": "IF exact duplicate lines >= 10 IN different files — 10-line logging wrapper duplicated across modules"
+      },
+      "code-structural-duplication-high-4": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF structural similarity >= 0.9 AND different names — Two functions with identical logic but different variable names"
+      },
+      "code-structural-duplication-medium-5": {
+        "severity": "low",
+        "effort": "M",
+        "description": "IF structural similarity >= 0.8 AND different names — Similar validation logic in user and product services"
+      },
+      "code-copy-paste-variant-6": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF copy paste with minor changes — Same 15-line pattern with only variable names changed"
+      },
+      "code-boilerplate-repetition-7": {
+        "severity": "low",
+        "effort": "S",
+        "description": "IF boilerplate code in every file — Same 5-line import/loading pattern in every service file"
+      },
+      "code-empty-catch-1": {
+        "severity": "critical",
+        "effort": "XS",
+        "description": "IF empty catch block — catch (Exception e) { } - silently swallowing all exceptions"
+      },
+      "code-generic-catch-2": {
+        "severity": "high",
+        "effort": "S",
+        "description": "IF catch generic exception AND NOT rethrow — catch (Exception e) { log.error(e); } - hiding failure from caller"
+      },
+      "code-null-instead-of-exception-3": {
+        "severity": "medium",
+        "effort": "S",
+        "description": "IF throws exception or returns null — Function returns null on failure instead of throwing meaningful exception"
+      },
+      "code-missing-validation-4": {
+        "severity": "high",
+        "effort": "M",
+        "description": "IF no validation at api boundary — API endpoint accepts user ID without checking existence or permissions"
+      },
+      "code-system-exit-misuse-5": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF uses system exit for flow control — System.exit(1) used for validation failure in library code"
+      },
+      "code-ignores-return-value-6": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF ignores return value — Call to validation function whose return value is ignored"
+      },
+      "code-warning-suppression-7": {
+        "severity": "low",
+        "effort": "S",
+        "description": "IF suppresses warnings without justification — @SuppressWarnings('all') used to hide 20 compiler warnings"
+      },
+      "code-print-statement-8": {
+        "severity": "low",
+        "effort": "S",
+        "description": "IF uses print instead of logger — System.out.println used for debugging in production code"
+      },
+      "code-catch-and-continue-9": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF catches error and continues — Loop continues after database connection failure"
+      },
+      "code-logs-secrets-10": {
+        "severity": "critical",
+        "effort": "XS",
+        "description": "IF logs sensitive information — Logger.debug(\\\"Password: \\\" + password) in authentication flow"
+      },
+      "code-loose-equality-1": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF `==` used instead of `===` — if (user.status == 'active') - type coercion risks"
+      },
+      "code-loose-inequality-2": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF `!=` used instead of `!==` — if (user.role != 'admin') - may incorrectly evaluate due to coercion"
+      },
+      "code-var-usage-3": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF `var` used — var i = 0; function scoped incorrectly in loops"
+      },
+      "code-unhandled-promise-4": {
+        "severity": "high",
+        "effort": "S",
+        "description": "IF promise not awaited AND not fire and forget — fetchUserData() called without await - promise ignored"
+      },
+      "code-promise-chain-missing-catch-5": {
+        "severity": "medium",
+        "effort": "S",
+        "description": "IF promise chain missing catch — promise.then().then() without .catch() - unhandled rejection"
+      },
+      "code-any-type-6": {
+        "severity": "medium",
+        "effort": "S",
+        "description": "IF `any` type in public API — function processData(data: any) - loses type safety"
+      },
+      "code-console-log-7": {
+        "severity": "low",
+        "effort": "S",
+        "description": "IF `console.log` in production code — Debug statement left in production error handler"
+      },
+      "code-missing-return-type-8": {
+        "severity": "low",
+        "effort": "S",
+        "description": "IF missing return type — function processData(input) { return input.trim(); }"
+      },
+      "code-nested-ternary-9": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF nested ternary operators — condition ? val1 : condition2 ? val2 : val3 - hard to read"
+      },
+      "code-callback-hell-10": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF callback hell detected — fs.readFile(..., fs.writeFile(..., fs.chmod(..., ...)))"
+      },
+      "code-bare-except-1": {
+        "severity": "critical",
+        "effort": "XS",
+        "description": "IF `except:` bare — except: pass - catches KeyboardInterrupt and SystemExit"
+      },
+      "code-bare-except-with-others-2": {
+        "severity": "high",
+        "effort": "S",
+        "description": "IF bare except in try with multiple except — except ValueError: ...; except: ... - bare except overrides specificity"
+      },
+      "code-mutable-default-3": {
+        "severity": "high",
+        "effort": "XS",
+        "description": "IF mutable default argument — def process(items=[]): items.append('item') - shared across calls"
+      },
+      "code-sql-injection-risk-4": {
+        "severity": "critical",
+        "effort": "S",
+        "description": "IF sql string concatenation — query = \\\"SELECT * FROM users WHERE name = '\\\" + name + \\\"'\\\""
+      },
+      "code-print-statement-5": {
+        "severity": "low",
+        "effort": "S",
+        "description": "IF `print` in production code (outside main/  main  ) — Debug print in library function"
+      },
+      "code-god-object-6": {
+        "severity": "high",
+        "effort": "L",
+        "description": "IF god object detected (class > 30 methods OR > 2000 lines) — DataManager class handles DB, file I/O, networking, and business logic"
+      },
+      "code-too-many-attributes-7": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF too many attributes (class > 20 attributes) — User class tracks 25 different properties suggesting poor cohesion"
+      },
+      "code-long-parameter-list-8": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF long parameter list (> 5 parameters) — def create_user(name, email, phone, address, dob, ssn, license, passport)"
+      },
+      "code-deep-inheritance-9": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF deep inheritance hierarchy (> 5 levels) — Animal → Mammal → DomesticDog → BreedSpecific → ShowDog → Champion"
+      },
+      "code-missing-docstring-10": {
+        "severity": "low",
+        "effort": "S",
+        "description": "IF missing docstring in public api — public function calculate_tax() lacks documentation"
+      },
+      "code-unchecked-error-1": {
+        "severity": "high",
+        "effort": "S",
+        "description": "IF error not checked — os.Create(file) - ignoring potential permission error"
+      },
+      "code-error-assigned-unused-2": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF error assigned not used — _, err := strconv.Atoi(input) - error checked but not used"
+      },
+      "code-blocking-in-goroutine-3": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF blocking call in goroutine — time.Sleep(5 * time.Second) in goroutine handling requests"
+      },
+      "code-mutex-missing-4": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF mutex not used — Multiple goroutines accessing shared map without synchronization"
+      },
+      "code-channel-not-closed-5": {
+        "severity": "low",
+        "effort": "S",
+        "description": "IF channel not closed — Channel used for worker coordination never closed"
+      },
+      "code-slice-append-in-loop-6": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF slice append in loop — for i := 0; i < 10000; i++ { slice = append(slice, i) }"
+      },
+      "code-map-lookup-unchecked-7": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF map lookup not checked — value := myMap[key] - panics if key doesn't exist"
+      },
+      "code-interface-bloat-8": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF interface bloat (> 10 methods) — Service interface with 12 methods violating ISP"
+      },
+      "code-god-package-9": {
+        "severity": "high",
+        "effort": "L",
+        "description": "IF god package detected (> 50 files in package) — utils package contains unrelated string, math, networking, and UI functions"
+      },
+      "code-missing-error-main-10": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF missing error handling in main — main() function calls functions that can error but doesn't check"
+      }
+    }
+  },
+  "budget": {
+    "state_question_limit": 32000,
+    "context_limit_total": 64000,
+    "per_request": [
+      {
+        "kind": "H1",
+        "state_tokens": 3704,
+        "longest_question_tokens": 2041,
+        "total_tokens": 5745,
+        "fits": true
+      },
+      {
+        "kind": "H2",
+        "state_tokens": 478,
+        "longest_question_tokens": 244,
+        "total_tokens": 722,
+        "fits": true
+      },
+      {
+        "kind": "H3",
+        "state_tokens": 3704,
+        "longest_question_tokens": 97,
+        "total_tokens": 3801,
+        "fits": true
+      }
+    ],
+    "single_pass": {
+      "configured_digest_chars": 180000,
+      "configured_digest_tokens": 45000,
+      "configured_digest_total_tokens": 45097,
+      "configured_digest_fits": false,
+      "measured_digest_chars": 80688,
+      "measured_digest_tokens": 20172,
+      "skills_chars": 216697,
+      "skills_tokens": 54175,
+      "full_single_pass_tokens": 74347,
+      "full_single_pass_fits": false
+    }
+  },
+  "requests": [
+    {
+      "kind": "H1",
+      "size": {
+        "kind": "H1",
+        "stateChars": 14814,
+        "stateTokens": 3704,
+        "questions": [
+          {
+            "id": "rule_id",
+            "chars": 8164,
+            "tokens": 2041,
+            "options": 59
+          }
+        ],
+        "longest": {
+          "id": "rule_id",
+          "chars": 8164,
+          "tokens": 2041,
+          "options": 59
+        },
+        "totalTokens": 5745,
+        "limit": 32000,
+        "headroom": 26255,
+        "fits": true,
+        "bodyChars": 23034
+      },
+      "body": {
+        "state": {
+          "repository": "realworld-control",
+          "path": "src/app/routes/article/article.service.ts",
+          "language": "typescript",
+          "content": "import slugify from 'slugify';\r\nimport prisma from '../../../prisma/prisma-client';\r\nimport HttpException from '../../models/http-exception.model';\r\nimport profileMapper from '../profile/profile.utils';\r\nimport articleMapper from './article.mapper';\r\nimport { Tag } from '../tag/tag.model';\r\n\r\nconst buildFindAllQuery = (query: any, id: number | undefined) => {\r\n  const queries: any = [];\r\n  const orAuthorQuery = [];\r\n  const andAuthorQuery = [];\r\n\r\n  orAuthorQuery.push({\r\n    demo: {\r\n      equals: true,\r\n    },\r\n  });\r\n\r\n  if (id) {\r\n    orAuthorQuery.push({\r\n      id: {\r\n        equals: id,\r\n      },\r\n    });\r\n  }\r\n\r\n  if ('author' in query) {\r\n    andAuthorQuery.push({\r\n      username: {\r\n        equals: query.author,\r\n      },\r\n    });\r\n  }\r\n\r\n  const authorQuery = {\r\n    author: {\r\n      OR: orAuthorQuery,\r\n      AND: andAuthorQuery,\r\n    },\r\n  };\r\n\r\n  queries.push(authorQuery);\r\n\r\n  if ('tag' in query) {\r\n    queries.push({\r\n      tagList: {\r\n        some: {\r\n          name: query.tag,\r\n        },\r\n      },\r\n    });\r\n  }\r\n\r\n  if ('favorited' in query) {\r\n    queries.push({\r\n      favoritedBy: {\r\n        some: {\r\n          username: {\r\n            equals: query.favorited,\r\n          },\r\n        },\r\n      },\r\n    });\r\n  }\r\n\r\n  return queries;\r\n};\r\n\r\nexport const getArticles = async (query: any, id?: number) => {\r\n  const andQueries = buildFindAllQuery(query, id);\r\n  const articlesCount = await prisma.article.count({\r\n    where: {\r\n      AND: andQueries,\r\n    },\r\n  });\r\n\r\n  const articles = await prisma.article.findMany({\r\n    where: { AND: andQueries },\r\n    orderBy: {\r\n      createdAt: 'desc',\r\n    },\r\n    skip: Number(query.offset) || 0,\r\n    take: Number(query.limit) || 10,\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return {\r\n    articles: articles.map((article: any) => articleMapper(article, id)),\r\n    articlesCount,\r\n  };\r\n};\r\n\r\nexport const getFeed = async (offset: number, limit: number, id: number) => {\r\n  const articlesCount = await prisma.article.count({\r\n    where: {\r\n      author: {\r\n        followedBy: { some: { id: id } },\r\n      },\r\n    },\r\n  });\r\n\r\n  const articles = await prisma.article.findMany({\r\n    where: {\r\n      author: {\r\n        followedBy: { some: { id: id } },\r\n      },\r\n    },\r\n    orderBy: {\r\n      createdAt: 'desc',\r\n    },\r\n    skip: offset || 0,\r\n    take: limit || 10,\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return {\r\n    articles: articles.map((article: any) => articleMapper(article, id)),\r\n    articlesCount,\r\n  };\r\n};\r\n\r\nexport const createArticle = async (article: any, id: number) => {\r\n  const { title, description, body, tagList } = article;\r\n  const tags = Array.isArray(tagList) ? tagList : [];\r\n\r\n  if (!title) {\r\n    throw new HttpException(422, { errors: { title: [\"can't be blank\"] } });\r\n  }\r\n\r\n  if (!description) {\r\n    throw new HttpException(422, { errors: { description: [\"can't be blank\"] } });\r\n  }\r\n\r\n  if (!body) {\r\n    throw new HttpException(422, { errors: { body: [\"can't be blank\"] } });\r\n  }\r\n\r\n  const slug = `${slugify(title)}-${id}`;\r\n\r\n  const existingTitle = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      slug: true,\r\n    },\r\n  });\r\n\r\n  if (existingTitle) {\r\n    throw new HttpException(422, { errors: { title: ['must be unique'] } });\r\n  }\r\n\r\n  const {\r\n    authorId,\r\n    id: articleId,\r\n    ...createdArticle\r\n  } = await prisma.article.create({\r\n    data: {\r\n      title,\r\n      description,\r\n      body,\r\n      slug,\r\n      tagList: {\r\n        connectOrCreate: tags.map((tag: string) => ({\r\n          create: { name: tag },\r\n          where: { name: tag },\r\n        })),\r\n      },\r\n      author: {\r\n        connect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return articleMapper(createdArticle, id);\r\n};\r\n\r\nexport const getArticle = async (slug: string, id?: number) => {\r\n  const article = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!article) {\r\n    throw new HttpException(404, { errors: { article: ['not found'] } });\r\n  }\r\n\r\n  return articleMapper(article, id);\r\n};\r\n\r\nconst disconnectArticlesTags = async (slug: string) => {\r\n  await prisma.article.update({\r\n    where: {\r\n      slug,\r\n    },\r\n    data: {\r\n      tagList: {\r\n        set: [],\r\n      },\r\n    },\r\n  });\r\n};\r\n\r\nexport const updateArticle = async (article: any, slug: string, id: number) => {\r\n  let newSlug = null;\r\n\r\n  const existingArticle = await await prisma.article.findFirst({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      author: {\r\n        select: {\r\n          id: true,\r\n          username: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!existingArticle) {\r\n    throw new HttpException(404, {});\r\n  }\r\n\r\n  if (existingArticle.author.id !== id) {\r\n    throw new HttpException(403, {\r\n      message: 'You are not authorized to update this article',\r\n    });\r\n  }\r\n\r\n  if (article.title) {\r\n    newSlug = `${slugify(article.title)}-${id}`;\r\n\r\n    if (newSlug !== slug) {\r\n      const existingTitle = await prisma.article.findFirst({\r\n        where: {\r\n          slug: newSlug,\r\n        },\r\n        select: {\r\n          slug: true,\r\n        },\r\n      });\r\n\r\n      if (existingTitle) {\r\n        throw new HttpException(422, { errors: { title: ['must be unique'] } });\r\n      }\r\n    }\r\n  }\r\n\r\n  const tagList =\r\n    Array.isArray(article.tagList) && article.tagList?.length\r\n      ? article.tagList.map((tag: string) => ({\r\n          create: { name: tag },\r\n          where: { name: tag },\r\n        }))\r\n      : [];\r\n\r\n  await disconnectArticlesTags(slug);\r\n\r\n  const updatedArticle = await prisma.article.update({\r\n    where: {\r\n      slug,\r\n    },\r\n    data: {\r\n      ...(article.title ? { title: article.title } : {}),\r\n      ...(article.body ? { body: article.body } : {}),\r\n      ...(article.description ? { description: article.description } : {}),\r\n      ...(newSlug ? { slug: newSlug } : {}),\r\n      updatedAt: new Date(),\r\n      tagList: {\r\n        connectOrCreate: tagList,\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return articleMapper(updatedArticle, id);\r\n};\r\n\r\nexport const deleteArticle = async (slug: string, id: number) => {\r\n  const existingArticle = await await prisma.article.findFirst({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      author: {\r\n        select: {\r\n          id: true,\r\n          username: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!existingArticle) {\r\n    throw new HttpException(404, {});\r\n  }\r\n\r\n  if (existingArticle.author.id !== id) {\r\n    throw new HttpException(403, {\r\n      message: 'You are not authorized to delete this article',\r\n    });\r\n  }\r\n  await prisma.article.delete({\r\n    where: {\r\n      slug,\r\n    },\r\n  });\r\n};\r\n\r\nexport const getCommentsByArticle = async (slug: string, id?: number) => {\r\n  const queries = [];\r\n\r\n  queries.push({\r\n    author: {\r\n      demo: true,\r\n    },\r\n  });\r\n\r\n  if (id) {\r\n    queries.push({\r\n      author: {\r\n        id,\r\n      },\r\n    });\r\n  }\r\n\r\n  const comments = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    include: {\r\n      comments: {\r\n        where: {\r\n          OR: queries,\r\n        },\r\n        select: {\r\n          id: true,\r\n          createdAt: true,\r\n          updatedAt: true,\r\n          body: true,\r\n          author: {\r\n            select: {\r\n              username: true,\r\n              bio: true,\r\n              image: true,\r\n              followedBy: true,\r\n            },\r\n          },\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  const result = comments?.comments.map((comment: any) => ({\r\n    ...comment,\r\n    author: {\r\n      username: comment.author.username,\r\n      bio: comment.author.bio,\r\n      image: comment.author.image,\r\n      following: comment.author.followedBy.some((follow: any) => follow.id === id),\r\n    },\r\n  }));\r\n\r\n  return result;\r\n};\r\n\r\nexport const addComment = async (body: string, slug: string, id: number) => {\r\n  if (!body) {\r\n    throw new HttpException(422, { errors: { body: [\"can't be blank\"] } });\r\n  }\r\n\r\n  const article = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      id: true,\r\n    },\r\n  });\r\n\r\n  const comment = await prisma.comment.create({\r\n    data: {\r\n      body,\r\n      article: {\r\n        connect: {\r\n          id: article?.id,\r\n        },\r\n      },\r\n      author: {\r\n        connect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return {\r\n    id: comment.id,\r\n    createdAt: comment.createdAt,\r\n    updatedAt: comment.updatedAt,\r\n    body: comment.body,\r\n    author: {\r\n      username: comment.author.username,\r\n      bio: comment.author.bio,\r\n      image: comment.author.image,\r\n      following: comment.author.followedBy.some((follow: any) => follow.id === id),\r\n    },\r\n  };\r\n};\r\n\r\nexport const deleteComment = async (id: number, userId: number) => {\r\n  const comment = await prisma.comment.findFirst({\r\n    where: {\r\n      id,\r\n      author: {\r\n        id: userId,\r\n      },\r\n    },\r\n    select: {\r\n      author: {\r\n        select: {\r\n          id: true,\r\n          username: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!comment) {\r\n    throw new HttpException(404, {});\r\n  }\r\n\r\n  if (comment.author.id !== userId) {\r\n    throw new HttpException(403, {\r\n      message: 'You are not authorized to delete this comment',\r\n    });\r\n  }\r\n\r\n  await prisma.comment.delete({\r\n    where: {\r\n      id,\r\n    },\r\n  });\r\n};\r\n\r\nexport const favoriteArticle = async (slugPayload: string, id: number) => {\r\n  const { _count, ...article } = await prisma.article.update({\r\n    where: {\r\n      slug: slugPayload,\r\n    },\r\n    data: {\r\n      favoritedBy: {\r\n        connect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  const result = {\r\n    ...article,\r\n    author: profileMapper(article.author, id),\r\n    tagList: article?.tagList.map((tag: Tag) => tag.name),\r\n    favorited: article.favoritedBy.some((favorited: any) => favorited.id === id),\r\n    favoritesCount: _count?.favoritedBy,\r\n  };\r\n\r\n  return result;\r\n};\r\n\r\nexport const unfavoriteArticle = async (slugPayload: string, id: number) => {\r\n  const { _count, ...article } = await prisma.article.update({\r\n    where: {\r\n      slug: slugPayload,\r\n    },\r\n    data: {\r\n      favoritedBy: {\r\n        disconnect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  const result = {\r\n    ...article,\r\n    author: profileMapper(article.author, id),\r\n    tagList: article?.tagList.map((tag: Tag) => tag.name),\r\n    favorited: article.favoritedBy.some((favorited: any) => favorited.id === id),\r\n    favoritesCount: _count?.favoritedBy,\r\n  };\r\n\r\n  return result;\r\n};\r\n"
+        },
+        "model": "jev-latest",
+        "questions": {
+          "rule_id": {
+            "type": "choice",
+            "instructions": "Which ONE canonical code rule from the module rule list is violated by the file in the state? Pick the single best-matching rule id as the option key. Judge only against the code shown.",
+            "criteria": {
+              "code-extreme-complexity-1": "IF cyclomatic complexity > 20 → FINDING: code-extreme-complexity-1 (severity: critical, effort: L) — Function processOrder has 25 paths through nested conditionals and loops",
+              "code-high-complexity-2": "IF cyclomatic complexity > 15 → FINDING: code-high-complexity-2 (severity: high, effort: M) — Function handleUserLogin has 18 distinct paths",
+              "code-moderate-complexity-3": "IF cyclomatic complexity > 10 → FINDING: code-moderate-complexity-3 (severity: medium, effort: S) — Function formatAddress has 12 paths through conditional formatting",
+              "code-extreme-nesting-4": "IF nesting depth > 5 → FINDING: code-extreme-nesting-4 (severity: high, effort: M) — 5 levels of nested if/else in data validation function",
+              "code-high-nesting-5": "IF nesting depth > 4 → FINDING: code-high-nesting-5 (severity: medium, effort: S) — 4 levels of nesting in nested loop processing matrix",
+              "code-extreme-length-6": "IF function lines > 150 → FINDING: code-extreme-length-6 (severity: high, effort: L) — Component render method spans 200 lines with mixed concerns",
+              "code-long-function-7": "IF function lines > 100 → FINDING: code-long-function-7 (severity: medium, effort: M) — Helper function utilityFormatData is 120 lines doing multiple transformations",
+              "code-medium-length-8": "IF function lines > 50 → FINDING: code-medium-length-8 (severity: low, effort: S) — Several utility functions in 60-80 line range",
+              "code-too-many-params-9": "IF parameter count > 7 → FINDING: code-too-many-params-9 (severity: medium, effort: M) — Function createUser requires 9 parameters for configuration",
+              "code-many-params-10": "IF parameter count > 5 → FINDING: code-many-params-10 (severity: low, effort: S) — Function connectToDatabase takes host, port, db, user, password, timeout",
+              "code-boolean-parameter-plague-11": "IF boolean parameter count > 3 — Function processPayment(true, false, true) - what do booleans mean?",
+              "code-multiple-return-points-12": "IF return statement count > 6 — Function has 8 return statements scattered through logic",
+              "code-exact-duplication-massive-1": "IF exact duplicate lines >= 30 IN different files — 30-line validation block copied in 5 different service files",
+              "code-exact-duplication-significant-2": "IF exact duplicate lines >= 20 IN different files — 20-line API response formatter duplicated in 3 controllers",
+              "code-exact-duplication-minor-3": "IF exact duplicate lines >= 10 IN different files — 10-line logging wrapper duplicated across modules",
+              "code-structural-duplication-high-4": "IF structural similarity >= 0.9 AND different names — Two functions with identical logic but different variable names",
+              "code-structural-duplication-medium-5": "IF structural similarity >= 0.8 AND different names — Similar validation logic in user and product services",
+              "code-copy-paste-variant-6": "IF copy paste with minor changes — Same 15-line pattern with only variable names changed",
+              "code-boilerplate-repetition-7": "IF boilerplate code in every file — Same 5-line import/loading pattern in every service file",
+              "code-empty-catch-1": "IF empty catch block — catch (Exception e) { } - silently swallowing all exceptions",
+              "code-generic-catch-2": "IF catch generic exception AND NOT rethrow — catch (Exception e) { log.error(e); } - hiding failure from caller",
+              "code-null-instead-of-exception-3": "IF throws exception or returns null — Function returns null on failure instead of throwing meaningful exception",
+              "code-missing-validation-4": "IF no validation at api boundary — API endpoint accepts user ID without checking existence or permissions",
+              "code-system-exit-misuse-5": "IF uses system exit for flow control — System.exit(1) used for validation failure in library code",
+              "code-ignores-return-value-6": "IF ignores return value — Call to validation function whose return value is ignored",
+              "code-warning-suppression-7": "IF suppresses warnings without justification — @SuppressWarnings('all') used to hide 20 compiler warnings",
+              "code-print-statement-8": "IF uses print instead of logger — System.out.println used for debugging in production code",
+              "code-catch-and-continue-9": "IF catches error and continues — Loop continues after database connection failure",
+              "code-logs-secrets-10": "IF logs sensitive information — Logger.debug(\\\"Password: \\\" + password) in authentication flow",
+              "code-loose-equality-1": "IF `==` used instead of `===` — if (user.status == 'active') - type coercion risks",
+              "code-loose-inequality-2": "IF `!=` used instead of `!==` — if (user.role != 'admin') - may incorrectly evaluate due to coercion",
+              "code-var-usage-3": "IF `var` used — var i = 0; function scoped incorrectly in loops",
+              "code-unhandled-promise-4": "IF promise not awaited AND not fire and forget — fetchUserData() called without await - promise ignored",
+              "code-promise-chain-missing-catch-5": "IF promise chain missing catch — promise.then().then() without .catch() - unhandled rejection",
+              "code-any-type-6": "IF `any` type in public API — function processData(data: any) - loses type safety",
+              "code-console-log-7": "IF `console.log` in production code — Debug statement left in production error handler",
+              "code-missing-return-type-8": "IF missing return type — function processData(input) { return input.trim(); }",
+              "code-nested-ternary-9": "IF nested ternary operators — condition ? val1 : condition2 ? val2 : val3 - hard to read",
+              "code-callback-hell-10": "IF callback hell detected — fs.readFile(..., fs.writeFile(..., fs.chmod(..., ...)))",
+              "code-bare-except-1": "IF `except:` bare — except: pass - catches KeyboardInterrupt and SystemExit",
+              "code-bare-except-with-others-2": "IF bare except in try with multiple except — except ValueError: ...; except: ... - bare except overrides specificity",
+              "code-mutable-default-3": "IF mutable default argument — def process(items=[]): items.append('item') - shared across calls",
+              "code-sql-injection-risk-4": "IF sql string concatenation — query = \\\"SELECT * FROM users WHERE name = '\\\" + name + \\\"'\\\"",
+              "code-print-statement-5": "IF `print` in production code (outside main/  main  ) — Debug print in library function",
+              "code-god-object-6": "IF god object detected (class > 30 methods OR > 2000 lines) — DataManager class handles DB, file I/O, networking, and business logic",
+              "code-too-many-attributes-7": "IF too many attributes (class > 20 attributes) — User class tracks 25 different properties suggesting poor cohesion",
+              "code-long-parameter-list-8": "IF long parameter list (> 5 parameters) — def create_user(name, email, phone, address, dob, ssn, license, passport)",
+              "code-deep-inheritance-9": "IF deep inheritance hierarchy (> 5 levels) — Animal → Mammal → DomesticDog → BreedSpecific → ShowDog → Champion",
+              "code-missing-docstring-10": "IF missing docstring in public api — public function calculate_tax() lacks documentation",
+              "code-unchecked-error-1": "IF error not checked — os.Create(file) - ignoring potential permission error",
+              "code-error-assigned-unused-2": "IF error assigned not used — _, err := strconv.Atoi(input) - error checked but not used",
+              "code-blocking-in-goroutine-3": "IF blocking call in goroutine — time.Sleep(5 * time.Second) in goroutine handling requests",
+              "code-mutex-missing-4": "IF mutex not used — Multiple goroutines accessing shared map without synchronization",
+              "code-channel-not-closed-5": "IF channel not closed — Channel used for worker coordination never closed",
+              "code-slice-append-in-loop-6": "IF slice append in loop — for i := 0; i < 10000; i++ { slice = append(slice, i) }",
+              "code-map-lookup-unchecked-7": "IF map lookup not checked — value := myMap[key] - panics if key doesn't exist",
+              "code-interface-bloat-8": "IF interface bloat (> 10 methods) — Service interface with 12 methods violating ISP",
+              "code-god-package-9": "IF god package detected (> 50 files in package) — utils package contains unrelated string, math, networking, and UI functions",
+              "code-missing-error-main-10": "IF missing error handling in main — main() function calls functions that can error but doesn't check"
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "H2",
+      "size": {
+        "kind": "H2",
+        "stateChars": 1911,
+        "stateTokens": 478,
+        "questions": [
+          {
+            "id": "evidence_line",
+            "chars": 975,
+            "tokens": 244,
+            "options": 73
+          }
+        ],
+        "longest": {
+          "id": "evidence_line",
+          "chars": 975,
+          "tokens": 244,
+          "options": 73
+        },
+        "totalTokens": 722,
+        "limit": 32000,
+        "headroom": 31278,
+        "fits": true,
+        "bodyChars": 2948
+      },
+      "body": {
+        "state": {
+          "repository": "realworld-control",
+          "path": "src/app/routes/article/article.service.ts",
+          "language": "typescript",
+          "line_window": "1-73 of 652",
+          "lines": "1: import slugify from 'slugify';\n2: import prisma from '../../../prisma/prisma-client';\n3: import HttpException from '../../models/http-exception.model';\n4: import profileMapper from '../profile/profile.utils';\n5: import articleMapper from './article.mapper';\n6: import { Tag } from '../tag/tag.model';\n7: \n8: const buildFindAllQuery = (query: any, id: number | undefined) => {\n9:   const queries: any = [];\n10:   const orAuthorQuery = [];\n11:   const andAuthorQuery = [];\n12: \n13:   orAuthorQuery.push({\n14:     demo: {\n15:       equals: true,\n16:     },\n17:   });\n18: \n19:   if (id) {\n20:     orAuthorQuery.push({\n21:       id: {\n22:         equals: id,\n23:       },\n24:     });\n25:   }\n26: \n27:   if ('author' in query) {\n28:     andAuthorQuery.push({\n29:       username: {\n30:         equals: query.author,\n31:       },\n32:     });\n33:   }\n34: \n35:   const authorQuery = {\n36:     author: {\n37:       OR: orAuthorQuery,\n38:       AND: andAuthorQuery,\n39:     },\n40:   };\n41: \n42:   queries.push(authorQuery);\n43: \n44:   if ('tag' in query) {\n45:     queries.push({\n46:       tagList: {\n47:         some: {\n48:           name: query.tag,\n49:         },\n50:       },\n51:     });\n52:   }\n53: \n54:   if ('favorited' in query) {\n55:     queries.push({\n56:       favoritedBy: {\n57:         some: {\n58:           username: {\n59:             equals: query.favorited,\n60:           },\n61:         },\n62:       },\n63:     });\n64:   }\n65: \n66:   return queries;\n67: };\n68: \n69: export const getArticles = async (query: any, id?: number) => {\n70:   const andQueries = buildFindAllQuery(query, id);\n71:   const articlesCount = await prisma.article.count({\n72:     where: {\n73:       AND: andQueries,"
+        },
+        "model": "jev-latest",
+        "questions": {
+          "evidence_line": {
+            "type": "choice",
+            "instructions": "Which single numbered line of the state contains the code that EVIDENCES the code rule code-missing-validation-4 in src/app/routes/article/article.service.ts? Answer with the option key of that line number.",
+            "criteria": {
+              "1": null,
+              "2": null,
+              "3": null,
+              "4": null,
+              "5": null,
+              "6": null,
+              "7": null,
+              "8": null,
+              "9": null,
+              "10": null,
+              "11": null,
+              "12": null,
+              "13": null,
+              "14": null,
+              "15": null,
+              "16": null,
+              "17": null,
+              "18": null,
+              "19": null,
+              "20": null,
+              "21": null,
+              "22": null,
+              "23": null,
+              "24": null,
+              "25": null,
+              "26": null,
+              "27": null,
+              "28": null,
+              "29": null,
+              "30": null,
+              "31": null,
+              "32": null,
+              "33": null,
+              "34": null,
+              "35": null,
+              "36": null,
+              "37": null,
+              "38": null,
+              "39": null,
+              "40": null,
+              "41": null,
+              "42": null,
+              "43": null,
+              "44": null,
+              "45": null,
+              "46": null,
+              "47": null,
+              "48": null,
+              "49": null,
+              "50": null,
+              "51": null,
+              "52": null,
+              "53": null,
+              "54": null,
+              "55": null,
+              "56": null,
+              "57": null,
+              "58": null,
+              "59": null,
+              "60": null,
+              "61": null,
+              "62": null,
+              "63": null,
+              "64": null,
+              "65": null,
+              "66": null,
+              "67": null,
+              "68": null,
+              "69": null,
+              "70": null,
+              "71": null,
+              "72": null,
+              "73": null
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "H3",
+      "size": {
+        "kind": "H3",
+        "stateChars": 14814,
+        "stateTokens": 3704,
+        "questions": [
+          {
+            "id": "statement_a",
+            "chars": 359,
+            "tokens": 90,
+            "options": 2
+          },
+          {
+            "id": "statement_b",
+            "chars": 387,
+            "tokens": 97,
+            "options": 2
+          }
+        ],
+        "longest": {
+          "id": "statement_b",
+          "chars": 387,
+          "tokens": 97,
+          "options": 2
+        },
+        "totalTokens": 3801,
+        "limit": 32000,
+        "headroom": 28199,
+        "fits": true,
+        "bodyChars": 15635
+      },
+      "body": {
+        "state": {
+          "repository": "realworld-control",
+          "path": "src/app/routes/article/article.service.ts",
+          "language": "typescript",
+          "content": "import slugify from 'slugify';\r\nimport prisma from '../../../prisma/prisma-client';\r\nimport HttpException from '../../models/http-exception.model';\r\nimport profileMapper from '../profile/profile.utils';\r\nimport articleMapper from './article.mapper';\r\nimport { Tag } from '../tag/tag.model';\r\n\r\nconst buildFindAllQuery = (query: any, id: number | undefined) => {\r\n  const queries: any = [];\r\n  const orAuthorQuery = [];\r\n  const andAuthorQuery = [];\r\n\r\n  orAuthorQuery.push({\r\n    demo: {\r\n      equals: true,\r\n    },\r\n  });\r\n\r\n  if (id) {\r\n    orAuthorQuery.push({\r\n      id: {\r\n        equals: id,\r\n      },\r\n    });\r\n  }\r\n\r\n  if ('author' in query) {\r\n    andAuthorQuery.push({\r\n      username: {\r\n        equals: query.author,\r\n      },\r\n    });\r\n  }\r\n\r\n  const authorQuery = {\r\n    author: {\r\n      OR: orAuthorQuery,\r\n      AND: andAuthorQuery,\r\n    },\r\n  };\r\n\r\n  queries.push(authorQuery);\r\n\r\n  if ('tag' in query) {\r\n    queries.push({\r\n      tagList: {\r\n        some: {\r\n          name: query.tag,\r\n        },\r\n      },\r\n    });\r\n  }\r\n\r\n  if ('favorited' in query) {\r\n    queries.push({\r\n      favoritedBy: {\r\n        some: {\r\n          username: {\r\n            equals: query.favorited,\r\n          },\r\n        },\r\n      },\r\n    });\r\n  }\r\n\r\n  return queries;\r\n};\r\n\r\nexport const getArticles = async (query: any, id?: number) => {\r\n  const andQueries = buildFindAllQuery(query, id);\r\n  const articlesCount = await prisma.article.count({\r\n    where: {\r\n      AND: andQueries,\r\n    },\r\n  });\r\n\r\n  const articles = await prisma.article.findMany({\r\n    where: { AND: andQueries },\r\n    orderBy: {\r\n      createdAt: 'desc',\r\n    },\r\n    skip: Number(query.offset) || 0,\r\n    take: Number(query.limit) || 10,\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return {\r\n    articles: articles.map((article: any) => articleMapper(article, id)),\r\n    articlesCount,\r\n  };\r\n};\r\n\r\nexport const getFeed = async (offset: number, limit: number, id: number) => {\r\n  const articlesCount = await prisma.article.count({\r\n    where: {\r\n      author: {\r\n        followedBy: { some: { id: id } },\r\n      },\r\n    },\r\n  });\r\n\r\n  const articles = await prisma.article.findMany({\r\n    where: {\r\n      author: {\r\n        followedBy: { some: { id: id } },\r\n      },\r\n    },\r\n    orderBy: {\r\n      createdAt: 'desc',\r\n    },\r\n    skip: offset || 0,\r\n    take: limit || 10,\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return {\r\n    articles: articles.map((article: any) => articleMapper(article, id)),\r\n    articlesCount,\r\n  };\r\n};\r\n\r\nexport const createArticle = async (article: any, id: number) => {\r\n  const { title, description, body, tagList } = article;\r\n  const tags = Array.isArray(tagList) ? tagList : [];\r\n\r\n  if (!title) {\r\n    throw new HttpException(422, { errors: { title: [\"can't be blank\"] } });\r\n  }\r\n\r\n  if (!description) {\r\n    throw new HttpException(422, { errors: { description: [\"can't be blank\"] } });\r\n  }\r\n\r\n  if (!body) {\r\n    throw new HttpException(422, { errors: { body: [\"can't be blank\"] } });\r\n  }\r\n\r\n  const slug = `${slugify(title)}-${id}`;\r\n\r\n  const existingTitle = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      slug: true,\r\n    },\r\n  });\r\n\r\n  if (existingTitle) {\r\n    throw new HttpException(422, { errors: { title: ['must be unique'] } });\r\n  }\r\n\r\n  const {\r\n    authorId,\r\n    id: articleId,\r\n    ...createdArticle\r\n  } = await prisma.article.create({\r\n    data: {\r\n      title,\r\n      description,\r\n      body,\r\n      slug,\r\n      tagList: {\r\n        connectOrCreate: tags.map((tag: string) => ({\r\n          create: { name: tag },\r\n          where: { name: tag },\r\n        })),\r\n      },\r\n      author: {\r\n        connect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return articleMapper(createdArticle, id);\r\n};\r\n\r\nexport const getArticle = async (slug: string, id?: number) => {\r\n  const article = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!article) {\r\n    throw new HttpException(404, { errors: { article: ['not found'] } });\r\n  }\r\n\r\n  return articleMapper(article, id);\r\n};\r\n\r\nconst disconnectArticlesTags = async (slug: string) => {\r\n  await prisma.article.update({\r\n    where: {\r\n      slug,\r\n    },\r\n    data: {\r\n      tagList: {\r\n        set: [],\r\n      },\r\n    },\r\n  });\r\n};\r\n\r\nexport const updateArticle = async (article: any, slug: string, id: number) => {\r\n  let newSlug = null;\r\n\r\n  const existingArticle = await await prisma.article.findFirst({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      author: {\r\n        select: {\r\n          id: true,\r\n          username: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!existingArticle) {\r\n    throw new HttpException(404, {});\r\n  }\r\n\r\n  if (existingArticle.author.id !== id) {\r\n    throw new HttpException(403, {\r\n      message: 'You are not authorized to update this article',\r\n    });\r\n  }\r\n\r\n  if (article.title) {\r\n    newSlug = `${slugify(article.title)}-${id}`;\r\n\r\n    if (newSlug !== slug) {\r\n      const existingTitle = await prisma.article.findFirst({\r\n        where: {\r\n          slug: newSlug,\r\n        },\r\n        select: {\r\n          slug: true,\r\n        },\r\n      });\r\n\r\n      if (existingTitle) {\r\n        throw new HttpException(422, { errors: { title: ['must be unique'] } });\r\n      }\r\n    }\r\n  }\r\n\r\n  const tagList =\r\n    Array.isArray(article.tagList) && article.tagList?.length\r\n      ? article.tagList.map((tag: string) => ({\r\n          create: { name: tag },\r\n          where: { name: tag },\r\n        }))\r\n      : [];\r\n\r\n  await disconnectArticlesTags(slug);\r\n\r\n  const updatedArticle = await prisma.article.update({\r\n    where: {\r\n      slug,\r\n    },\r\n    data: {\r\n      ...(article.title ? { title: article.title } : {}),\r\n      ...(article.body ? { body: article.body } : {}),\r\n      ...(article.description ? { description: article.description } : {}),\r\n      ...(newSlug ? { slug: newSlug } : {}),\r\n      updatedAt: new Date(),\r\n      tagList: {\r\n        connectOrCreate: tagList,\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return articleMapper(updatedArticle, id);\r\n};\r\n\r\nexport const deleteArticle = async (slug: string, id: number) => {\r\n  const existingArticle = await await prisma.article.findFirst({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      author: {\r\n        select: {\r\n          id: true,\r\n          username: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!existingArticle) {\r\n    throw new HttpException(404, {});\r\n  }\r\n\r\n  if (existingArticle.author.id !== id) {\r\n    throw new HttpException(403, {\r\n      message: 'You are not authorized to delete this article',\r\n    });\r\n  }\r\n  await prisma.article.delete({\r\n    where: {\r\n      slug,\r\n    },\r\n  });\r\n};\r\n\r\nexport const getCommentsByArticle = async (slug: string, id?: number) => {\r\n  const queries = [];\r\n\r\n  queries.push({\r\n    author: {\r\n      demo: true,\r\n    },\r\n  });\r\n\r\n  if (id) {\r\n    queries.push({\r\n      author: {\r\n        id,\r\n      },\r\n    });\r\n  }\r\n\r\n  const comments = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    include: {\r\n      comments: {\r\n        where: {\r\n          OR: queries,\r\n        },\r\n        select: {\r\n          id: true,\r\n          createdAt: true,\r\n          updatedAt: true,\r\n          body: true,\r\n          author: {\r\n            select: {\r\n              username: true,\r\n              bio: true,\r\n              image: true,\r\n              followedBy: true,\r\n            },\r\n          },\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  const result = comments?.comments.map((comment: any) => ({\r\n    ...comment,\r\n    author: {\r\n      username: comment.author.username,\r\n      bio: comment.author.bio,\r\n      image: comment.author.image,\r\n      following: comment.author.followedBy.some((follow: any) => follow.id === id),\r\n    },\r\n  }));\r\n\r\n  return result;\r\n};\r\n\r\nexport const addComment = async (body: string, slug: string, id: number) => {\r\n  if (!body) {\r\n    throw new HttpException(422, { errors: { body: [\"can't be blank\"] } });\r\n  }\r\n\r\n  const article = await prisma.article.findUnique({\r\n    where: {\r\n      slug,\r\n    },\r\n    select: {\r\n      id: true,\r\n    },\r\n  });\r\n\r\n  const comment = await prisma.comment.create({\r\n    data: {\r\n      body,\r\n      article: {\r\n        connect: {\r\n          id: article?.id,\r\n        },\r\n      },\r\n      author: {\r\n        connect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  return {\r\n    id: comment.id,\r\n    createdAt: comment.createdAt,\r\n    updatedAt: comment.updatedAt,\r\n    body: comment.body,\r\n    author: {\r\n      username: comment.author.username,\r\n      bio: comment.author.bio,\r\n      image: comment.author.image,\r\n      following: comment.author.followedBy.some((follow: any) => follow.id === id),\r\n    },\r\n  };\r\n};\r\n\r\nexport const deleteComment = async (id: number, userId: number) => {\r\n  const comment = await prisma.comment.findFirst({\r\n    where: {\r\n      id,\r\n      author: {\r\n        id: userId,\r\n      },\r\n    },\r\n    select: {\r\n      author: {\r\n        select: {\r\n          id: true,\r\n          username: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  if (!comment) {\r\n    throw new HttpException(404, {});\r\n  }\r\n\r\n  if (comment.author.id !== userId) {\r\n    throw new HttpException(403, {\r\n      message: 'You are not authorized to delete this comment',\r\n    });\r\n  }\r\n\r\n  await prisma.comment.delete({\r\n    where: {\r\n      id,\r\n    },\r\n  });\r\n};\r\n\r\nexport const favoriteArticle = async (slugPayload: string, id: number) => {\r\n  const { _count, ...article } = await prisma.article.update({\r\n    where: {\r\n      slug: slugPayload,\r\n    },\r\n    data: {\r\n      favoritedBy: {\r\n        connect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  const result = {\r\n    ...article,\r\n    author: profileMapper(article.author, id),\r\n    tagList: article?.tagList.map((tag: Tag) => tag.name),\r\n    favorited: article.favoritedBy.some((favorited: any) => favorited.id === id),\r\n    favoritesCount: _count?.favoritedBy,\r\n  };\r\n\r\n  return result;\r\n};\r\n\r\nexport const unfavoriteArticle = async (slugPayload: string, id: number) => {\r\n  const { _count, ...article } = await prisma.article.update({\r\n    where: {\r\n      slug: slugPayload,\r\n    },\r\n    data: {\r\n      favoritedBy: {\r\n        disconnect: {\r\n          id: id,\r\n        },\r\n      },\r\n    },\r\n    include: {\r\n      tagList: {\r\n        select: {\r\n          name: true,\r\n        },\r\n      },\r\n      author: {\r\n        select: {\r\n          username: true,\r\n          bio: true,\r\n          image: true,\r\n          followedBy: true,\r\n        },\r\n      },\r\n      favoritedBy: true,\r\n      _count: {\r\n        select: {\r\n          favoritedBy: true,\r\n        },\r\n      },\r\n    },\r\n  });\r\n\r\n  const result = {\r\n    ...article,\r\n    author: profileMapper(article.author, id),\r\n    tagList: article?.tagList.map((tag: Tag) => tag.name),\r\n    favorited: article.favoritedBy.some((favorited: any) => favorited.id === id),\r\n    favoritesCount: _count?.favoritedBy,\r\n  };\r\n\r\n  return result;\r\n};\r\n"
+        },
+        "model": "jev-latest",
+        "questions": {
+          "statement_a": {
+            "type": "noul",
+            "instructions": "src/app/routes/article/article.service.ts genuinely violates the canonical code rule code-missing-validation-4, which the hand-verified assessment cites at line 69 of this file.",
+            "criteria": {
+              "true": "The code in the state confirms the statement",
+              "false": "The code in the state contradicts the statement, or does not support it"
+            }
+          },
+          "statement_b": {
+            "type": "noul",
+            "instructions": "The code at src/app/routes/article/article.service.ts:69 only looks like a code-missing-validation-4 violation: the value is guarded by a branch elsewhere in the file, so the rule is not actually violated.",
+            "criteria": {
+              "true": "The code in the state confirms the statement",
+              "false": "The code in the state contradicts the statement, or does not support it"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "kind": "H1",
+      "branch": null,
+      "question_id": "rule_id",
+      "verdict": "FAIL — chose code-any-type-6 (medium/S), a real rule, but not code-missing-validation-4",
+      "check": {
+        "chosen": "code-any-type-6",
+        "inList": true,
+        "expected": "code-missing-validation-4",
+        "matched": false,
+        "confidence": 0.94,
+        "chosenProbability": 0.95,
+        "topProbabilities": [
+          [
+            "code-any-type-6",
+            0.95
+          ],
+          [
+            "code-structural-duplication-high-4",
+            0.02
+          ],
+          [
+            "code-copy-paste-variant-6",
+            0.02
+          ]
+        ],
+        "runnerUp": {
+          "id": "code-structural-duplication-high-4",
+          "probability": 0.02,
+          "inList": true,
+          "severity": "medium",
+          "effort": "M",
+          "isExpected": false
+        },
+        "probabilitySum": 1,
+        "stampedSeverity": "medium",
+        "stampedEffort": "S",
+        "expectedSeverity": "high",
+        "expectedEffort": "M",
+        "modelReported": "jev-1.13.0"
+      },
+      "raw_answer": {
+        "type": "choice",
+        "choice": "code-any-type-6",
+        "confidence": 0.94,
+        "probabilities": {
+          "code-logs-secrets-10": 0,
+          "code-channel-not-closed-5": 0,
+          "code-long-parameter-list-8": 0,
+          "code-null-instead-of-exception-3": 0,
+          "code-many-params-10": 0,
+          "code-console-log-7": 0,
+          "code-medium-length-8": 0,
+          "code-slice-append-in-loop-6": 0,
+          "code-any-type-6": 0.95,
+          "code-structural-duplication-high-4": 0.02,
+          "code-missing-error-main-10": 0,
+          "code-extreme-length-6": 0,
+          "code-loose-equality-1": 0,
+          "code-promise-chain-missing-catch-5": 0,
+          "code-boolean-parameter-plague-11": 0,
+          "code-high-nesting-5": 0,
+          "code-missing-docstring-10": 0,
+          "code-blocking-in-goroutine-3": 0,
+          "code-multiple-return-points-12": 0,
+          "code-ignores-return-value-6": 0,
+          "code-unchecked-error-1": 0,
+          "code-map-lookup-unchecked-7": 0,
+          "code-catch-and-continue-9": 0,
+          "code-high-complexity-2": 0,
+          "code-nested-ternary-9": 0,
+          "code-interface-bloat-8": 0,
+          "code-sql-injection-risk-4": 0,
+          "code-too-many-params-9": 0,
+          "code-extreme-complexity-1": 0,
+          "code-exact-duplication-significant-2": 0,
+          "code-deep-inheritance-9": 0,
+          "code-exact-duplication-minor-3": 0,
+          "code-mutex-missing-4": 0,
+          "code-exact-duplication-massive-1": 0,
+          "code-callback-hell-10": 0,
+          "code-bare-except-1": 0,
+          "code-empty-catch-1": 0,
+          "code-long-function-7": 0,
+          "code-boilerplate-repetition-7": 0,
+          "code-structural-duplication-medium-5": 0,
+          "code-god-object-6": 0,
+          "code-print-statement-5": 0,
+          "code-unhandled-promise-4": 0,
+          "code-print-statement-8": 0,
+          "code-bare-except-with-others-2": 0,
+          "code-missing-return-type-8": 0,
+          "code-too-many-attributes-7": 0,
+          "code-copy-paste-variant-6": 0.02,
+          "code-loose-inequality-2": 0,
+          "code-extreme-nesting-4": 0,
+          "code-warning-suppression-7": 0.01,
+          "code-missing-validation-4": 0,
+          "code-var-usage-3": 0,
+          "code-generic-catch-2": 0,
+          "code-mutable-default-3": 0,
+          "code-error-assigned-unused-2": 0,
+          "code-moderate-complexity-3": 0,
+          "code-god-package-9": 0,
+          "code-system-exit-misuse-5": 0
+        }
+      }
+    },
+    {
+      "kind": "H2",
+      "branch": null,
+      "question_id": "evidence_line",
+      "verdict": "FAIL — line 8 is \"const buildFindAllQuery = (query: any, id: number | undefined) => {\", which is not ground truth (--expect-line 69)",
+      "check": {
+        "chosen": "8",
+        "lineNumber": 8,
+        "inWindow": true,
+        "lineText": "const buildFindAllQuery = (query: any, id: number | undefined) => {",
+        "expectedLine": 69,
+        "evidenceLines": [],
+        "acceptedLines": [
+          69
+        ],
+        "matchesExpectedLine": false,
+        "accepted": false,
+        "chosenProbability": 0.35000000000000003,
+        "confidence": 0.33,
+        "topProbabilities": [
+          [
+            "8",
+            0.35000000000000003
+          ],
+          [
+            "69",
+            0.27
+          ],
+          [
+            "27",
+            0.09999999999999999
+          ]
+        ]
+      },
+      "raw_answer": {
+        "type": "choice",
+        "choice": "8",
+        "confidence": 0.33,
+        "probabilities": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0.35000000000000003,
+          "9": 0.02,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0.08,
+          "15": 0.04,
+          "16": 0,
+          "17": 0,
+          "18": 0,
+          "19": 0.03,
+          "20": 0,
+          "21": 0,
+          "22": 0,
+          "23": 0,
+          "24": 0,
+          "25": 0,
+          "26": 0,
+          "27": 0.09999999999999999,
+          "28": 0.03,
+          "29": 0.01,
+          "30": 0,
+          "31": 0,
+          "32": 0,
+          "33": 0.01,
+          "34": 0,
+          "35": 0,
+          "36": 0,
+          "37": 0,
+          "38": 0,
+          "39": 0,
+          "40": 0,
+          "41": 0,
+          "42": 0,
+          "43": 0,
+          "44": 0.01,
+          "45": 0,
+          "46": 0,
+          "47": 0,
+          "48": 0,
+          "49": 0,
+          "50": 0,
+          "51": 0,
+          "52": 0,
+          "53": 0.01,
+          "54": 0.01,
+          "55": 0,
+          "56": 0,
+          "57": 0,
+          "58": 0.01,
+          "59": 0.01,
+          "60": 0,
+          "61": 0,
+          "62": 0,
+          "63": 0,
+          "64": 0,
+          "65": 0,
+          "66": 0,
+          "67": 0,
+          "68": 0,
+          "69": 0.27,
+          "70": 0,
+          "71": 0,
+          "72": 0,
+          "73": 0
+        }
+      }
+    },
+    {
+      "kind": "H3",
+      "branch": null,
+      "question_id": "statement_a / statement_b",
+      "verdict": "DOES NOT SEPARATE — true 0.28 vs false 0.31",
+      "check": {
+        "trueValue": 0.28,
+        "falseValue": 0.31,
+        "separation": -0.03,
+        "trueCalledTrue": false,
+        "falseCalledFalse": true,
+        "clean": false
+      },
+      "raw_answer": {
+        "statement_a": {
+          "type": "noul",
+          "noul": 0.28
+        },
+        "statement_b": {
+          "type": "noul",
+          "noul": 0.31
+        }
+      }
+    }
+  ],
+  "usage": {
+    "input_tokens": 12988,
+    "cost_usd": 0.000545496
+  }
+}

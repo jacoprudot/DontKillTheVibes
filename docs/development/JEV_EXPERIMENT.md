@@ -1,8 +1,14 @@
 # JEV EXPERIMENT — does TypeSafe's Jev fix the two defects we measured?
 
-> Status: **probe built, verified offline, and generalised to any module. No live run yet** (no
-> `TYPESAFE_API_KEY` was available in this workspace; that is expected and the probe is designed
-> to be useful without one).
+> Status: **ran live on 2026-10-03 against `jev-1.13.0`.** Three runs — `security`, `database`
+> and `code` — **nine live POSTs total** (three per run: H1 rule selection, H2 line selection,
+> H3 judging). Measured cost: **$0.00016** (security, 3,870 input tokens), **$0.00050**
+> (database, 11,820) and **$0.00055** (code, 12,988) — **$0.00120** for the whole experiment.
+> Raw, unedited API output is versioned in
+> [`docs/development/jev-evidence/`](jev-evidence/README.md).
+>
+> The probe was built and verified offline first and that offline verification still stands; §7
+> now separates what the live runs verified from what remains genuinely unverified.
 >
 > Artifact: [`scripts/jev-probe.mjs`](../../scripts/jev-probe.mjs) — three requests, one per
 > hypothesis. It defaults to the `security` ground truth of
@@ -177,6 +183,9 @@ TYPESAFE_API_KEY='<key>' node scripts/jev-probe.mjs \
   --target benchmark/work/realworld-control --out temp/jev-probe --module security --model jev-latest
 ```
 
+The three live runs that were actually performed — with their `--out` directories, parameters and
+measured costs — are recorded in [`jev-evidence/README.md`](jev-evidence/README.md).
+
 CLI:
 
 ```
@@ -306,9 +315,21 @@ comes back in `usage` and is printed, but is not charged).
 | `code` H1 / H2 / H3 | 5,745 / 722 / 3,801 | $0.00024129 / $0.00003032 / $0.00015964 |
 | `code` **run total** | **10,268** | **$0.00043125** |
 
-A live run replaces the estimate with the real `usage.input_tokens` and reports both. A `--mock`
-run reports a doubled figure and labels it as meaningless (two stubbed answers per hypothesis,
-nothing billed).
+A live run replaces the estimate with the real `usage.input_tokens` and reports both. **Measured
+live on 2026-10-03**, three requests per run, `usage.input_tokens` as returned by the API — not an
+estimate:
+
+| Module / run | Input tokens | Cost |
+|---|---|---|
+| `security` H1/H2/H3 | 3,870 | $0.00016254 |
+| `database` H1/H2/H3 | 11,820 | $0.00049644 |
+| `code` H1/H2/H3 | 12,988 | $0.00054550 |
+| **three-module total** | **28,678** | **$0.00120448** |
+
+The live calls cost 1.4–1.6× the `chars/4` estimate above (2,446 / 9,482 / 10,268 tokens): the
+estimate under-counted the state, which is the expensive side, and is exactly what the per-module
+architecture keeps small. Output was not billed. A `--mock` run reports a doubled figure and labels
+it as meaningless (two stubbed answers per hypothesis, nothing billed).
 
 **A full 5-target benchmark (projection — this part is an assumption, not a measurement):**
 
@@ -330,28 +351,94 @@ what the per-module architecture keeps small.
 ## 6. Language caveat
 
 English is Jev's primary language; the docs accept other languages but state **lower accuracy**.
-Our toolkit is **Spanish-first**: `dktv-orchestrate.mjs` defaults to `--language es`, the
-assessment report is written in Spanish, and our target repositories have Spanish identifiers,
-comments and READMEs.
+
+Since commit `74f49fd` (`feat(runner): default the report language to English`) our toolkit no
+longer defaults to Spanish. The default lived in **three** places — `scripts/dktv-assess.mjs`,
+`scripts/dktv-orchestrate.mjs` and the fallback in `scripts/lib/report-renderer.mjs` — and all
+three now read **`en`**; `--language es` still works. The decision layer is therefore
+**English-native**, and the English probe measured here is the configuration we would actually
+ship rather than an upper bound bought by switching language.
 
 Consequences for this experiment:
 
-* The probe deliberately uses **English-only instructions and an English source file**, so the
-  measured result is an *upper bound* on Jev's quality for us. A good H1/H2/H3 result in English
-  says nothing about the Spanish path.
-* If Jev is adopted, the state stays code (mostly language-neutral, but Spanish comments and
-  domain nouns are state too), while the **question text** would have to be Spanish to produce
-  Spanish-facing output — that is exactly the swap the docs warn about.
-* **Follow-up probe before adoption:** re-run H1/H2/H3 with (a) Spanish `instructions`, and
-  (b) a Spanish-heavy source file, and compare against the English baseline. Both are one
-  `--model`/one file away; the probe needs no code change beyond pointing `--target` at a
-  Spanish repo, and a small wording option if we want translated questions.
+* The probe uses **English-only instructions and an English source file** — the same language the
+  default runner path emits, so the measured result describes the default configuration.
+* The state stays code either way (mostly language-neutral, though Spanish identifiers and
+  comments are state too). Only if we chose to run `--language es` would the **question text** have
+  to be Spanish to produce Spanish-facing output — that is the swap the docs warn about, and it
+  stays unmeasured.
+* **Optional follow-up, only if Spanish output is wanted:** re-run H1/H2/H3 with (a) Spanish
+  `instructions` and (b) a Spanish-heavy source file, and compare against this English baseline.
+  Both are one file away; the probe needs no code change beyond pointing `--target` at a Spanish
+  repo, plus a small wording option for translated questions.
 
 ---
 
-## 7. What the probe verifies offline, and what it cannot
+## 7. What the live runs verified, what the offline runs verified, and what is still unverified
 
-Verified without a key:
+### Verified live — 2026-10-03, `jev-1.13.0`, nine POSTs, $0.00120
+
+Raw, unedited output: [`jev-evidence/`](jev-evidence/README.md). **No invented value appeared in any
+of the nine live answers**: every rule id returned was an option key we sent, and every cited line
+was inside the window we sent. The two defect classes the probe targets are structurally closed;
+what follows is how well the model used the closed space.
+
+#### `security` — all three hypotheses pass
+
+* **H1** chose **`security-jwt-weak-3`** at probability **1.0** and confidence **1**, with the other
+  44 rules at 0. The expected id, and the only rule with any mass. PASS.
+* **H2** chose line **16** at **0.99** and gave the residual **0.01** to line **21** — the *second*
+  real occurrence of the same `JWT_SECRET || 'superSecret'` fallback, not an arbitrary runner-up.
+  PASS.
+* **H3** separated the hand-written pair **0.98 vs 0.03** (margin 0.95), against thresholds of
+  a ≥ 0.8 and b ≤ 0.2. PASS.
+
+#### `database` and `code` — the probe's own automated verdicts are wrong, and that is the finding
+
+Both runs report **H1 FAIL**, **H2 FAIL** and **"H3 does not separate"**. Those verdicts are wrong
+for a documented reason: `src/app/routes/article/article.service.ts` genuinely violates **two** rules
+per module, and our hand-verified assessment lists **both**:
+
+| Module | Rule 1 (hand-nominated) | Rule 2 (also real, same file) |
+|---|---|---|
+| `database` | `database-sequential-pagination-1` — line 71 | `database-overfetch-relation-1` — line 98 |
+| `code` | `code-missing-validation-4` — line 69 | `code-any-type-6` — line 69 |
+
+The probe asks "which ONE rule" and scores against the single nominated id, so a **correct** answer
+is recorded as a failure. Re-scored honestly against the full hand list:
+
+* **H1 chose a real canonical rule in all three modules.** `security` → `security-jwt-weak-3`;
+  `database` → `database-overfetch-relation-1` (high/S — the *second* real violation in that file,
+  with the nominated id still #2 in the top-3 probability list); `code` → `code-any-type-6`
+  (medium/S, also real, at line 69). **Zero invented values across nine live calls.**
+* **H2 was correct in 2 of 3.** `security` line 16 at 0.99 (second occurrence 0.01), and `code`
+  line 8 — which literally contains `query: any`, the right evidence for the rule it actually chose
+  (`code-any-type-6`), even though the hand list nominates line 69 for that rule. The single genuine
+  weak citation is `database` H2, line **75**, whose text is `  });`.
+
+#### Confidence tracked ambiguity once, and not the other time
+
+* `security`: **1.00** — one rule, one answer, nothing competing.
+* `database`: **0.65** probability on the winner, **0.35** on `database-sequential-pagination-1`
+  (confidence 0.63) — two real rules competing, and the probabilities say so.
+* `code`: **0.95** probability / **0.94** confidence on `code-any-type-6` — two real rules also
+  competed here, and Jev did **not** signal doubt.
+
+So confidence is **not** a reliable ambiguity detector: it reflected the two-rule competition in
+`database` and ignored it in `code`. Do not generalise from this and do not build a threshold on it
+— with n = 1 per module there is nothing to calibrate against.
+
+#### Consequence for our own benchmark — an open defect
+
+Our ground truth is a **list** of rules per file, not one answer. Any score that compares a model's
+single pick against the one hand-nominated id counts a correct second finding as an error, which is
+exactly what happened in these two runs. The blind judge's **precision** (`real / (real + false)`) is
+**unaffected**: it verifies each individual claim against the cited code, so a second true finding
+cannot become a false positive. The exposure is confined to **recall-style scores computed against the
+hand list**, whose numerator must be scored against the full list. **Recorded as an open defect**, not
+as a reason to distrust the precision number.
+
+### Verified offline, without a key
 
 * the 45-option H1 list is built from the **real registry** — `loadRulesFrom` (ids declared by
   `skills/security-assessment.skill.md`) joined with `loadRules` (authoritative severity/effort),
@@ -383,22 +470,45 @@ Verified without a key:
 * the retry path: 5 attempts with 5/10/15/20 s backoff against a closed port (see raw output),
   not against a real `429`/`529`.
 
-**Cannot be verified here, and must not be claimed:**
+### Still unverified
 
-* any statement about Jev's actual accuracy — there is no API key in this workspace, so the
-  probe has never spoken to `api.typesafe.ai`. A MOCK report is a test of the harness, not a
-  finding about Jev. The `database` and `code` ground truth is verified *offline* only: the
-  request bodies are correct and the windows contain the right lines, but whether Jev picks them
-  is untested;
-* retry behaviour against a genuine `429` with a real `retry-after` header (only the closed-port
-  network-error path was exercised — the backoff itself is confirmed at 5/10/15/20 s, 50.3 s total);
-* price, rate limits and the alias→version mapping are taken from `/models` as documented; they are
-  external facts that the probe asserts as constants, not things it measures;
-* **H3 is the weakest hypothesis by construction**: one clean pair of statements is not judge
-  stability. Proving the judge defect is fixed needs the same statements run repeatedly and
-  across prompt variants — which is precisely the experiment that produced the 11 moved verdicts.
-  For non-security modules the H3 statements are *generated* from `--expect-id`/`--expect-line`
-  rather than hand-verified, so their truth is only as good as that ground truth.
+* **A real rate limit.** The retry path is confirmed only against a closed port (a network error,
+  backoff 5/10/15/20 s, 50.3 s total). None of the nine live POSTs hit a `429` or a `529`, so
+  honouring a real `retry-after` header is still untested against the real thing.
+* **H3 outside `security`.** Only the security pair of statements is hand-written. For `database`
+  and `code` the statements are *generated* from `--expect-id`/`--expect-line`, so their truth is
+  only as good as those flags — and in both modules the nominated id was one of two real violations.
+  Neither generated pair separated: `database` true 0.28 vs false 0.19 (margin 0.09), `code` true
+  0.28 vs false 0.31 (margin −0.03).
+* **Judge stability, which is what H3 actually claims.** One pair of statements run once is not
+  stability. Proving the generating judge's defect is fixed needs the same statements repeatedly and
+  across prompt variants — precisely the experiment that produced the 11 moved verdicts. That has
+  not been done.
+* **n = 1 per hypothesis**, per module, over two files of one repository. A signal with a decision
+  rule, not a benchmark.
+* **Price, rate limits and the alias→version mapping** are taken from `/models` as documented
+  constants the probe asserts rather than measures. The live responses did report
+  `modelReported: jev-1.13.0`, which confirms the `jev-latest` alias for these three runs.
+* **Spanish-language accuracy** is no longer on the critical path (§6): the default configuration is
+  English, and that is what was measured. It matters only if we ship `--language es`.
+* **A MOCK report remains a test of the harness, not a finding about Jev.**
+
+### The experiment that decides adoption: one `Noul` per candidate rule
+
+`Choice` is the **wrong primitive for detection**. It returns exactly one option, so a file that
+violates two rules can only ever report one of them, and — as these runs show — a correct answer is
+indistinguishable from a miss unless the scorer holds the full hand list.
+
+The product shape is a **`Noul` per candidate rule**: for each rule declared by the module's skill
+file — 45 (`security`), 32 (`database`), 59 (`code`), 29–71 across all eight modules — one yes/no
+statement ("this file violates rule X, at line N"), asked in a **single request**, each returning a
+truth probability, reported against a probability threshold. The 32k budget applies to the state plus
+the single longest question and the 64k limit to the whole request, so the full per-module question
+set has to fit that outer budget; that arithmetic has not been measured.
+
+None of it has been scored against real answers, and it is the thing that decides adoption: if
+per-rule Nouls cannot separate clean violations from clean code at a usable threshold, Jev buys us a
+closed id space and nothing else, and the toolkit keeps its own detector.
 
 ---
 
@@ -411,35 +521,44 @@ Verified without a key:
 | H1 or H2 wrong (a valid but wrong option) | The structural fix removes invented values but not wrong values. **Check the top-3 first**: if the runner-up is itself a canonical rule, the file may genuinely violate more than one rule (`article.service.ts` does, in both `database` and `code`), so a "miss" on the winner can still be a correct second finding. |
 | H3 separates cleanly **and** reproduces across repeated runs | The judge can move off a generating model. Until repeated runs confirm it, keep `benchmark/judge.mjs` and treat Noul as an *additional* signal. |
 
-Whatever the outcome: this is **n = 1 per hypothesis on one file of one repository**. It is a
-signal with a clear decision rule, not a benchmark.
+**Applied to the 2026-10-03 runs: the first row is `security`, and the third row is `database` and
+`code`** — the runner-up being a real second violation is exactly what happened in both, and §7
+re-scores them against the full hand list.
+
+Whatever the outcome: this is **n = 1 per hypothesis, per module**, on two files of one repository.
+It is a signal with a clear decision rule, not a benchmark.
 
 ---
 
 ## Anexo (español) — costo y decisión de negocio
 
-**Qué costaría probarlo de verdad.** La corrida real de este probe cuesta del orden de
-**$0.0001** (2.446 tokens de entrada) con el módulo `security`; con `database` o `code` sobre
-`article.service.ts` sube a **≈$0.0004** (9.482 / 10.268 tokens), porque el estado lleva el
-archivo completo (652 líneas). Un benchmark completo de 5 targets × 8 módulos se
-proyecta en **≈$0.04** con el supuesto de 24.000 tokens por módulo. Es decir: el costo no es la
-razón para no probarlo. Lo caro hoy no es Jev, es seguir reparando citas débiles y severidades
-inventadas con código propio (`REPAIR_*`, `stampRuleFields`) y un juez que se mueve con el
-prompt.
+**Qué costó probarlo de verdad.** Ya no es una estimación: la corrida real del 2026-10-03 costó
+**$0.00016254** con `security` (3.870 tokens de entrada), **$0.00049644** con `database` (11.820) y
+**$0.00054550** con `code` (12.988) — **$0.00120448** los tres módulos, nueve llamadas. Los dos
+últimos módulos suben porque el estado lleva el archivo completo (652 líneas). Un benchmark completo
+de 5 targets × 8 módulos se proyecta en **≈$0.04** con el supuesto de 24.000 tokens por módulo. Es
+decir: el costo no es la razón para no probarlo. Lo caro hoy no es Jev, es seguir reparando citas
+débiles y severidades inventadas con código propio (`REPAIR_*`, `stampRuleFields`) y un juez que se
+mueve con el prompt.
 
 **Qué compraríamos.** No un modelo más listo, sino **tres restricciones de forma**: el id de
 regla sale del registro o no sale; la línea citada existe o no existe; el veredicto de un juez
 es un número en vez de un prompt. Eso es exactamente el tipo de garantía que un toolkit de
 auditoría necesita para que un informe sea defendible ante un cliente.
 
-**La advertencia honesta.** Todo lo medido está en inglés, y nuestro toolkit es
-español-primero. Antes de adoptar hay que repetir H1/H2/H3 en español: si la precisión cae, la
-restricción de forma sigue tapando los ids inventados, pero el valor del juicio (H3) se cae.
+**La advertencia honesta.** Todo lo medido está en inglés, que **ya es el default** del toolkit desde
+`74f49fd` (el reporte sale en inglés salvo `--language es`). El camino en español queda sin medir,
+pero salió del camino crítico: solo importa si decidimos emitir reportes en español. Lo que **sí**
+sigue sin probar es la forma de producto: `Choice` devuelve una sola opción y no sirve para detectar
+varias violaciones en el mismo archivo; el experimento que decide la adopción es un `Noul` por regla
+candidata, con umbral de probabilidad, medido contra la lista completa de reglas violadas (§7).
 
 **Dato de cumplimiento.** `/models` dice que Jev **no se entrena con las peticiones ni las
 respuestas del cliente**, y que hay retención cero (ZDR) en planes enterprise. Eso importa para
 nuestra regla de "datos de clientes son sagrados": mandar código de cliente a este endpoint es
-defendible, pero conviene aclararlo por escrito con el cliente antes de la primera corrida real.
+defendible, pero conviene aclararlo por escrito con el cliente antes de la primera corrida con código
+de un cliente (las corridas del 2026-10-03 fueron contra el snapshot de control `realworld-control`,
+no contra código de cliente).
 
 ---
 
@@ -477,3 +596,20 @@ node scripts/jev-probe.mjs --dry-run --module database --target <fixture-dir> --
 
 No command above needs `TYPESAFE_API_KEY`. `git status --short` after all of them lists only
 `scripts/jev-probe.mjs` and this document.
+
+The **live** runs — the only ones that needed a key, passed through the environment only — were:
+
+```powershell
+node scripts/jev-probe.mjs --target benchmark/work/realworld-control --out temp/jev-run `
+  --module security --model jev-latest
+node scripts/jev-probe.mjs --target benchmark/work/realworld-control --out temp/jev-db `
+  --module database --file src/app/routes/article/article.service.ts `
+  --expect-id database-sequential-pagination-1 --expect-line 71 --model jev-latest
+node scripts/jev-probe.mjs --target benchmark/work/realworld-control --out temp/jev-code `
+  --module code --file src/app/routes/article/article.service.ts `
+  --expect-id code-missing-validation-4 --expect-line 69 --model jev-latest
+```
+
+Their raw output is versioned, unedited, under [`jev-evidence/`](jev-evidence/README.md); the
+`temp/jev-probe/` and `temp/jev-verify/` artifacts are **MOCK** runs (no key, no network call) and are
+not evidence.

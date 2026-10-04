@@ -1,0 +1,690 @@
+{
+  "generated_at": "2026-10-03T23:44:26.760Z",
+  "mode": "LIVE",
+  "endpoint": "https://api.typesafe.ai/v1/systemone",
+  "model": "jev-latest",
+  "target": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\realworld-control",
+  "file": "src/app/routes/auth/auth.ts",
+  "provenance": {
+    "node": "v24.14.1",
+    "commit": "30b68e1"
+  },
+  "registry": {
+    "canonical_rule_count": 368,
+    "fingerprint": "368-6e180554",
+    "module": "security",
+    "module_rule_count": 45,
+    "expected_rule_id": "security-jwt-weak-3",
+    "expected_rule_present": true,
+    "options": {
+      "security-secret-in-code-1": {
+        "severity": "critical",
+        "effort": "XS",
+        "description": "IF api key pattern IN committed files — AKIA[0-9A-Z]{16} found in src/config/aws.js"
+      },
+      "security-secret-in-history-2": {
+        "severity": "critical",
+        "effort": "S",
+        "description": "IF secret in git history (trufflehog/gitleaks patterns) — AWS secret key found in commit abc123 from 2 weeks ago"
+      },
+      "security-env-file-committed-3": {
+        "severity": "high",
+        "effort": "XS",
+        "description": "IF .env committed — .env file containing DATABASE_URL found in repository"
+      },
+      "security-encryption-weak-5": {
+        "severity": "critical",
+        "effort": "XS",
+        "description": "IF encryption key weak or short — AES key: '123456789012345' (15 bytes) found in crypto config"
+      },
+      "security-db-conn-string-6": {
+        "severity": "high",
+        "effort": "XS",
+        "description": "IF database connection string in code — postgres://user:password@localhost:5432/db found in database.js"
+      },
+      "security-private-key-7": {
+        "severity": "critical",
+        "effort": "XS",
+        "description": "IF private key in code — -----BEGIN RSA PRIVATE KEY----- found in src/ssl/server.key"
+      },
+      "security-oauth-secret-8": {
+        "severity": "critical",
+        "effort": "XS",
+        "description": "IF oauth token or secret in code — GitHub token: ghp_... found in integrations/github.js"
+      },
+      "security-weak-crypto-9": {
+        "severity": "high",
+        "effort": "M",
+        "description": "IF encryption algorithm weak — Using MD5 or SHA1 for password hashing"
+      },
+      "security-weak-rng-10": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF random number generator weak — Using Math.random() for token generation instead of crypto.randomBytes"
+      },
+      "security-cve-critical-1": {
+        "severity": "critical",
+        "effort": "S",
+        "description": "IF CVE critical in prod dependency — lodash 4.17.10 (CVE-2018-3721) - Prototype pollution leading to RCE"
+      },
+      "security-cve-high-2": {
+        "severity": "high",
+        "effort": "S",
+        "description": "IF CVE high in prod dependency — express 4.15.0 (CVE-2017-16112) - Path traversal vulnerability"
+      },
+      "security-cve-medium-3": {
+        "severity": "medium",
+        "effort": "S",
+        "description": "IF CVE medium in prod dependency — jquery 3.3.1 (CVE-2019-11358) - Prototype pollution"
+      },
+      "security-unmaintained-dep-4": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF unmaintained dependency > 2 years — left-pad 1.1.0 last updated 2016 - no security updates for 6 years"
+      },
+      "security-exploit-in-wild-5": {
+        "severity": "critical",
+        "effort": "S",
+        "description": "IF dependency with known exploit in wild — Log4j 2.0-beta9 (CVE-2021-44228) - Active exploitation in wild"
+      },
+      "security-license-incompatible-6": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF license incompatible with commercial use — GPLv3 dependency in proprietary commercial software"
+      },
+      "security-no-security-maintenance-7": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF dependency has no security maintenance — Dependency last security update was 3 years ago"
+      },
+      "security-transitive-vuln-8": {
+        "severity": "medium",
+        "effort": "S",
+        "description": "IF transitive dependency vulnerability — Dependency A (safe) depends on Dependency B (vulnerable)"
+      },
+      "security-vcs-insecure-9": {
+        "severity": "low",
+        "effort": "M",
+        "description": "IF version control system not secure — Using HTTP instead of HTTPS for git submodules"
+      },
+      "security-binary-dep-10": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF binary dependency without source — Pre-compiled binary dependency without source code for verification"
+      },
+      "security-gha-pr-target-risk-1": {
+        "severity": "critical",
+        "effort": "S",
+        "description": "IF workflow uses pull request target with checkout — workflow_run: workflow_pull_request_target with steps: checkout"
+      },
+      "security-gha-overpermissive-2": {
+        "severity": "high",
+        "effort": "XS",
+        "description": "IF workflow permissions not restricted — permissions: write-all - grants excessive permissions to workflow"
+      },
+      "security-gha-secret-leak-3": {
+        "severity": "critical",
+        "effort": "XS",
+        "description": "IF secret used in log output — echo \\\"$API_KEY\\\" - secret exposed in workflow logs"
+      },
+      "security-gha-fork-pr-4": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF workflow runs on fork pull requests — on: pull_request_target allows untrusted code from forks"
+      },
+      "security-gha-action-unpinned-5": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF action not pinned to version — uses: actions/checkout@v2 - should specify exact version"
+      },
+      "security-gha-workspace-not-cleaned-6": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF workspace not cleaned — Job does not clean up workspace - secrets may persist between jobs"
+      },
+      "security-gha-job-no-timeout-7": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF job without timeout — job: build has no timeout setting - can run indefinitely"
+      },
+      "security-gha-no-container-8": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF container not used for isolation — jobs.runner: ubuntu-latest instead of containerized execution"
+      },
+      "security-gha-auto-deploy-prod-9": {
+        "severity": "high",
+        "effort": "M",
+        "description": "IF deployment to production on merge — on: push to main branch triggers production deployment"
+      },
+      "security-gha-no-concurrency-prod-10": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF no concurrency control for production — Multiple deployment jobs can run concurrently to production"
+      },
+      "security-debug-in-prod-1": {
+        "severity": "high",
+        "effort": "XS",
+        "description": "IF debug mode enabled in prod — app.set('env', 'development') in production environment"
+      },
+      "security-cors-wildcard-2": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF cors allows all origins — app.use(cors({ origin: true })) - allows any origin"
+      },
+      "security-jwt-weak-3": {
+        "severity": "critical",
+        "effort": "XS",
+        "description": "IF jwt secret default or short — JWT secret: 'secret' or 'changeme' found in auth config"
+      },
+      "security-session-cookie-not-secure-3": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF session cookie not secure — Session cookie missing Secure flag - transmitted over HTTP"
+      },
+      "security-session-cookie-not-http-only-4": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF session cookie not http only — Session cookie missing HttpOnly flag - accessible via JavaScript"
+      },
+      "security-password-weak-5": {
+        "severity": "critical",
+        "effort": "M",
+        "description": "IF password storage weak — Storing passwords in plaintext or using weak hashing (MD5)"
+      },
+      "security-rate-limit-weak-6": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF rate limiting missing or weak — No rate limiting on authentication endpoints"
+      },
+      "security-file-upload-weak-7": {
+        "severity": "high",
+        "effort": "M",
+        "description": "IF file upload validation missing — Accepts .exe files without validation"
+      },
+      "security-directory-listing-8": {
+        "severity": "medium",
+        "effort": "XS",
+        "description": "IF directory listing enabled — Apache/nginx configured to show directory listings"
+      },
+      "security-outdated-server-9": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF outdated server software — Running nginx 1.14.0 (2018) instead of current stable version"
+      },
+      "security-missing-headers-10": {
+        "severity": "medium",
+        "effort": "S",
+        "description": "IF missing security headers — No HSTS, CSP, X-Frame-Options, or X-Content-Type-Options headers"
+      },
+      "security-db-no-tls-11": {
+        "severity": "high",
+        "effort": "M",
+        "description": "IF database connection no encryption — Connecting to database without TLS/SSL encryption"
+      },
+      "security-logs-contain-secrets-12": {
+        "severity": "critical",
+        "effort": "XS",
+        "description": "IF logs contain sensitive information — Logger.debug(\\\"Token: \\\" + authToken) in authentication code"
+      },
+      "security-key-rotation-manual-13": {
+        "severity": "medium",
+        "effort": "M",
+        "description": "IF encryption keys rotated manually — Encryption keys changed by manual config edit instead of automated process"
+      },
+      "security-no-input-validation-14": {
+        "severity": "high",
+        "effort": "M",
+        "description": "IF no input validation at boundaries — API endpoints accept user input without validation or sanitization"
+      },
+      "security-error-detail-1": {
+        "severity": "info",
+        "effort": "XS",
+        "description": "IF error detail exposed to client — Global error handler returns raw err.message with HTTP 500 to the client"
+      }
+    }
+  },
+  "budget": {
+    "state_question_limit": 32000,
+    "context_limit_total": 64000,
+    "per_request": [
+      {
+        "kind": "H1",
+        "state_tokens": 242,
+        "longest_question_tokens": 1479,
+        "total_tokens": 1721,
+        "fits": true
+      },
+      {
+        "kind": "H2",
+        "state_tokens": 259,
+        "longest_question_tokens": 135,
+        "total_tokens": 394,
+        "fits": true
+      },
+      {
+        "kind": "H3",
+        "state_tokens": 242,
+        "longest_question_tokens": 89,
+        "total_tokens": 331,
+        "fits": true
+      }
+    ],
+    "single_pass": {
+      "configured_digest_chars": 180000,
+      "configured_digest_tokens": 45000,
+      "configured_digest_total_tokens": 45089,
+      "configured_digest_fits": false,
+      "measured_digest_chars": 80688,
+      "measured_digest_tokens": 20172,
+      "skills_chars": 216697,
+      "skills_tokens": 54175,
+      "full_single_pass_tokens": 74347,
+      "full_single_pass_fits": false
+    }
+  },
+  "requests": [
+    {
+      "kind": "H1",
+      "size": {
+        "kind": "H1",
+        "stateChars": 965,
+        "stateTokens": 242,
+        "questions": [
+          {
+            "id": "rule_id",
+            "chars": 5916,
+            "tokens": 1479,
+            "options": 45
+          }
+        ],
+        "longest": {
+          "id": "rule_id",
+          "chars": 5916,
+          "tokens": 1479,
+          "options": 45
+        },
+        "totalTokens": 1721,
+        "limit": 32000,
+        "headroom": 30279,
+        "fits": true,
+        "bodyChars": 6937
+      },
+      "body": {
+        "state": {
+          "repository": "realworld-control",
+          "path": "src/app/routes/auth/auth.ts",
+          "language": "typescript",
+          "content": "import { expressjwt as jwt } from 'express-jwt';\r\nimport * as express from 'express';\r\n\r\nconst getTokenFromHeaders = (req: express.Request): string | null => {\r\n  if (\r\n    (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Token') ||\r\n    (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer')\r\n  ) {\r\n    return req.headers.authorization.split(' ')[1];\r\n  }\r\n  return null;\r\n};\r\n\r\nconst auth = {\r\n  required: jwt({\r\n    secret: process.env.JWT_SECRET || 'superSecret',\r\n    getToken: getTokenFromHeaders,\r\n    algorithms: ['HS256'],\r\n  }),\r\n  optional: jwt({\r\n    secret: process.env.JWT_SECRET || 'superSecret',\r\n    credentialsRequired: false,\r\n    getToken: getTokenFromHeaders,\r\n    algorithms: ['HS256'],\r\n  }),\r\n};\r\n\r\nexport default auth;\r\n"
+        },
+        "model": "jev-latest",
+        "questions": {
+          "rule_id": {
+            "type": "choice",
+            "instructions": "Which ONE canonical security rule from the module rule list is violated by the file in the state? Pick the single best-matching rule id as the option key. Judge only against the code shown.",
+            "criteria": {
+              "security-secret-in-code-1": "IF api key pattern IN committed files — AKIA[0-9A-Z]{16} found in src/config/aws.js",
+              "security-secret-in-history-2": "IF secret in git history (trufflehog/gitleaks patterns) — AWS secret key found in commit abc123 from 2 weeks ago",
+              "security-env-file-committed-3": "IF .env committed — .env file containing DATABASE_URL found in repository",
+              "security-encryption-weak-5": "IF encryption key weak or short — AES key: '123456789012345' (15 bytes) found in crypto config",
+              "security-db-conn-string-6": "IF database connection string in code — postgres://user:password@localhost:5432/db found in database.js",
+              "security-private-key-7": "IF private key in code — -----BEGIN RSA PRIVATE KEY----- found in src/ssl/server.key",
+              "security-oauth-secret-8": "IF oauth token or secret in code — GitHub token: ghp_... found in integrations/github.js",
+              "security-weak-crypto-9": "IF encryption algorithm weak — Using MD5 or SHA1 for password hashing",
+              "security-weak-rng-10": "IF random number generator weak — Using Math.random() for token generation instead of crypto.randomBytes",
+              "security-cve-critical-1": "IF CVE critical in prod dependency — lodash 4.17.10 (CVE-2018-3721) - Prototype pollution leading to RCE",
+              "security-cve-high-2": "IF CVE high in prod dependency — express 4.15.0 (CVE-2017-16112) - Path traversal vulnerability",
+              "security-cve-medium-3": "IF CVE medium in prod dependency — jquery 3.3.1 (CVE-2019-11358) - Prototype pollution",
+              "security-unmaintained-dep-4": "IF unmaintained dependency > 2 years — left-pad 1.1.0 last updated 2016 - no security updates for 6 years",
+              "security-exploit-in-wild-5": "IF dependency with known exploit in wild — Log4j 2.0-beta9 (CVE-2021-44228) - Active exploitation in wild",
+              "security-license-incompatible-6": "IF license incompatible with commercial use — GPLv3 dependency in proprietary commercial software",
+              "security-no-security-maintenance-7": "IF dependency has no security maintenance — Dependency last security update was 3 years ago",
+              "security-transitive-vuln-8": "IF transitive dependency vulnerability — Dependency A (safe) depends on Dependency B (vulnerable)",
+              "security-vcs-insecure-9": "IF version control system not secure — Using HTTP instead of HTTPS for git submodules",
+              "security-binary-dep-10": "IF binary dependency without source — Pre-compiled binary dependency without source code for verification",
+              "security-gha-pr-target-risk-1": "IF workflow uses pull request target with checkout — workflow_run: workflow_pull_request_target with steps: checkout",
+              "security-gha-overpermissive-2": "IF workflow permissions not restricted — permissions: write-all - grants excessive permissions to workflow",
+              "security-gha-secret-leak-3": "IF secret used in log output — echo \\\"$API_KEY\\\" - secret exposed in workflow logs",
+              "security-gha-fork-pr-4": "IF workflow runs on fork pull requests — on: pull_request_target allows untrusted code from forks",
+              "security-gha-action-unpinned-5": "IF action not pinned to version — uses: actions/checkout@v2 - should specify exact version",
+              "security-gha-workspace-not-cleaned-6": "IF workspace not cleaned — Job does not clean up workspace - secrets may persist between jobs",
+              "security-gha-job-no-timeout-7": "IF job without timeout — job: build has no timeout setting - can run indefinitely",
+              "security-gha-no-container-8": "IF container not used for isolation — jobs.runner: ubuntu-latest instead of containerized execution",
+              "security-gha-auto-deploy-prod-9": "IF deployment to production on merge — on: push to main branch triggers production deployment",
+              "security-gha-no-concurrency-prod-10": "IF no concurrency control for production — Multiple deployment jobs can run concurrently to production",
+              "security-debug-in-prod-1": "IF debug mode enabled in prod — app.set('env', 'development') in production environment",
+              "security-cors-wildcard-2": "IF cors allows all origins — app.use(cors({ origin: true })) - allows any origin",
+              "security-jwt-weak-3": "IF jwt secret default or short — JWT secret: 'secret' or 'changeme' found in auth config",
+              "security-session-cookie-not-secure-3": "IF session cookie not secure — Session cookie missing Secure flag - transmitted over HTTP",
+              "security-session-cookie-not-http-only-4": "IF session cookie not http only — Session cookie missing HttpOnly flag - accessible via JavaScript",
+              "security-password-weak-5": "IF password storage weak — Storing passwords in plaintext or using weak hashing (MD5)",
+              "security-rate-limit-weak-6": "IF rate limiting missing or weak — No rate limiting on authentication endpoints",
+              "security-file-upload-weak-7": "IF file upload validation missing — Accepts .exe files without validation",
+              "security-directory-listing-8": "IF directory listing enabled — Apache/nginx configured to show directory listings",
+              "security-outdated-server-9": "IF outdated server software — Running nginx 1.14.0 (2018) instead of current stable version",
+              "security-missing-headers-10": "IF missing security headers — No HSTS, CSP, X-Frame-Options, or X-Content-Type-Options headers",
+              "security-db-no-tls-11": "IF database connection no encryption — Connecting to database without TLS/SSL encryption",
+              "security-logs-contain-secrets-12": "IF logs contain sensitive information — Logger.debug(\\\"Token: \\\" + authToken) in authentication code",
+              "security-key-rotation-manual-13": "IF encryption keys rotated manually — Encryption keys changed by manual config edit instead of automated process",
+              "security-no-input-validation-14": "IF no input validation at boundaries — API endpoints accept user input without validation or sanitization",
+              "security-error-detail-1": "IF error detail exposed to client — Global error handler returns raw err.message with HTTP 500 to the client"
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "H2",
+      "size": {
+        "kind": "H2",
+        "stateChars": 1035,
+        "stateTokens": 259,
+        "questions": [
+          {
+            "id": "evidence_line",
+            "chars": 537,
+            "tokens": 135,
+            "options": 28
+          }
+        ],
+        "longest": {
+          "id": "evidence_line",
+          "chars": 537,
+          "tokens": 135,
+          "options": 28
+        },
+        "totalTokens": 394,
+        "limit": 32000,
+        "headroom": 31606,
+        "fits": true,
+        "bodyChars": 1634
+      },
+      "body": {
+        "state": {
+          "repository": "realworld-control",
+          "path": "src/app/routes/auth/auth.ts",
+          "language": "typescript",
+          "line_window": "1-28 of 28",
+          "lines": "1: import { expressjwt as jwt } from 'express-jwt';\n2: import * as express from 'express';\n3: \n4: const getTokenFromHeaders = (req: express.Request): string | null => {\n5:   if (\n6:     (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Token') ||\n7:     (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer')\n8:   ) {\n9:     return req.headers.authorization.split(' ')[1];\n10:   }\n11:   return null;\n12: };\n13: \n14: const auth = {\n15:   required: jwt({\n16:     secret: process.env.JWT_SECRET || 'superSecret',\n17:     getToken: getTokenFromHeaders,\n18:     algorithms: ['HS256'],\n19:   }),\n20:   optional: jwt({\n21:     secret: process.env.JWT_SECRET || 'superSecret',\n22:     credentialsRequired: false,\n23:     getToken: getTokenFromHeaders,\n24:     algorithms: ['HS256'],\n25:   }),\n26: };\n27: \n28: export default auth;"
+        },
+        "model": "jev-latest",
+        "questions": {
+          "evidence_line": {
+            "type": "choice",
+            "instructions": "Which single numbered line of the state contains the code that EVIDENCES a hardcoded JWT-secret fallback (a literal secret used when the environment variable is missing)? Answer with the option key of that line number.",
+            "criteria": {
+              "1": null,
+              "2": null,
+              "3": null,
+              "4": null,
+              "5": null,
+              "6": null,
+              "7": null,
+              "8": null,
+              "9": null,
+              "10": null,
+              "11": null,
+              "12": null,
+              "13": null,
+              "14": null,
+              "15": null,
+              "16": null,
+              "17": null,
+              "18": null,
+              "19": null,
+              "20": null,
+              "21": null,
+              "22": null,
+              "23": null,
+              "24": null,
+              "25": null,
+              "26": null,
+              "27": null,
+              "28": null
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "H3",
+      "size": {
+        "kind": "H3",
+        "stateChars": 965,
+        "stateTokens": 242,
+        "questions": [
+          {
+            "id": "statement_a",
+            "chars": 314,
+            "tokens": 79,
+            "options": 2
+          },
+          {
+            "id": "statement_b",
+            "chars": 354,
+            "tokens": 89,
+            "options": 2
+          }
+        ],
+        "longest": {
+          "id": "statement_b",
+          "chars": 354,
+          "tokens": 89,
+          "options": 2
+        },
+        "totalTokens": 331,
+        "limit": 32000,
+        "headroom": 31669,
+        "fits": true,
+        "bodyChars": 1708
+      },
+      "body": {
+        "state": {
+          "repository": "realworld-control",
+          "path": "src/app/routes/auth/auth.ts",
+          "language": "typescript",
+          "content": "import { expressjwt as jwt } from 'express-jwt';\r\nimport * as express from 'express';\r\n\r\nconst getTokenFromHeaders = (req: express.Request): string | null => {\r\n  if (\r\n    (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Token') ||\r\n    (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer')\r\n  ) {\r\n    return req.headers.authorization.split(' ')[1];\r\n  }\r\n  return null;\r\n};\r\n\r\nconst auth = {\r\n  required: jwt({\r\n    secret: process.env.JWT_SECRET || 'superSecret',\r\n    getToken: getTokenFromHeaders,\r\n    algorithms: ['HS256'],\r\n  }),\r\n  optional: jwt({\r\n    secret: process.env.JWT_SECRET || 'superSecret',\r\n    credentialsRequired: false,\r\n    getToken: getTokenFromHeaders,\r\n    algorithms: ['HS256'],\r\n  }),\r\n};\r\n\r\nexport default auth;\r\n"
+        },
+        "model": "jev-latest",
+        "questions": {
+          "statement_a": {
+            "type": "noul",
+            "instructions": "src/app/routes/auth/auth.ts falls back to the hardcoded literal 'superSecret' whenever the JWT_SECRET environment variable is unset.",
+            "criteria": {
+              "true": "The code in the state confirms the statement",
+              "false": "The code in the state contradicts the statement, or does not support it"
+            }
+          },
+          "statement_b": {
+            "type": "noul",
+            "instructions": "src/app/routes/auth/auth.ts resolves the JWT signing secret through a centralised secrets helper, and its hardcoded fallback literal is only reachable in local development.",
+            "criteria": {
+              "true": "The code in the state confirms the statement",
+              "false": "The code in the state contradicts the statement, or does not support it"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "kind": "H1",
+      "question_id": "rule_id",
+      "verdict": "PASS — it chose the canonical rule for this defect, and the option list makes any other id impossible",
+      "check": {
+        "chosen": "security-jwt-weak-3",
+        "inList": true,
+        "expected": "security-jwt-weak-3",
+        "matched": true,
+        "confidence": 1,
+        "topProbabilities": [
+          [
+            "security-jwt-weak-3",
+            1
+          ],
+          [
+            "security-debug-in-prod-1",
+            0
+          ],
+          [
+            "security-vcs-insecure-9",
+            0
+          ]
+        ],
+        "probabilitySum": 1,
+        "stampedSeverity": "critical",
+        "stampedEffort": "XS",
+        "expectedSeverity": "critical",
+        "expectedEffort": "XS",
+        "modelReported": "jev-1.13.0"
+      },
+      "raw_answer": {
+        "type": "choice",
+        "choice": "security-jwt-weak-3",
+        "confidence": 1,
+        "probabilities": {
+          "security-debug-in-prod-1": 0,
+          "security-vcs-insecure-9": 0,
+          "security-db-no-tls-11": 0,
+          "security-session-cookie-not-secure-3": 0,
+          "security-logs-contain-secrets-12": 0,
+          "security-gha-no-concurrency-prod-10": 0,
+          "security-no-input-validation-14": 0,
+          "security-gha-action-unpinned-5": 0,
+          "security-secret-in-history-2": 0,
+          "security-rate-limit-weak-6": 0,
+          "security-cors-wildcard-2": 0,
+          "security-db-conn-string-6": 0,
+          "security-secret-in-code-1": 0,
+          "security-weak-crypto-9": 0,
+          "security-gha-auto-deploy-prod-9": 0,
+          "security-env-file-committed-3": 0,
+          "security-binary-dep-10": 0,
+          "security-missing-headers-10": 0,
+          "security-gha-overpermissive-2": 0,
+          "security-weak-rng-10": 0,
+          "security-jwt-weak-3": 1,
+          "security-unmaintained-dep-4": 0,
+          "security-gha-pr-target-risk-1": 0,
+          "security-key-rotation-manual-13": 0,
+          "security-outdated-server-9": 0,
+          "security-gha-job-no-timeout-7": 0,
+          "security-no-security-maintenance-7": 0,
+          "security-session-cookie-not-http-only-4": 0,
+          "security-gha-secret-leak-3": 0,
+          "security-transitive-vuln-8": 0,
+          "security-encryption-weak-5": 0,
+          "security-cve-medium-3": 0,
+          "security-gha-fork-pr-4": 0,
+          "security-gha-workspace-not-cleaned-6": 0,
+          "security-password-weak-5": 0,
+          "security-directory-listing-8": 0,
+          "security-oauth-secret-8": 0,
+          "security-gha-no-container-8": 0,
+          "security-private-key-7": 0,
+          "security-file-upload-weak-7": 0,
+          "security-exploit-in-wild-5": 0,
+          "security-cve-high-2": 0,
+          "security-license-incompatible-6": 0,
+          "security-error-detail-1": 0,
+          "security-cve-critical-1": 0
+        }
+      }
+    },
+    {
+      "kind": "H2",
+      "question_id": "evidence_line",
+      "verdict": "PASS — line 16 is \"    secret: process.env.JWT_SECRET || 'superSecret',\", which contains the evidence",
+      "check": {
+        "chosen": "16",
+        "lineNumber": 16,
+        "inWindow": true,
+        "lineText": "    secret: process.env.JWT_SECRET || 'superSecret',",
+        "hasEvidence": true,
+        "expectedLines": [
+          16,
+          21
+        ],
+        "expectedFirst": 16,
+        "confidence": 0.99,
+        "topProbabilities": [
+          [
+            "16",
+            0.99
+          ],
+          [
+            "21",
+            0.01
+          ],
+          [
+            "1",
+            0
+          ]
+        ]
+      },
+      "raw_answer": {
+        "type": "choice",
+        "choice": "16",
+        "confidence": 0.99,
+        "probabilities": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "9": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0.99,
+          "17": 0,
+          "18": 0,
+          "19": 0,
+          "20": 0,
+          "21": 0.01,
+          "22": 0,
+          "23": 0,
+          "24": 0,
+          "25": 0,
+          "26": 0,
+          "27": 0,
+          "28": 0
+        }
+      }
+    },
+    {
+      "kind": "H3",
+      "question_id": "statement_a / statement_b",
+      "verdict": "SEPARATES — true 0.98 vs false 0.03, margin 0.95 (clean)",
+      "check": {
+        "trueValue": 0.98,
+        "falseValue": 0.03,
+        "separation": 0.95,
+        "trueCalledTrue": true,
+        "falseCalledFalse": true,
+        "clean": true
+      },
+      "raw_answer": {
+        "statement_a": {
+          "type": "noul",
+          "noul": 0.98
+        },
+        "statement_b": {
+          "type": "noul",
+          "noul": 0.03
+        }
+      }
+    }
+  ],
+  "usage": {
+    "input_tokens": 3870,
+    "cost_usd": 0.00016254
+  }
+}
