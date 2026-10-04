@@ -38,15 +38,24 @@ and the 30/60/90 plan was ordered on invented numbers.
 `findings[]` (each with `id` = a canonical rule id, `severity`/`effort`
 verbatim from the rule, `location.file`, `location.line`, `description`,
 `evidence`, `remediation`, `confidence` 0.0–1.0), `metadata`, and
-`work_plan` (30/60/90 phases referencing only real finding ids).
+`work_plan` (30/60/90 phases referencing only real finding ids). `work_plan`
+accepts either shape — the rich phases with per-phase totals or the compact
+`phases` map; both validate. Do NOT write `summary.overall_health` yourself:
+the grading command below computes it from your findings (worst severity
+present — volume never improves it), and the runners stamp it.
 
-**3. Validate before you finish:**
+**3. Validate and grade before you finish:**
 
-    node scripts/validate-assessment.mjs assessment.json
+    node /path/to/dontkillthevibes/scripts/validate-assessment.mjs assessment.json
+    node /path/to/dontkillthevibes/scripts/dktv-grade.mjs assessment.json --fix
 
-If it prints INVALID, fix exactly what it lists and re-run until VALID. A valid
-document with 0 findings is possible but suspicious — accept it only if the
-repository genuinely violates none of the 368 canonical rules.
+The validator enforces the document contract — if it prints INVALID, fix
+exactly what it lists and re-run until VALID. The grader computes the letter:
+F = any critical, D = high, C = medium, B = low, A = info-only or empty
+(E is reserved), with `critical_count` reported separately, never encoded in
+the letter. A valid document with 0 findings is possible but suspicious —
+accept it only if the repository genuinely violates none of the 368 canonical
+rules.
 
 ## Prioritization Algorithm
 

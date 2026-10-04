@@ -1,7 +1,7 @@
 # Assessment Report: realworld (gothinkster RealWorld API, temp/realworld)
 
 ## Executive Summary
-- **Overall Health**: C
+- **Overall Health**: F (worst severity: critical — graded by `scripts/dktv-grade.mjs`, not judgement)
 - **Critical Findings**: 1
 - **Estimated Total Effort**: S (3×XS, 3×S, 1×M)
 - **Top 3 Priorities**:

@@ -71,6 +71,7 @@ import { openRepo, SKIP_EXT, SENSITIVE_NAME } from './lib/repo-files.mjs';
 // The runner both ENFORCES the contract (id list + validation) and MAKES it hold
 // (stampRuleFields), because severity/effort are rule properties, not LLM judgements.
 import { loadRules, stampRuleFields, diffRuleFields, rulesetFingerprint } from './lib/canonical-registry.mjs';
+import { gradeFromFindings } from './lib/health-grade.mjs';
 // Human-readable artifact: assessment.json is the contract, assessment-report.md is what a
 // human reads. ONE shared renderer (scripts/lib/report-renderer.mjs) so this runner and
 // scripts/dktv-assess.mjs produce the same report from the same document. The render runs
@@ -917,18 +918,9 @@ function scoreOf(finding, moduleWeights) {
   return sev * mod * finding.confidence;
 }
 
-/** A-F derived from the severity mix (weighted mean penalty per finding). */
-function overallHealth(findings) {
-  if (!findings.length) return 'A';
-  const penalty = { critical: 25, high: 10, medium: 3, low: 1, info: 0 };
-  const total = findings.reduce((acc, f) => acc + (penalty[f.severity] ?? 0), 0) / findings.length;
-  if (total <= 2) return 'A';
-  if (total <= 6) return 'B';
-  if (total <= 12) return 'C';
-  if (total <= 22) return 'D';
-  if (total <= 35) return 'E';
-  return 'F';
-}
+/** A-F overall health comes from scripts/lib/health-grade.mjs (worst severity,
+ *  volume-immune) — the SAME function Path A (dktv-grade.mjs) and Path B
+ *  (dktv-assess.mjs) run, so one repository can never receive two letters.
 
 /** Bucket a summed effort weight back into the XS..XL scale used by `total_effort`. */
 function effortBucket(total) {
@@ -1036,7 +1028,8 @@ function synthesize({ findings, target, model, toolkitVersion, moduleWeights, me
         ...(meta.notes ? { notes: meta.notes } : {}),
       },
       summary: {
-        overall_health: overallHealth(merged),
+        overall_health: gradeFromFindings(merged).letter,
+        critical_count: gradeFromFindings(merged).criticalCount,
         total_findings: merged.length,
         by_severity: tally(merged, 'severity', SEVERITIES),
         by_module: tally(merged, 'module', MODULE_DEFS.map((m) => m.module)),

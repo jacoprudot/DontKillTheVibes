@@ -41,7 +41,7 @@ git clone https://github.com/jacoprudot/dontkillthevibes.git
 
 Then, inside the repository you want to assess, tell your agent (Claude Code, Cursor, …):
 
-> "Act as the Synthesis Agent defined in `/path/to/dontkillthevibes/agents/synthesis-agent.md`. Read the skills from `/path/to/dontkillthevibes/skills/` and audit this repository. Generate `assessment.json` and `assessment-report.md`."
+> "Act as the Synthesis Agent defined in `/path/to/dontkillthevibes/agents/synthesis-agent.md`. Read the skills from `/path/to/dontkillthevibes/skills/` and audit this repository. Generate `assessment.json` and `assessment-report.md`. Validate the JSON with `node /path/to/dontkillthevibes/scripts/validate-assessment.mjs assessment.json` and `node /path/to/dontkillthevibes/scripts/dktv-grade.mjs assessment.json --fix` — fix whatever either reports."
 
 > **Status, honestly:** Path A has produced valid end-to-end assessments, but the prompt above alone is not the whole recipe — the output contract (severity/effort owned by the rule, exact tallies, document shape) lives in the Synthesis Agent's *Output Contract* section and in `templates/minimal-assessment.json`. Follow those and it validates. The fully scripted path below (Path B) is the most thoroughly verified.
 
@@ -86,6 +86,8 @@ node scripts/validate-assessment.mjs assessment.json
 ```
 
 Enforces the document shape, every field type from `templates/finding-schema.json`, unique finding IDs, that every ID exists as a canonical rule in `skills/*.skill.md`, that `work_plan`/`relatedFindings` reference only real findings, and that `summary` tallies match the findings. If it fails, feed the error back to the LLM and have it fix the JSON until the validator accepts it.
+
+Scope, honestly: the contract guarantees *shape*, not *truth* — a well-formed finding with a wrong line number still validates; the blind-judge benchmark is the counterweight, and we publish its ranges, not decimals. Only `assessment.json` is machine-validated; `assessment-report.md` is rendered from it and has no gate — regenerate it if you edit the JSON. And `overall_health` is nobody's judgement: it is the worst severity present (F = any critical, D = high, C = medium, B = low, A = info-only; E reserved), computed by `scripts/lib/health-grade.mjs`. Path A applies it via `scripts/dktv-grade.mjs`, the CLI runner and the orchestrator stamp it — one repository, one letter, three consumers running the same function.
 
 ## Measured results (not claimed)
 

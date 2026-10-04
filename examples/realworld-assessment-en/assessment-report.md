@@ -8,7 +8,7 @@
 ---
 
 ## Executive Summary
-- **Overall Health**: D
+- **Overall Health**: F (worst severity: critical — graded by `scripts/dktv-grade.mjs`, not judgement)
 - **Critical Findings**: 2
 - **Total Findings**: 6
 - **By Severity**: critical 2 · high 1 · medium 2 · low 1

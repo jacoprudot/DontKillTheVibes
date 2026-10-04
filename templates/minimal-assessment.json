@@ -6,7 +6,7 @@
     "llm_used": "name of the model you used"
   },
   "summary": {
-    "overall_health": "C",
+    "overall_health": "F",
     "total_findings": 1,
     "critical_count": 1,
     "by_severity": {

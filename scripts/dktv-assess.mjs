@@ -46,6 +46,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, resolve, join, relative, basename } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { loadRules, stampRuleFields, rulesetFingerprint } from './lib/canonical-registry.mjs';
+import { gradeFromFindings } from './lib/health-grade.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -229,7 +230,7 @@ Respond with ONLY a JSON object — no prose, no markdown fences, no comments:
 
 {
   "metadata": { "repo": "<repo name>", "assessed_at": "<ISO 8601>", "toolkit_version": "0.1.0-beta", "llm_used": "<model id>" },
-  "summary": { "overall_health": "<A-F>", "total_findings": <n>, "critical_count": <n> },
+  "summary": { "overall_health": "<stamped by the runner: worst severity present — write your best guess>", "total_findings": <n>, "critical_count": <n> },
   "findings": [ <finding objects> ],
   "work_plan": { "phases": { "30_days": ["<finding-id>", ...], "60_days": [...], "90_days": [...] }, "dependencies": [{ "from": "<id>", "to": "<id>", "type": "blocks" }] }
 }
@@ -432,6 +433,13 @@ for (let attempt = 1; attempt <= opts.maxRetries + 1; attempt++) {
       }
       candidate.summary.by_severity = bySeverity;
       candidate.summary.effort_estimate = byEffort;
+      // overall_health is stamped from the SHARED formula (worst severity present,
+      // volume-immune — scripts/lib/health-grade.mjs), never the model's judgement:
+      // the same defect class as severity/effort. Averaging severities would reward
+      // repos that pad the report with trivia.
+      const grade = gradeFromFindings(candidate.findings);
+      candidate.summary.overall_health = grade.letter;
+      candidate.summary.critical_count = grade.criticalCount;
     }
   }
   // Pin the rule contract to the document: the fingerprint changes on ANY rule

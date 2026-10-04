@@ -8,109 +8,220 @@
     "notes": "Rules applied from skills: security-assessment (Configuration Security, GHA N/A), database-assessment (Query Anti-Patterns), code-quality-assessment (TS rules), performance-assessment (static review only). Every finding id below is a canonical `→ FINDING:` rule id from skills/*.skill.md."
   },
   "summary": {
-    "overall_health": "C",
+    "overall_health": "F",
     "total_findings": 7,
-    "by_severity": { "critical": 1, "high": 3, "medium": 2, "low": 0, "info": 1 },
-    "by_module": { "security": 3, "database": 2, "code": 2 },
-    "effort_estimate": { "XS": 3, "S": 3, "M": 1 }
+    "by_severity": {
+      "critical": 1,
+      "high": 3,
+      "medium": 2,
+      "low": 0,
+      "info": 1
+    },
+    "by_module": {
+      "security": 3,
+      "database": 2,
+      "code": 2
+    },
+    "effort_estimate": {
+      "XS": 3,
+      "S": 3,
+      "M": 1
+    },
+    "critical_count": 1
   },
   "findings": [
     {
       "id": "security-jwt-weak-3",
       "module": "security",
       "severity": "critical",
-      "location": { "file": "src/app/routes/auth/auth.ts", "line": 16, "function": "required/optional jwt middleware" },
+      "location": {
+        "file": "src/app/routes/auth/auth.ts",
+        "line": 16,
+        "function": "required/optional jwt middleware"
+      },
       "description": "JWT secret falls back to the hardcoded default 'superSecret' when JWT_SECRET is not set (also at auth.ts:21 and token.utils.ts:4). Any deployment missing the env var accepts tokens signed with a publicly known secret — full auth bypass. Rule: security-assessment Configuration Security (jwt_secret_default_or_short → security-jwt-weak-3, critical).",
       "remediation": "Remove the fallback: throw at boot if JWT_SECRET is unset. Rotate any token signed with 'superSecret'. Add a startup validation step (e.g. envalid/zod) for required env vars.",
       "effort": "XS",
       "confidence": 0.95,
-      "tags": ["jwt", "auth", "secret-management"],
-      "evidence": { "snippet": "secret: process.env.JWT_SECRET || 'superSecret'" }
+      "tags": [
+        "jwt",
+        "auth",
+        "secret-management"
+      ],
+      "evidence": {
+        "snippet": "secret: process.env.JWT_SECRET || 'superSecret'"
+      }
     },
     {
       "id": "database-sequential-pagination-1",
       "module": "database",
       "severity": "high",
-      "location": { "file": "src/app/routes/article/article.service.ts", "line": 71, "function": "getArticles" },
+      "location": {
+        "file": "src/app/routes/article/article.service.ts",
+        "line": 71,
+        "function": "getArticles"
+      },
       "description": "Paginated list endpoints run prisma.article.count() and prisma.article.findMany() as two sequential awaits (getArticles :71-77 and getFeed :114-122). The count blocks the findMany, doubling DB I/O latency on the hottest read paths. Rule: database-assessment Query Anti-Patterns (sequential_count_and_findmany_on_paginated_endpoint → database-sequential-pagination-1, high).",
       "remediation": "Execute both in parallel: const [articlesCount, articles] = await Promise.all([prisma.article.count({where}), prisma.article.findMany({where, ...})]). Apply to getArticles and getFeed.",
       "effort": "S",
       "confidence": 0.9,
-      "tags": ["prisma", "pagination", "latency"],
-      "relatedFindings": ["database-overfetch-relation-1"],
-      "evidence": { "snippet": "const articlesCount = await prisma.article.count({...}); const articles = await prisma.article.findMany({...})" }
+      "tags": [
+        "prisma",
+        "pagination",
+        "latency"
+      ],
+      "relatedFindings": [
+        "database-overfetch-relation-1"
+      ],
+      "evidence": {
+        "snippet": "const articlesCount = await prisma.article.count({...}); const articles = await prisma.article.findMany({...})"
+      }
     },
     {
       "id": "database-overfetch-relation-1",
       "module": "database",
       "severity": "high",
-      "location": { "file": "src/app/routes/article/article.service.ts", "line": 98, "function": "getArticles (articleListMapper)" },
+      "location": {
+        "file": "src/app/routes/article/article.service.ts",
+        "line": 98,
+        "function": "getArticles (articleListMapper)"
+      },
       "description": "favoritedBy: true is included in Prisma queries at 8+ call sites (:98, :101, :147, :150, :229, :232, :260, :263, :373, :376, :588, :591, :634, :637). This loads the FULL many-to-many user relation into memory only to compute article.favorited via favoritedBy.some(f => f.id === id) (:601, :647). An article with thousands of favorites OOMs the process per request. Rule: database-assessment Query Anti-Patterns (full_relation_included_to_derive_single_flag → database-overfetch-relation-1, high).",
       "remediation": "Replace the include with a filtered existence check: favoritedBy: { where: { id: userId }, select: { id: true } } or use _count + a per-current-user some() subquery. favoritesCount already uses _count — extend that pattern to the favorited flag.",
       "effort": "S",
       "confidence": 0.85,
-      "tags": ["prisma", "over-fetching", "n-plus-one-risk", "memory"],
-      "relatedFindings": ["database-sequential-pagination-1"],
-      "evidence": { "snippet": "include: { ... favoritedBy: true ... }; article.favoritedBy.some((favorited: any) => favorited.id === id)" }
+      "tags": [
+        "prisma",
+        "over-fetching",
+        "n-plus-one-risk",
+        "memory"
+      ],
+      "relatedFindings": [
+        "database-sequential-pagination-1"
+      ],
+      "evidence": {
+        "snippet": "include: { ... favoritedBy: true ... }; article.favoritedBy.some((favorited: any) => favorited.id === id)"
+      }
     },
     {
       "id": "code-missing-validation-4",
       "module": "code",
       "severity": "high",
-      "location": { "file": "src/app/routes/article/article.service.ts", "line": 69, "function": "getArticles" },
+      "location": {
+        "file": "src/app/routes/article/article.service.ts",
+        "line": 69,
+        "function": "getArticles"
+      },
       "description": "No input validation exists at any API boundary: service functions take query: any / body: any (getArticles :69, and controllers pass req.query/req.body straight through). Pagination params (limit/offset), slugs and auth payloads are unvalidated. Rule: code-quality-assessment Error Handling Anti-Patterns (no_validation_at_api_boundary → code-missing-validation-4, high).",
       "remediation": "Add a validation middleware (zod or class-validator) on all routes; type service inputs strictly instead of any. Validate limit/offset ranges, slug format, and required fields before they reach Prisma.",
       "effort": "M",
       "confidence": 0.9,
-      "tags": ["validation", "typescript", "api-boundary"],
-      "evidence": { "snippet": "export const getArticles = async (query: any, id?: number) => {" }
+      "tags": [
+        "validation",
+        "typescript",
+        "api-boundary"
+      ],
+      "evidence": {
+        "snippet": "export const getArticles = async (query: any, id?: number) => {"
+      }
     },
     {
       "id": "security-cors-wildcard-2",
       "module": "security",
       "severity": "medium",
-      "location": { "file": "src/main.ts", "line": 13 },
+      "location": {
+        "file": "src/main.ts",
+        "line": 13
+      },
       "description": "app.use(cors()) with no options enables Access-Control-Allow-Origin: * on every route. Combined with JWT-in-localStorage frontends this widens the attack surface for cross-origin abuse. Rule: security-assessment Configuration Security (cors_allows_all_origins → security-cors-wildcard-2, medium).",
       "remediation": "Configure cors({ origin: ['https://your-frontend'], credentials: true }) with an explicit allowlist; reject unknown origins.",
       "effort": "XS",
       "confidence": 0.9,
-      "tags": ["cors", "express"],
-      "evidence": { "snippet": "app.use(cors());" }
+      "tags": [
+        "cors",
+        "express"
+      ],
+      "evidence": {
+        "snippet": "app.use(cors());"
+      }
     },
     {
       "id": "code-any-type-6",
       "module": "code",
       "severity": "medium",
-      "location": { "file": "src/app/routes/article/article.service.ts", "line": 69, "function": "getArticles" },
+      "location": {
+        "file": "src/app/routes/article/article.service.ts",
+        "line": 69,
+        "function": "getArticles"
+      },
       "description": "any is used in public/service interfaces (query: any, favorited: any in mappers at :601/:647), disabling TypeScript's safety net exactly at the API surface. Rule: code-quality-assessment Language-Specific Rules / TypeScript (any type in public API → code-any-type-6, medium).",
       "remediation": "Define DTO types for query/body (e.g. ArticleQuery { tag?: string; author?: string; limit?: number; offset?: number }) and replace mapper anys with generated Prisma types.",
       "effort": "S",
       "confidence": 0.85,
-      "tags": ["typescript", "any"],
-      "evidence": { "snippet": "export const getArticles = async (query: any, id?: number) => { ... favoritedBy.some((favorited: any) => ..." }
+      "tags": [
+        "typescript",
+        "any"
+      ],
+      "evidence": {
+        "snippet": "export const getArticles = async (query: any, id?: number) => { ... favoritedBy.some((favorited: any) => ..."
+      }
     },
     {
       "id": "security-error-detail-1",
       "module": "security",
       "severity": "info",
-      "location": { "file": "src/main.ts", "line": 44 },
+      "location": {
+        "file": "src/main.ts",
+        "line": 44
+      },
       "description": "The global error handler returns raw err.message with HTTP 500 for unclassified errors, potentially leaking internal exception text (paths, library names) to clients. Rule: security-assessment Configuration Security (error_detail_exposed_to_client → security-error-detail-1, info).",
       "remediation": "Log the full error server-side; return a generic message to the client (e.g. { status: 'error', message: 'Internal server error' }).",
       "effort": "XS",
       "confidence": 0.7,
-      "tags": ["error-handling", "info-disclosure"],
-      "evidence": { "snippet": "} else if (err) { res.status(500).json(err.message); }" }
+      "tags": [
+        "error-handling",
+        "info-disclosure"
+      ],
+      "evidence": {
+        "snippet": "} else if (err) { res.status(500).json(err.message); }"
+      }
     }
   ],
   "work_plan": {
     "phases": [
-      { "name": "30 Days (Quick Wins)", "findings": ["security-jwt-weak-3", "security-cors-wildcard-2", "security-error-detail-1", "database-sequential-pagination-1", "database-overfetch-relation-1"], "total_effort": "L" },
-      { "name": "60 Days (Core Fixes)", "findings": ["code-any-type-6"], "total_effort": "S" },
-      { "name": "90 Days (Strategic)", "findings": ["code-missing-validation-4"], "total_effort": "M" }
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "security-jwt-weak-3",
+          "security-cors-wildcard-2",
+          "security-error-detail-1",
+          "database-sequential-pagination-1",
+          "database-overfetch-relation-1"
+        ],
+        "total_effort": "L"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "code-any-type-6"
+        ],
+        "total_effort": "S"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "code-missing-validation-4"
+        ],
+        "total_effort": "M"
+      }
     ],
     "dependencies": {
-      "database-overfetch-relation-1": ["database-sequential-pagination-1"],
-      "code-any-type-6": ["code-missing-validation-4"]
+      "database-overfetch-relation-1": [
+        "database-sequential-pagination-1"
+      ],
+      "code-any-type-6": [
+        "code-missing-validation-4"
+      ]
     }
   },
   "priority_scores": [
