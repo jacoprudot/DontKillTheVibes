@@ -1,54 +1,54 @@
-# Comparación: corrida real end-to-end vs baseline Gemini (corrida real, verbatim)
+# Comparison: real end-to-end run vs the Gemini baseline (real run, verbatim)
 
-Mismo objetivo (`temp/realworld`, RealWorld API). Baseline:
-`../gemini-baseline/assessment-realworld-gemini-raw.md`. Corrida:
-`./assessment.json` + `./assessment-report.md` (esta carpeta).
+Same target (`temp/realworld`, the RealWorld API implementation). Baseline:
+`../gemini-baseline/assessment-realworld-gemini-raw.md`. This run:
+`./assessment.json` + `./assessment-report.md` (this folder).
 
-## Cobertura
+## Coverage
 
-| Métrica | Gemini (corrida real) | DKTV real |
+| Metric | Gemini (real run) | DKTV (real run) |
 |---|---|---|
-| Hallazgos totales | 3 | 7 |
+| Total findings | 3 | 7 |
 | Criticals | 0 | 1 |
 | Highs | 1 | 3 |
-| Hallazgos de security | 0 | 3 |
-| Instancias del patrón favoritedBy reportadas | 1 (1 ubicación) | 1 hallazgo, 14 ubicaciones citadas |
-| Patrón count+findMany | 1 ubicación | ambas funciones (getArticles + getFeed) |
+| Security findings | 0 | 3 |
+| Instances of the `favoritedBy` pattern reported | 1 (1 location) | 1 finding, 14 locations cited |
+| The count+findMany pattern | 1 location | both functions (getArticles + getFeed) |
 
-## Falsos negativos del baseline que la corrida real detectó
+## False negatives in the baseline that this run caught
 
-- **`security-jwt-weak-3`** (critical): fallback `'superSecret'` en auth.ts:16/:21 y
-  token.utils.ts:4. El baseline lo omitió por completo — es el hallazgo más grave
-  del repo.
-- **`security-cors-wildcard-2`**: `app.use(cors())` sin restricción (main.ts:13). Omitido.
-- **`security-error-detail-1`**: error handler filtra `err.message` crudo (main.ts:44). Omitido.
-- **Repetición del patrón de paginación**: el baseline citó una función; el patrón
-  existe en dos (getArticles :71, getFeed :114).
+- **`security-jwt-weak-3`** (critical): the `'superSecret'` fallback at auth.ts:16/:21
+  and token.utils.ts:4. The baseline missed it entirely — it is the most severe
+  finding in the repo.
+- **`security-cors-wildcard-2`**: `app.use(cors())` unrestricted (main.ts:13). Missed.
+- **`security-error-detail-1`**: the error handler leaks raw `err.message`
+  (main.ts:44). Missed.
+- **Pagination pattern repetition**: the baseline cited one function; the pattern
+  exists in two (getArticles :71, getFeed :114).
 
-## Conformidad con el contrato
+## Contract conformance
 
-| Chequeo | Gemini | DKTV real |
+| Check | Gemini | DKTV (real run) |
 |---|---|---|
 | IDs `^[a-z-]+-\d+$` | ❌ `PERF-01` | ✅ |
-| Enum de módulos | ❌ "Performance" | ✅ |
-| Enum de effort | ✅ en este baseline — el `M/L` fuera de enum pertenece a otro baseline: `../gemini-baseline/assessment-legal-rag-gemini-raw.md` | ✅ |
-| `confidence` 0–1 | ❌ ausente | ✅ en los 7 |
-| `assessment.json` | ❌ no generado | ✅ |
-| Algoritmo de priorización | ❌ contradicho | ✅ scores calculados, security primero |
-| Validación automática | n/a | ✅ `VALID: 7 findings, 0 warnings` |
+| Module enum | ❌ "Performance" | ✅ |
+| Effort enum | ✅ in this baseline — the out-of-enum `M/L` belongs to the other baseline: `../gemini-baseline/assessment-legal-rag-gemini-raw.md` | ✅ |
+| `confidence` 0–1 | ❌ absent | ✅ on all 7 |
+| `assessment.json` | ❌ not generated | ✅ |
+| Prioritization algorithm | ❌ contradicted | ✅ scores computed, security first |
+| Automatic validation | n/a | ✅ `VALID: 7 findings, 0 warnings` |
 
-## Interpretación
+## Interpretation
 
-- La corrida real encontró **más, más grave y conforme**. El baseline de Gemini fue
-  preciso en lo que reportó (sus 3 hallazgos coinciden con hallazgos 2, 3 y 4 de
-  esta corrida) pero omitió toda la superficie de security — exactamente el tipo de
-  omisión que un proceso sistemático (árboles de decisión por módulo) existe para
-  prevenir.
-- Limitación honesta de esta corrida: benchmark-mcp no se ejercitó (el servidor
-  realworld no estaba corriendo), por lo que los hallazgos de performance son
-  estáticos. La skill de performance marca este caso como "baseline protocol"
-  pendiente.
-- Limitación del baseline que sigue aplicando: la corrida aplicó los árboles de
-  forma manual/orquestada por un agente; la ejecución automatizada completa
-  (8 agentes paralelos invocados por el synthesis-agent) aún no está implementada
-  como pipeline ejecutable.
+- This run found **more, more severe, and contract-conformant output**. The Gemini
+  baseline was accurate in what it reported (its 3 findings match findings 2, 3 and
+  4 of this run) but missed the entire security surface — exactly the kind of
+  omission a systematic per-module process (decision trees) exists to prevent.
+- Honest limitation of this run: benchmark-mcp was not exercised (the realworld
+  server was not running), so the performance findings are static. The performance
+  skill marks this case as the pending "baseline protocol".
+- What has changed since this comparison was written: the full 8-agent pipeline is
+  now implemented (`scripts/dktv-orchestrate.mjs`) and was exercised as ARM C in
+  the three-arm benchmark (`benchmark/results/`), where it matched or beat the
+  single-pass arm on precision in 4 of 5 targets. This hand-run comparison remains
+  valid as the per-finding audit trail.
