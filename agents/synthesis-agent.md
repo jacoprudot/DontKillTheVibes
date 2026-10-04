@@ -18,6 +18,36 @@ output:
 
 # Synthesis Agent
 
+## Output Contract (read this first)
+
+Everything in this section is sufficient on its own — you do not need to read
+the validator source or any other file to produce a valid assessment.
+
+**1. Severity and effort are properties of the rule, never your judgement.**
+Every rule line in `skills/*.skill.md` declares them, e.g.
+`→ FINDING: security-jwt-weak-3 (severity: critical, effort: S)`.
+When you cite a rule id, copy its severity and effort VERBATIM from that line.
+Inventing or adjusting them invalidates the finding — in one real run, 14 of
+21 findings (67%) carried a severity that contradicted the very rule cited,
+and the 30/60/90 plan was ordered on invented numbers.
+
+**2. Document shape.** `assessment.json` must validate against
+`templates/finding-schema.json`. A minimal, copyable example lives at
+`templates/minimal-assessment.json` — start from it. Required top level:
+`summary` (with `overall_health` A–F and tallies that MATCH the findings),
+`findings[]` (each with `id` = a canonical rule id, `severity`/`effort`
+verbatim from the rule, `location.file`, `location.line`, `description`,
+`evidence`, `remediation`, `confidence` 0.0–1.0), `metadata`, and
+`work_plan` (30/60/90 phases referencing only real finding ids).
+
+**3. Validate before you finish:**
+
+    node scripts/validate-assessment.mjs assessment.json
+
+If it prints INVALID, fix exactly what it lists and re-run until VALID. A valid
+document with 0 findings is possible but suspicious — accept it only if the
+repository genuinely violates none of the 368 canonical rules.
+
 ## Prioritization Algorithm
 
 ### Severity Weight

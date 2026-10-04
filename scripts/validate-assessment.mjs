@@ -246,8 +246,12 @@ if (findings) {
         if (f.evidence.snippet !== undefined && !isStr(f.evidence.snippet)) {
           errors.push(`${where}: evidence.snippet must be a string`);
         }
-        if (f.evidence.metric !== undefined && !isNum(f.evidence.metric)) {
-          errors.push(`${where}: evidence.metric must be a number`);
+        // A metric is a measurement, and measurements are often described, not
+        // numeric ("CVSS 10.0 (Critical)", "write-all vs contents:read"). The 38
+        // worked examples in the skills describe them; nothing consumes the field
+        // numerically. Accept string or number, mirroring finding-schema.json.
+        if (f.evidence.metric !== undefined && !isStr(f.evidence.metric) && !isNum(f.evidence.metric)) {
+          errors.push(`${where}: evidence.metric must be a string or a number`);
         }
         if (f.evidence.benchmark !== undefined && !isStr(f.evidence.benchmark)) {
           errors.push(`${where}: evidence.benchmark must be a string`);

@@ -62,7 +62,7 @@
       "type": "object",
       "properties": {
         "snippet": { "type": "string", "description": "Code/config snippet showing the issue" },
-        "metric": { "type": "number", "description": "Quantitative metric (e.g., complexity score)" },
+        "metric": { "type": ["string", "number"], "description": "Measured value, described or numeric (e.g. \"CVSS 10.0 (Critical)\" or 42)" },
         "benchmark": { "type": "string", "description": "Benchmark result if applicable" }
       }
     }

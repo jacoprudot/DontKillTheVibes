@@ -37,6 +37,20 @@ tool's observable contract. This file is the record of those changes.
 
 ---
 
+## 2026-10-04 — deprecation: flows-missing-security-headers-10
+
+**Fingerprint: `368-6e180554`** (unchanged — deprecation does not alter the canonical
+`id|severity|effort` string) · **368 canonical finding rules**
+
+- **Deprecated:** `flows-missing-security-headers-10` (severity: low, effort: S) in
+  `skills/flows-assessment.skill.md` is superseded by `security-missing-headers-10`
+  (severity: medium, effort: S) in `skills/security-assessment.skill.md`.
+- **Why:** both rules described the same defect (missing security headers) with different
+  severities, so the 30/60/90 plan changed depending on which one a report cited. The
+  security module owns this defect class; citing the flows id now produces a deprecation
+  warning, never a scored finding. Detected by an external Path-A audit on 2026-10-04.
+- No rules added, none removed, no severity/effort changed by this entry.
+
 ## 2026-10-03 — current ruleset
 
 **Fingerprint: `368-6e180554`** · **368 canonical finding rules**

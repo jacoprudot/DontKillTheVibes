@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "repo": "your-repo-name",
+    "assessed_at": "2026-01-01T00:00:00Z",
+    "toolkit_version": "0.1.0",
+    "llm_used": "name of the model you used"
+  },
+  "summary": {
+    "overall_health": "C",
+    "total_findings": 1,
+    "critical_count": 1,
+    "by_severity": {
+      "critical": 1
+    },
+    "effort_estimate": {
+      "XS": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "security-secret-in-code-1",
+      "module": "security",
+      "severity": "critical",
+      "location": {
+        "file": "path/from/repo/root.ts",
+        "line": 12
+      },
+      "description": "What is wrong, in one sentence.",
+      "evidence": {
+        "snippet": "the exact code lines that show the problem",
+        "metric": "described measurement, e.g. CVSS 9.8 (Critical)"
+      },
+      "remediation": "The specific fix, actionable without asking you again.",
+      "effort": "XS",
+      "confidence": 0.9
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-secret-in-code-1"
+      ],
+      "60_days": [],
+      "90_days": []
+    },
+    "dependencies": []
+  }
+}

@@ -148,7 +148,7 @@ Emit findings[] array and flow-analysis-summary.json with:
    - Evidence: "API accessible from any origin without restriction"
    - Remediation: "Configure CORS policy to restrict origins as needed"
 10. IF no_security_headers
-    → FINDING: flows-missing-security-headers-10 (severity: low, effort: S)
+    → FINDING: flows-missing-security-headers-10 (severity: low, effort: S) [deprecated -> security-missing-headers-10]
     - Evidence: "Missing Helmet.js equivalent - no XSS, clickjacking protection"
     - Remediation: "Add security headers middleware (HSTS, CSP, X-Frame-Options, etc)"
 ```

@@ -43,6 +43,8 @@ Then, inside the repository you want to assess, tell your agent (Claude Code, Cu
 
 > "Act as the Synthesis Agent defined in `/path/to/dontkillthevibes/agents/synthesis-agent.md`. Read the skills from `/path/to/dontkillthevibes/skills/` and audit this repository. Generate `assessment.json` and `assessment-report.md`."
 
+> **Status, honestly:** Path A has produced valid end-to-end assessments, but the prompt above alone is not the whole recipe — the output contract (severity/effort owned by the rule, exact tallies, document shape) lives in the Synthesis Agent's *Output Contract* section and in `templates/minimal-assessment.json`. Follow those and it validates. The fully scripted path below (Path B) is the most thoroughly verified.
+
 Optional power-ups: register the custom MCPs from `mcp_config.json` (deep Git analysis + local benchmarking) — `pnpm install && pnpm build` first, plus a `GITHUB_PERSONAL_ACCESS_TOKEN` if you want the GitHub MCP.
 
 ### Path B — CLI runner, single pass
