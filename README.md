@@ -80,6 +80,29 @@ Prefer English? [`examples/realworld-assessment-en/`](examples/realworld-assessm
 
 The automated pipeline emits `assessment.json` plus a generated `assessment-report.md` covering findings, severities, priority scores and the 30/60/90-day plan. The checked-in report additionally carries hand-written prose: that part is authored by a human, not generated, and the tool does not claim to produce it.
 
+What the output looks like, end to end:
+
+```text
+$ node scripts/validate-assessment.mjs examples/realworld-assessment/assessment.json
+VALID: 7 findings, 0 warning(s)
+```
+
+…and the generated report hands you the plan:
+
+```text
+## 30/60/90 Day Plan
+### 30 Days
+- `security-jwt-weak-3`: Remove the default value and require JWT_SECRET to be
+  set in environment variables (XS)
+- `database-sequential-pagination-1`: Execute count and findMany queries
+  concurrently using Promise.all in both functions (S)
+- `code-any-type-6`: Replace 'any' with a specific type, e.g., define a Query
+  interface for the query object (S)
+- `code-missing-return-type-8`: Add return type annotation (S)
+```
+
+Every finding carries its canonical rule ID, severity, effort, confidence, priority score and a file:line citation — the excerpt above is from the checked-in English example, exactly as the tool emitted it.
+
 Want that for your codebase? → [Request a free 15-minute audit](mailto:jaco@leongael.xyz?subject=Repo%20audit&body=Repo%20URL%3A%20%0ATech%20stack%3A%20%0AWhat%20worries%20me%20most%3A%20)
 
 ## Architecture
