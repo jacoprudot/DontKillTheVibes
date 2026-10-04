@@ -24,7 +24,7 @@
  *   --base-url <url>     OpenAI-compatible base (env LLM_BASE_URL,
  *                        default https://integrate.api.nvidia.com/v1)
  *   --api-key <key>      API key (env LLM_API_KEY). Not needed with --dry-run.
- *   --language <code>    Report language, e.g. es/en (default: es)
+ *   --language <code>    Report language, e.g. en/es (default: en)
  *   --context-chars <n>  Total file-content budget in chars
  *                        (default: DIGEST_CONTEXT_CHARS env, else 180000)
  *   --max-retries <n>    Validation retry attempts (default: 3)
@@ -68,7 +68,7 @@ function parseArgs(argv) {
     model: process.env.LLM_MODEL,
     baseUrl: process.env.LLM_BASE_URL || 'https://integrate.api.nvidia.com/v1',
     apiKey: process.env.LLM_API_KEY,
-    language: 'es',
+    language: 'en',
     contextChars: Number(process.env.DIGEST_CONTEXT_CHARS) || 180_000,
     maxRetries: 3,
     // Reasoning models spend thousands of tokens on hidden reasoning before emitting

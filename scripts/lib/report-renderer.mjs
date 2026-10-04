@@ -174,14 +174,14 @@ const isObj = (v) => Boolean(v) && typeof v === 'object' && !Array.isArray(v);
 const str = (v) => (typeof v === 'string' && v.trim() ? v.trim() : null);
 const num = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
 
-/** Resolve 'es' | 'en' | 'es-MX' | 'EN' ... to a label table key; unknown -> 'es' (the default). */
+/** Resolve 'es' | 'en' | 'es-MX' | 'EN' ... to a label table key; unknown -> 'en' (the default). */
 function resolveLanguage(language) {
   const raw = str(language);
-  if (!raw) return 'es';
+  if (!raw) return 'en';
   const base = raw.toLowerCase().split(/[-_]/)[0];
   if (Object.prototype.hasOwnProperty.call(LABELS, raw.toLowerCase())) return raw.toLowerCase();
   if (Object.prototype.hasOwnProperty.call(LABELS, base)) return base;
-  return 'es';
+  return 'en';
 }
 
 /**
@@ -594,7 +594,7 @@ function renderAppendix(L, { toolkit, runType }) {
  * Render an assessment document as markdown.
  *
  * @param {object} doc  {metadata, summary, findings[], work_plan:{phases, dependencies}}
- * @param {object} [options] {language='es', repo, commit, model, generatedAt, toolkitVersion}
+ * @param {object} [options] {language='en', repo, commit, model, generatedAt, toolkitVersion}
  *   Non-empty options win over the document's own metadata.
  * @returns {string} markdown, LF line endings, exactly one trailing newline
  */

@@ -43,7 +43,7 @@
  *   --max-chars N      Per-module content budget in chars for round 2 (default 200000)
  *   --max-tokens N     Completion budget (env MAX_TOKENS, default 32768 — reasoning
  *                      models spend thousands of tokens before any content)
- *   --language <code>  Report language (default: es)
+ *   --language <code>  Report language (default: en)
  *   --dry-run          No API key needed; print plan + budgets + prompt sizes, no LLM
  *   --mock             Offline; every finding is clearly labelled MOCK. No network.
  *                      The stub also drifts severity/effort on purpose so the rule stamp
@@ -136,7 +136,7 @@ Options:
   --max-files N      Max files a module may request in round 1 (default 25)
   --max-chars N      Per-module content budget for round 2, chars (default 200000)
   --max-tokens N     Completion token budget (env MAX_TOKENS, default 32768)
-  --language <code>  Report language (default: es)
+  --language <code>  Report language (default: en)
   --dry-run          No API key needed: print the plan, budgets and prompt sizes; call nothing
   --mock             Offline: stub every LLM response with MOCK-labelled findings; no network
   --help             Show this help
@@ -172,7 +172,7 @@ function parseArgs(argv) {
     // Reasoning models spend thousands of tokens on hidden reasoning before emitting
     // content: a real run burned 12,977 reasoning tokens and 8192 truncated it.
     maxTokens: Number(process.env.MAX_TOKENS) || 32_768,
-    language: 'es',
+    language: 'en',
     dryRun: false,
     mock: false,
     help: false,
