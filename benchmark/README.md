@@ -83,6 +83,7 @@ verdicts are kept in `scores.json`.
 | Grounding - judge | judge's `grounded: true` count | `summary_by_arm.<arm>.judgeGrounded` |
 | Grounding - mechanical | the cited file **exists** in the target repo **and** the cited line is within the file's line count | `claims[].grounded_mechanical`, `claims[].mechanical` |
 | Actionability | judge's 1–5 per claim; reported as the mean | `summary_by_arm.<arm>.meanActionability` |
+| Weak citations | cited line carries no evidentiary weight (empty, comment, import/export-from, only braces) — measures findings that cite the import block instead of the handler. Metric only, never affects verdicts. **Definition changed 2026-10-06**: digest content is read WITHOUT the runner's line-number gutter (`stripGutter` in `judge.mjs`), so the metric means the same on pre-gutter and gutter-era digests — but any comparison written before that change is invalid in both directions. | `summary_by_arm.<arm>.weakCitations` |
 | **Security false negatives** | security-relevant claims (matched against a security keyword list) that the judge marked `real: false` - i.e. problems an arm raised and the scoring called not real | `summary_by_arm.<arm>.securityFn` |
 
 The security false-negative count is the headline metric. A naive pass that stays silent
@@ -96,6 +97,31 @@ or re-derived with a stricter list.
 line; it does *not* prove the line says what the claim says. Semantic grounding
 ("does that line actually support this?") is the judge's job, and human review is what
 settles it. This limit is stated again in §7.
+
+## 4b. Review checklist (external and self review)
+
+Every validation report must pass these checks BEFORE it is handed to a reviewer.
+Each one has caught a real error in an actual round — they are cheap, run them
+in order:
+
+1. **Parts must sum to the declared total.** Any claim broken into parts
+   (real / false / unverifiable; per-repo rows; per-module counts) must add up
+   to the total the same document declares. Three catches in three rounds: a
+   column split that didn't sum (rev. 1), a "100%" that contradicted its own
+   distribution (rev. 4), a part count that disagreed with its own total
+   (fix review). This is the cheapest check in the methodology and the most
+   reliable — it is what separates a credible report from one with pretty
+   numbers.
+2. **The denominator is declared before the result.** "Precision" is quoted
+   with its denominator (decidibles vs all claims), because the two tell
+   opposite stories when decidable rates differ between arms.
+3. **Agreement is corrected for chance.** Raw agreement between two judges is
+   reported WITH Cohen's kappa; raw % alone is base-rate inflation.
+4. **Every causal claim names the test that would kill it.** A hypothesis that
+   no measurement can falsify is narration, not analysis.
+5. **Metric definition changes are recorded with a before/after boundary.**
+   Comparisons across the boundary are invalid unless a shim (like
+   `stripGutter`) makes the metric mean the same thing on both sides.
 
 ## 5. How to run
 
