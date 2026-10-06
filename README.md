@@ -10,6 +10,10 @@ Free, MIT, LLM-agnostic. Works with Claude Code, Cursor, Gemini, or any OpenAI-c
 
 **[👉 See a real assessment on a real repository](examples/realworld-assessment-en/)** — raw pipeline output: findings with file:line citations, priority scores, and the plan. Judge for yourself before installing anything.
 
+## ⚠️ Pivot (2026-10-06): the LLM-as-detector paths are retired
+
+Measured on 10 vibe-coded repos ([evidence](benchmark/results-lote2-crossjudge/VALIDATION-REPORT-REV5.md)): only **60%** of citations resolve to a real line, and **88%** of orchestrated findings were unverifiable. The unreliable part was the LLM as *detector*; the asset is the **368-rule registry + contract**. New direction, declared in [PLAN.md](PLAN.md): deterministic detectors (`gitleaks`/`semgrep`/`osv-scanner`) find, the registry translates, code assembles the report — citations valid by construction. Paths A/B/C below stay as **versioned evidence**, not as the recommended path.
+
 ## Overview
 
 **DontKillTheVibes** is a toolkit of opinionated *Skills* (decision-tree analysis), *MCPs* (Model Context Protocol servers), and *Agent definitions* that let your LLM audit a repository and emit an actionable 30/60/90-day work plan.
@@ -34,6 +38,8 @@ Three ways to run it, from zero-config to full pipeline:
 ### Path A — inside your AI agent (zero config, no API key needed)
 
 The toolkit is skills + agents + MCPs: your existing agent subscription does the work.
+
+> ⚠️ **Legacy path.** The 2026-10-06 pivot (see [Pivot](#-pivot-2026-10-06-the-llm-as-detector-paths-are-retired) above) retires the LLM-as-detector paths; this one stays as versioned evidence.
 
 ```bash
 git clone https://github.com/jacoprudot/dontkillthevibes.git
@@ -134,8 +140,8 @@ Every finding carries its canonical rule ID, severity, effort, confidence, prior
 
 - **Skills (`skills/`)**: 8 decision-tree modules (database, code, structure, flows, github, security, cost, performance) declaring **368 canonical rules**, each with owned severity/effort and a fingerprinted registry (`scripts/lib/canonical-registry.mjs`) — the single source of truth for runners *and* validator.
 - **MCPs (`mcps/`)**: tools for your LLM — deep Git analysis (blame, diff, branch tree, large files) and localized benchmarking (wrk/k6/perf) that never send your code anywhere.
-- **Agents (`agents/`)**: 8 specialist analyst roles + 1 Synthesis Agent (priority = severity × module-weight × confidence).
-- **Runners**: single-pass CLI (`scripts/dktv-assess.mjs`) and the 8-agent orchestrator (`scripts/dktv-orchestrate.mjs`), both stamping rule fields from the registry instead of trusting the model.
+- **Agents (`agents/`)**: 8 specialist analyst roles + 1 Synthesis Agent (priority = severity × module-weight × confidence). **Legacy** — retired by the 2026-10-06 pivot ([PLAN.md](PLAN.md)); kept on disk as versioned evidence until the benchmark is archived.
+- **Runners**: single-pass CLI (`scripts/dktv-assess.mjs`) and the 8-agent orchestrator (`scripts/dktv-orchestrate.mjs`), both stamping rule fields from the registry instead of trusting the model. **Legacy** — same pivot.
 
 ## Status (honest)
 

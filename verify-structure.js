@@ -13,7 +13,9 @@ const requiredDirs = [
   'mcps',
   'mcps/git-mcp',
   'mcps/benchmark-mcp',
-  'agents',
+  // 'agents' removed 2026-10-06: the specialist agents were retired by the pivot
+  // (PLAN.md §4). The directory stays on disk as versioned evidence until the
+  // benchmark is archived; it is no longer part of the required structure.
   'templates',
   'examples',
   'scripts',

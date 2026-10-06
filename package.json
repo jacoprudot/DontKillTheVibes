@@ -1,7 +1,7 @@
 {
   "name": "dontkillthevibes",
   "version": "0.1.0-beta",
-  "description": "LLM-orchestrated assessment toolkit for vibe coders",
+  "description": "Deterministic assessment for vibe-coded repos: canonical rule registry + contract + detectors, citations valid by construction (pivot declared 2026-10-06, see PLAN.md)",
   "keywords": [
     "mcp",
     "model-context-protocol",
