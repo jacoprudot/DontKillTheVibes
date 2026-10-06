@@ -1,0 +1,36 @@
+{
+  "target": "agentgraphed-s1-x1",
+  "mock": false,
+  "created_at": "2026-10-06T00:56:41.288Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "security-gha-no-container-8",
+      "title": "security-gha-no-container-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C2",
+      "arm": "toolkit",
+      "source_id": "security-gha-no-concurrency-prod-10",
+      "title": "security-gha-no-concurrency-prod-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C4",
+      "arm": "toolkit",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "security_relevant": true
+    }
+  ]
+}

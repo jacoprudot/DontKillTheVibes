@@ -1,0 +1,204 @@
+{
+  "metadata": {
+    "repo": "jarvis-voice",
+    "assessed_at": "2025-01-15T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "F",
+    "total_findings": 37,
+    "critical_count": 7,
+    "by_severity": {
+      "critical": 7,
+      "high": 10,
+      "medium": 18,
+      "low": 2
+    },
+    "effort_estimate": {
+      "XS": 7,
+      "S": 7,
+      "M": 23
+    }
+  },
+  "findings": [
+    {
+      "id": "security-secret-in-history-2",
+      "module": "security",
+      "severity": "critical",
+      "effort": "S",
+      "location": {
+        "file": ".gitignore",
+        "line": 5
+      },
+      "description": "config.json is gitignored only now; any earlier commit that included config.json with real Anthropic/ElevenLabs keys would still expose them in git history, and the README instructs users to paste live keys into that file.",
+      "remediation": "Run a secret scanner (gitleaks/trufflehog) over full history, rotate any exposed Anthropic and ElevenLabs keys immediately, and add a pre-commit hook that blocks config.json and key-shaped strings.",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-file-upload-weak-7",
+      "module": "security",
+      "severity": "high",
+      "effort": "M",
+      "location": {
+        "file": "browser_tools.py",
+        "line": 0
+      },
+      "description": "visit() and search_and_read() navigate to URLs derived from model output and page content with no scheme allowlist, so a crafted [ACTION:OPEN] payload or a redirect can drive the headless-visible browser to file:// or javascript: URLs.",
+      "remediation": "Validate URLs before navigation: allow only http/https schemes, reject localhost/private IP ranges, and resolve redirects against the same allowlist.",
+      "confidence": 0.6
+    },
+    {
+      "id": "code-bare-except-1",
+      "module": "code",
+      "severity": "critical",
+      "effort": "XS",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "Both get_weather_sync() and get_tasks_sync() use a bare 'except:' clause with no exception type, which catches KeyboardInterrupt and SystemExit and makes startup failures undiagnosable.",
+      "remediation": "Replace 'except:' with 'except Exception as e:' and log the exception; never use a bare except in application code.",
+      "confidence": 0.75
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "module": "flows",
+      "severity": "critical",
+      "effort": "S",
+      "location": {
+        "file": "scripts/clap-trigger.py",
+        "line": 0
+      },
+      "description": "The clap trigger fires launch-session.ps1 via subprocess.Popen with no idempotency guard beyond an in-process 'triggered' flag; if the script is restarted or two instances run, a double clap launches the entire workspace (Spotify, VS Code, Obsidian, Chrome) twice.",
+      "remediation": "Write a lock file or use a named mutex before launching, and have launch-session.ps1 check for already-running processes before starting new ones.",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "module": "flows",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "The WebSocket endpoint and the ElevenLabs TTS calls have no rate limiting, so a stuck speech-recognition loop or a malicious local page can drive unbounded Claude and ElevenLabs API usage and cost.",
+      "remediation": "Add a per-connection token bucket limiting messages per minute and cap concurrent TTS requests; reject bursts with a status frame.",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-llm-high-usage-1",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "Every voice turn sends the full system prompt (personality rules, action documentation, weather and task blocks) plus the entire conversation history to Claude Haiku, and the conversation list is never trimmed, so token usage grows unbounded per session.",
+      "remediation": "Trim conversation history to the last N turns, cache the static system prompt with prompt caching, and move the action documentation out of the per-turn prompt.",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "There is no tracking of Anthropic token usage or ElevenLabs character consumption; the only cost signal is a printed TTS chunk size, so a runaway loop would not be noticed until the bill arrives.",
+      "remediation": "Log per-request token counts from the Anthropic response and character counts sent to ElevenLabs, and alert when daily totals exceed a configured budget.",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "README.md",
+        "line": 0
+      },
+      "description": "README documents usage and troubleshooting but never documents the WebSocket message protocol, the [ACTION:*] grammar, or the config.json schema, so the frontend/backend contract is only discoverable by reading server.py.",
+      "remediation": "Add a protocol section documenting the JSON frames (text, response, status, error) and the action grammar, and keep it in sync with the code.",
+      "confidence": 0.65
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-secret-in-code-1",
+        "security-secret-in-history-2",
+        "security-logs-contain-secrets-12",
+        "security-gha-secret-leak-3",
+        "code-empty-catch-1",
+        "code-bare-except-1",
+        "github-log-pattern-6",
+        "flows-retry-no-backoff-4",
+        "cost-deprecated-version-10"
+      ],
+      "60_days": [
+        "security-no-input-validation-14",
+        "security-cors-wildcard-2",
+        "security-missing-headers-10",
+        "security-file-upload-weak-7",
+        "flows-missing-error-handler-5",
+        "flows-missing-idempotency-3",
+        "flows-missing-dlq-2",
+        "flows-missing-rate-limit-8",
+        "structure-config-logic-8",
+        "structure-high-coupling-2",
+        "performance-no-connection-pool-7",
+        "performance-no-adaptive-timeout-6",
+        "performance-no-compression-13",
+        "cost-llm-high-usage-1",
+        "cost-api-no-response-cache-5",
+        "cost-api-no-usage-monitoring-9",
+        "cost-gha-no-dependency-cache-5",
+        "github-log-pattern-9",
+        "code-print-statement-5",
+        "code-print-statement-8",
+        "code-unhandled-promise-4"
+      ],
+      "90_days": [
+        "structure-layer-violation-1",
+        "database-missing-app-pool-8",
+        "cost-no-automated-tests-4",
+        "cost-dev-setup-missing-3",
+        "cost-documentation-poor-7",
+        "github-commit-history-1"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "structure-layer-violation-1",
+        "to": "cost-no-automated-tests-4",
+        "type": "blocks"
+      },
+      {
+        "from": "structure-config-logic-8",
+        "to": "cost-no-automated-tests-4",
+        "type": "blocks"
+      },
+      {
+        "from": "security-secret-in-history-2",
+        "to": "security-secret-in-code-1",
+        "type": "blocks"
+      },
+      {
+        "from": "flows-missing-error-handler-5",
+        "to": "flows-missing-dlq-2",
+        "type": "blocks"
+      },
+      {
+        "from": "database-missing-app-pool-8",
+        "to": "performance-no-connection-pool-7",
+        "type": "blocks"
+      }
+    ]
+  }
+}

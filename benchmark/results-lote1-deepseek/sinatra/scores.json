@@ -1,0 +1,1860 @@
+{
+  "target": "sinatra",
+  "mock": false,
+  "created_at": "2026-10-05T16:07:23.025Z",
+  "judge_model": "deepseek-chat",
+  "judge_base_url": "https://api.deepseek.com/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\sinatra",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "cb22afd7902b566b6eaba6c4ea89739494a65d12",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 59,
+    "toolkit": 9,
+    "orchestrated": 0,
+    "naive": 50,
+    "judged": 59,
+    "unverifiable": 50
+  },
+  "summary_by_arm": {
+    "naive": {
+      "claims": 50,
+      "judged": 50,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 50,
+      "judgeGrounded": 1,
+      "mechGrounded": 0,
+      "mechUngrounded": 50,
+      "mismatch": 1,
+      "actionableSum": 115,
+      "actionableN": 50,
+      "security": 5,
+      "securityFn": 0,
+      "claimsWithCitations": 0,
+      "citationsTotal": 0,
+      "weakCitations": 0,
+      "meanActionability": 2.3,
+      "precision": null,
+      "judgeGroundedRate": 0.02
+    },
+    "toolkit": {
+      "claims": 9,
+      "judged": 9,
+      "real": 1,
+      "falseCount": 8,
+      "unverifiable": 0,
+      "judgeGrounded": 9,
+      "mechGrounded": 9,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 29,
+      "actionableN": 9,
+      "security": 3,
+      "securityFn": 3,
+      "claimsWithCitations": 9,
+      "citationsTotal": 9,
+      "weakCitations": 1,
+      "meanActionability": 3.22,
+      "precision": 0.111,
+      "judgeGroundedRate": 1
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "21. `examples/stream.ru` — comment says \"does not work properly with WEBrick\" but doesn't say why",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Code at cited location not available; cannot verify the comment text or its helpfulness.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "toolkit",
+      "source_id": "cost-gha-matrix-inefficient-10",
+      "title": "cost-gha-matrix-inefficient-10",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Matrix expansion with redundant frozen-string-literal and head-dependency axes is a plausible real CI cost issue; snippet shows matrix at line 75.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 75,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 178,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-47",
+      "title": "48. `Gemfile` — `gem 'webrick'` listed but CHANGELOG says WEBrick support was restored in 4.1.1",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Gemfile contents not shown; cannot confirm webrick entry or whether it's runtime vs test-only.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. `.gitignore` — `.DS_STORE` is the wrong filename",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": ".gitignore not shown; cannot verify the .DS_STORE typo claim.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "17. `Gemfile` — `rubocop '~> 1.32.0'` is very old",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Gemfile and .rubocop.yml not shown; cannot verify rubocop version or NewCops setting.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-38",
+      "title": "38. `examples/chat.rb` — `connections` is a module-level local, not thread-safe",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "examples/chat.rb not shown; cannot verify Set usage or threading model.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "26. `.github/workflows/CODEOWNERS` — wrong location",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "File tree confirms CODEOWNERS is at .github/workflows/CODEOWNERS, which GitHub does not recognize; real bug.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. `.gitignore` — `*.lock` ignores `Gemfile.lock`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": ".gitignore not shown; claim is generic advice about lockfiles.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. `.github/workflows/release.yml` — release is not gated on tests",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "release.yml not shown; cannot verify absence of test gating.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C10",
+      "arm": "toolkit",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Snippet shows only id-token: write; omitting contents: read is common and not clearly a defect since defaults apply.",
+        "votes": {
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/release.yml",
+            "line": 12,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 30,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-30",
+      "title": "30. `.github/workflows/test.yml` — Discord notification only on `main`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "test.yml snippet not shown; cannot verify Discord notification condition.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C12",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Snippet shows bundle install in contrib step; caching advice is generic and not clearly a defect.",
+        "votes": {
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 160,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 178,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-50",
+      "title": "Summary of the most important fixes",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Summary table aggregates many unverifiable claims; cannot confirm most items.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "29. `.github/workflows/test.yml` — `timeout-minutes: 5` for rack-protection",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "test.yml not shown; cannot verify timeout-minutes: 5 for rack-protection.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C15",
+      "arm": "naive",
+      "source_id": "naive-claim-33",
+      "title": "33. `.yardopts` — `--title 'Sinatra API Documentation'` but the repo contains three gems",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": ".yardopts not shown; cannot verify file list scope.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C16",
+      "arm": "toolkit",
+      "source_id": "security-gha-no-concurrency-prod-10",
+      "title": "security-gha-no-concurrency-prod-10",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Snippet shows no concurrency block; missing concurrency is a plausible but minor risk, not clearly a defect.",
+        "votes": {
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/release.yml",
+            "line": 9,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 30,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C17",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "18. `Gemfile` — `gem 'rack', rack_version` with `nil`",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Gemfile not shown; cannot verify the nil rack_version pattern.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. `examples/chat.rb` — XSS via unescaped user input",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "examples/chat.rb not shown; cannot verify XSS claim.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C19",
+      "arm": "naive",
+      "source_id": "naive-claim-43",
+      "title": "44. `Gemfile` — `gem 'rubocop', '~> 1.32.0', require: false`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Gemfile not shown; cannot verify rubocop pin.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-37",
+      "title": "37. `examples/chat.rb` — `post '/'` returns `204` but the JS ignores the response",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "examples/chat.rb not shown; claim is trivial style nit.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "27. `.github/workflows/test.yml` — `actions/checkout@v5` and `ruby/setup-ruby@v1` version skew",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Workflow files not shown; cannot verify checkout version inconsistency.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C22",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "22. `examples/lifecycle_events.rb` — `on_start`/`on_stop` are not standard Sinatra DSL",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "examples/lifecycle_events.rb not shown; claim is hedged and unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-45",
+      "title": "46. `Gemfile` — `gem 'falcon', '~> 0.40', platforms: [:ruby]`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Gemfile not shown; cannot verify falcon pin.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C24",
+      "arm": "naive",
+      "source_id": "naive-claim-34",
+      "title": "34. `examples/simple.rb` — missing blank line / style",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "examples/simple.rb not shown; trivial style nit.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C25",
+      "arm": "naive",
+      "source_id": "naive-claim-32",
+      "title": "32. `.gitignore` — `vendor` (no leading slash)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": ".gitignore not shown; claim is speculative.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-48",
+      "title": "49. `examples/chat.rb` — `set :server, :puma` but no `require 'puma'`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "examples/chat.rb not shown; cannot verify missing require 'puma'.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C27",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. `.github/workflows/release.yml` — `workflow_dispatch` with no inputs",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "release.yml not shown; cannot verify workflow_dispatch inputs.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C28",
+      "arm": "toolkit",
+      "source_id": "cost-gha-always-on-8",
+      "title": "cost-gha-always-on-8",
+      "severity": "low",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Snippet confirms push branches '**'; duplicate CI is a plausible but minor efficiency concern, not a defect.",
+        "votes": {
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 4,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 178,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C29",
+      "arm": "naive",
+      "source_id": "naive-claim-39",
+      "title": "39. `examples/stream.ru` — `content_type :txt` before `stream`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "examples/stream.ru not shown; claim is minor advice.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C30",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. `examples/chat.rb` — `sleep 1` inside the stream loop",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "examples/chat.rb not shown; cannot verify sleep loop.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C31",
+      "arm": "naive",
+      "source_id": "naive-claim-44",
+      "title": "45. `Gemfile` — `gem 'sass-embedded', '~> 1.54'`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Gemfile not shown; cannot verify sass-embedded constraint.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C32",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. `examples/chat.rb` — `rescue` with no exception class swallows everything",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "examples/chat.rb not shown; cannot verify bare rescue.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C33",
+      "arm": "naive",
+      "source_id": "naive-claim-31",
+      "title": "31. `.gitignore` — `/pkg` and `*.gem` overlap",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": ".gitignore not shown; claim itself says redundant but harmless.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C34",
+      "arm": "naive",
+      "source_id": "naive-claim-46",
+      "title": "47. `Gemfile` — `gem 'eventmachine'` with no version",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Gemfile not shown; cannot verify eventmachine entry.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C35",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `.github/workflows/test.yml` — `continue-on-error` masking real failures",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "test.yml not shown; cannot verify continue-on-error pattern.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C36",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "16. `.yardopts` — `'lib/**/*.rb' - '*.md'` is not valid YARD syntax",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": ".yardopts not shown; cannot verify YARD syntax claim.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C37",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. `CHANGELOG.md` — `4.2.1` reverts a fix shipped in `4.2.0`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "CHANGELOG not shown; cannot verify 4.2.1 revert claim.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C38",
+      "arm": "toolkit",
+      "source_id": "security-gha-fork-pr-4",
+      "title": "security-gha-fork-pr-4",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet shows actions/checkout@v5 and ruby/setup-ruby@v1; unpinned actions is a real supply-chain risk.",
+        "votes": {
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 47,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 178,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C39",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "13. `.rubocop.yml` — `TargetRubyVersion: 2.7` but CI tests Ruby 4.0 / head",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": ".rubocop.yml not shown; cannot verify TargetRubyVersion.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C40",
+      "arm": "naive",
+      "source_id": "naive-claim-49",
+      "title": "50. `examples/chat.rb` — `halt erb(:login) unless params[:user]`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "examples/chat.rb not shown; cannot verify halt condition.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C41",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "14. `.rubocop.yml` — massive list of disabled cops",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": ".rubocop.yml not shown; cannot verify disabled cops list.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C42",
+      "arm": "toolkit",
+      "source_id": "github-commit-history-2",
+      "title": "github-commit-history-2",
+      "severity": "info",
+      "module": "github",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 1,
+        "reason": "Snippet confirms changelog cadence; this is a positive observation, not a defect.",
+        "votes": {
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "CHANGELOG.md",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 1849,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C43",
+      "arm": "naive",
+      "source_id": "naive-claim-41",
+      "title": "42. `CHANGELOG.md` — link reference definitions are inconsistent",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "CHANGELOG not shown; cannot verify link style inconsistency.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C44",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `examples/chat.rb` — `Set` is used without `require 'set'`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "examples/chat.rb not shown; cannot verify missing require 'set'.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C45",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "20. `Gemfile` — `gem 'ostruct'` and `gem 'webrick'` as runtime deps",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Gemfile and gemspec not shown; claim is hedged and unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C46",
+      "arm": "naive",
+      "source_id": "naive-claim-40",
+      "title": "41. `CHANGELOG.md` — `## Unreleased` is empty",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "CHANGELOG not shown; trivial convention nit.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C47",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "19. `Gemfile` — `sass-embedded` guard is incomplete",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Gemfile not shown; cannot verify sass-embedded guard logic.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C48",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. `CHANGELOG.md` — `4.0.1` section is mislabeled and out of order",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "CHANGELOG not shown; cannot verify 4.0.1 ordering/duplication.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C49",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "25. `AUTHORS.md` — \"Alumni\" list includes people still on the team?",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "AUTHORS.md not shown; claim itself admits it's not verifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C50",
+      "arm": "toolkit",
+      "source_id": "security-gha-auto-deploy-prod-9",
+      "title": "security-gha-auto-deploy-prod-9",
+      "severity": "high",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms tag-triggered release with no environment/concurrency; real risk but common practice.",
+        "votes": {
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/release.yml",
+            "line": 4,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 30,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C51",
+      "arm": "naive",
+      "source_id": "naive-claim-36",
+      "title": "36. `examples/chat.rb` — `out << \"heartbeat:\\n\"` is not valid SSE",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "examples/chat.rb not shown; cannot verify SSE heartbeat format.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C52",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `.github/workflows/test.yml` — `ruby: \"4.0\"` in the matrix",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "test.yml not shown; cannot verify ruby: \"4.0\" matrix entry.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C53",
+      "arm": "naive",
+      "source_id": "naive-claim-35",
+      "title": "35. `examples/chat.rb` — `#!/usr/bin/env ruby -I ../lib -I lib`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "examples/chat.rb not shown; trivial shebang nit.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C54",
+      "arm": "naive",
+      "source_id": "naive-claim-42",
+      "title": "43. `Gemfile` — `gem 'minitest', '~> 5.0'` but tests use `test/contest.rb`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Gemfile not shown; cannot verify minitest constraint.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C55",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. `.rubocop.yml` — `rack-protection/**/*` and `sinatra-contrib/**/*` excluded",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": ".rubocop.yml not shown; cannot verify exclusions.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C56",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "23. `CONTRIBUTING.md` — IRC link points to Freenode, which is defunct",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "CONTRIBUTING.md not shown; cannot verify Freenode link.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C57",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "24. `CONTRIBUTING.md` — references `README.ja.md`, `README.de.md`, etc. that don't exist in this repo",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "CONTRIBUTING.md not shown; file tree lacks translated READMEs but claim is about doc content.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C58",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "28. `.github/workflows/test.yml` — `rubygems: ${{ matrix.ruby == '3.0' && 'latest' || matrix.ruby == '3.1' && 'latest' || 'default' }}`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "test.yml not shown; cannot verify rubygems ternary expression.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C59",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet shows actions/checkout@v4 and ruby/setup-ruby@v1 unpinned in release job; real supply-chain risk.",
+        "votes": {
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/release.yml",
+            "line": 19,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 30,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

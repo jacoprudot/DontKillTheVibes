@@ -1,0 +1,561 @@
+{
+  "target": "aurora-synth",
+  "mock": false,
+  "created_at": "2026-10-05T21:19:01.450Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "2. Correctness / bug risks in the visible code",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "security-gha-workspace-not-cleaned-6",
+      "title": "security-gha-workspace-not-cleaned-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-1",
+      "title": "github-commit-history-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "structure-service-orchestration-3",
+      "title": "structure-service-orchestration-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "2.6 `env(safe-area-inset-top)` without `viewport-fit=cover`",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "2.7 `@keyframes mt-eq` animates `background-size` on a multi-layer background",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "5.2 `.gitignore` does not ignore `.claude/`",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "toolkit",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "3.4 `.dc__titleMain` uses `color: transparent` with `background-clip: text`",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-36",
+      "title": "7.2 `mix-blend-mode: screen` on animated elements",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "orchestrated",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C12",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-1",
+      "title": "github-log-pattern-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "orchestrated",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "orchestrated",
+      "source_id": "performance-no-slo-6",
+      "title": "performance-no-slo-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C15",
+      "arm": "naive",
+      "source_id": "naive-claim-43",
+      "title": "9. Minor / stylistic",
+      "security_relevant": true
+    },
+    {
+      "label": "C16",
+      "arm": "toolkit",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C17",
+      "arm": "naive",
+      "source_id": "naive-claim-38",
+      "title": "7.4 `will-change` is absent",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "orchestrated",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "naive",
+      "source_id": "naive-claim-44",
+      "title": "10. Things I could not verify (files not provided)",
+      "security_relevant": true
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-31",
+      "title": "6.1 `docs/` mixes HTML demos and Markdown",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "2.9 `.ac-knob__aura` uses `display: none` then `display: block` in a media-independent rule",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "naive",
+      "source_id": "naive-claim-39",
+      "title": "7.5 `scroll-behavior: smooth` on `.dc__body`",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-1",
+      "title": "github-issue-health-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C24",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-1",
+      "title": "structure-high-coupling-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C25",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "4.1 Bilingual labels are hardcoded in CSS class names and structure",
+      "security_relevant": false
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-45",
+      "title": "Summary of highest-priority fixes",
+      "security_relevant": true
+    },
+    {
+      "label": "C27",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "2.11 `-webkit-user-select: none; user-select: none;` on `.ac-knob` etc.",
+      "security_relevant": false
+    },
+    {
+      "label": "C28",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "2.4 `color-mix(in oklab, …)` used pervasively with no fallback",
+      "security_relevant": false
+    },
+    {
+      "label": "C29",
+      "arm": "orchestrated",
+      "source_id": "structure-dto-logic-7",
+      "title": "structure-dto-logic-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C30",
+      "arm": "orchestrated",
+      "source_id": "security-gha-auto-deploy-prod-9",
+      "title": "security-gha-auto-deploy-prod-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C31",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "1.4 `css/demo.css` is 67 KB",
+      "security_relevant": false
+    },
+    {
+      "label": "C32",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "2.10 `clip: rect(0 0 0 0)` in `.ac-sr-only`",
+      "security_relevant": false
+    },
+    {
+      "label": "C33",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "2.3 `overflow: hidden; overflow: clip;` pairs",
+      "security_relevant": false
+    },
+    {
+      "label": "C34",
+      "arm": "orchestrated",
+      "source_id": "security-gha-no-concurrency-prod-10",
+      "title": "security-gha-no-concurrency-prod-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C35",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "5.4 `tools/selfsigned.mjs` + `.cert/` in `.gitignore`",
+      "security_relevant": true
+    },
+    {
+      "label": "C36",
+      "arm": "orchestrated",
+      "source_id": "performance-no-perf-budgets-10",
+      "title": "performance-no-perf-budgets-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C37",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "3.3 `prefers-reduced-motion` coverage is partial",
+      "security_relevant": false
+    },
+    {
+      "label": "C38",
+      "arm": "orchestrated",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C39",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "3.5 `env(safe-area-inset-*)` only on one element",
+      "security_relevant": false
+    },
+    {
+      "label": "C40",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C41",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "2.8 `animation: dc-rim 6s linear infinite` on a `conic-gradient` with `@property`",
+      "security_relevant": false
+    },
+    {
+      "label": "C42",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "3.1 `outline: none` on focusable elements",
+      "security_relevant": false
+    },
+    {
+      "label": "C43",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "2.1 `@property --dc-a` is declared *after* it is used",
+      "security_relevant": false
+    },
+    {
+      "label": "C44",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C45",
+      "arm": "naive",
+      "source_id": "naive-claim-41",
+      "title": "8.2 No CSP visible",
+      "security_relevant": false
+    },
+    {
+      "label": "C46",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "1.2 `tools/` is a second, unversioned application",
+      "security_relevant": false
+    },
+    {
+      "label": "C47",
+      "arm": "naive",
+      "source_id": "naive-claim-35",
+      "title": "7.1 `backdrop-filter: blur(20px) saturate(1.25)` on a full-screen overlay",
+      "security_relevant": false
+    },
+    {
+      "label": "C48",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "2.2 `mask-composite` / `-webkit-mask-composite` mismatch",
+      "security_relevant": false
+    },
+    {
+      "label": "C49",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "2.5 `oklch(from …)` relative color syntax",
+      "security_relevant": false
+    },
+    {
+      "label": "C50",
+      "arm": "naive",
+      "source_id": "naive-claim-40",
+      "title": "8.1 `tools/serve.mjs` + self-signed cert",
+      "security_relevant": true
+    },
+    {
+      "label": "C51",
+      "arm": "orchestrated",
+      "source_id": "security-unmaintained-dep-4",
+      "title": "security-unmaintained-dep-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C52",
+      "arm": "toolkit",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C53",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "4.2 `:lang(zh)` selector in `css/jam.css`",
+      "security_relevant": false
+    },
+    {
+      "label": "C54",
+      "arm": "orchestrated",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C55",
+      "arm": "orchestrated",
+      "source_id": "structure-layer-violation-1",
+      "title": "structure-layer-violation-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C56",
+      "arm": "naive",
+      "source_id": "naive-claim-42",
+      "title": "8.3 `wrangler.jsonc` may expose account IDs",
+      "security_relevant": true
+    },
+    {
+      "label": "C57",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "4.3 `text-transform: uppercase` on Chinese text",
+      "security_relevant": false
+    },
+    {
+      "label": "C58",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1.1 No module system declared, but 171 files with `import`/`export`-style code",
+      "security_relevant": false
+    },
+    {
+      "label": "C59",
+      "arm": "orchestrated",
+      "source_id": "security-directory-listing-8",
+      "title": "security-directory-listing-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C60",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "1.3 Duplicated token fallback blocks",
+      "security_relevant": true
+    },
+    {
+      "label": "C61",
+      "arm": "orchestrated",
+      "source_id": "security-gha-secret-leak-3",
+      "title": "security-gha-secret-leak-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C62",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "5.3 `wrangler.jsonc` present but no `wrangler` in devDependencies (not shown)",
+      "security_relevant": false
+    },
+    {
+      "label": "C63",
+      "arm": "orchestrated",
+      "source_id": "cost-no-performance-budget-10",
+      "title": "cost-no-performance-budget-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C64",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "5.1 `.claude/launch.json` hardcodes port 5173",
+      "security_relevant": false
+    },
+    {
+      "label": "C65",
+      "arm": "naive",
+      "source_id": "naive-claim-33",
+      "title": "6.3 No `CONTRIBUTING.md`, no `CHANGELOG.md`",
+      "security_relevant": false
+    },
+    {
+      "label": "C66",
+      "arm": "orchestrated",
+      "source_id": "cost-slow-build-1",
+      "title": "cost-slow-build-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C67",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "3.2 `aria-pressed` on toggle buttons without `role`",
+      "security_relevant": false
+    },
+    {
+      "label": "C68",
+      "arm": "naive",
+      "source_id": "naive-claim-34",
+      "title": "6.4 `LICENSE` present but license type unknown",
+      "security_relevant": false
+    },
+    {
+      "label": "C69",
+      "arm": "toolkit",
+      "source_id": "security-env-file-committed-3",
+      "title": "security-env-file-committed-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C70",
+      "arm": "orchestrated",
+      "source_id": "performance-no-adaptive-timeout-6",
+      "title": "performance-no-adaptive-timeout-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C71",
+      "arm": "toolkit",
+      "source_id": "code-console-log-7",
+      "title": "code-console-log-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C72",
+      "arm": "naive",
+      "source_id": "naive-claim-37",
+      "title": "7.3 `filter: blur(80px)` on 55vmax × 30vmax elements",
+      "security_relevant": false
+    },
+    {
+      "label": "C73",
+      "arm": "naive",
+      "source_id": "naive-claim-32",
+      "title": "6.2 `docs/video/STORYBOARD.md` and `tools/video/README.md` overlap",
+      "security_relevant": false
+    },
+    {
+      "label": "C74",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "5.5 No test runner config visible",
+      "security_relevant": false
+    },
+    {
+      "label": "C75",
+      "arm": "orchestrated",
+      "source_id": "performance-no-regression-detection-5",
+      "title": "performance-no-regression-detection-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C76",
+      "arm": "orchestrated",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C77",
+      "arm": "orchestrated",
+      "source_id": "performance-no-backpressure-10",
+      "title": "performance-no-backpressure-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C78",
+      "arm": "naive",
+      "source_id": "naive-claim-30",
+      "title": "5.6 `tools/video/overlays/assets/app-sample.jpg` committed",
+      "security_relevant": false
+    },
+    {
+      "label": "C79",
+      "arm": "orchestrated",
+      "source_id": "performance-no-load-testing-3",
+      "title": "performance-no-load-testing-3",
+      "security_relevant": false
+    }
+  ]
+}

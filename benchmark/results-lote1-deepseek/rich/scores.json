@@ -1,0 +1,1407 @@
+{
+  "target": "rich",
+  "mock": false,
+  "created_at": "2026-10-05T16:15:31.644Z",
+  "judge_model": "deepseek-chat",
+  "judge_base_url": "https://api.deepseek.com/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\rich",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 44,
+    "toolkit": 7,
+    "orchestrated": 0,
+    "naive": 37,
+    "judged": 44,
+    "unverifiable": 37
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 7,
+      "judged": 7,
+      "real": 3,
+      "falseCount": 4,
+      "unverifiable": 0,
+      "judgeGrounded": 5,
+      "mechGrounded": 7,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 25,
+      "actionableN": 7,
+      "security": 4,
+      "securityFn": 4,
+      "claimsWithCitations": 7,
+      "citationsTotal": 7,
+      "weakCitations": 0,
+      "meanActionability": 3.57,
+      "precision": 0.429,
+      "judgeGroundedRate": 0.714
+    },
+    "naive": {
+      "claims": 37,
+      "judged": 37,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 37,
+      "judgeGrounded": 1,
+      "mechGrounded": 0,
+      "mechUngrounded": 37,
+      "mismatch": 1,
+      "actionableSum": 78,
+      "actionableN": 37,
+      "security": 2,
+      "securityFn": 0,
+      "claimsWithCitations": 0,
+      "citationsTotal": 0,
+      "weakCitations": 0,
+      "meanActionability": 2.11,
+      "precision": null,
+      "judgeGroundedRate": 0.027
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "security-gha-no-concurrency-prod-10",
+      "title": "security-gha-no-concurrency-prod-10",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "CodeQL analyze job indeed lacks timeout-minutes; adding one is a concrete, reasonable hardening fix.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/codeql.yml",
+            "line": 13,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 66,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `newissue.yml` pipes untrusted issue titles into a shell command",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Code block not shown; claim is speculative about faqtory/shell mishandling and pinning.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "20. `.pre-commit-config.yaml` uses `black-pre-commit-mirror` at `23.11.0`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Cannot verify pre-commit pin or PR template wording from digest.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "13. `benchmarks/benchmarks.py` `TextHotCacheSuite` doesn't measure what it claims",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Benchmark code not shown; cannot confirm Text is recreated each iteration.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. `asv.conf.json` pins `setuptools: [\"59.2.0\"]` and Python 3.10 only",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "asv.conf.json contents not shown; pin claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "19. `.pre-commit-config.yaml` pins `isort` to `language_version: \"3.11\"`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "pre-commit config not shown; isort language_version claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-30",
+      "title": "30. `rich/_unicode_data/` contains 20+ generated files",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "_unicode_data dir not in tree; generator drift claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "25. `readmechanged.yml` triggers on `push` to `master` only",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "readmechanged.yml contents not shown; trigger and hardcoded handles unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-34",
+      "title": "34. `README.md` is translated into ~20 languages but there's no CI check that translations stay in sync",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Process-gap claim about translation drift; not verifiable and generic.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "29. `docs/requirements.txt` is not shown but is referenced by `.readthedocs.yml`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Author admits contents can't be verified; speculative advice.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-37",
+      "title": "Summary of the most impactful fixes",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Summary restating other unverifiable claims; no single grounded defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. `benchmarks/benchmarks.py` `time_align_center_unicode_heavy` uses the wrong width",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Benchmark code not shown; wrong-width claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-31",
+      "title": "31. `tests/pytest.ini` exists alongside `pyproject.toml`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "tests/pytest.ini not in tree; precedence claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. `benchmarks/benchmarks.py` `time_divide_unicode_heavy` uses the wrong text",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Benchmark code not shown; wrong-text claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C15",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "14. `.coveragerc` omits `rich/jupyter.py` from coverage",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": ".coveragerc contents not shown; jupyter omission unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "17. `benchmarks/results/darrenburns-2022-mbp/` contains ~200 committed JSON result files",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Tree confirms ~200 committed machine-specific benchmark JSONs; noise concern is legitimate.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C17",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Cited line 38 is mypy step, not the install-poetry action; citation does not support claim.",
+        "votes": {
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/pythonpackage.yml",
+            "line": 38,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 54,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. CI matrix excludes Python 3.13 on Windows for no documented reason",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Matrix exclude block not shown; unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C19",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "16. `assets/logo.ai` is a 1.2 MB PDF masquerading as an `.ai` file",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Cannot inspect logo.ai content from digest; PDF-header claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. `codespell` workflow has a malformed multi-line `run`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "codespell workflow contents not shown; YAML folding claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C21",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Cited line 41 is make typecheck; cache-step claim not supported by shown snippet.",
+        "votes": {
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/pythonpackage.yml",
+            "line": 41,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 54,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C22",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. `asv.conf.json` `build_command` installs Poetry but then uses `setup.py build`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "asv.conf.json build_command not shown; unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "22. `AI_POLICY.md` says \"The Pull Request must link to a issue\" — grammar",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "AI_POLICY.md text not shown; grammar claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C24",
+      "arm": "toolkit",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Shown newissue.yml has issues:write plus checkout; least-privilege concern is plausible but partly speculative.",
+        "votes": {
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/newissue.yml",
+            "line": 6,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 30,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C25",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. `benchmarks/benchmarks.py` has a misnamed benchmark",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Benchmark method not shown; ASV naming claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-33",
+      "title": "33. `benchmarks/snippets.py` is excluded from codespell but not from pre-commit",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Exclusion lists not shown; inconsistency unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C27",
+      "arm": "toolkit",
+      "source_id": "cost-gha-always-on-8",
+      "title": "cost-gha-always-on-8",
+      "severity": "low",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "codespell.yml line 2 shows on: [pull_request, push] with no branch filter; concrete fix given.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/codespell.yml",
+            "line": 2,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 11,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C28",
+      "arm": "toolkit",
+      "source_id": "security-gha-fork-pr-4",
+      "title": "security-gha-fork-pr-4",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Shown newissue.yml line 22 uses mutable tag; pinning to SHA is a valid supply-chain fix.",
+        "votes": {
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/newissue.yml",
+            "line": 22,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 30,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C29",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. CI workflow is broken: `$VENV` is never set",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Workflow file not shown; $VENV unset claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C30",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "28. `.github/workflows/comment.yml` uses a pinned SHA for `peter-evans/create-or-update-comment`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "comment.yml contents not shown; SHA pinning claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C31",
+      "arm": "naive",
+      "source_id": "naive-claim-35",
+      "title": "35. `.github/workflows/pythonpackage.yml` only runs on `pull_request`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "pythonpackage.yml trigger not shown; push-trigger claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C32",
+      "arm": "naive",
+      "source_id": "naive-claim-32",
+      "title": "32. `setup.py` still exists in a Poetry-managed project",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "setup.py not in tree; presence claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C33",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "23. `bug_report.md` template has a typo",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "bug_report.md text not shown; typo claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C34",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "24. `bug_report.md` suggests `pip freeze | grep rich`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "bug_report.md content not shown; pip freeze claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C35",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "21. `AI_POLICY.md` and PR template disagree on AI PR requirements",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "AI_POLICY.md and PR template not shown; disagreement unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C36",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "18. `.pre-commit-config.yaml` excludes `benchmarks/` entirely",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "pre-commit exclude not shown; unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C37",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "26. `asvhashfile` lists tags out of order",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "asvhashfile contents not shown; ordering claim unverifiable and trivial.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C38",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. `pyproject.toml` / `setup.py` duplication",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "setup.py not in tree; dual-build claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C39",
+      "arm": "toolkit",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Shown matrix job has no timeout-minutes; adding one is a concrete, reasonable fix.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/pythonpackage.yml",
+            "line": 8,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 54,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C40",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `readmechanged.yml` uses a hardcoded discussion ID and a personal token",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "readmechanged.yml contents not shown; hardcoded ID/token claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C41",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. `comment.yml` and `newissue.yml` both use `name: issues`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Workflow names not shown; duplicate name claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C42",
+      "arm": "naive",
+      "source_id": "naive-claim-36",
+      "title": "36. `tox.ini` exists but CI uses Poetry directly",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "tox.ini not in tree; redundancy claim unverifiable and generic.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C43",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `codespell` skips `./tests` and `./tools`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "codespell skip list not shown; unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C44",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "27. `benchmarks/README.md` references `main` branch of `rich-benchmarks`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "benchmarks/README.md content not shown; branch-name claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

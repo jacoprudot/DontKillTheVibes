@@ -1,0 +1,70 @@
+{
+  "metadata": {
+    "repo": "<repo name>",
+    "assessed_at": "<ISO 8601>",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "<model id>",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "D",
+    "total_findings": 2,
+    "critical_count": 0,
+    "by_severity": {
+      "high": 2
+    },
+    "effort_estimate": {
+      "L": 1,
+      "M": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "structure-high-coupling-1",
+      "module": "structure",
+      "severity": "high",
+      "location": {
+        "file": "src/controllers/OrderController.java",
+        "line": 8
+      },
+      "description": "Controller directly accesses repository bypassing service layer",
+      "remediation": "Inject OrderService instead and delegate to service layer",
+      "effort": "L",
+      "confidence": 0.9,
+      "evidence": {
+        "snippet": "private OrderRepository orderRepository;",
+        "metric": "Direct repository access in 3 controller methods",
+        "benchmark": "High coupling detected"
+      }
+    },
+    {
+      "id": "structure-layer-violation-1",
+      "module": "structure",
+      "severity": "high",
+      "location": {
+        "file": "src/controllers/OrderController.java",
+        "line": 16
+      },
+      "description": "Controller contains business logic that should be in service layer",
+      "remediation": "Move tax calculation and discount application to OrderService",
+      "effort": "M",
+      "confidence": 0.9,
+      "evidence": {
+        "snippet": "order.calculateTax();\norder.applyDiscounts();",
+        "metric": "Business logic spread across 4 controller methods",
+        "benchmark": "High coupling detected"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "structure-high-coupling-1",
+        "structure-layer-violation-1"
+      ],
+      "60_days": [],
+      "90_days": []
+    },
+    "dependencies": []
+  }
+}

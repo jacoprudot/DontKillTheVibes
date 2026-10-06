@@ -1,0 +1,85 @@
+{
+  "target": "rich-c1",
+  "mock": false,
+  "created_at": "2026-10-05T19:53:51.486Z",
+  "judge_model": "qwen3.5:9b",
+  "judge_base_url": "http://localhost:11434/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\rich",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 1,
+    "toolkit": 1,
+    "orchestrated": 0,
+    "naive": 0,
+    "judged": 1,
+    "unverifiable": 1
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 1,
+      "judged": 1,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 1,
+      "judgeGrounded": 0,
+      "mechGrounded": 1,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 5,
+      "actionableN": 1,
+      "security": 1,
+      "securityFn": 0,
+      "claimsWithCitations": 1,
+      "citationsTotal": 1,
+      "weakCitations": 0,
+      "meanActionability": 5,
+      "precision": null,
+      "judgeGroundedRate": 0
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 5,
+        "reason": "Snippet shows check steps but not Poetry installation logic; cannot verify tag usage or fix from provided evidence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/pythonpackage.yml",
+            "line": 38,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 54,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

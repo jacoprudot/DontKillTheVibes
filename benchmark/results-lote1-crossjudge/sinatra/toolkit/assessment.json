@@ -1,0 +1,193 @@
+{
+  "metadata": {
+    "repo": "sinatra/sinatra",
+    "assessed_at": "2025-10-15T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "D",
+    "total_findings": 9,
+    "critical_count": 0,
+    "by_severity": {
+      "medium": 5,
+      "high": 2,
+      "low": 1,
+      "info": 1
+    },
+    "effort_estimate": {
+      "M": 6,
+      "XS": 2,
+      "S": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/release.yml",
+        "line": 19
+      },
+      "description": "The release workflow uses third-party actions pinned only to mutable version tags (actions/checkout@v4, ruby/setup-ruby@v1, rubygems/configure-rubygems-credentials@v1.0.0). A compromised or retagged upstream action could execute arbitrary code in a job that holds id-token: write and publishes gems to rubygems.org.",
+      "remediation": "Pin every action to a full commit SHA (e.g. actions/checkout@<sha> # v4.x.y) and let Dependabot keep the SHAs current. This is especially important for the release job, which has trusted-publishing credentials.",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "- uses: actions/checkout@v4\n- uses: ruby/setup-ruby@v1\n- uses: rubygems/configure-rubygems-credentials@v1.0.0",
+        "metric": "3 of 3 actions in release.yml pinned to tags, not SHAs"
+      }
+    },
+    {
+      "id": "security-gha-fork-pr-4",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 47
+      },
+      "description": "The test workflow references actions by mutable tags (actions/checkout@v5, ruby/setup-ruby@v1, zzak/action-discord@v6). The Discord action in particular is a third-party action that receives secrets.GITHUB_TOKEN and secrets.DISCORD_WEBHOOK; a tag move would exfiltrate those secrets. This is the same unpinned-action class as the release workflow but in a separate file, so it is tracked separately.",
+      "remediation": "Pin all actions to full commit SHAs, including zzak/action-discord, and enable Dependabot for github-actions to keep pins updated.",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "- uses: zzak/action-discord@v6\n  if: failure() && github.ref_name == 'main'\n  with:\n    github-token: ${{ secrets.GITHUB_TOKEN }}\n    webhook: ${{ secrets.DISCORD_WEBHOOK }}",
+        "metric": "3 distinct actions referenced by tag in test.yml"
+      }
+    },
+    {
+      "id": "security-gha-auto-deploy-prod-9",
+      "module": "security",
+      "severity": "high",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/release.yml",
+        "line": 4
+      },
+      "description": "Pushing any tag matching v* automatically triggers the full release job, which builds and pushes all three gems to rubygems.org with no environment protection, manual approval, or concurrency guard. A mistyped or maliciously pushed tag immediately publishes to the public registry.",
+      "remediation": "Gate the release job behind a protected GitHub Environment (e.g. `environment: release`) requiring reviewer approval, and add a `concurrency: { group: release, cancel-in-progress: false }` block so two tag pushes cannot publish concurrently.",
+      "confidence": 0.8,
+      "evidence": {
+        "snippet": "on:\n  push:\n    tags:\n      - v*\n  workflow_dispatch:",
+        "metric": "0 approval gates on a job that runs `rake release:*` for 3 gems"
+      }
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/release.yml",
+        "line": 9
+      },
+      "description": "The release job has no concurrency control. Two tags pushed in quick succession (or a tag push racing a workflow_dispatch run) will start two release jobs that both execute `rake release:sinatra` etc., risking duplicate or interleaved gem pushes to rubygems.org.",
+      "remediation": "Add a top-level `concurrency: { group: release, cancel-in-progress: false }` to release.yml so only one release pipeline can run at a time.",
+      "confidence": 0.75,
+      "evidence": {
+        "snippet": "jobs:\n  release:\n    if: github.repository == 'sinatra/sinatra'\n    runs-on: ubuntu-latest",
+        "metric": "no `concurrency:` key present in release.yml"
+      }
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "module": "security",
+      "severity": "high",
+      "effort": "XS",
+      "location": {
+        "file": ".github/workflows/release.yml",
+        "line": 12
+      },
+      "description": "The release job requests `id-token: write` but does not declare `contents: read`. When a workflow omits the `permissions` map entirely for other scopes, the repository/org default token permissions apply, which may grant broader access than the job needs. The job only needs to read the repo and mint an OIDC token.",
+      "remediation": "Declare the full least-privilege set explicitly: `permissions: { contents: read, id-token: write }`, and set the repository default workflow token permission to read-only.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "permissions:\n  id-token: write # for trusted publishing",
+        "metric": "1 of 2 required scopes declared explicitly"
+      }
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 160
+      },
+      "description": "The sinatra job installs system packages (pandoc, nodejs, libxml2-dev, libxslt-dev, libyaml-dev) via apt-get on every matrix leg, and the sinatra-contrib step runs `bundle install` again inside the working directory rather than relying on the cached bundler path. With a matrix of ~20 ruby/rack/puma/tilt/zeitwerk combinations this multiplies runner minutes and network egress.",
+      "remediation": "Cache the apt packages (e.g. actions/cache on /var/cache/apt) or bake a container image with the native deps, and ensure `bundler-cache: true` covers the sinatra-contrib Gemfile (set `working-directory` on the setup-ruby step or add a second cache key) so `bundle install` in the contrib step is a no-op.",
+      "confidence": 0.6,
+      "evidence": {
+        "snippet": "- name: Install dependencies\n  run: |\n    sudo apt-get update\n    sudo apt-get install --yes \\\n      pandoc \\\n      nodejs \\\n      pkg-config \\\n      libxml2-dev \\\n      libxslt-dev \\\n      libyaml-dev",
+        "metric": "apt-get install runs once per matrix leg (~20 legs)"
+      }
+    },
+    {
+      "id": "cost-gha-always-on-8",
+      "module": "cost",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 4
+      },
+      "description": "The test workflow triggers on pushes to every branch (`branches: ['**']`) in addition to pull_request. For a repo with many feature branches this duplicates the full ~20-leg matrix for each push and again when the PR is opened/updated, roughly doubling CI consumption for no additional signal.",
+      "remediation": "Restrict push triggers to long-lived branches (`branches: [main]`) and rely on `pull_request` for feature branches, or add a `paths-ignore` filter for docs-only changes.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "on:\n  push:\n    branches:\n      - '**'\n  pull_request:",
+        "metric": "push trigger matches all branches plus pull_request"
+      }
+    },
+    {
+      "id": "github-commit-history-2",
+      "module": "github",
+      "severity": "info",
+      "effort": "XS",
+      "location": {
+        "file": "CHANGELOG.md",
+        "line": 1
+      },
+      "description": "The changelog shows a steady, active release cadence (4.2.1 on 2025-10-10, 4.2.0 on 2025-10-08, 4.1.1 on 2024-11-20, 4.1.0 on 2024-11-18), confirming the project is actively maintained. Recorded as a positive maturity signal, not a defect.",
+      "remediation": "No action required — continue the current release cadence and keep the changelog entries linked to their pull requests.",
+      "confidence": 0.9,
+      "evidence": {
+        "snippet": "## 4.2.1 / 2025-10-10\n\n* Fix: Revert \"`PATH_INFO` can never be empty\" ([#2124](https://github.com/sinatra/sinatra/pull/2124))",
+        "metric": "4 releases in the last ~12 months"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-gha-overpermissive-2",
+        "security-gha-action-unpinned-5",
+        "security-gha-no-concurrency-prod-10"
+      ],
+      "60_days": [
+        "security-gha-auto-deploy-prod-9",
+        "cost-gha-always-on-8",
+        "cost-gha-no-dependency-cache-5"
+      ],
+      "90_days": [
+        "cost-gha-matrix-inefficient-10",
+        "github-commit-history-2"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "security-gha-auto-deploy-prod-9",
+        "to": "security-gha-no-concurrency-prod-10",
+        "type": "blocks"
+      },
+      {
+        "from": "security-gha-action-unpinned-5",
+        "to": "security-gha-overpermissive-2",
+        "type": "blocks"
+      }
+    ]
+  }
+}

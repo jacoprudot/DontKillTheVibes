@@ -1,0 +1,911 @@
+{
+  "target": "ai-job-agent",
+  "mock": false,
+  "created_at": "2026-10-05T20:49:21.814Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-53",
+      "title": "56. `bin/job-agent.sh` — `tmux split-window -v -p 40 -t \"${SESSION}:main\"` may fail if the session was just created",
+      "security_relevant": true
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "database-connection-timeout-high-3",
+      "title": "database-connection-timeout-high-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "code-exact-duplication-massive-1",
+      "title": "code-exact-duplication-massive-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-rate-limit-8",
+      "title": "flows-missing-rate-limit-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C5",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "orchestrated",
+      "source_id": "flows-message-not-idempotent-8",
+      "title": "flows-message-not-idempotent-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "9. `bin/doctor.sh` — `set -u` with unguarded `$REPO` in remediation hints",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "29. `.github/workflows/test.yml` — `skill-files` job duplicates the smoke test",
+      "security_relevant": false
+    },
+    {
+      "label": "C9",
+      "arm": "toolkit",
+      "source_id": "cost-gha-always-on-8",
+      "title": "cost-gha-always-on-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "orchestrated",
+      "source_id": "structure-service-sql-5",
+      "title": "structure-service-sql-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-60",
+      "title": "63. `.github/workflows/test.yml` — `branches: [main]` on both `push` and `pull_request`",
+      "security_relevant": false
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "21. `bin/smoke-test.sh` — `run` uses `head -1` on stderr/stdout, hiding multi-line failures",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "orchestrated",
+      "source_id": "flows-no-state-persistence-6",
+      "title": "flows-no-state-persistence-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-54",
+      "title": "57. `bin/job-agent.sh` — `exec \"$0\" \"$@\"` after install re-runs the whole script including the tmux check",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "orchestrated",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `bin/doctor.sh` — `REPO_PATH` branch is unreachable",
+      "security_relevant": false
+    },
+    {
+      "label": "C17",
+      "arm": "orchestrated",
+      "source_id": "database-sequential-pagination-1",
+      "title": "database-sequential-pagination-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `bin/smoke-test.sh` — \"quoted commas\" test doesn't test CSV parsing",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "orchestrated",
+      "source_id": "cost-documentation-poor-7",
+      "title": "cost-documentation-poor-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C20",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-44",
+      "title": "46. `.gitignore` — `chrome-data/` ignored, but no mention of Playwright's browser cache",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-1",
+      "title": "github-issue-health-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. `bin/smoke-test.sh` — `set -e` + `run` returning non-zero aborts the whole suite",
+      "security_relevant": false
+    },
+    {
+      "label": "C24",
+      "arm": "orchestrated",
+      "source_id": "flows-error-leaks-stack-6",
+      "title": "flows-error-leaks-stack-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C25",
+      "arm": "naive",
+      "source_id": "naive-claim-40",
+      "title": "41. `.gitignore` — `*.json.bak` is too narrow",
+      "security_relevant": false
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-49",
+      "title": "52. `bin/smoke-test.sh` — `skip` function doesn't actually skip anything",
+      "security_relevant": false
+    },
+    {
+      "label": "C27",
+      "arm": "naive",
+      "source_id": "naive-claim-36",
+      "title": "37. `CLAUDE.md` — skill table omits `/job-recap`",
+      "security_relevant": false
+    },
+    {
+      "label": "C28",
+      "arm": "orchestrated",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C29",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "15. `.github/workflows/test.yml` — `npm install` without lockfile",
+      "security_relevant": false
+    },
+    {
+      "label": "C30",
+      "arm": "orchestrated",
+      "source_id": "flows-message-retention-too-long-7",
+      "title": "flows-message-retention-too-long-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C31",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-hot-path-2",
+      "title": "database-missing-index-hot-path-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C32",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-circuit-breaker-7",
+      "title": "flows-missing-circuit-breaker-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C33",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-high-usage-1",
+      "title": "cost-gha-high-usage-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C34",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "26. `bin/doctor.sh` — `node -e` invoked once per field (N+1 process spawns)",
+      "security_relevant": false
+    },
+    {
+      "label": "C35",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-cors-9",
+      "title": "flows-missing-cors-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C36",
+      "arm": "naive",
+      "source_id": "naive-claim-58",
+      "title": "61. `.github/workflows/test.yml` — `npm install` runs before `npm run smoke`, but smoke test doesn't need deps",
+      "security_relevant": false
+    },
+    {
+      "label": "C37",
+      "arm": "naive",
+      "source_id": "naive-claim-34",
+      "title": "35. `CHANGELOG.md` — \"BUNDLED array extended from 9 → 13 skills\" but doctor says 14",
+      "security_relevant": false
+    },
+    {
+      "label": "C38",
+      "arm": "toolkit",
+      "source_id": "security-gha-no-concurrency-prod-10",
+      "title": "security-gha-no-concurrency-prod-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C39",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "18. `bin/doctor.sh` — `npx --no-install playwright install --dry-run chromium` may hit the network",
+      "security_relevant": false
+    },
+    {
+      "label": "C40",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "13. `bin/job-agent.sh` — `exec \"$0\" \"$@\"` after install loses the original argv semantics",
+      "security_relevant": false
+    },
+    {
+      "label": "C41",
+      "arm": "orchestrated",
+      "source_id": "security-weak-rng-10",
+      "title": "security-weak-rng-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C42",
+      "arm": "orchestrated",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C43",
+      "arm": "naive",
+      "source_id": "naive-claim-57",
+      "title": "60. `bin/job-agent.sh` — no check for `claude` version",
+      "security_relevant": false
+    },
+    {
+      "label": "C44",
+      "arm": "orchestrated",
+      "source_id": "flows-retry-no-backoff-4",
+      "title": "flows-retry-no-backoff-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C45",
+      "arm": "toolkit",
+      "source_id": "security-gha-no-container-8",
+      "title": "security-gha-no-container-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C46",
+      "arm": "naive",
+      "source_id": "naive-claim-41",
+      "title": "42. `.gitignore` — `data/applications.md` and `data/outreach.md` ignored, but `data/` directory itself isn't",
+      "security_relevant": false
+    },
+    {
+      "label": "C47",
+      "arm": "orchestrated",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "security_relevant": true
+    },
+    {
+      "label": "C48",
+      "arm": "orchestrated",
+      "source_id": "database-missing-app-pool-8",
+      "title": "database-missing-app-pool-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C49",
+      "arm": "naive",
+      "source_id": "naive-claim-52",
+      "title": "55. `bin/job-agent.sh` — `tmux set-option -t \"$SESSION\" status off` is per-session, not per-window",
+      "security_relevant": true
+    },
+    {
+      "label": "C50",
+      "arm": "orchestrated",
+      "source_id": "flows-auth-order-1",
+      "title": "flows-auth-order-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C51",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C52",
+      "arm": "naive",
+      "source_id": "naive-claim-45",
+      "title": "47. `bin/doctor.sh` — `printf \"  %-58s\"` with long skill names overflows",
+      "security_relevant": false
+    },
+    {
+      "label": "C53",
+      "arm": "naive",
+      "source_id": "naive-claim-42",
+      "title": "43. `.gitignore` — `reports/`, `output/`, `interview-prep/` ignored but no `.gitkeep`",
+      "security_relevant": false
+    },
+    {
+      "label": "C54",
+      "arm": "orchestrated",
+      "source_id": "database-iteration-overload-5",
+      "title": "database-iteration-overload-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C55",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-timeout-9",
+      "title": "cost-gha-no-timeout-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C56",
+      "arm": "orchestrated",
+      "source_id": "flows-message-ordering-needed-4",
+      "title": "flows-message-ordering-needed-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C57",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "27. `bin/doctor.sh` — placeholder detection is heuristic and locale-dependent",
+      "security_relevant": false
+    },
+    {
+      "label": "C58",
+      "arm": "orchestrated",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C59",
+      "arm": "naive",
+      "source_id": "naive-claim-59",
+      "title": "62. `.github/workflows/test.yml` — no `timeout-minutes` on jobs",
+      "security_relevant": false
+    },
+    {
+      "label": "C60",
+      "arm": "orchestrated",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C61",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. `.github/workflows/test.yml` — idempotency check is broken",
+      "security_relevant": false
+    },
+    {
+      "label": "C62",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C63",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "23. `bin/smoke-test.sh` — header-injection test only checks `Bcc`",
+      "security_relevant": true
+    },
+    {
+      "label": "C64",
+      "arm": "orchestrated",
+      "source_id": "flows-validation-too-early-3",
+      "title": "flows-validation-too-early-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C65",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. `bin/smoke-test.sh` — `run()` swallows the real exit code",
+      "security_relevant": false
+    },
+    {
+      "label": "C66",
+      "arm": "toolkit",
+      "source_id": "cost-gha-wasteful-retries-3",
+      "title": "cost-gha-wasteful-retries-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C67",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-idempotency-3",
+      "title": "flows-missing-idempotency-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C68",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-1",
+      "title": "github-commit-history-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C69",
+      "arm": "orchestrated",
+      "source_id": "flows-consumer-group-lag-3",
+      "title": "flows-consumer-group-lag-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C70",
+      "arm": "orchestrated",
+      "source_id": "cost-dev-setup-missing-3",
+      "title": "cost-dev-setup-missing-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C71",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "25. `bin/doctor.sh` — `REMEDIATIONS` array is populated but never printed",
+      "security_relevant": false
+    },
+    {
+      "label": "C72",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "20. `bin/smoke-test.sh` — writes to fixed `/tmp/smoke-stdout` and `/tmp/smoke-stderr`",
+      "security_relevant": false
+    },
+    {
+      "label": "C73",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-where-4",
+      "title": "database-missing-index-where-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C74",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-dlq-2",
+      "title": "flows-missing-dlq-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C75",
+      "arm": "naive",
+      "source_id": "naive-claim-48",
+      "title": "50. `bin/doctor.sh` — `2>/dev/null` on `[ \"$NODE_MAJOR\" -ge 18 ]` hides real errors",
+      "security_relevant": false
+    },
+    {
+      "label": "C76",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C77",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "14. `.github/workflows/test.yml` — ShellCheck is `continue-on-error: true` and also `|| true`",
+      "security_relevant": false
+    },
+    {
+      "label": "C78",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "24. `bin/smoke-test.sh` — `set -eu` + `run` returning non-zero (duplicate of #2, but worth flagging in the summary)",
+      "security_relevant": false
+    },
+    {
+      "label": "C79",
+      "arm": "orchestrated",
+      "source_id": "structure-low-cohesion-5",
+      "title": "structure-low-cohesion-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C80",
+      "arm": "toolkit",
+      "source_id": "security-gha-workspace-not-cleaned-6",
+      "title": "security-gha-workspace-not-cleaned-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C81",
+      "arm": "naive",
+      "source_id": "naive-claim-31",
+      "title": "32. `.github/workflows/test.yml` — `actions/checkout@v4` and `actions/setup-node@v4` not pinned to SHA",
+      "security_relevant": false
+    },
+    {
+      "label": "C82",
+      "arm": "toolkit",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C83",
+      "arm": "orchestrated",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C84",
+      "arm": "orchestrated",
+      "source_id": "database-full-table-scan-3",
+      "title": "database-full-table-scan-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C85",
+      "arm": "toolkit",
+      "source_id": "code-ignores-return-value-6",
+      "title": "code-ignores-return-value-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C86",
+      "arm": "orchestrated",
+      "source_id": "flows-validation-placement-2",
+      "title": "flows-validation-placement-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C87",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C88",
+      "arm": "toolkit",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C89",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-security-headers-10",
+      "title": "flows-missing-security-headers-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C90",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-visibility-timeout-9",
+      "title": "flows-missing-visibility-timeout-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C91",
+      "arm": "naive",
+      "source_id": "naive-claim-30",
+      "title": "31. `.github/workflows/test.yml` — no `permissions:` block",
+      "security_relevant": true
+    },
+    {
+      "label": "C92",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "11. `bin/job-agent.sh` — `eval \"$INSTALL_CMD\"` on a user-influenced string",
+      "security_relevant": true
+    },
+    {
+      "label": "C93",
+      "arm": "orchestrated",
+      "source_id": "flows-retry-no-max-5",
+      "title": "flows-retry-no-max-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C94",
+      "arm": "orchestrated",
+      "source_id": "cost-no-license-tracking-5",
+      "title": "cost-no-license-tracking-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C95",
+      "arm": "naive",
+      "source_id": "naive-claim-51",
+      "title": "54. `bin/smoke-test.sh` — `run \"interactive mode falls back gracefully when not a TTY\"` uses `|| true`",
+      "security_relevant": false
+    },
+    {
+      "label": "C96",
+      "arm": "naive",
+      "source_id": "naive-claim-38",
+      "title": "39. `CLAUDE.md` — table row for `/job-interview` is truncated mid-sentence",
+      "security_relevant": false
+    },
+    {
+      "label": "C97",
+      "arm": "orchestrated",
+      "source_id": "flows-message-breaking-schema-2",
+      "title": "flows-message-breaking-schema-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C98",
+      "arm": "naive",
+      "source_id": "naive-claim-43",
+      "title": "44. `.gitignore` — `.claude/` ignored, but `skills/install.sh` writes to `~/.claude/skills/`",
+      "security_relevant": false
+    },
+    {
+      "label": "C99",
+      "arm": "naive",
+      "source_id": "naive-claim-46",
+      "title": "48. `bin/doctor.sh` — color codes emitted even when not a TTY",
+      "security_relevant": true
+    },
+    {
+      "label": "C100",
+      "arm": "naive",
+      "source_id": "naive-claim-39",
+      "title": "40. `.gitignore` — ignores `config/candidate-profile.md` but not `config/candidate-profile.template.md`",
+      "security_relevant": false
+    },
+    {
+      "label": "C101",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "16. `.gitignore` ignores `package-lock.json` — but `package.json` is committed",
+      "security_relevant": false
+    },
+    {
+      "label": "C102",
+      "arm": "orchestrated",
+      "source_id": "flows-fire-and-forget-critical-1",
+      "title": "flows-fire-and-forget-critical-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C103",
+      "arm": "orchestrated",
+      "source_id": "code-exact-duplication-significant-2",
+      "title": "code-exact-duplication-significant-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C104",
+      "arm": "naive",
+      "source_id": "naive-claim-37",
+      "title": "38. `CLAUDE.md` — \"Two ways to drive it\" lists 13 skills in the intro",
+      "security_relevant": false
+    },
+    {
+      "label": "C105",
+      "arm": "naive",
+      "source_id": "naive-claim-35",
+      "title": "36. `CHANGELOG.md` — \"Fixed\" section claims a fix that isn't verifiable",
+      "security_relevant": false
+    },
+    {
+      "label": "C106",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "17. `bin/doctor.sh` — Playwright check is fragile string-matching",
+      "security_relevant": false
+    },
+    {
+      "label": "C107",
+      "arm": "toolkit",
+      "source_id": "cost-gha-expensive-runner-4",
+      "title": "cost-gha-expensive-runner-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C108",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-2",
+      "title": "structure-high-coupling-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C109",
+      "arm": "orchestrated",
+      "source_id": "flows-dlq-not-monitored-5",
+      "title": "flows-dlq-not-monitored-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C110",
+      "arm": "naive",
+      "source_id": "naive-claim-55",
+      "title": "58. `bin/job-agent.sh` — iTerm AppleScript assumes iTerm is running",
+      "security_relevant": false
+    },
+    {
+      "label": "C111",
+      "arm": "naive",
+      "source_id": "naive-claim-50",
+      "title": "53. `bin/smoke-test.sh` — `run \"snapshot is non-TTY safe (returns to TTY check)\"` name is confusing",
+      "security_relevant": false
+    },
+    {
+      "label": "C112",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "28. `bin/doctor.sh` — `[[ ... ]]` is bash-only, but the shebang is `#!/usr/bin/env bash`",
+      "security_relevant": false
+    },
+    {
+      "label": "C113",
+      "arm": "naive",
+      "source_id": "naive-claim-56",
+      "title": "59. `bin/job-agent.sh` — Terminal.app fallback opens two *windows*, not tabs",
+      "security_relevant": false
+    },
+    {
+      "label": "C114",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `bin/smoke-test.sh` — \"handles empty CSV\" test is a no-op",
+      "security_relevant": false
+    },
+    {
+      "label": "C115",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "10. `bin/job-agent.sh` — AppleScript injection via `$REPO`",
+      "security_relevant": true
+    },
+    {
+      "label": "C116",
+      "arm": "orchestrated",
+      "source_id": "code-long-parameter-list-8",
+      "title": "code-long-parameter-list-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C117",
+      "arm": "orchestrated",
+      "source_id": "security-gha-workspace-not-cleaned-6",
+      "title": "security-gha-workspace-not-cleaned-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C118",
+      "arm": "naive",
+      "source_id": "naive-claim-33",
+      "title": "[1.0.0] — 2026-04-22",
+      "security_relevant": false
+    },
+    {
+      "label": "C119",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "22. `bin/smoke-test.sh` — `run \"install.sh --uninstall removes the symlinks\"` then re-installs without checking",
+      "security_relevant": false
+    },
+    {
+      "label": "C120",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "30. `.github/workflows/test.yml` — `skill-files` glob `skills/job-*/SKILL.md` will match `skills/job-apply/SKILL.md` etc., but not `skills/README.md`",
+      "security_relevant": false
+    },
+    {
+      "label": "C121",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-timeout-9",
+      "title": "cost-gha-no-timeout-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C122",
+      "arm": "orchestrated",
+      "source_id": "flows-inconsistent-response-4",
+      "title": "flows-inconsistent-response-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C123",
+      "arm": "orchestrated",
+      "source_id": "flows-message-schema-no-version-1",
+      "title": "flows-message-schema-no-version-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C124",
+      "arm": "naive",
+      "source_id": "naive-claim-32",
+      "title": "33. `.github/workflows/test.yml` — `sudo apt-get update && sudo apt-get install -y shellcheck` on every run",
+      "security_relevant": false
+    },
+    {
+      "label": "C125",
+      "arm": "naive",
+      "source_id": "naive-claim-47",
+      "title": "49. `bin/doctor.sh` — `NODE_MAJOR=${NODE_V%%.*}` fails on pre-release versions",
+      "security_relevant": false
+    },
+    {
+      "label": "C126",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. `bin/doctor.sh` — repo resolution order contradicts the docs",
+      "security_relevant": false
+    },
+    {
+      "label": "C127",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "12. `bin/job-agent.sh` — `read -r REPLY` under `set -e` with no TTY",
+      "security_relevant": false
+    },
+    {
+      "label": "C128",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "19. `bin/doctor.sh` — `mktemp -d /tmp/ajagent-doctor.XXXXXX` is not portable",
+      "security_relevant": false
+    },
+    {
+      "label": "C129",
+      "arm": "orchestrated",
+      "source_id": "cost-slow-tests-2",
+      "title": "cost-slow-tests-2",
+      "security_relevant": false
+    }
+  ]
+}

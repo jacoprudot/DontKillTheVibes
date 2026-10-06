@@ -1,0 +1,161 @@
+{
+  "target": "deutsia-radio-s1-x1",
+  "mock": false,
+  "created_at": "2026-10-06T01:15:20.535Z",
+  "judge_model": "qwen3.5:9b",
+  "judge_base_url": "http://localhost:11434/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\deutsia-radio",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "38499d6f2555a80de4b7df1b1073f3e0cdb1f124",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 3,
+    "toolkit": 3,
+    "orchestrated": 0,
+    "naive": 0,
+    "judged": 3,
+    "unverifiable": 2
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 3,
+      "judged": 3,
+      "real": 1,
+      "falseCount": 0,
+      "unverifiable": 2,
+      "judgeGrounded": 1,
+      "mechGrounded": 3,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 12,
+      "actionableN": 3,
+      "security": 2,
+      "securityFn": 0,
+      "claimsWithCitations": 3,
+      "citationsTotal": 3,
+      "weakCitations": 1,
+      "meanActionability": 4,
+      "precision": 1,
+      "judgeGroundedRate": 0.333
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "security-debug-in-prod-1",
+      "title": "security-debug-in-prod-1",
+      "severity": "high",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Global cleartext traffic enabled without network security config allows interception of streams and metadata.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/src/main/AndroidManifest.xml",
+            "line": 28,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 91,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "toolkit",
+      "source_id": "security-gha-auto-deploy-prod-9",
+      "title": "security-gha-auto-deploy-prod-9",
+      "severity": "high",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Workflow trigger configuration shown lacks job body steps; cannot verify artifact protection or build commands from snippet alone.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/build.yml",
+            "line": 4,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 35,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 5,
+        "reason": "Snippet shows only start of jobs block and partial content, insufficient to confirm absence of timeouts across all workflows.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/build.yml",
+            "line": 12,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 35,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

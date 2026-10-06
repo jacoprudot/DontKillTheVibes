@@ -1,0 +1,16 @@
+WARN: findings[1] (security-logs-contain-secrets-12): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[6] (security-debug-in-prod-1): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[7] (security-gha-secret-leak-3): confidence 0.35 below 0.6 — finding may be speculative
+WARN: findings[11] (cost-dev-setup-missing-3): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[26] (cost-no-license-tracking-5): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[27] (cost-no-oss-policy-9): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[28] (security-cors-wildcard-2): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[29] (security-gha-job-no-timeout-7): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[30] (security-no-security-maintenance-7): confidence 0.45 below 0.6 — finding may be speculative
+WARN: findings[31] (github-commit-history-1): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[32] (github-issue-health-1): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[33] (security-gha-action-unpinned-5): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[36] (flows-missing-security-headers-10): rule "flows-missing-security-headers-10" is deprecated (superseded by security-missing-headers-10) — prefer the replacement
+WARN: findings[37] (security-vcs-insecure-9): confidence 0.45 below 0.6 — finding may be speculative
+WARN: findings[38] (github-log-pattern-1): confidence 0.55 below 0.6 — finding may be speculative
+VALID: 39 findings, 15 warning(s)

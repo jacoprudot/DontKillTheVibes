@@ -1,0 +1,3 @@
+WARN: findings[5] (security-gha-workspace-not-cleaned-6): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[9] (cost-gha-expensive-runner-4): confidence 0.5 below 0.6 — finding may be speculative
+VALID: 12 findings, 2 warning(s)

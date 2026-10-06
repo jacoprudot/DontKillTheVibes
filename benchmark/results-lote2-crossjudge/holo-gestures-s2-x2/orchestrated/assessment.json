@@ -1,0 +1,509 @@
+{
+  "metadata": {
+    "repo": "holo-gestures",
+    "assessed_at": "2026-10-05T20:41:24.478Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 19,
+    "findings_raw": 46,
+    "findings_dropped": 6,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 5,
+    "total_findings": 39,
+    "by_severity": {
+      "critical": 5,
+      "high": 6,
+      "medium": 23,
+      "low": 4,
+      "info": 1
+    },
+    "by_module": {
+      "code": 4,
+      "structure": 3,
+      "flows": 8,
+      "security": 5,
+      "cost": 7,
+      "performance": 3,
+      "github": 9
+    },
+    "effort_estimate": {
+      "XS": 7,
+      "S": 6,
+      "M": 25,
+      "L": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "cost-dev-setup-missing-3",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "README.md",
+        "line": 21
+      },
+      "description": "Onboarding relies on a single clone-and-run command with no documented development setup: no guidance on running the probe battery in CI, no linting/formatting setup, no contribution workflow, and no explanation of the gesture-threshold constants beyond a one-line mention. New contributors must reverse-engineer the workflow from the README prose.",
+      "remediation": "Add a DEVELOPMENT.md (or README section) covering local setup, how to run ?probe=1 and ?sim=1, the meaning of the gesture threshold constants, and the expected contribution/verification workflow.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "security-directory-listing-8",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 113
+      },
+      "description": "The /vendor/ and /props/ static file handler serves any file under those directories based on the raw request path, with only a normpath/\"..\" check. There is no allowlist of extensions or filenames, so any file placed in vendor/ or props/ (or reachable via the normalized path) is served to any client that can reach the server.",
+      "remediation": "Restrict the static handler to an explicit allowlist of extensions (e.g. .mjs, .js, .wasm, .glb) and reject anything else with 404; also resolve the final path with os.path.realpath and verify it is contained within the intended vendor/props directory before serving.",
+      "effort": "XS",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-license-attribution-missing-2",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "LICENSE",
+        "line": 27
+      },
+      "description": "The repo bundles third-party components (Google MediaPipe Tasks Vision, three.js) in vendor/ and redistributes them, but the LICENSE file only lists component names and license names without including the full Apache-2.0 license text or the required copyright/NOTICE attribution for the bundled Apache-2.0 MediaPipe code. Apache-2.0 redistribution requires retaining the license text and NOTICE, and the README even documents that the vendored wasm glue was modified (HOLO SHIM) without a modification notice.",
+      "remediation": "Add the full Apache-2.0 license text and Google's NOTICE/copyright for the vendored MediaPipe files under vendor/, and add a modification notice for the HOLO SHIM changes, so redistribution complies with Apache-2.0 attribution requirements.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "security-no-security-maintenance-7",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "README.md",
+        "line": 0
+      },
+      "description": "The repository has no SECURITY.md, no dependabot/renovate configuration, and no documented vulnerability-reporting process, despite vendoring third-party binaries (MediaPipe wasm glue, three.js) that the README itself says must be manually patched after re-download. There is no mechanism to learn about or ship security updates for those vendored components.",
+      "remediation": "Add a SECURITY.md with a private disclosure channel and enable Dependabot (or Renovate) for the vendored JS/wasm artifacts and any future package manifests.",
+      "effort": "M",
+      "confidence": 0.45
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "code-bare-except-1",
+          "security-logs-contain-secrets-12",
+          "flows-fire-and-forget-critical-1",
+          "flows-missing-idempotency-3",
+          "security-no-input-validation-14",
+          "code-missing-validation-4",
+          "security-debug-in-prod-1",
+          "security-gha-secret-leak-3",
+          "cost-license-share-alike-3",
+          "cost-no-automated-tests-4",
+          "security-missing-headers-10",
+          "cost-dev-setup-missing-3"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "performance-io-bound-sync-2",
+          "performance-no-compression-13",
+          "security-directory-listing-8",
+          "code-catch-and-continue-9",
+          "structure-config-logic-8",
+          "performance-no-keep-alive-9",
+          "structure-controller-logic-6",
+          "flows-missing-rate-limit-8",
+          "structure-service-sql-5"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "flows-error-leaks-stack-6",
+          "flows-missing-timeout-6",
+          "code-ignores-return-value-6",
+          "cost-license-attribution-missing-2",
+          "cost-documentation-poor-7",
+          "cost-no-license-tracking-5",
+          "cost-no-oss-policy-9",
+          "security-cors-wildcard-2",
+          "security-gha-job-no-timeout-7",
+          "security-no-security-maintenance-7",
+          "github-commit-history-1",
+          "github-issue-health-1",
+          "security-gha-action-unpinned-5",
+          "flows-missing-cors-9",
+          "flows-missing-request-id-7",
+          "flows-missing-security-headers-10",
+          "security-vcs-insecure-9",
+          "github-log-pattern-1"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "flows-missing-cors-9": [
+        "structure-config-logic-8"
+      ],
+      "flows-missing-rate-limit-8": [
+        "structure-config-logic-8"
+      ],
+      "flows-missing-request-id-7": [
+        "structure-config-logic-8"
+      ],
+      "flows-missing-security-headers-10": [
+        "structure-config-logic-8"
+      ],
+      "flows-error-leaks-stack-6": [
+        "structure-config-logic-8"
+      ],
+      "flows-missing-idempotency-3": [
+        "structure-config-logic-8"
+      ],
+      "flows-missing-timeout-6": [
+        "structure-config-logic-8"
+      ],
+      "flows-fire-and-forget-critical-1": [
+        "structure-config-logic-8"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "code-bare-except-1",
+      "severity": "critical",
+      "module": "code",
+      "confidence": 0.9,
+      "score": 90,
+      "canonical_rule": "code-bare-except-1"
+    },
+    {
+      "id": "security-logs-contain-secrets-12",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 75,
+      "canonical_rule": "security-logs-contain-secrets-12"
+    },
+    {
+      "id": "flows-fire-and-forget-critical-1",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 60,
+      "canonical_rule": "flows-fire-and-forget-critical-1"
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 60,
+      "canonical_rule": "flows-missing-idempotency-3"
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.65,
+      "score": 48.75,
+      "canonical_rule": "security-no-input-validation-14"
+    },
+    {
+      "id": "code-missing-validation-4",
+      "severity": "high",
+      "module": "code",
+      "confidence": 0.75,
+      "score": 37.5,
+      "canonical_rule": "code-missing-validation-4"
+    },
+    {
+      "id": "security-debug-in-prod-1",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 37.5,
+      "canonical_rule": "security-debug-in-prod-1"
+    },
+    {
+      "id": "security-gha-secret-leak-3",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.35,
+      "score": 24.5,
+      "canonical_rule": "security-gha-secret-leak-3"
+    },
+    {
+      "id": "cost-license-share-alike-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 24,
+      "canonical_rule": "cost-license-share-alike-3"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 24,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.7,
+      "score": 21,
+      "canonical_rule": "security-missing-headers-10"
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 20,
+      "canonical_rule": "cost-dev-setup-missing-3"
+    },
+    {
+      "id": "performance-io-bound-sync-2",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.8,
+      "score": 19.2,
+      "canonical_rule": "performance-io-bound-sync-2"
+    },
+    {
+      "id": "performance-no-compression-13",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.75,
+      "score": 18,
+      "canonical_rule": "performance-no-compression-13"
+    },
+    {
+      "id": "security-directory-listing-8",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 18,
+      "canonical_rule": "security-directory-listing-8"
+    },
+    {
+      "id": "code-catch-and-continue-9",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.85,
+      "score": 17,
+      "canonical_rule": "code-catch-and-continue-9"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "performance-no-keep-alive-9",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.6,
+      "score": 14.4,
+      "canonical_rule": "performance-no-keep-alive-9"
+    },
+    {
+      "id": "structure-controller-logic-6",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 14.3,
+      "canonical_rule": "structure-controller-logic-6"
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "flows-missing-rate-limit-8"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.65,
+      "score": 13,
+      "canonical_rule": "flows-error-leaks-stack-6"
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.65,
+      "score": 13,
+      "canonical_rule": "flows-missing-timeout-6"
+    },
+    {
+      "id": "code-ignores-return-value-6",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.6,
+      "score": 12,
+      "canonical_rule": "code-ignores-return-value-6"
+    },
+    {
+      "id": "cost-license-attribution-missing-2",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 11.2,
+      "canonical_rule": "cost-license-attribution-missing-2"
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-documentation-poor-7"
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-no-license-tracking-5"
+    },
+    {
+      "id": "cost-no-oss-policy-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-no-oss-policy-9"
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "security-cors-wildcard-2"
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "security-gha-job-no-timeout-7"
+    },
+    {
+      "id": "security-no-security-maintenance-7",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.45,
+      "score": 6.3,
+      "canonical_rule": "security-no-security-maintenance-7"
+    },
+    {
+      "id": "github-commit-history-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "github-commit-history-1"
+    },
+    {
+      "id": "github-issue-health-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "github-issue-health-1"
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "security-gha-action-unpinned-5"
+    },
+    {
+      "id": "flows-missing-cors-9",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 3.75,
+      "canonical_rule": "flows-missing-cors-9"
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 3.5,
+      "canonical_rule": "flows-missing-request-id-7"
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 3.5,
+      "canonical_rule": "flows-missing-security-headers-10"
+    },
+    {
+      "id": "security-vcs-insecure-9",
+      "severity": "low",
+      "module": "github",
+      "confidence": 0.45,
+      "score": 1.57,
+      "canonical_rule": "security-vcs-insecure-9"
+    },
+    {
+      "id": "github-log-pattern-1",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 0.39,
+      "canonical_rule": "github-log-pattern-1"
+    }
+  ]
+}

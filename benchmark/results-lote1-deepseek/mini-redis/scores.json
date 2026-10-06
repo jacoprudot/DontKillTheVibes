@@ -1,0 +1,876 @@
+{
+  "target": "mini-redis",
+  "mock": false,
+  "created_at": "2026-10-05T16:01:43.877Z",
+  "judge_model": "deepseek-chat",
+  "judge_base_url": "https://api.deepseek.com/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\mini-redis",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "3d93b42bc363220f85af4fc9e1bebd35b588a4a3",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 26,
+    "toolkit": 6,
+    "orchestrated": 0,
+    "naive": 20,
+    "judged": 26,
+    "unverifiable": 21
+  },
+  "summary_by_arm": {
+    "naive": {
+      "claims": 20,
+      "judged": 20,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 20,
+      "judgeGrounded": 0,
+      "mechGrounded": 0,
+      "mechUngrounded": 20,
+      "mismatch": 0,
+      "actionableSum": 34,
+      "actionableN": 20,
+      "security": 1,
+      "securityFn": 0,
+      "claimsWithCitations": 0,
+      "citationsTotal": 0,
+      "weakCitations": 0,
+      "meanActionability": 1.7,
+      "precision": null,
+      "judgeGroundedRate": 0
+    },
+    "toolkit": {
+      "claims": 6,
+      "judged": 6,
+      "real": 5,
+      "falseCount": 0,
+      "unverifiable": 1,
+      "judgeGrounded": 5,
+      "mechGrounded": 6,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 18,
+      "actionableN": 5,
+      "security": 1,
+      "securityFn": 0,
+      "claimsWithCitations": 6,
+      "citationsTotal": 6,
+      "weakCitations": 5,
+      "meanActionability": 3.6,
+      "precision": 1,
+      "judgeGroundedRate": 0.833
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. `src/bin/server.rs` binds to `127.0.0.1` only",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Code block not in digest; binding to 127.0.0.1 is plausible but unverifiable from shown evidence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. `README.md` says \"There is no support for persistence yet\" but also lists `SET` with expiration. Expiration is in-memory only, which is consistent, but the README doesn't mention that `SET` with TTL is supported (only `SET` is listed). The supported-commands list is incomplete relative to the CLI.",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "README content not shown; claim is vague and partly self-contradictory.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. `BufferedClient` swallows the `Set` response type",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Type-modeling smell is plausible but the cited code is not in the digest.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `otel` feature is not exercised in a way that catches breakage",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "CI and OTel setup not shown; claim is speculative about runtime failures.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. `src/bin/cli.rs` uses `tracing_subscriber::fmt::try_init()?` and then prints to stdout",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "cli.rs not shown; claim about try_init emitting to stdout is unverified.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "20. `examples/chat.rs` aside, `examples/` has no `README` or index",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "README and examples content not shown; claim is minor and unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "toolkit",
+      "source_id": "code-generic-catch-2",
+      "title": "code-generic-catch-2",
+      "severity": "high",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet shows tx.send result discarded; logging the error is a concrete fix.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/clients/buffered_client.rs",
+            "line": 35,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 121,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "toolkit",
+      "source_id": "code-missing-validation-4",
+      "title": "code-missing-validation-4",
+      "severity": "high",
+      "module": "code",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": null,
+        "reason": "Snippet shows hardcoded 127.0.0.1 bind; no auth is a real risk for a teaching server.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/bin/server.rs",
+            "line": 34,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 95,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C9",
+      "arm": "toolkit",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "No timeout around connect/read/write is a real hang risk; fix is concrete.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/clients/client.rs",
+            "line": 78,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 509,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. `README.md` links to `src/clients/client.rs` but the file tree shows `src/clients/client.rs` exists — however the README's \"Client library\" section links to `client.rs` while the actual public re-export is `mini_redis::clients::Client`. The link is fine, but the README never mentions `BlockingClient` or `BufferedClient`, which are two of the more interesting patterns in the crate.",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Claim is self-admittedly fine and mostly a documentation nit; unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C11",
+      "arm": "toolkit",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "server::run signature not shown; claim about discarded result is unverified.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/bin/server.rs",
+            "line": 36,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 95,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. `BufferedClient` has a hard-coded channel capacity and no backpressure documentation",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "BufferedClient API not shown; claim about &mut self is unverified.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. `duration_from_ms_str` accepts `u64` milliseconds but the CLI help says \"Expire the value after specified amount of time\"",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "CLI help text and parser not shown; unit mismatch is unverified.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. `examples/chat.rs` is a stub that panics",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "examples/chat.rs content not shown; unimplemented!() claim is unverified.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C15",
+      "arm": "toolkit",
+      "source_id": "code-ignores-return-value-6",
+      "title": "code-ignores-return-value-6",
+      "severity": "medium",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "JoinHandle discarded and fixed channel capacity is a real hang risk; fix is concrete.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/clients/buffered_client.rs",
+            "line": 57,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 121,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `Cargo.toml` metadata is stale/inconsistent",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Cargo.toml not shown; version/edition/dep claims are unverified.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C17",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "18. No `rust-version` (MSRV) in `Cargo.toml`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Cargo.toml not shown; MSRV advice is generic and unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "13. `.gitignore` ignores `/target` and `**/*.rs.bk` but not `Cargo.lock` — good, since this is a binary crate. However, `Cargo.lock` is committed (it's in the file tree), which is correct for a binary but should be noted; for a library-only crate it would be wrong. Since this ships binaries, committing it is right.",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": ".gitignore not shown; claim is mostly a non-issue and unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C19",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. `BlockingClient` doc examples are `no_run` and rely on wall-clock timing",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "BlockingClient doc examples not shown; flakiness claim is unverified.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C20",
+      "arm": "toolkit",
+      "source_id": "code-unhandled-promise-4",
+      "title": "code-unhandled-promise-4",
+      "severity": "high",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Discarded JoinHandle plus oneshot hang is a real failure mode; fix is concrete.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/clients/buffered_client.rs",
+            "line": 57,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 121,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "19. `tests/frame_validation.rs` exists but no corresponding validation logic is visible",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "parse.rs/frame.rs not shown; claim is speculative about test coverage.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C22",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `BlockingClient` creates a fresh runtime per client and never shuts it down",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "BlockingClient runtime code not shown; panic-on-drop claim is unverified.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "14. `examples/hello_world.rs` and `examples/sub.rs` declare `pub async fn main()`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Example files not shown; pub main style nit is unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C24",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "17. `Cargo.toml` uses `tokio = { version = \"1\", features = [\"full\"] }` in `[dependencies]` and then re-declares `tokio` in `[dev-dependencies]` with `test-util`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Cargo.toml not shown; feature-merge claim is unverified.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C25",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. CI does not run `clippy` or `cargo test --all-targets`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "ci.yml not shown; missing clippy/all-targets claims are unverified.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "16. `set_up_logging` return type differs between feature configurations",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "set_up_logging signatures not shown; differing return types unverified.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

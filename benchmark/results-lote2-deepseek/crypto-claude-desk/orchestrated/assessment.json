@@ -1,0 +1,1799 @@
+{
+  "metadata": {
+    "repo": "crypto-claude-desk",
+    "assessed_at": "2026-10-05T21:00:29.330Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 22,
+    "findings_raw": 92,
+    "findings_dropped": 14,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 6,
+    "total_findings": 76,
+    "by_severity": {
+      "critical": 6,
+      "high": 15,
+      "medium": 42,
+      "low": 6,
+      "info": 7
+    },
+    "by_module": {
+      "database": 12,
+      "code": 9,
+      "structure": 9,
+      "security": 3,
+      "cost": 13,
+      "performance": 6,
+      "github": 24
+    },
+    "effort_estimate": {
+      "XS": 15,
+      "S": 12,
+      "M": 45,
+      "L": 4
+    }
+  },
+  "findings": [
+    {
+      "id": "database-irreversible-migration-1",
+      "module": "database",
+      "severity": "critical",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 186
+      },
+      "description": "The migration list includes irreversible DROP TABLE statements executed at every _init_db() call with no down-migration, backup, or user_version gate; once agent_scorecards/scorecard_history are dropped the data cannot be recovered.",
+      "remediation": "Gate migrations behind PRAGMA user_version, take a file-level backup (or VACUUM INTO) before applying destructive steps, and provide a documented rollback path for each migration.",
+      "effort": "L",
+      "confidence": 0.75
+    },
+    {
+      "id": "database-full-table-scan-3",
+      "module": "database",
+      "severity": "critical",
+      "location": {
+        "file": "dashboard/src/lib/db.ts",
+        "line": 227
+      },
+      "description": "getSymbolStats computes COUNT/SUM/AVG/MIN/MAX over the entire trades table filtered only by UPPER(symbol) = UPPER(?), a non-sargable expression that cannot use any index even if one existed, guaranteeing a full table scan per symbol statistics request.",
+      "remediation": "Store symbol in a normalized (already-uppercased) column and compare with a plain equality predicate, then add an index on that column so the aggregation can use an index scan instead of a full table scan.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "code-bare-except-1",
+      "module": "code",
+      "severity": "critical",
+      "location": {
+        "file": "dashboard/src/lib/db.ts",
+        "line": 113
+      },
+      "description": "`extractLiquidationPrice` wraps `JSON.parse(t.agent_signals)` in a `catch {}` with no binding and no logging, silently swallowing malformed JSON and falling through to the computed default. The same pattern is repeated in market-intelligence.ts `parseOutcomes` and in the fetch helpers, hiding data-corruption problems.",
+      "remediation": "Bind the error (`catch (err)`) and log it (e.g. `console.warn('invalid agent_signals JSON', err)`) before falling back, so malformed trade data is visible instead of silently ignored.",
+      "effort": "XS",
+      "confidence": 0.85
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "module": "security",
+      "severity": "high",
+      "location": {
+        "file": "dashboard/src/app/api/ohlcv/route.ts",
+        "line": 9
+      },
+      "description": "The `symbol` query parameter is read straight from the request and passed to `getOhlcv(symbol, ...)` without any validation or allow-list check, unlike `interval` which is validated against VALID_INTERVALS. An attacker can supply arbitrary strings (path fragments, extremely long values, injection payloads) that flow into the downstream data-fetching layer.",
+      "remediation": "Validate `symbol` against the same allow-list used elsewhere (e.g. the `_SYMBOL_RE` pattern / supported symbols set) and return HTTP 400 for anything that does not match before calling getOhlcv.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "database-risky-migration-3",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 186
+      },
+      "description": "_ensure_schema runs destructive migrations unconditionally on every startup — 'DROP TABLE IF EXISTS scorecard_history' and 'DROP TABLE IF EXISTS agent_scorecards' — inside a loop that swallows sqlite3.OperationalError, so historical scorecard data is silently and irreversibly deleted whenever the server initializes.",
+      "remediation": "Move destructive DDL out of the startup path into a versioned, one-time migration guarded by PRAGMA user_version, and archive the dropped tables (rename to *_deprecated) instead of dropping them outright.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 94
+      },
+      "description": "_get_conn() creates a brand-new sqlite3 connection on every call and _init_db() re-runs the schema script each time; no connection pool or shared handle is used, so every MCP tool call pays connection setup plus DDL overhead and connections are never explicitly closed.",
+      "remediation": "Introduce a small connection pool or a module-level cached connection (with proper close on shutdown) and initialize the schema only once, so repeated tool calls reuse an already-prepared connection.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "performance-no-connection-pool-7",
+      "module": "performance",
+      "severity": "high",
+      "location": {
+        "file": "mcp-servers/crypto_technical_analysis.py",
+        "line": 88
+      },
+      "description": "safe_fetch_ohlcv_data iterates over every configured CCXT exchange and calls exchange.fetch_ohlcv sequentially, creating a fresh HTTP request per attempt with no shared session/connection pooling or keep-alive reuse. Each retry pays a new TCP + TLS handshake to the exchange, and the CoinGecko fallback uses bare requests.get() calls (lines 118, 145) which also open a new connection per call.",
+      "remediation": "Create a module-level requests.Session (or configure ccxt with a shared aiohttp/requests session) and reuse it for all exchange and CoinGecko calls so TCP/TLS connections are pooled and reused across retries and tool invocations.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "security-secret-in-code-1",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "dashboard/server/pty-server.mjs",
+        "line": 0
+      },
+      "description": "The PTY server spawns a real OS shell with the user's full privileges and passes the entire process environment (`env: { ...process.env, TERM: \"xterm-256color\" }`) into that shell. Any secrets present in the environment (API keys, tokens, cloud credentials) are inherited by the spawned shell and are reachable by anything that connects to the WebSocket, which has no authentication.",
+      "remediation": "Do not forward the full process.env to the spawned shell. Build an explicit minimal environment allowlist (PATH, HOME, SHELL, TERM) and require an authentication token on the WebSocket handshake before spawning any PTY.",
+      "effort": "XS",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "module": "structure",
+      "severity": "high",
+      "location": {
+        "file": "mcp-servers/crypto_technical_analysis.py",
+        "line": 16
+      },
+      "description": "The technical-analysis MCP server hardcodes a module-level dict of live ccxt exchange clients (EXCHANGES = {'binance': ccxt.binance(), ...}) and a CoinGecko URL template, coupling the analysis logic directly to concrete external data providers. Every tool function reaches into this global, so the module cannot be tested or reused without real network clients and cannot swap providers without editing the module.",
+      "remediation": "Introduce a data-provider abstraction (e.g. an ExchangeClient protocol with a fetch_ohlcv method) and inject it into the tool functions, keeping the concrete ccxt/CoinGecko wiring in a single composition root.",
+      "effort": "L",
+      "confidence": 0.7
+    },
+    {
+      "id": "code-missing-validation-4",
+      "module": "code",
+      "severity": "high",
+      "location": {
+        "file": "dashboard/src/app/api/ohlcv/route.ts",
+        "line": 11
+      },
+      "description": "The `symbol` query parameter is taken straight from the URL and passed to `getOhlcv`/`toBinanceSymbol` without any validation against an allowed symbol pattern, unlike the MCP servers which route symbols through `validate_symbol`. Arbitrary user-controlled strings are interpolated into the upstream Binance URL.",
+      "remediation": "Validate `symbol` with a strict allow-list regex (e.g. `/^[A-Za-z0-9]{1,15}$/`) before use and return HTTP 400 on mismatch, mirroring `validators.validate_symbol`.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "structure-layer-violation-1",
+      "module": "structure",
+      "severity": "high",
+      "location": {
+        "file": "dashboard/server/pty-server.mjs",
+        "line": 0
+      },
+      "description": "The PTY server mixes transport concerns with process/OS concerns in a single module: it creates the WebSocketServer, performs loopback authorization, picks the platform shell, spawns the PTY, and manages its lifecycle all in one file. The WebSocket transport layer directly owns shell-spawning policy, so neither can be changed or tested independently.",
+      "remediation": "Separate the WebSocket transport (connection handling, message framing) from a PTY session manager that owns shell selection and process lifecycle, wiring them together in a small composition entrypoint.",
+      "effort": "M",
+      "confidence": 0.65
+    },
+    {
+      "id": "security-gha-pr-target-risk-1",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "CONTRIBUTING.md",
+        "line": 0
+      },
+      "description": "CONTRIBUTING.md states there is no automated test suite and that the project relies on manual smoke testing, while also inviting pull requests that may add or modify MCP servers and hooks. Without any CI validation, untrusted contributions are merged based on manual review alone, and the executable hook/script surface is not automatically checked.",
+      "remediation": "Introduce a minimal CI workflow that runs the existing pytest suite (pyproject.toml already configures pytest) and lints shell/Python files on every PR, and require it to pass before merge.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "security-gha-secret-leak-3",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "bin/autopilot.sh",
+        "line": 0
+      },
+      "description": "The script redirects all stdout/stderr of the headless Claude run into data/logs/YYYY-MM-DD.log (`>> \"$LOG_FILE\" 2>&1`). Agent output and any error traces that include environment details or credentials echoed by tools are persisted to a plaintext log file in the repository working tree.",
+      "remediation": "Redact secrets from log output before writing, store logs outside the repo tree with restrictive permissions (chmod 600), and add data/logs to .gitignore (already present) plus a scrub step for known secret patterns.",
+      "effort": "XS",
+      "confidence": 0.5
+    },
+    {
+      "id": "database-missing-index-fk-1",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 150
+      },
+      "description": "The predictions table declares FOREIGN KEY (trade_id) REFERENCES trades(id) and the trade_modifications table declares FOREIGN KEY (trade_id) REFERENCES trades(id), but only idx_predictions_trade and idx_tm_trade exist; the parent side of the relationship (trades.id) has no index beyond the implicit PRIMARY KEY, and no index covers the FK lookups performed when validating/joining trades by id in the dashboard queries.",
+      "remediation": "Ensure every foreign-key column has a covering index (idx_predictions_trade and idx_tm_trade already do) and add an explicit index on trades(id) usage paths; verify with PRAGMA foreign_key_check and EXPLAIN QUERY PLAN that FK enforcement does not scan the child tables.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "tests/test_crypto_learning_db.py",
+        "line": 175
+      },
+      "description": "The trade query API is exercised with limit/offset pagination (db._query_trades(limit=2, offset=0)), which is the classic OFFSET-based pagination pattern; on a growing trades table each page re-scans and discards all preceding rows, and concurrent inserts shift page boundaries.",
+      "remediation": "Switch to keyset (cursor) pagination on an indexed, monotonic column such as (opened_at, id) — WHERE (opened_at, id) < (?, ?) ORDER BY opened_at DESC, id DESC LIMIT ? — instead of LIMIT/OFFSET.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-llm-very-high-usage-2",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "bin/autopilot.sh",
+        "line": 1
+      },
+      "description": "autopilot.sh is designed to be driven by crontab (documented examples run monitor hourly, quick daily, analyze weekly, portfolio on weekdays) and each invocation launches a headless `claude -p` session that itself delegates to multiple subagents. The hourly monitor alone spawns haiku+opus+sonnet agents on every run, producing continuous, unattended LLM spend with no cost ceiling or usage monitoring.",
+      "remediation": "Introduce a cost guard in autopilot.sh: track cumulative spend per day in data/logs, abort when a configurable budget is exceeded, and reduce the monitor cron frequency or batch symbols to cut redundant agent spawns.",
+      "effort": "L",
+      "confidence": 0.7
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/server/pty-server.mjs",
+        "line": 44
+      },
+      "description": "The WebSocket server accepts connections based on remote address only and performs no Origin header check. Any web page loaded in the user's browser can open a WebSocket to ws://127.0.0.1:3001 (loopback is reachable from the browser) and, because the server spawns a full-privilege shell with no authentication, achieve remote command execution on the developer's machine.",
+      "remediation": "Verify the `Origin` header in the connection handler and reject any origin that is not the dashboard's own origin; additionally require a per-session random token passed in the URL or first message before spawning the PTY.",
+      "effort": "XS",
+      "confidence": 0.75
+    },
+    {
+      "id": "security-gha-auto-deploy-prod-9",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": "bin/autopilot.sh",
+        "line": 20
+      },
+      "description": "autopilot.sh is designed to be run unattended from cron and invokes `claude -p` with a broad pre-approved tool allowlist (Read,Write,Grep,Glob,WebSearch,WebFetch and seven mcp__crypto-* servers). Any workflow it runs can write files and call external services without human review, and the crontab examples show it running hourly/daily against the live project directory. There is no dry-run, no confirmation gate, and no restriction preventing it from mutating the portfolio DB or repository contents.",
+      "remediation": "Add a dry-run/confirmation mode for state-mutating workflows, restrict the allowed tools per workflow (read-only for monitor/quick/portfolio), and require an explicit opt-in flag before any workflow that writes to the database or filesystem runs unattended.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": "bin/autopilot.sh",
+        "line": 0
+      },
+      "description": "ALLOWED_TOOLS grants the headless session Write, Grep, Glob, WebSearch, WebFetch plus every crypto MCP server, including crypto-learning-db which can create/close trades and modify portfolio state. This is broader than any single workflow needs (e.g. `quick` only reads market data) and violates least privilege for an unattended process.",
+      "remediation": "Define a per-workflow allowlist so read-only workflows (quick, portfolio, monitor price checks) get only Read and the market-data MCP servers, and reserve Write plus crypto-learning-db for workflows that legitimately mutate state.",
+      "effort": "XS",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-missing-headers-10",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/next.config.ts",
+        "line": 3
+      },
+      "description": "The Next.js configuration defines no `headers()` block, so the dashboard is served without security response headers such as Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, or Strict-Transport-Security. This leaves the app open to clickjacking, MIME sniffing, and XSS amplification.",
+      "remediation": "Add an async `headers()` entry in next.config.ts that sets Content-Security-Policy, X-Frame-Options: DENY, X-Content-Type-Options: nosniff, Referrer-Policy: strict-origin-when-cross-origin, and Strict-Transport-Security for all routes.",
+      "effort": "S",
+      "confidence": 0.7
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 1
+      },
+      "description": "The project declares pytest and pytest-cov as dev dependencies and configures testpaths, but the provided repository content shows no test suite exercising the MCP servers, the dashboard DB layer, or the autopilot workflows. Without automated tests, regressions in the trading logic and data pipeline are only caught in production, driving up rework and maintenance cost.",
+      "remediation": "Add a pytest suite covering the MCP server helper functions (validators, serializers, DB schema) and a smoke test for the dashboard DB layer, and wire it into CI so regressions are caught before merge.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "database-missing-index-where-4",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/src/lib/db.ts",
+        "line": 150
+      },
+      "description": "getRecentClosedTradesForChart filters trades on status and closed_at (WHERE status = 'closed' AND closed_at IS NOT NULL AND closed_at >= ? ORDER BY closed_at DESC) but the schema mirror defines no index on trades(status) or trades(closed_at), forcing a full table scan on every chart render.",
+      "remediation": "Add CREATE INDEX idx_trades_status_closed_at ON trades(status, closed_at) to the schema in crypto_learning_db.py and the EMPTY_SCHEMA mirror so the chart query can use an index range scan.",
+      "effort": "S",
+      "confidence": 0.75
+    },
+    {
+      "id": "database-connection-timeout-high-3",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 96
+      },
+      "description": "_get_conn() opens sqlite3.connect(str(DB_PATH)) with the default timeout of 5 seconds and no explicit busy timeout, so concurrent writers (MCP server plus the dashboard's better-sqlite3 connection on the same WAL database) will raise 'database is locked' under contention instead of waiting.",
+      "remediation": "Pass an explicit timeout to sqlite3.connect (e.g. sqlite3.connect(str(DB_PATH), timeout=30)) and/or execute PRAGMA busy_timeout=30000 so concurrent writers back off instead of failing immediately.",
+      "effort": "XS",
+      "confidence": 0.7
+    },
+    {
+      "id": "code-exact-duplication-significant-2",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/crypto_advanced_indicators.py",
+        "line": 39
+      },
+      "description": "The `_json_native` serializer helper and its `_tool_serializer` wrapper are copy-pasted verbatim (including the same Spanish docstring) into at least three MCP servers: crypto_advanced_indicators.py, crypto_exchange_ccxt_ultra.py and crypto_market_microstructure.py. Any fix to the numpy serialization bug must be applied in every copy, and the copies will drift.",
+      "remediation": "Extract `_json_native`/`_tool_serializer` into the shared `validators.py` (or a new `serialization.py`) module and import it from each server, so the numpy-serialization fix lives in exactly one place.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "github-log-pattern-6",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": "bin/autopilot.sh",
+        "line": 0
+      },
+      "description": "Log entries are appended to a single daily file shared by all workflows with no rotation, size cap, or retention, and the file is opened with default permissions. Logs grow unbounded and are world-readable depending on umask.",
+      "remediation": "Set restrictive permissions on the log directory (chmod 700) and add rotation/retention (logrotate or a size check that archives/truncates old logs).",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "database-heavy-migration-5",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 182
+      },
+      "description": "_ensure_schema executes the full CREATE TABLE/CREATE INDEX script plus ALTER TABLE and DROP TABLE migrations synchronously on every connection initialization (_init_db is called at the start of each core function), adding repeated DDL work to every tool invocation.",
+      "remediation": "Run schema setup once per process (cache an initialized flag or check PRAGMA user_version) instead of re-executing the whole script on every _init_db() call.",
+      "effort": "L",
+      "confidence": 0.65
+    },
+    {
+      "id": "structure-config-logic-8",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 29
+      },
+      "description": "_discover_db_dir() embeds environment-dependent path-resolution policy (CRYPTO_DB_DIR, CLAUDE_PROJECT_DIR, walking up from PWD up to 6 levels, plugin-relative fallback) directly in the module and executes it at import time (DB_DIR = _discover_db_dir()). Configuration decisions are entangled with the server's runtime logic, making the DB location non-deterministic and untestable without mutating process env/PWD.",
+      "remediation": "Move the path-resolution policy into a dedicated config module that reads a validated settings object, and pass the resolved DB path explicitly into the connection factory instead of computing it at import time.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "hooks/post-setup.sh",
+        "line": 1
+      },
+      "description": "The session startup hook only creates data directories and explicitly defers dependency management to a separate /setup skill and `uv run`. There is no automated, verifiable dev-environment bootstrap (no lockfile check, no dependency install, no health check), so new contributors hit manual setup steps and wasted time.",
+      "remediation": "Provide a single documented bootstrap command (e.g. `uv sync` plus a setup script) that installs dependencies and verifies the environment, and reference it from the README and the post-setup hook.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "performance-no-keep-alive-9",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/crypto_ultra_simple.py",
+        "line": 24
+      },
+      "description": "Every CoinGecko tool (get_bitcoin_price, get_crypto_prices, get_coin_details, get_market_rankings, get_price_history, get_market_trends) issues a standalone requests.get() with no shared Session, so no HTTP keep-alive connection is reused between calls. Each tool invocation re-establishes a TCP+TLS connection to api.coingecko.com.",
+      "remediation": "Introduce a module-level requests.Session() and route all CoinGecko calls through it so connections are kept alive and reused across tool calls.",
+      "effort": "M",
+      "confidence": 0.65
+    },
+    {
+      "id": "structure-repository-logic-4",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/src/lib/db.ts",
+        "line": 7
+      },
+      "description": "db.ts acts as the data-access layer but also contains domain/business logic: extractLiquidationPrice() computes a cross-margin liquidation approximation (entry × (1 ∓ (1/leverage − buffer))) and getSymbolStats() derives win-rate/avg-win/avg-loss aggregates. Repository modules should only map rows to entities; this decision logic belongs in a domain/service layer.",
+      "remediation": "Move extractLiquidationPrice and the derived statistics into a domain module (e.g. lib/domain/trade-metrics.ts) and keep db.ts limited to querying and row-to-entity mapping.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "structure-service-sql-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 29
+      },
+      "description": "The MCP server layer mixes service/orchestration concerns with raw SQL: _ensure_schema() inlines the full DDL, migration statements, and seed inserts, while _record_trade() and the other tool functions build INSERT/SELECT statements inline. There is no repository/DAO boundary, so persistence details leak into the tool surface.",
+      "remediation": "Extract a TradeRepository/PortfolioRepository that owns all SQL and schema DDL, and have the MCP tool functions call repository methods so the service layer contains no SQL strings.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "performance-no-retry-jitter-8",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/crypto_technical_analysis.py",
+        "line": 88
+      },
+      "description": "The exchange fallback loop retries the next exchange immediately on failure with no backoff or jitter. When an upstream exchange is rate-limiting or degraded, all configured exchanges are hammered back-to-back in a tight loop, which can amplify throttling and lengthen the critical path of every indicator tool.",
+      "remediation": "Add exponential backoff with randomized jitter between exchange retry attempts (e.g. sleep(2**attempt + random.uniform(0, 0.5))) and cap the number of retries.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "database-statement-timeout-missing-9",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 96
+      },
+      "description": "The SQLite connection is created without any statement-level timeout or progress handler, so a long-running query (e.g. an unindexed full-table aggregation over trades) can block the MCP server indefinitely with no upper bound.",
+      "remediation": "Set a bounded execution time via conn.set_progress_handler() or PRAGMA busy_timeout plus query-level LIMITs, and abort queries that exceed the budget so a single slow statement cannot hang the server.",
+      "effort": "XS",
+      "confidence": 0.55
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/src/app/api/ohlcv/route.ts",
+        "line": 2
+      },
+      "description": "The route handler leaks the underlying data-source framework into the HTTP layer: it imports the Interval type and getOhlcv directly from @/lib/ohlcv, so the Next.js route is coupled to the Binance-specific adapter rather than to an application service. Swapping the candle provider would require editing every route.",
+      "remediation": "Introduce an application service (e.g. getCandles(symbol, interval, limit)) that the route depends on, and keep the Binance adapter behind that service so routes never import provider modules directly.",
+      "effort": "M",
+      "confidence": 0.65
+    },
+    {
+      "id": "code-copy-paste-variant-6",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/src/lib/market-intelligence.ts",
+        "line": 41
+      },
+      "description": "`parseOutcomes` in market-intelligence.ts is a near-duplicate of `_parse_outcomes` in mcp-servers/crypto_polymarket.py: both defensively JSON-parse the `outcomes`/`outcomePrices` string-or-array fields, index prices by position and coerce to float. The two implementations will diverge on edge cases (e.g. missing price entries).",
+      "remediation": "Move the outcome-parsing logic into a single shared module (or a small npm package consumed by both the dashboard and the MCP server) so the Polymarket payload handling is defined once.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "code-missing-error-main-10",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/server/pty-server.mjs",
+        "line": 36
+      },
+      "description": "`new WebSocketServer({ host: HOST, port: PORT })` is created at module top level with no error handler; if the port is already in use the process throws an unhandled 'error' event and crashes without a clear diagnostic.",
+      "remediation": "Attach `wss.on('error', ...)` and wrap startup in a try/catch (or a `main()` with process-level handlers) that logs the failure and exits with a non-zero code.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "performance-no-adaptive-timeout-6",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/crypto_defillama.py",
+        "line": 36
+      },
+      "description": "DEFAULT_TIMEOUT is a single fixed 30s value applied to every DefiLlama endpoint, including the large /overview/dexs and historical TVL payloads. There is no adaptive or per-endpoint timeout, so a slow large-payload endpoint can block a tool call for the full 30 seconds while small endpoints get an unnecessarily long budget.",
+      "remediation": "Set per-endpoint timeouts (shorter for small responses like /v2/chains, longer for large ones) or implement an adaptive timeout that adjusts based on observed response times.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "database-missing-bloat-monitoring-5",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 96
+      },
+      "description": "The database is opened with PRAGMA journal_mode=WAL and PRAGMA foreign_keys=ON but no auto_vacuum, incremental_vacuum, or free-page monitoring; the trades/predictions/summaries tables grow unbounded with no bloat tracking or maintenance job.",
+      "remediation": "Enable PRAGMA auto_vacuum=INCREMENTAL (or schedule periodic VACUUM), and add a maintenance task that reports freelist_count/page_count so table and index bloat is visible before it degrades query performance.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/validators.py",
+        "line": 0
+      },
+      "description": "validators.py groups unrelated validation concerns — symbol/coin-id regex validation, exchange allow-list checking, positive-integer bounds, and timeframe validation — into one module with no shared abstraction beyond 'validation'. Callers must import the whole grab-bag to use any single validator.",
+      "remediation": "Split the validators into cohesive modules by domain (symbols, exchanges, numeric bounds, timeframes) or expose them through a small Validator interface so each concern can evolve independently.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "code-ignores-return-value-6",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 150
+      },
+      "description": "`conn.execute(\"PRAGMA journal_mode=WAL\")` and `conn.execute(\"PRAGMA foreign_keys=ON\")` in `_get_conn` discard the returned cursor, so a failure to enable WAL or foreign-key enforcement (which silently degrades durability and referential integrity) is never detected.",
+      "remediation": "Capture and check the PRAGMA result, e.g. `row = conn.execute(\"PRAGMA journal_mode=WAL\").fetchone()` and assert the mode is 'wal', logging a warning if the pragma did not take effect.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "performance-no-request-collapsing-4",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/src/components/price-chart.tsx",
+        "line": 110
+      },
+      "description": "The price polling effect fires a fetch to /api/price every 30 seconds per mounted PriceChart instance, and the candle-fetch effect issues separate /api/ohlcv and /api/price requests on every symbol/timeframe change. Concurrent components or rapid symbol switching produce duplicate in-flight requests to the same endpoints with no collapsing/deduplication.",
+      "remediation": "Deduplicate concurrent requests to /api/price and /api/ohlcv (e.g. a shared in-flight promise map keyed by symbol+interval, or SWR/React Query with a shared cache) so simultaneous callers share one network request.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "skills/setup/SKILL.md",
+        "line": 26
+      },
+      "description": "The setup skill instructs the agent to install uv by piping a remote install script directly into a shell (`curl -LsSf https://astral.sh/uv/install.sh | sh`), and the Windows variant does the same with `irm ... | iex`. The script is fetched from a mutable URL with no version pin or checksum verification, so a compromised or changed upstream script executes arbitrary code with the user's privileges.",
+      "remediation": "Pin the installer to a specific released version and verify a published checksum before executing, e.g. download the versioned script to a temp file, validate its SHA-256 against the known digest, then run it. Alternatively install uv via a package manager (brew/apt/pipx) with a pinned version.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "performance-no-compression-13",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/next.config.ts",
+        "line": 3
+      },
+      "description": "next.config.ts defines only serverExternalPackages and enables no compression configuration. The dashboard serves large JSON payloads (OHLCV candle arrays, market-intelligence snapshots) and Next.js response compression is not explicitly enabled/configured, so responses may be sent uncompressed.",
+      "remediation": "Enable response compression (Next.js `compress: true` is default but verify it is not disabled, and/or add gzip/brotli at the reverse proxy) so large JSON API payloads are compressed on the wire.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/src/app/api/ohlcv/route.ts",
+        "line": 6
+      },
+      "description": "The OHLCV route is marked `export const dynamic = \"force-dynamic\"`, which disables Next.js route caching entirely, so every client request re-executes the upstream Binance fetch path even though the underlying candle data only changes per interval. This multiplies upstream API calls and compute cost unnecessarily.",
+      "remediation": "Remove force-dynamic or add an explicit revalidate window (e.g. `export const revalidate = 60`) so identical OHLCV requests are served from cache instead of hitting the upstream API on every call.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-llm-high-usage-1",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "skills/analyze/SKILL.md",
+        "line": 1
+      },
+      "description": "The /analyze workflow spawns 5 subagents per invocation, including two opus-tier agents (portfolio-manager and learning-agent) plus three sonnet/haiku agents, each with multi-turn MCP tool access. Every analysis run therefore consumes a large, unbounded amount of LLM tokens with no per-run budget, no caching of agent outputs, and no cap on how often the workflow is triggered.",
+      "remediation": "Add a token/run budget guard to the /analyze workflow: cache Phase 1 report files and reuse them within a time window instead of re-spawning agents, downgrade non-decision agents where possible, and document a maximum number of full analyses per day.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "bin/autopilot.sh",
+        "line": 0
+      },
+      "description": "The headless `claude -p` invocation in autopilot.sh has no timeout or watchdog. If the model call or an MCP server hangs (e.g. a slow exchange API), the cron job blocks indefinitely, overlapping with the next scheduled run and potentially accumulating concurrent headless sessions against the same SQLite DB.",
+      "remediation": "Wrap the `claude -p` call in `timeout 600` (or a configurable limit), and add a lockfile (flock) so overlapping cron invocations cannot run concurrently.",
+      "effort": "M",
+      "confidence": 0.65
+    },
+    {
+      "id": "cost-no-performance-budget-10",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "bin/autopilot.sh",
+        "line": 1
+      },
+      "description": "The autopilot runs unattended via cron with no performance or cost budget defined anywhere: no maximum runtime, no token/spend ceiling, and no alerting when a run exceeds expectations. A runaway or looping headless session would consume resources indefinitely without detection.",
+      "remediation": "Define explicit budgets for each workflow (max wall-clock time and max token spend), enforce them with `timeout` around the claude invocation, and log/alert when a run exceeds the budget.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "bin/autopilot.sh",
+        "line": 0
+      },
+      "description": "The crontab examples schedule monitor/quick/analyze/portfolio jobs at overlapping times (hourly monitor plus daily quick/analyze/portfolio) with no concurrency guard. Multiple headless Claude sessions can run simultaneously against the same project directory and SQLite learning.db, risking interleaved writes and duplicate trade closes.",
+      "remediation": "Serialize autopilot runs with a lock (flock on a lockfile) or a queue, and stagger the cron schedules so no two workflows overlap.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-api-no-client-rate-limit-4",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/src/lib/ohlcv.ts",
+        "line": 41
+      },
+      "description": "The server-side fetchers call Binance's public klines and ticker endpoints with no client-side rate limiting, request collapsing, or backoff. Under concurrent dashboard usage or aggressive polling, these calls can exceed Binance rate limits, triggering throttling or IP bans that break the dashboard and force costly retries.",
+      "remediation": "Add a shared rate limiter / request-collapsing layer (e.g. a token-bucket or in-flight dedupe) around the Binance fetchers and honor 429 responses with exponential backoff.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/src/lib/ohlcv.ts",
+        "line": 41
+      },
+      "description": "There is no monitoring or accounting of upstream API usage across the dashboard fetchers or the MCP servers. Without tracking call volume, error rates, or per-endpoint consumption, quota exhaustion and cost spikes from the public APIs go undetected until they cause outages.",
+      "remediation": "Add lightweight usage counters/metrics for each upstream API (calls, errors, latency) and emit them to logs or a metrics endpoint so quota and cost trends are observable.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "github-log-pattern-5",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "bin/autopilot.sh",
+        "line": 0
+      },
+      "description": "The autopilot script captures the exit code of the `claude -p` call into EXIT_CODE but the `set -euo pipefail` at the top means a non-zero exit from the command aborts the script before the 'Finished' log line and the `exit $EXIT_CODE` are reached, so failed runs are not logged as finished.",
+      "remediation": "Temporarily disable errexit around the claude invocation (e.g. `set +e` ... `set -e`) or use `if ! claude ...; then EXIT_CODE=$?; fi` so the completion line and exit code are always recorded.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "security-gha-workspace-not-cleaned-6",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "bin/autopilot.sh",
+        "line": 0
+      },
+      "description": "Each autopilot run appends full model output to data/logs/YYYY-MM-DD.log and leaves behind generated report files under data/reports/ with no rotation or cleanup. Over time this accumulates unbounded on-disk artifacts (including any sensitive portfolio data the agents emit) that are never pruned.",
+      "remediation": "Add log rotation (logrotate or a size-based truncation in the script) and a retention policy that prunes data/reports and data/logs older than N days.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/src/lib/market-intelligence.ts",
+        "line": 22
+      },
+      "description": "The market-intelligence fetchers return null on any failure with no retry or backoff strategy. Transient upstream errors (Polymarket, DefiLlama, stablecoins) silently degrade the panel, and any future retry logic added ad hoc would amplify load without jitter, increasing both failure and cost risk.",
+      "remediation": "Implement a bounded retry with exponential backoff and jitter for the fetchJson helper, and surface degraded state to the UI instead of silently returning null.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "cost-no-http-compression-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/next.config.ts",
+        "line": 3
+      },
+      "description": "The Next.js config only sets serverExternalPackages and enables no compression or response optimization. The dashboard serves OHLCV candle arrays, market-intelligence snapshots and trade lists over the API routes without compression, inflating bandwidth and egress cost for every client poll.",
+      "remediation": "Enable compression in next.config.ts (or via the hosting layer) and ensure API responses for large payloads such as OHLCV candles are gzip/brotli encoded.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "github-issue-health-1",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "CONTRIBUTING.md",
+        "line": 0
+      },
+      "description": "CONTRIBUTING.md defines bug and feature issue templates only as prose instructions ('Open a GitHub issue with the following information') rather than as structured issue templates. There are no .github/ISSUE_TEMPLATE files, so reports arrive unstructured and are hard to triage.",
+      "remediation": "Add .github/ISSUE_TEMPLATE/bug_report.yml and feature_request.yml with the fields described in CONTRIBUTING.md so issues are consistently structured and auto-labeled.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "github-log-pattern-2",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/server/pty-server.mjs",
+        "line": 0
+      },
+      "description": "The PTY server logs lifecycle events with `console.log`/`console.warn` and interpolated strings (e.g. `[pty-server] spawned PID ${pty.pid}`) with no log level or structured format, and it logs the remote address of rejected connections. This is inconsistent with the project's own CONTRIBUTING.md rule to use the logging module and avoid ad-hoc output.",
+      "remediation": "Adopt a leveled logger (pino/winston) with structured fields (event, pid, remote) and consistent severity levels instead of raw console calls.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "github-log-pattern-4",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "hooks/post-setup.sh",
+        "line": 0
+      },
+      "description": "The SessionStart hook suppresses all errors with `2>/dev/null || true` and produces no log output at all. If directory creation fails (e.g. permissions), the failure is completely silent and later MCP/agent operations fail with confusing downstream errors.",
+      "remediation": "Log hook failures to a known location (e.g. data/logs/hook.log) with a timestamp and the failing path, while still exiting 0 so the session is not blocked.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "github-log-pattern-9",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 0
+      },
+      "description": "The DB path discovery walks up to six parent directories from PWD looking for an existing data/db/learning.db and silently falls back to the plugin-local path. The chosen DB location is never logged, so when trades appear to vanish users cannot tell which database file the server actually opened.",
+      "remediation": "Log the resolved DB_PATH (and which discovery branch was taken) once at server startup so the active database is always identifiable.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "security-gha-fork-pr-4",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "CONTRIBUTING.md",
+        "line": 0
+      },
+      "description": "The contribution workflow instructs contributors to fork the repository and open pull requests against main, and the project ships a SessionStart hook (hooks/hooks.json -> hooks/post-setup.sh) that executes a shell script on session start. A PR that modifies hooks/post-setup.sh would execute attacker-controlled shell code for any maintainer who checks out and opens the branch, with no CI gate shown to review it.",
+      "remediation": "Add a CI check that flags changes to hooks/ and other executable scripts for mandatory human review, and document that maintainers should review hook changes before running Claude Code on an untrusted branch.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers.plugin.json",
+        "line": 38
+      },
+      "description": "The MCP server manifest documents configuration only via an inline `_comment` string inside the env block, and the DB path discovery logic in crypto_learning_db.py is non-obvious. Poor operational documentation of how the DB location and servers are wired increases onboarding and maintenance cost for contributors.",
+      "remediation": "Move the configuration explanation out of the JSON env block into README/docs, documenting CRYPTO_DB_DIR, the DB discovery order, and how each MCP server is launched.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 1
+      },
+      "description": "The project declares an MIT license and pulls in third-party dependencies (fastmcp, ccxt, numpy, pandas, requests) but there is no automated license inventory or compliance check in the repository, so incompatible or changed licenses in transitive dependencies would go unnoticed.",
+      "remediation": "Add an automated license scan (e.g. pip-licenses or a CI license-check step) that inventories dependency licenses and fails the build on disallowed licenses.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-slow-tests-2",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 1
+      },
+      "description": "The pytest configuration uses `addopts = \"-v --tb=short\"` with no parallelism (e.g. pytest-xdist) and no test selection markers, so any future suite that touches network-backed MCP servers or SQLite will run serially and slowly, increasing developer iteration cost.",
+      "remediation": "Add pytest-xdist for parallel execution and mark network/integration tests so the fast unit subset can be run during development.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "github-commit-history-1",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "CONTRIBUTING.md",
+        "line": 0
+      },
+      "description": "CONTRIBUTING.md asks contributors to 'Commit with a clear message describing the change' but defines no commit message convention (no Conventional Commits, no scope/type rules), so history quality depends entirely on individual discipline.",
+      "remediation": "Adopt and document a commit message convention (e.g. Conventional Commits) in CONTRIBUTING.md and enforce it with a commit-msg hook or CI check.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "code-missing-return-type-8",
+      "module": "code",
+      "severity": "low",
+      "location": {
+        "file": "mcp-servers/crypto_advanced_indicators.py",
+        "line": 39
+      },
+      "description": "`_json_native(obj)` and `_tool_serializer(result)` are declared without parameter or return type annotations, unlike the rest of the module which annotates tool signatures. The same untyped helpers appear in crypto_exchange_ccxt_ultra.py and crypto_market_security.py.",
+      "remediation": "Annotate the helpers, e.g. `def _json_native(obj: Any) -> Any:` and `def _tool_serializer(result: Any) -> str:`, to keep the module consistently typed.",
+      "effort": "S",
+      "confidence": 0.8
+    },
+    {
+      "id": "database-max-lifetime-missing-5",
+      "module": "database",
+      "severity": "low",
+      "location": {
+        "file": "dashboard/src/lib/db.ts",
+        "line": 68
+      },
+      "description": "getDb() caches a single better-sqlite3 connection in the module-level _db variable for the lifetime of the process with no max-lifetime or re-open policy; if the underlying learning.db file is replaced (e.g. by bin/sync-plugin-db.sh copying a new DB over it) the cached handle keeps serving the stale file.",
+      "remediation": "Track the DB file mtime/inode and re-open the connection when it changes, or add a max-lifetime after which the cached handle is closed and recreated, so external DB syncs are picked up.",
+      "effort": "XS",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-adapter-violation-10",
+      "module": "structure",
+      "severity": "low",
+      "location": {
+        "file": "dashboard/src/lib/ohlcv.ts",
+        "line": 0
+      },
+      "description": "ohlcv.ts is the adapter to the Binance klines/ticker API, but it also embeds domain transformation logic: toBinanceSymbol() applies quote-currency inference rules and the response mapping performs numeric coercion and unit conversion (ms→s). The adapter is doing more than translating the external protocol into the internal model.",
+      "remediation": "Split the module into a thin Binance HTTP adapter that returns raw payloads and a mapper that converts them into the Candle domain type, so symbol-normalization rules live in one place.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "module": "structure",
+      "severity": "low",
+      "location": {
+        "file": "dashboard/src/lib/market-intelligence.ts",
+        "line": 0
+      },
+      "description": "The GammaMarket/Chain/DexOverview DTO types carry behavior: parseOutcomes() and classifyFlow() implement parsing and classification rules (STRONG_INFLOW/OUTFLOW thresholds) that are business logic attached to transport shapes, and getDefiFlowSnapshot() computes the 7-day TVL change inline from raw history points.",
+      "remediation": "Keep the DTO types as pure data shapes and move parseOutcomes/classifyFlow and the TVL-change computation into a dedicated domain module that consumes the DTOs.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "code-missing-docstring-10",
+      "module": "code",
+      "severity": "low",
+      "location": {
+        "file": "tests/helpers.py",
+        "line": 4
+      },
+      "description": "`call_tool` is defined identically in both tests/helpers.py and tests/conftest.py; the helpers.py copy is a duplicate utility module whose presence invites divergence between the two definitions.",
+      "remediation": "Keep a single definition (in conftest.py or helpers.py) and import it from the other location so tests cannot drift between two copies of `call_tool`.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "code-print-statement-5",
+      "module": "code",
+      "severity": "low",
+      "location": {
+        "file": "dashboard/server/pty-server.mjs",
+        "line": 45
+      },
+      "description": "The PTY server uses raw `console.log`/`console.warn` calls throughout (listening banner, spawned PID, rejected connections, resize failures) instead of a structured logger, making it hard to filter or route these operational logs.",
+      "remediation": "Introduce a small logger (e.g. pino or a leveled wrapper) and replace the console calls with `logger.info`/`logger.warn` so log levels and destinations are configurable.",
+      "effort": "S",
+      "confidence": 0.55
+    },
+    {
+      "id": "github-log-pattern-8",
+      "module": "github",
+      "severity": "info",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 0
+      },
+      "description": "The learning DB server performs schema migrations by executing ALTER/DROP statements inside a loop that swallows `sqlite3.OperationalError` with a bare `pass` and no logging. A migration that fails for an unexpected reason (not 'already exists') is silently ignored, leaving the schema in an unknown state with no diagnostic trail.",
+      "remediation": "Log the swallowed exception at debug/info level and only suppress the specific 'duplicate column'/'no such table' errors; re-raise or log at warning level for any other OperationalError.",
+      "effort": "XS",
+      "confidence": 0.55
+    },
+    {
+      "id": "github-log-pattern-1",
+      "module": "github",
+      "severity": "info",
+      "location": {
+        "file": "bin/autopilot.sh",
+        "line": 0
+      },
+      "description": "Autopilot logging uses ad-hoc `echo \"[$TIMESTAMP] ...\" >> \"$LOG_FILE\"` lines with a hand-rolled timestamp format and no log level, request id, or structured fields. This makes the logs hard to parse or correlate across the multiple workflows that write to the same daily file.",
+      "remediation": "Emit structured, leveled log lines (e.g. JSON with timestamp, workflow, level, message) or use a small logging helper, and include a run id so concurrent workflow entries can be correlated.",
+      "effort": "XS",
+      "confidence": 0.5
+    },
+    {
+      "id": "github-log-pattern-10",
+      "module": "github",
+      "severity": "info",
+      "location": {
+        "file": "dashboard/src/lib/db.ts",
+        "line": 0
+      },
+      "description": "The dashboard DB layer silently substitutes an in-memory empty database when learning.db is missing (`createEmptyDb()`), with no log or user-visible warning beyond the isDbInitialized helper. Operators may believe they are viewing real data when the dashboard is actually rendering a synthetic zero-state.",
+      "remediation": "Log a clear warning when falling back to the in-memory DB and surface a visible banner in the UI indicating that no real database was found.",
+      "effort": "XS",
+      "confidence": 0.5
+    },
+    {
+      "id": "github-issue-health-2",
+      "module": "github",
+      "severity": "info",
+      "location": {
+        "file": "CONTRIBUTING.md",
+        "line": 0
+      },
+      "description": "CONTRIBUTING.md references labels (`enhancement`, `question`) and a PR workflow but the repository provides no pull request template and no documented triage/labeling process, so contributions lack a consistent review checklist.",
+      "remediation": "Add a .github/pull_request_template.md mirroring the PR guidelines (focused PR, CLAUDE.md/docs updates, example output for new MCP tools) and document the label taxonomy.",
+      "effort": "XS",
+      "confidence": 0.45
+    },
+    {
+      "id": "github-log-pattern-3",
+      "module": "github",
+      "severity": "info",
+      "location": {
+        "file": "bin/sync-plugin-db.sh",
+        "line": 0
+      },
+      "description": "sync-plugin-db.sh reports status via plain `echo` lines prefixed with `[sync-plugin-db]` and no severity level, and it silently swallows failures in the mtime helper (`2>/dev/null || ...`). Operational failures during a DB sync are therefore not distinguishable from normal output.",
+      "remediation": "Add explicit error handling and leveled output (e.g. write errors to stderr with an ERROR prefix and exit non-zero on failure) so sync problems are visible in logs.",
+      "effort": "XS",
+      "confidence": 0.45
+    },
+    {
+      "id": "github-log-pattern-7",
+      "module": "github",
+      "severity": "info",
+      "location": {
+        "file": "dashboard/server/pty-server.mjs",
+        "line": 0
+      },
+      "description": "The PTY server logs the full shell command and project root at startup and logs every spawned PID and websocket close, but never logs the outcome of the shell session or any error context beyond `e.message`. There is no correlation id tying a browser session to its PTY, making incident investigation difficult.",
+      "remediation": "Assign a session id per connection, include it in every log line for that session, and log session start/end with exit codes so a session can be reconstructed from logs.",
+      "effort": "XS",
+      "confidence": 0.45
+    },
+    {
+      "id": "github-commit-history-2",
+      "module": "github",
+      "severity": "info",
+      "location": {
+        "file": "CONTRIBUTING.md",
+        "line": 0
+      },
+      "description": "The documented workflow has contributors branch from main and open PRs, but there is no documented branch protection, required review, or merge strategy (squash vs merge). This makes commit history and review guarantees dependent on repository settings that are not described anywhere in the repo.",
+      "remediation": "Document the required branch protection rules (required reviews, status checks) and the merge strategy in CONTRIBUTING.md, and enable them in the repository settings.",
+      "effort": "XS",
+      "confidence": 0.4
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "database-irreversible-migration-1",
+          "database-full-table-scan-3",
+          "code-bare-except-1",
+          "security-no-input-validation-14",
+          "database-risky-migration-3",
+          "database-missing-app-pool-8",
+          "performance-no-connection-pool-7",
+          "security-secret-in-code-1",
+          "structure-high-coupling-1",
+          "code-missing-validation-4",
+          "structure-layer-violation-1",
+          "security-gha-pr-target-risk-1",
+          "security-gha-secret-leak-3",
+          "database-missing-index-fk-1",
+          "database-sequential-pagination-1",
+          "cost-llm-very-high-usage-2",
+          "security-cors-wildcard-2",
+          "security-gha-auto-deploy-prod-9",
+          "security-gha-overpermissive-2",
+          "security-missing-headers-10",
+          "cost-no-automated-tests-4",
+          "database-missing-index-where-4",
+          "database-connection-timeout-high-3"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "code-exact-duplication-significant-2",
+          "github-log-pattern-6",
+          "database-heavy-migration-5",
+          "structure-config-logic-8",
+          "cost-dev-setup-missing-3",
+          "performance-no-keep-alive-9",
+          "structure-repository-logic-4",
+          "structure-service-sql-5",
+          "performance-no-retry-jitter-8",
+          "database-statement-timeout-missing-9",
+          "structure-framework-leak-3",
+          "code-copy-paste-variant-6",
+          "code-missing-error-main-10",
+          "performance-no-adaptive-timeout-6",
+          "database-missing-bloat-monitoring-5",
+          "structure-low-cohesion-5"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "code-ignores-return-value-6",
+          "performance-no-request-collapsing-4",
+          "security-gha-action-unpinned-5",
+          "performance-no-compression-13",
+          "cost-api-no-response-cache-5",
+          "cost-llm-high-usage-1",
+          "security-gha-job-no-timeout-7",
+          "cost-no-performance-budget-10",
+          "security-gha-no-concurrency-prod-10",
+          "cost-api-no-client-rate-limit-4",
+          "cost-api-no-usage-monitoring-9",
+          "github-log-pattern-5",
+          "security-gha-workspace-not-cleaned-6",
+          "cost-api-no-retry-strategy-8",
+          "cost-no-http-compression-9",
+          "github-issue-health-1",
+          "github-log-pattern-2",
+          "github-log-pattern-4",
+          "github-log-pattern-9",
+          "security-gha-fork-pr-4",
+          "cost-documentation-poor-7",
+          "cost-no-license-tracking-5",
+          "cost-slow-tests-2",
+          "github-commit-history-1",
+          "code-missing-return-type-8",
+          "database-max-lifetime-missing-5",
+          "structure-adapter-violation-10",
+          "structure-dto-logic-7",
+          "code-missing-docstring-10",
+          "code-print-statement-5",
+          "github-log-pattern-8",
+          "github-log-pattern-1",
+          "github-log-pattern-10",
+          "github-issue-health-2",
+          "github-log-pattern-3",
+          "github-log-pattern-7",
+          "github-commit-history-2"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "code-exact-duplication-significant-2": [
+        "database-irreversible-migration-1"
+      ],
+      "code-bare-except-1": [
+        "database-irreversible-migration-1"
+      ],
+      "code-copy-paste-variant-6": [
+        "database-irreversible-migration-1"
+      ],
+      "code-missing-return-type-8": [
+        "database-irreversible-migration-1"
+      ],
+      "code-ignores-return-value-6": [
+        "database-irreversible-migration-1"
+      ],
+      "code-missing-validation-4": [
+        "database-irreversible-migration-1"
+      ],
+      "code-print-statement-5": [
+        "database-irreversible-migration-1"
+      ],
+      "code-missing-error-main-10": [
+        "database-irreversible-migration-1"
+      ],
+      "code-missing-docstring-10": [
+        "database-irreversible-migration-1"
+      ],
+      "performance-no-connection-pool-7": [
+        "database-irreversible-migration-1"
+      ],
+      "performance-no-keep-alive-9": [
+        "database-irreversible-migration-1"
+      ],
+      "performance-no-retry-jitter-8": [
+        "database-irreversible-migration-1"
+      ],
+      "performance-no-adaptive-timeout-6": [
+        "database-irreversible-migration-1"
+      ],
+      "performance-no-request-collapsing-4": [
+        "database-irreversible-migration-1"
+      ],
+      "performance-no-compression-13": [
+        "database-irreversible-migration-1"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "database-irreversible-migration-1",
+      "severity": "critical",
+      "module": "database",
+      "confidence": 0.75,
+      "score": 97.5,
+      "canonical_rule": "database-irreversible-migration-1"
+    },
+    {
+      "id": "database-full-table-scan-3",
+      "severity": "critical",
+      "module": "database",
+      "confidence": 0.7,
+      "score": 91,
+      "canonical_rule": "database-full-table-scan-3"
+    },
+    {
+      "id": "code-bare-except-1",
+      "severity": "critical",
+      "module": "code",
+      "confidence": 0.85,
+      "score": 85,
+      "canonical_rule": "code-bare-except-1"
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.8,
+      "score": 60,
+      "canonical_rule": "security-no-input-validation-14"
+    },
+    {
+      "id": "database-risky-migration-3",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.8,
+      "score": 52,
+      "canonical_rule": "database-risky-migration-3"
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.7,
+      "score": 45.5,
+      "canonical_rule": "database-missing-app-pool-8"
+    },
+    {
+      "id": "performance-no-connection-pool-7",
+      "severity": "high",
+      "module": "performance",
+      "confidence": 0.7,
+      "score": 42,
+      "canonical_rule": "performance-no-connection-pool-7"
+    },
+    {
+      "id": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 42,
+      "canonical_rule": "security-secret-in-code-1"
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 38.5,
+      "canonical_rule": "structure-high-coupling-1"
+    },
+    {
+      "id": "code-missing-validation-4",
+      "severity": "high",
+      "module": "code",
+      "confidence": 0.75,
+      "score": 37.5,
+      "canonical_rule": "code-missing-validation-4"
+    },
+    {
+      "id": "structure-layer-violation-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 35.75,
+      "canonical_rule": "structure-layer-violation-1"
+    },
+    {
+      "id": "security-gha-pr-target-risk-1",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 35,
+      "canonical_rule": "security-gha-pr-target-risk-1"
+    },
+    {
+      "id": "security-gha-secret-leak-3",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 35,
+      "canonical_rule": "security-gha-secret-leak-3"
+    },
+    {
+      "id": "database-missing-index-fk-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 32.5,
+      "canonical_rule": "database-missing-index-fk-1"
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 32.5,
+      "canonical_rule": "database-sequential-pagination-1"
+    },
+    {
+      "id": "cost-llm-very-high-usage-2",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 28,
+      "canonical_rule": "cost-llm-very-high-usage-2"
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.75,
+      "score": 22.5,
+      "canonical_rule": "security-cors-wildcard-2"
+    },
+    {
+      "id": "security-gha-auto-deploy-prod-9",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 21,
+      "canonical_rule": "security-gha-auto-deploy-prod-9"
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 21,
+      "canonical_rule": "security-gha-overpermissive-2"
+    },
+    {
+      "id": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.7,
+      "score": 21,
+      "canonical_rule": "security-missing-headers-10"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 20,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "database-missing-index-where-4",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.75,
+      "score": 19.5,
+      "canonical_rule": "database-missing-index-where-4"
+    },
+    {
+      "id": "database-connection-timeout-high-3",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.7,
+      "score": 18.2,
+      "canonical_rule": "database-connection-timeout-high-3"
+    },
+    {
+      "id": "code-exact-duplication-significant-2",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.9,
+      "score": 18,
+      "canonical_rule": "code-exact-duplication-significant-2"
+    },
+    {
+      "id": "github-log-pattern-6",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 17.5,
+      "canonical_rule": "github-log-pattern-6"
+    },
+    {
+      "id": "database-heavy-migration-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.65,
+      "score": 16.9,
+      "canonical_rule": "database-heavy-migration-5"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 16.5,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 16,
+      "canonical_rule": "cost-dev-setup-missing-3"
+    },
+    {
+      "id": "performance-no-keep-alive-9",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.65,
+      "score": 15.6,
+      "canonical_rule": "performance-no-keep-alive-9"
+    },
+    {
+      "id": "structure-repository-logic-4",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-repository-logic-4"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "performance-no-retry-jitter-8",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.6,
+      "score": 14.4,
+      "canonical_rule": "performance-no-retry-jitter-8"
+    },
+    {
+      "id": "database-statement-timeout-missing-9",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.55,
+      "score": 14.3,
+      "canonical_rule": "database-statement-timeout-missing-9"
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 14.3,
+      "canonical_rule": "structure-framework-leak-3"
+    },
+    {
+      "id": "code-copy-paste-variant-6",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "code-copy-paste-variant-6"
+    },
+    {
+      "id": "code-missing-error-main-10",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "code-missing-error-main-10"
+    },
+    {
+      "id": "performance-no-adaptive-timeout-6",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.55,
+      "score": 13.2,
+      "canonical_rule": "performance-no-adaptive-timeout-6"
+    },
+    {
+      "id": "database-missing-bloat-monitoring-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 13,
+      "canonical_rule": "database-missing-bloat-monitoring-5"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.55,
+      "score": 12.1,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "code-ignores-return-value-6",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.6,
+      "score": 12,
+      "canonical_rule": "code-ignores-return-value-6"
+    },
+    {
+      "id": "performance-no-request-collapsing-4",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 12,
+      "canonical_rule": "performance-no-request-collapsing-4"
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.7,
+      "score": 9.8,
+      "canonical_rule": "security-gha-action-unpinned-5"
+    },
+    {
+      "id": "performance-no-compression-13",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.4,
+      "score": 9.6,
+      "canonical_rule": "performance-no-compression-13"
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-api-no-response-cache-5"
+    },
+    {
+      "id": "cost-llm-high-usage-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-llm-high-usage-1"
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.65,
+      "score": 9.1,
+      "canonical_rule": "security-gha-job-no-timeout-7"
+    },
+    {
+      "id": "cost-no-performance-budget-10",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.55,
+      "score": 8.8,
+      "canonical_rule": "cost-no-performance-budget-10"
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 8.4,
+      "canonical_rule": "security-gha-no-concurrency-prod-10"
+    },
+    {
+      "id": "cost-api-no-client-rate-limit-4",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-api-no-client-rate-limit-4"
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-api-no-usage-monitoring-9"
+    },
+    {
+      "id": "github-log-pattern-5",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 7.7,
+      "canonical_rule": "github-log-pattern-5"
+    },
+    {
+      "id": "security-gha-workspace-not-cleaned-6",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 7.7,
+      "canonical_rule": "security-gha-workspace-not-cleaned-6"
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.45,
+      "score": 7.2,
+      "canonical_rule": "cost-api-no-retry-strategy-8"
+    },
+    {
+      "id": "cost-no-http-compression-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.45,
+      "score": 7.2,
+      "canonical_rule": "cost-no-http-compression-9"
+    },
+    {
+      "id": "github-issue-health-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-issue-health-1"
+    },
+    {
+      "id": "github-log-pattern-2",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-log-pattern-2"
+    },
+    {
+      "id": "github-log-pattern-4",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-log-pattern-4"
+    },
+    {
+      "id": "github-log-pattern-9",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-log-pattern-9"
+    },
+    {
+      "id": "security-gha-fork-pr-4",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "security-gha-fork-pr-4"
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-documentation-poor-7"
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-no-license-tracking-5"
+    },
+    {
+      "id": "cost-slow-tests-2",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-slow-tests-2"
+    },
+    {
+      "id": "github-commit-history-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.45,
+      "score": 6.3,
+      "canonical_rule": "github-commit-history-1"
+    },
+    {
+      "id": "code-missing-return-type-8",
+      "severity": "low",
+      "module": "code",
+      "confidence": 0.8,
+      "score": 4,
+      "canonical_rule": "code-missing-return-type-8"
+    },
+    {
+      "id": "database-max-lifetime-missing-5",
+      "severity": "low",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 3.9,
+      "canonical_rule": "database-max-lifetime-missing-5"
+    },
+    {
+      "id": "structure-adapter-violation-10",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 3.3,
+      "canonical_rule": "structure-adapter-violation-10"
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 3.3,
+      "canonical_rule": "structure-dto-logic-7"
+    },
+    {
+      "id": "code-missing-docstring-10",
+      "severity": "low",
+      "module": "code",
+      "confidence": 0.6,
+      "score": 3,
+      "canonical_rule": "code-missing-docstring-10"
+    },
+    {
+      "id": "code-print-statement-5",
+      "severity": "low",
+      "module": "code",
+      "confidence": 0.55,
+      "score": 2.75,
+      "canonical_rule": "code-print-statement-5"
+    },
+    {
+      "id": "github-log-pattern-8",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 0.39,
+      "canonical_rule": "github-log-pattern-8"
+    },
+    {
+      "id": "github-log-pattern-1",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 0.35,
+      "canonical_rule": "github-log-pattern-1"
+    },
+    {
+      "id": "github-log-pattern-10",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 0.35,
+      "canonical_rule": "github-log-pattern-10"
+    },
+    {
+      "id": "github-issue-health-2",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.45,
+      "score": 0.32,
+      "canonical_rule": "github-issue-health-2"
+    },
+    {
+      "id": "github-log-pattern-3",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.45,
+      "score": 0.32,
+      "canonical_rule": "github-log-pattern-3"
+    },
+    {
+      "id": "github-log-pattern-7",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.45,
+      "score": 0.32,
+      "canonical_rule": "github-log-pattern-7"
+    },
+    {
+      "id": "github-commit-history-2",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 0.28,
+      "canonical_rule": "github-commit-history-2"
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+{
+  "mock": false,
+  "target": "aurora-synth",
+  "url": "https://github.com/pixbvr/aurora-synth",
+  "commit": "aa204456bfbfff49f79322bfea4673f22d4b4de3",
+  "model": "deepseek-chat",
+  "base_url": "https://api.deepseek.com/v1",
+  "target_dir": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\aurora-synth",
+  "timestamp": "2026-10-05T21:19:01.343Z",
+  "digest": {
+    "file": "digest.json",
+    "tree_files": 171,
+    "included_files": 7,
+    "chars": 40034,
+    "skipped_content": 164,
+    "skipped_sensitive": 0
+  },
+  "arms": {
+    "toolkit": {
+      "ok": true,
+      "output": "toolkit/assessment.json"
+    },
+    "naive": {
+      "ok": true,
+      "output": "naive.md"
+    },
+    "orchestrated": {
+      "ok": true,
+      "requested": true,
+      "output": "orchestrated/assessment.json"
+    }
+  },
+  "arm_c": {
+    "requested": true,
+    "runner": "scripts/dktv-orchestrate.mjs",
+    "max_files": 25,
+    "max_chars": 200000,
+    "max_tokens": 16384,
+    "metrics": {
+      "run_mode": "real",
+      "repo": "aurora-synth",
+      "assessed_at": "2026-10-05T21:16:09.713Z",
+      "report_path": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\results-lote2-deepseek\\aurora-synth\\orchestrated\\assessment-report.md",
+      "report_written": true,
+      "findings_total": 28,
+      "findings_evaluated": 29,
+      "weak_before": 18,
+      "weak_after": 9,
+      "repaired": 9,
+      "repair_failed": 9,
+      "repair_calls": 5,
+      "weak_over_cap": 0,
+      "stamped_total": 23,
+      "stamped_severity": 16,
+      "stamped_effort": 19,
+      "rules_unknown": 0,
+      "llm_calls": 21,
+      "repair_budget": {
+        "max_calls": 8,
+        "max_findings_per_module": 5,
+        "window_radius": 40,
+        "window_chars_cap": 6000,
+        "prompt_chars_cap": 40000,
+        "calls_used": 5
+      },
+      "per_module": {
+        "database": {
+          "weak_before": 0,
+          "weak_after": 0,
+          "repaired": 0,
+          "repair_failed": 0,
+          "repair_calls": 0,
+          "weak_over_cap": 0,
+          "stamped_total": 0,
+          "stamped_severity": 0,
+          "stamped_effort": 0,
+          "rules_unknown": 0
+        },
+        "code": {
+          "weak_before": 0,
+          "weak_after": 0,
+          "repaired": 0,
+          "repair_failed": 0,
+          "repair_calls": 0,
+          "weak_over_cap": 0,
+          "stamped_total": 0,
+          "stamped_severity": 0,
+          "stamped_effort": 0,
+          "rules_unknown": 0
+        },
+        "structure": {
+          "weak_before": 5,
+          "weak_after": 0,
+          "repaired": 5,
+          "repair_failed": 0,
+          "repair_calls": 1,
+          "weak_over_cap": 0,
+          "stamped_total": 4,
+          "stamped_severity": 1,
+          "stamped_effort": 3,
+          "rules_unknown": 0
+        },
+        "flows": {
+          "weak_before": 0,
+          "weak_after": 0,
+          "repaired": 0,
+          "repair_failed": 0,
+          "repair_calls": 0,
+          "weak_over_cap": 0,
+          "stamped_total": 0,
+          "stamped_severity": 0,
+          "stamped_effort": 0,
+          "rules_unknown": 0
+        },
+        "security": {
+          "weak_before": 4,
+          "weak_after": 2,
+          "repaired": 2,
+          "repair_failed": 2,
+          "repair_calls": 1,
+          "weak_over_cap": 0,
+          "stamped_total": 3,
+          "stamped_severity": 1,
+          "stamped_effort": 3,
+          "rules_unknown": 0
+        },
+        "cost": {
+          "weak_before": 1,
+          "weak_after": 1,
+          "repaired": 0,
+          "repair_failed": 1,
+          "repair_calls": 1,
+          "weak_over_cap": 0,
+          "stamped_total": 4,
+          "stamped_severity": 4,
+          "stamped_effort": 3,
+          "rules_unknown": 0
+        },
+        "performance": {
+          "weak_before": 4,
+          "weak_after": 3,
+          "repaired": 1,
+          "repair_failed": 3,
+          "repair_calls": 1,
+          "weak_over_cap": 0,
+          "stamped_total": 2,
+          "stamped_severity": 1,
+          "stamped_effort": 2,
+          "rules_unknown": 0
+        },
+        "github": {
+          "weak_before": 4,
+          "weak_after": 3,
+          "repaired": 1,
+          "repair_failed": 3,
+          "repair_calls": 1,
+          "weak_over_cap": 0,
+          "stamped_total": 10,
+          "stamped_severity": 9,
+          "stamped_effort": 8,
+          "rules_unknown": 0
+        }
+      },
+      "report_language": "en"
+    }
+  },
+  "note": "Arms A and B share one digest (identical input, different prompt/tooling). Arm C (B2) does its own per-module file selection, so its input differs by design.",
+  "api_key_recorded": false
+}

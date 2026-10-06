@@ -1,0 +1,673 @@
+{
+  "target": "deutsia-radio",
+  "mock": false,
+  "created_at": "2026-10-05T20:36:59.543Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "4.1 `test.yml` does not validate the Gradle wrapper",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "4.6 `dependabot.yml` has no `groups`",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-59",
+      "title": "8.5 `ic_invizible.xml` — typo in filename",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-48",
+      "title": "6.4 `assets/` directory contains screenshots and SVGs",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "3.2 `coverArtUri` in `bundled_stations.json` points to clearnet hosts",
+      "security_relevant": true
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "2.3 `READ_MEDIA_IMAGES` / `READ_MEDIA_AUDIO` without apparent use",
+      "security_relevant": true
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "2.7 No `android:networkSecurityConfig` and no `android:dataExtractionRules` reference",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-60",
+      "title": "8.6 `app/src/main/res/drawable/ic_launcher_foreground.xml` and `ic_launcher_monochrome.xml`",
+      "security_relevant": false
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-39",
+      "title": "5.8 `AuthenticationActivity` — no `onBackPressed` handling",
+      "security_relevant": true
+    },
+    {
+      "label": "C10",
+      "arm": "orchestrated",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1.1 SDK and Java version mismatch across the project",
+      "security_relevant": false
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-52",
+      "title": "7.2 `README_TESTS.md` and `README_SECURITY_TESTS.md` inside `src/test/`",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-55",
+      "title": "8.1 `app/src/main/res/values/colors_*.xml` — 8 color theme files",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "3.3 `i2p_stations.json` has a duplicate entry",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-fk-1",
+      "title": "database-missing-index-fk-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "4.3 `trivy.yml` scans the filesystem, not the built APK",
+      "security_relevant": true
+    },
+    {
+      "label": "C17",
+      "arm": "naive",
+      "source_id": "naive-claim-36",
+      "title": "5.5 `AuthenticationActivity` — `isVerifying` flag is not thread-safe",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-3",
+      "title": "github-issue-health-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "naive",
+      "source_id": "naive-claim-34",
+      "title": "5.3 `EqualizerManager` — `initializeForPreview` sets `isBassBoostSupported = true` unconditionally",
+      "security_relevant": false
+    },
+    {
+      "label": "C20",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-1",
+      "title": "github-issue-health-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "1.7 `lint { disable += \"NullSafeMutableLiveData\" }`",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "orchestrated",
+      "source_id": "structure-dto-logic-7",
+      "title": "structure-dto-logic-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-49",
+      "title": "6.5 `assets/160731958(1).svg` — filename with parentheses and a space-like character",
+      "security_relevant": false
+    },
+    {
+      "label": "C24",
+      "arm": "toolkit",
+      "source_id": "security-gha-no-container-8",
+      "title": "security-gha-no-container-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C25",
+      "arm": "orchestrated",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "3.4 `security-crypto:1.1.0-alpha06`",
+      "security_relevant": true
+    },
+    {
+      "label": "C27",
+      "arm": "naive",
+      "source_id": "naive-claim-41",
+      "title": "5.10 `bundled_stations.json` — `proxyPort: 0` for non-proxied stations",
+      "security_relevant": false
+    },
+    {
+      "label": "C28",
+      "arm": "naive",
+      "source_id": "naive-claim-58",
+      "title": "8.4 `app/src/main/res/layout-land/fragment_now_playing.xml` exists but no other `-land` layouts",
+      "security_relevant": false
+    },
+    {
+      "label": "C29",
+      "arm": "orchestrated",
+      "source_id": "structure-singleton-violation-5",
+      "title": "structure-singleton-violation-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C30",
+      "arm": "naive",
+      "source_id": "naive-claim-56",
+      "title": "8.2 `values-night/themes.xml` exists but no `values-night/colors.xml`",
+      "security_relevant": false
+    },
+    {
+      "label": "C31",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-high-usage-1",
+      "title": "cost-gha-high-usage-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C32",
+      "arm": "toolkit",
+      "source_id": "security-gha-auto-deploy-prod-9",
+      "title": "security-gha-auto-deploy-prod-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C33",
+      "arm": "orchestrated",
+      "source_id": "database-heavy-migration-5",
+      "title": "database-heavy-migration-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C34",
+      "arm": "orchestrated",
+      "source_id": "structure-repository-logic-4",
+      "title": "structure-repository-logic-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C35",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "3.6 `DigestAuthenticator` — HTTP Digest auth is weak",
+      "security_relevant": true
+    },
+    {
+      "label": "C36",
+      "arm": "orchestrated",
+      "source_id": "database-missing-bloat-monitoring-5",
+      "title": "database-missing-bloat-monitoring-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C37",
+      "arm": "toolkit",
+      "source_id": "security-debug-in-prod-1",
+      "title": "security-debug-in-prod-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C38",
+      "arm": "naive",
+      "source_id": "naive-claim-31",
+      "title": "5. Code-level issues (from the files shown)",
+      "security_relevant": false
+    },
+    {
+      "label": "C39",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "1.4 `kotlin-kapt` plugin applied but no Kotlin plugin version pinned",
+      "security_relevant": false
+    },
+    {
+      "label": "C40",
+      "arm": "orchestrated",
+      "source_id": "database-missing-app-pool-8",
+      "title": "database-missing-app-pool-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C41",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "2.2 `package=\"com.opensource.i2pradio\"` in the manifest",
+      "security_relevant": false
+    },
+    {
+      "label": "C42",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-expensive-runner-4",
+      "title": "cost-gha-expensive-runner-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C43",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "4.2 `test.yml` uploads test reports but not on failure only",
+      "security_relevant": false
+    },
+    {
+      "label": "C44",
+      "arm": "naive",
+      "source_id": "naive-claim-44",
+      "title": "5.13 `tor_stations.json` — only 4 stations, all with `proxyPort: 9050`",
+      "security_relevant": true
+    },
+    {
+      "label": "C45",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-where-4",
+      "title": "database-missing-index-where-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C46",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "4.5 No `concurrency` block on any workflow",
+      "security_relevant": false
+    },
+    {
+      "label": "C47",
+      "arm": "orchestrated",
+      "source_id": "structure-framework-leak-3",
+      "title": "structure-framework-leak-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C48",
+      "arm": "naive",
+      "source_id": "naive-claim-38",
+      "title": "5.7 `AuthenticationActivity` imports `FragmentActivity` but extends `AppCompatActivity`",
+      "security_relevant": false
+    },
+    {
+      "label": "C49",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "3.1 Bundled station JSON contains hardcoded proxy assumptions",
+      "security_relevant": true
+    },
+    {
+      "label": "C50",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "3.7 `usesCleartextTraffic=\"true\"` + Digest auth + cleartext cover art",
+      "security_relevant": true
+    },
+    {
+      "label": "C51",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-1",
+      "title": "structure-high-coupling-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C52",
+      "arm": "toolkit",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C53",
+      "arm": "naive",
+      "source_id": "naive-claim-33",
+      "title": "5.2 `EqualizerManager` — `isInitialized()` returns true in preview mode",
+      "security_relevant": false
+    },
+    {
+      "label": "C54",
+      "arm": "naive",
+      "source_id": "naive-claim-35",
+      "title": "5.4 `EqualizerManager` — `FIXED_BAND_FREQUENCIES` hardcoded to 5 bands",
+      "security_relevant": false
+    },
+    {
+      "label": "C55",
+      "arm": "naive",
+      "source_id": "naive-claim-46",
+      "title": "6.2 `fastlane/metadata/android/en-US/changelogs/` has `10605.txt`, `10700.txt`, `10701.txt`",
+      "security_relevant": false
+    },
+    {
+      "label": "C56",
+      "arm": "naive",
+      "source_id": "naive-claim-43",
+      "title": "5.12 `i2p_stations.json` — `eQtv Ukrainian` uses a clearnet cover art URL",
+      "security_relevant": true
+    },
+    {
+      "label": "C57",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "4.4 `scorecard.yml` has `publish_results: true` but no `repo_token`",
+      "security_relevant": true
+    },
+    {
+      "label": "C58",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-1",
+      "title": "github-log-pattern-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C59",
+      "arm": "orchestrated",
+      "source_id": "code-exact-duplication-significant-2",
+      "title": "code-exact-duplication-significant-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C60",
+      "arm": "naive",
+      "source_id": "naive-claim-53",
+      "title": "7.3 `RadioBrowserServerManagerDnsLeakTest` — good, but is it run in CI?",
+      "security_relevant": false
+    },
+    {
+      "label": "C61",
+      "arm": "naive",
+      "source_id": "naive-claim-54",
+      "title": "7.4 `unitTests { isReturnDefaultValues = true }`",
+      "security_relevant": false
+    },
+    {
+      "label": "C62",
+      "arm": "orchestrated",
+      "source_id": "database-sequential-pagination-1",
+      "title": "database-sequential-pagination-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C63",
+      "arm": "naive",
+      "source_id": "naive-claim-32",
+      "title": "5.1 `EqualizerManager.initialize` — resource leak on partial failure",
+      "security_relevant": false
+    },
+    {
+      "label": "C64",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "2.4 `WRITE_EXTERNAL_STORAGE` with `maxSdkVersion=\"28\"` but no `requestLegacyExternalStorage`",
+      "security_relevant": false
+    },
+    {
+      "label": "C65",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-infinite-artifacts-6",
+      "title": "cost-gha-infinite-artifacts-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C66",
+      "arm": "orchestrated",
+      "source_id": "database-irreversible-migration-1",
+      "title": "database-irreversible-migration-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C67",
+      "arm": "toolkit",
+      "source_id": "security-gha-workspace-not-cleaned-6",
+      "title": "security-gha-workspace-not-cleaned-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C68",
+      "arm": "naive",
+      "source_id": "naive-claim-42",
+      "title": "5.11 `bundled_stations.json` — `Lain Radio - Focus` has no `country`/`countryCode`",
+      "security_relevant": false
+    },
+    {
+      "label": "C69",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "1.5 `signingConfigs` block is broken when `keystore.properties` is absent",
+      "security_relevant": false
+    },
+    {
+      "label": "C70",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "1.2 `compileSdk = 34` is behind current Play requirements",
+      "security_relevant": false
+    },
+    {
+      "label": "C71",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "2.6 `AuthenticationActivity` has `android:screenOrientation=\"portrait\"`",
+      "security_relevant": true
+    },
+    {
+      "label": "C72",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "2.1 `android:usesCleartextTraffic=\"true\"` globally",
+      "security_relevant": true
+    },
+    {
+      "label": "C73",
+      "arm": "naive",
+      "source_id": "naive-claim-57",
+      "title": "8.3 17 locale files",
+      "security_relevant": false
+    },
+    {
+      "label": "C74",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C75",
+      "arm": "orchestrated",
+      "source_id": "structure-service-sql-5",
+      "title": "structure-service-sql-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C76",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-1",
+      "title": "github-commit-history-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C77",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "3.5 `PasswordEncryptionUtil` / `PasswordHashUtil` — cannot verify without source",
+      "security_relevant": true
+    },
+    {
+      "label": "C78",
+      "arm": "naive",
+      "source_id": "naive-claim-50",
+      "title": "6.6 `assets/5.PNG` — uppercase extension",
+      "security_relevant": false
+    },
+    {
+      "label": "C79",
+      "arm": "naive",
+      "source_id": "naive-claim-45",
+      "title": "6.1 `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `PRIVACY_POLICY.md` exist but weren't shown",
+      "security_relevant": false
+    },
+    {
+      "label": "C80",
+      "arm": "naive",
+      "source_id": "naive-claim-37",
+      "title": "5.6 `AuthenticationActivity` — `progressBar` is nullable but `lateinit` fields are not",
+      "security_relevant": true
+    },
+    {
+      "label": "C81",
+      "arm": "naive",
+      "source_id": "naive-claim-47",
+      "title": "6.3 `zapstore.yaml` exists but no corresponding CI",
+      "security_relevant": false
+    },
+    {
+      "label": "C82",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-timeout-9",
+      "title": "cost-gha-no-timeout-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C83",
+      "arm": "naive",
+      "source_id": "naive-claim-40",
+      "title": "5.9 `ExampleInstrumentedTest` is the default template",
+      "security_relevant": false
+    },
+    {
+      "label": "C84",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "1.3 Dependency version skew",
+      "security_relevant": true
+    },
+    {
+      "label": "C85",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-2",
+      "title": "structure-high-coupling-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C86",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-2",
+      "title": "github-issue-health-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C87",
+      "arm": "naive",
+      "source_id": "naive-claim-30",
+      "title": "4.7 No release workflow",
+      "security_relevant": false
+    },
+    {
+      "label": "C88",
+      "arm": "orchestrated",
+      "source_id": "structure-low-cohesion-5",
+      "title": "structure-low-cohesion-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C89",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "1.9 `gradle-wrapper.jar` committed",
+      "security_relevant": false
+    },
+    {
+      "label": "C90",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "1.6 `isMinifyEnabled = true` with a very thin ProGuard config",
+      "security_relevant": false
+    },
+    {
+      "label": "C91",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "2.5 `DeutsiaMediaLibraryService` is `exported=\"true\"` and `enabled=\"false\"`",
+      "security_relevant": true
+    },
+    {
+      "label": "C92",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C93",
+      "arm": "orchestrated",
+      "source_id": "structure-service-orchestration-3",
+      "title": "structure-service-orchestration-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C94",
+      "arm": "naive",
+      "source_id": "naive-claim-51",
+      "title": "7.1 Test coverage is concentrated in `security/` and `data/radiobrowser/`",
+      "security_relevant": false
+    },
+    {
+      "label": "C95",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "1.8 `.idea/` files committed to the repository",
+      "security_relevant": false
+    }
+  ]
+}

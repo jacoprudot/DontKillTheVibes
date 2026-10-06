@@ -1,0 +1,716 @@
+{
+  "metadata": {
+    "repo": "deutsia-radio",
+    "assessed_at": "2026-10-05T20:32:10.955Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 20,
+    "findings_raw": 36,
+    "findings_dropped": 6,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 1,
+    "total_findings": 29,
+    "by_severity": {
+      "critical": 1,
+      "high": 6,
+      "medium": 18,
+      "low": 2,
+      "info": 2
+    },
+    "by_module": {
+      "database": 7,
+      "structure": 11,
+      "cost": 6,
+      "github": 5
+    },
+    "effort_estimate": {
+      "XS": 2,
+      "S": 4,
+      "M": 20,
+      "L": 3
+    }
+  },
+  "findings": [
+    {
+      "id": "database-irreversible-migration-1",
+      "module": "database",
+      "severity": "critical",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/data/RadioDatabase.kt",
+        "line": 29
+      },
+      "description": "The schema evolution relies on destructive/irreversible ALTER TABLE ADD COLUMN migrations (MIGRATION_1_2 through MIGRATION_9_10) with no downgrade path and no fallbackToDestructiveMigration guard documented. If a migration fails partway, the database is left in an inconsistent state with no rollback strategy.",
+      "remediation": "Add explicit downgrade migrations or a documented recovery path, wrap each migration in a transaction, and add a pre-migration backup of the database file so a failed upgrade can be restored.",
+      "effort": "L",
+      "confidence": 0.45
+    },
+    {
+      "id": "database-missing-index-fk-1",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/data/BrowseHistory.kt",
+        "line": 18
+      },
+      "description": "BrowseHistory stores radioBrowserUuid as a logical reference to radio_stations.radioBrowserUuid and is queried by it (countBrowseHistoryByUuid, updateBrowseHistoryTimestamp), but the entity declares no @Index on radioBrowserUuid. The index is only created ad-hoc in MIGRATION_4_5, so a fresh install built from the entity schema will not have it.",
+      "remediation": "Declare @Entity(tableName = \"browse_history\", indices = [Index(value = [\"radioBrowserUuid\"]), Index(value = [\"visitedAt\"])]) on BrowseHistory so the index is part of the generated schema, and add a migration for existing installs.",
+      "effort": "S",
+      "confidence": 0.7
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "module": "structure",
+      "severity": "high",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/data/radiobrowser/RadioBrowserClient.kt",
+        "line": 6
+      },
+      "description": "RadioBrowserClient (data layer) directly depends on UI-layer PreferencesHelper and on TorManager, reading seven different proxy preferences and Tor connection state to build its HTTP client. A data-layer API client reaching into UI preferences and a global singleton creates tight cross-layer coupling.",
+      "remediation": "Introduce a ProxyConfigProvider abstraction (interface) that supplies resolved proxy settings, inject it into RadioBrowserClient, and have the UI layer implement it over PreferencesHelper/TorManager.",
+      "effort": "L",
+      "confidence": 0.75
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/data/RadioDao.kt",
+        "line": 0
+      },
+      "description": "Browse history pruning uses OFFSET-based pagination: 'SELECT visitedAt FROM browse_history ORDER BY visitedAt DESC LIMIT 1 OFFSET 74' inside deleteOldBrowseHistory. OFFSET forces SQLite to scan and discard the first 74 rows on every prune, and the query is re-run on each history insert.",
+      "remediation": "Replace the OFFSET subquery with a keyset/seek approach, e.g. delete rows whose visitedAt is older than the 75th newest timestamp obtained via a bounded index scan, or maintain a rolling window by deleting WHERE visitedAt < (SELECT MIN(visitedAt) FROM (SELECT visitedAt FROM browse_history ORDER BY visitedAt DESC LIMIT 75)).",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/data/RadioDatabase.kt",
+        "line": 0
+      },
+      "description": "RadioDatabase builds the Room instance without configuring a connection pool or query executor; the default single-threaded executor is used for all DAO work while the repository dispatches many concurrent suspend queries (getQueueStations, batch UUID lookups, browse history writes). Under concurrent load these serialize on one connection.",
+      "remediation": "Configure Room's setQueryExecutor/setTransactionExecutor with a bounded thread pool sized to the expected concurrency, and document the chosen pool size relative to the app's query load.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "database-missing-index-where-4",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/data/RadioDao.kt",
+        "line": 25
+      },
+      "description": "The radio_stations table is queried and sorted by genre, isLiked, lastPlayedAt, displayOrder, source, cachedAt and streamUrl (e.g. 'SELECT * FROM radio_stations WHERE genre = :genre ORDER BY ...', 'WHERE streamUrl = :streamUrl', 'WHERE source = :source'), but the only index declared on the entity is on radioBrowserUuid. Every genre/source/streamUrl lookup and every ORDER BY on these columns forces a full table scan plus a sort.",
+      "remediation": "Add Room @Index annotations on RadioStation for the columns used in WHERE/ORDER BY clauses (genre, source, streamUrl, isLiked, lastPlayedAt, displayOrder, cachedAt) and bump the database version with a migration that creates the corresponding indexes.",
+      "effort": "S",
+      "confidence": 0.75
+    },
+    {
+      "id": "github-issue-health-3",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": "CONTRIBUTING.md",
+        "line": 9
+      },
+      "description": "No issue templates or pull-request template are referenced anywhere in the provided repository files, so bug reports and PRs arrive without the structured information (device, Android version, steps to reproduce) the project asks for.",
+      "remediation": "Add .github/ISSUE_TEMPLATE/bug_report.md, feature_request.md and a PULL_REQUEST_TEMPLATE.md capturing device, Android version, reproduction steps and test evidence.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "code-exact-duplication-significant-2",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/data/radioregistry/RadioRegistryClient.kt",
+        "line": 27
+      },
+      "description": "buildHttpClient in RadioRegistryClient is a near-verbatim copy of buildHttpClient in RadioBrowserClient: identical SOCKS5_DNS placeholder resolver, identical force-Tor/force-custom-proxy branching, identical proxy-authenticator lambda and timeout handling. The two clients duplicate a substantial block of proxy-routing logic.",
+      "remediation": "Extract the shared proxy-aware OkHttpClient construction (DNS resolver, proxy selection, authenticator, timeouts) into one common helper used by both clients.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "structure-high-coupling-2",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/data/radioregistry/RadioRegistryClient.kt",
+        "line": 7
+      },
+      "description": "RadioRegistryClient duplicates the same cross-layer coupling pattern: it imports com.opensource.i2pradio.ui.PreferencesHelper and TorManager and reads force-proxy preferences directly to construct its OkHttpClient, so the data layer is bound to UI preferences and global Tor state.",
+      "remediation": "Share a single injected ProxyConfigProvider between RadioBrowserClient and RadioRegistryClient instead of each client reading PreferencesHelper/TorManager directly.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/ui/RadioViewModel.kt",
+        "line": 9
+      },
+      "description": "RadioViewModel leaks Android framework/service details into the presentation layer: it references RadioService action constants and extra keys, constructs Intents, and calls getApplication().startService, coupling the ViewModel to the concrete service implementation and its wire protocol.",
+      "remediation": "Hide service actions/extras behind a domain-level interface (e.g. PlaybackController) so the ViewModel does not depend on RadioService constants or Intent construction.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/RadioService.kt",
+        "line": 0
+      },
+      "description": "RadioService is a single class that simultaneously handles ExoPlayer playback, audio focus, media session/notification, stream recording to MediaStore, sleep timer, reconnect/network-callback logic, proxy configuration and repository access. These are unrelated responsibilities bundled into one service, indicating low cohesion.",
+      "remediation": "Split RadioService into focused collaborators (e.g. PlaybackController, RecordingController, SleepTimerController, ReconnectManager) coordinated by a thin service facade.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/ui/RadioViewModel.kt",
+        "line": 0
+      },
+      "description": "RadioViewModel performs service orchestration directly: it builds Intents with action strings and extras (ACTION_SWITCH_RECORDING_STREAM, ACTION_START_RECORDING, ACTION_STOP_RECORDING) and calls startService, and it also instantiates RadioRepository inline for syncCurrentStationById. The ViewModel is coordinating service commands rather than exposing state.",
+      "remediation": "Introduce a PlaybackCommandDispatcher/use-case layer that the ViewModel calls; keep Intent construction and service invocation out of the ViewModel.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "structure-service-sql-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/data/RadioRepository.kt",
+        "line": 5
+      },
+      "description": "RadioRepository is a data-layer repository but it also embeds business/presentation logic: it reads user preferences (PreferencesHelper.arePresetsInitialized, setPresetsInitialized) and seeds bundled preset stations from JSON inside initializePresetStations, mixing persistence concerns with app configuration and seeding policy.",
+      "remediation": "Move preset seeding and preference checks out of RadioRepository into a dedicated startup/initializer component (e.g. a PresetInitializer invoked from I2PRadioApplication), leaving the repository responsible only for DAO access.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "structure-singleton-violation-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/tor/TorManager.kt",
+        "line": 0
+      },
+      "description": "TorManager is a global object singleton holding mutable connection state (_state, _socksPort, _httpPort, listeners, threads) that is read and mutated from many unrelated components (Application, MainActivity, RadioService, RadioBrowserClient, RadioRegistryClient, BrowseViewModel, TorService). Global mutable singleton state shared across layers makes dependencies implicit and hard to test.",
+      "remediation": "Convert TorManager into an injectable instance managed by a DI container or an application-scoped holder, exposing an interface so consumers depend on an abstraction rather than a global object.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "structure-config-logic-8",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/I2PRadioApplication.kt",
+        "line": 0
+      },
+      "description": "I2PRadioApplication.onCreate embeds startup decision logic: it conditionally initializes TorManager, registers a state listener, and decides whether to auto-start TorService based on multiple preference checks and current TorManager state. Application bootstrap is carrying runtime configuration/branching logic.",
+      "remediation": "Move the Tor startup decision into a dedicated StartupCoordinator/TorBootstrapper class invoked from onCreate, so the Application class only wires components.",
+      "effort": "M",
+      "confidence": 0.65
+    },
+    {
+      "id": "structure-repository-logic-4",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/data/RadioRepository.kt",
+        "line": 0
+      },
+      "description": "RadioRepository contains non-CRUD decision logic: getStationsSorted/getStationsByGenreSorted/getQueueStations implement sort-order and genre-filter branching that maps UI sort semantics onto DAO queries, and setStationOrder loops over ids reassigning display positions. This is query-selection policy living in the repository rather than a dedicated query/spec layer.",
+      "remediation": "Extract the sort/filter mapping into a dedicated query-specification or use-case class (e.g. StationQueryBuilder) so the repository only executes the resulting DAO calls.",
+      "effort": "M",
+      "confidence": 0.65
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 27
+      },
+      "description": "The build workflow runs `./gradlew assembleDebug --no-daemon` on every push and PR without any Gradle dependency/build cache step (no actions/cache, no gradle/actions/setup-gradle). Every run re-downloads all dependencies and recompiles from scratch, burning CI minutes and bandwidth on each commit.",
+      "remediation": "Add a caching step, e.g. use `gradle/actions/setup-gradle@v4` (or `actions/cache` keyed on `~/.gradle/caches` and `~/.gradle/wrapper` with a hash of the gradle files) before the build step, and drop `--no-daemon` so the Gradle daemon and caches are reused.",
+      "effort": "M",
+      "confidence": 0.85
+    },
+    {
+      "id": "database-heavy-migration-5",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/data/RadioDatabase.kt",
+        "line": 33
+      },
+      "description": "MIGRATION_9_10 runs 'UPDATE radio_stations SET displayOrder = id' over the entire table, and MIGRATION_1_2 runs 'UPDATE radio_stations SET proxyType = 'I2P' WHERE useProxy = 1'. These full-table UPDATEs execute inside the migration transaction on the main upgrade path and can be slow on large libraries, blocking app startup.",
+      "remediation": "Keep migrations minimal and idempotent: seed displayOrder lazily on first read instead of rewriting every row, or batch the UPDATE and document the expected runtime; ensure migrations run off the main thread during database open.",
+      "effort": "L",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-gha-infinite-artifacts-6",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 33
+      },
+      "description": "The test-results artifact is uploaded with `if: always()` and no `retention-days`, so every push and PR accumulates test reports under the default 90-day retention, growing storage cost indefinitely.",
+      "remediation": "Set `retention-days: 7` (or similar) on the `actions/upload-artifact` step and consider uploading only on failure to limit artifact storage growth.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 13
+      },
+      "description": "The `build` job defines no `timeout-minutes`, so a hung Gradle build (network stall, daemon deadlock) can occupy a runner for the default 360 minutes, consuming CI minutes and blocking the queue.",
+      "remediation": "Add `timeout-minutes: 20` (or an appropriate bound) to the `build` job so a stuck build is killed instead of running to the platform default.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "app/build.gradle.kts",
+        "line": 0
+      },
+      "description": "The module declares test dependencies (JUnit, MockK, MockWebServer, coroutines-test) but the provided build configuration contains no coverage gate, no test task wiring beyond the default, and no performance/regression budget, so test cost/benefit is unmanaged.",
+      "remediation": "Add a coverage threshold (e.g. JaCoCo/Kover) and wire it into the CI test job so test investment is measured and regressions are caught early.",
+      "effort": "M",
+      "confidence": 0.3
+    },
+    {
+      "id": "github-issue-health-1",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "SECURITY.md",
+        "line": 5
+      },
+      "description": "The supported-versions table lists only 1.6.x as supported, while the project is already at 1.8.1 (see app/build.gradle.kts versionName and CHANGELOG.md). Users on 1.7.x/1.8.x are told they are unsupported, so security fixes for current releases are not communicated.",
+      "remediation": "Update the supported-versions table in SECURITY.md to cover the current release line (e.g. 1.8.x) and state an explicit support window policy for older versions.",
+      "effort": "M",
+      "confidence": 0.85
+    },
+    {
+      "id": "database-missing-bloat-monitoring-5",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/data/RadioDao.kt",
+        "line": 0
+      },
+      "description": "The radio_stations table accumulates RadioBrowser cache rows (source = 'RADIOBROWSER') that are only pruned by deleteStaleCachedStations with a caller-supplied timestamp, and there is no monitoring or scheduled vacuum/analyze of table growth. Unbounded cache growth degrades query performance over time.",
+      "remediation": "Add periodic maintenance that prunes stale cached stations on a schedule, runs ANALYZE/VACUUM when the table grows past a threshold, and logs table row counts so growth can be monitored.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-gha-high-usage-1",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/trivy.yml",
+        "line": 8
+      },
+      "description": "The Trivy workflow triggers on every push and pull request to main in addition to the weekly schedule, running a full filesystem vulnerability scan on each commit even though the scheduled run already covers drift.",
+      "remediation": "Restrict the Trivy scan to the weekly `schedule` plus `workflow_dispatch`, or gate the push/PR trigger with `paths` filters so it only runs when dependency manifests change.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "github-commit-history-1",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "CHANGELOG.md",
+        "line": 10
+      },
+      "description": "The changelog mixes release entries with unresolved issue references (e.g. '#442', '#' placeholders in the 1.8.1 section) and several entries end with a bare '#' marker, indicating incomplete changelog hygiene and unreferenced issue links.",
+      "remediation": "Replace the bare '#' markers with real issue/PR numbers or remove them, and ensure every referenced issue number resolves to an existing GitHub issue.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "module": "structure",
+      "severity": "low",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/ui/StationActionHelper.kt",
+        "line": 0
+      },
+      "description": "StationActionHelper.convertToRadioBrowserStation performs data mapping between RadioStation and RadioBrowserStation but hardcodes derived values (hls = false, lastcheckok = true, votes = 0, empty language fields) and forces non-null assertions on radioBrowserUuid, embedding conversion policy in a UI helper object.",
+      "remediation": "Move the RadioStation<->RadioBrowserStation mapping into the data layer (e.g. a mapper in the radiobrowser package) and handle missing UUIDs explicitly instead of using !! assertions.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-gha-expensive-runner-4",
+      "module": "cost",
+      "severity": "low",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 14
+      },
+      "description": "The build job runs on `ubuntu-latest` with no matrix or runner-size tuning; combined with the uncached, no-daemon Gradle invocation this maximizes per-run compute cost for a single-module Android build.",
+      "remediation": "Cache Gradle dependencies, remove `--no-daemon`, and consider a smaller/cheaper runner or a single combined build+test job to reduce per-run compute.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "github-issue-health-2",
+      "module": "github",
+      "severity": "info",
+      "location": {
+        "file": "CONTRIBUTING.md",
+        "line": 8
+      },
+      "description": "CONTRIBUTING.md documents bug reporting, feature requests and code style but contains no issue/PR triage guidance, no response-time expectations and no labels/templates guidance, so contributors have no visibility into how issues are handled.",
+      "remediation": "Add a short triage section to CONTRIBUTING.md describing expected response times, label usage and how issues are prioritized, and link to issue templates.",
+      "effort": "XS",
+      "confidence": 0.6
+    },
+    {
+      "id": "github-log-pattern-1",
+      "module": "github",
+      "severity": "info",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/utils/DatabaseEncryptionManager.kt",
+        "line": 3
+      },
+      "description": "The module logs through android.util.Log with a hardcoded tag and no structured logging or log-level configuration, so security-relevant events (database encryption enable/disable, key derivation failures) are not consistently recorded or filterable.",
+      "remediation": "Introduce a small logging facade with configurable levels and consistent tags, and log security-relevant lifecycle events (encryption enabled/disabled, migration success/failure) at appropriate levels.",
+      "effort": "XS",
+      "confidence": 0.4
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "database-irreversible-migration-1",
+          "database-missing-index-fk-1",
+          "structure-high-coupling-1",
+          "database-sequential-pagination-1",
+          "database-missing-app-pool-8",
+          "database-missing-index-where-4",
+          "github-issue-health-3",
+          "code-exact-duplication-significant-2",
+          "structure-high-coupling-2"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "structure-framework-leak-3",
+          "structure-low-cohesion-5",
+          "structure-service-orchestration-3",
+          "structure-service-sql-5",
+          "structure-singleton-violation-5",
+          "structure-config-logic-8"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "structure-repository-logic-4",
+          "cost-gha-no-dependency-cache-5",
+          "database-heavy-migration-5",
+          "cost-gha-infinite-artifacts-6",
+          "cost-gha-no-timeout-9",
+          "cost-no-automated-tests-4",
+          "github-issue-health-1",
+          "database-missing-bloat-monitoring-5",
+          "cost-gha-high-usage-1",
+          "github-commit-history-1",
+          "structure-dto-logic-7",
+          "cost-gha-expensive-runner-4",
+          "github-issue-health-2",
+          "github-log-pattern-1"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {}
+  },
+  "priority_scores": [
+    {
+      "id": "database-irreversible-migration-1",
+      "severity": "critical",
+      "module": "database",
+      "confidence": 0.45,
+      "score": 58.5,
+      "canonical_rule": "database-irreversible-migration-1"
+    },
+    {
+      "id": "database-missing-index-fk-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.7,
+      "score": 45.5,
+      "canonical_rule": "database-missing-index-fk-1"
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 41.25,
+      "canonical_rule": "structure-high-coupling-1"
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 39,
+      "canonical_rule": "database-sequential-pagination-1"
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.4,
+      "score": 26,
+      "canonical_rule": "database-missing-app-pool-8"
+    },
+    {
+      "id": "database-missing-index-where-4",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.75,
+      "score": 19.5,
+      "canonical_rule": "database-missing-index-where-4"
+    },
+    {
+      "id": "github-issue-health-3",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 19.25,
+      "canonical_rule": "github-issue-health-3"
+    },
+    {
+      "id": "code-exact-duplication-significant-2",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.8,
+      "score": 17.6,
+      "canonical_rule": "code-exact-duplication-significant-2"
+    },
+    {
+      "id": "structure-high-coupling-2",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 16.5,
+      "canonical_rule": "structure-high-coupling-2"
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-framework-leak-3"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-service-orchestration-3"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "structure-singleton-violation-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-singleton-violation-5"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 14.3,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "structure-repository-logic-4",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 14.3,
+      "canonical_rule": "structure-repository-logic-4"
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.85,
+      "score": 13.6,
+      "canonical_rule": "cost-gha-no-dependency-cache-5"
+    },
+    {
+      "id": "database-heavy-migration-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 13,
+      "canonical_rule": "database-heavy-migration-5"
+    },
+    {
+      "id": "cost-gha-infinite-artifacts-6",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.8,
+      "score": 12.8,
+      "canonical_rule": "cost-gha-infinite-artifacts-6"
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.8,
+      "score": 12.8,
+      "canonical_rule": "cost-gha-no-timeout-9"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 12,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "github-issue-health-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.85,
+      "score": 11.9,
+      "canonical_rule": "github-issue-health-1"
+    },
+    {
+      "id": "database-missing-bloat-monitoring-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.4,
+      "score": 10.4,
+      "canonical_rule": "database-missing-bloat-monitoring-5"
+    },
+    {
+      "id": "cost-gha-high-usage-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-gha-high-usage-1"
+    },
+    {
+      "id": "github-commit-history-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-commit-history-1"
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 3.3,
+      "canonical_rule": "structure-dto-logic-7"
+    },
+    {
+      "id": "cost-gha-expensive-runner-4",
+      "severity": "low",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 1.6,
+      "canonical_rule": "cost-gha-expensive-runner-4"
+    },
+    {
+      "id": "github-issue-health-2",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 0.42,
+      "canonical_rule": "github-issue-health-2"
+    },
+    {
+      "id": "github-log-pattern-1",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 0.28,
+      "canonical_rule": "github-log-pattern-1"
+    }
+  ]
+}

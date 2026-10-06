@@ -1,0 +1,351 @@
+{
+  "target": "holo-gestures-s1",
+  "mock": false,
+  "created_at": "2026-10-06T00:17:52.746Z",
+  "judge_model": "qwen3.5:9b",
+  "judge_base_url": "http://localhost:11434/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\holo-gestures",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "55626ff00f6b49c649a407ffdb3cad174479c637",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 8,
+    "toolkit": 8,
+    "orchestrated": 0,
+    "naive": 0,
+    "judged": 8,
+    "unverifiable": 8
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 8,
+      "judged": 8,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 8,
+      "judgeGrounded": 0,
+      "mechGrounded": 0,
+      "mechUngrounded": 8,
+      "mismatch": 0,
+      "actionableSum": 31,
+      "actionableN": 8,
+      "security": 4,
+      "securityFn": 0,
+      "claimsWithCitations": 8,
+      "citationsTotal": 8,
+      "weakCitations": 0,
+      "meanActionability": 3.88,
+      "precision": null,
+      "judgeGroundedRate": 0
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 5,
+        "reason": "Code snippet for server.py not provided; cannot verify exception handling logic from file tree alone.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "server.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 181,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "toolkit",
+      "source_id": "code-generic-catch-2",
+      "title": "code-generic-catch-2",
+      "severity": "high",
+      "module": "code",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "server.py content unavailable in digest; specific catch blocks and logging behavior cannot be confirmed.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "server.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 181,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 5,
+        "reason": "README.md content not shown; CI workflow existence and instructions unverifiable from partial file tree listing.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "README.md",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 135,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "toolkit",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "CI configuration files absent from provided list, but 'partial' tag prevents definitive verification of pipeline setup.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "README.md",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 135,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "toolkit",
+      "source_id": "code-empty-catch-1",
+      "title": "code-empty-catch-1",
+      "severity": "critical",
+      "module": "code",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "server.py implementation details missing; cannot confirm specific exception swallower locations or logic.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "server.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 181,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "toolkit",
+      "source_id": "code-missing-docstring-10",
+      "title": "code-missing-docstring-10",
+      "severity": "low",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Docstrings and function signatures inside server.py are not visible in the provided code digest.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "server.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 181,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "toolkit",
+      "source_id": "code-print-statement-5",
+      "title": "code-print-statement-5",
+      "severity": "low",
+      "module": "code",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Logging configuration within server.py is inaccessible; cannot verify default handler setup or overrides.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "server.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 181,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "toolkit",
+      "source_id": "code-long-function-7",
+      "title": "code-long-function-7",
+      "severity": "medium",
+      "module": "code",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Module structure and internal function logic in server.py are not visible to assess separation of concerns.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "server.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 181,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

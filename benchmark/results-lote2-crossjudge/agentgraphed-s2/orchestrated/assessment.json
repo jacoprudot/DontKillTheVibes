@@ -1,0 +1,931 @@
+{
+  "metadata": {
+    "repo": "agentgraphed",
+    "assessed_at": "2026-10-05T20:53:38.712Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 22,
+    "findings_raw": 96,
+    "findings_dropped": 17,
+    "sensitive_files_withheld": 1,
+    "files_withheld_sensitive": [
+      "src/lib/quota/credentials.ts"
+    ],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 6,
+    "total_findings": 79,
+    "by_severity": {
+      "critical": 6,
+      "high": 15,
+      "medium": 48,
+      "low": 6,
+      "info": 4
+    },
+    "by_module": {
+      "database": 25,
+      "structure": 8,
+      "flows": 11,
+      "security": 15,
+      "cost": 11,
+      "github": 9
+    },
+    "effort_estimate": {
+      "XS": 20,
+      "S": 13,
+      "M": 43,
+      "L": 3
+    }
+  },
+  "findings": [
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/ci.yml",
+        "line": 8
+      },
+      "description": "The `build` job in ci.yml defines no `timeout-minutes`. A hung build, install, or the backgrounded server poll loop can occupy a runner indefinitely (default 360 minutes), burning CI minutes and masking a stuck process.",
+      "remediation": "Add `timeout-minutes: 15` (or an appropriate bound) to the `build` job so a wedged step fails fast instead of consuming the runner for hours.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "security-missing-headers-10",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "next.config.mjs",
+        "line": 2
+      },
+      "description": "The Next.js config defines no `headers()` block, so responses lack security headers such as `Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `X-Frame-Options`/`frame-ancestors`, and `Referrer-Policy`. The dashboard renders user-derived session content, so the absence of CSP and framing protections leaves it exposed to injected-content and clickjacking risks.",
+      "remediation": "Add an async `headers()` entry in next.config.mjs that sets `Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` (or CSP frame-ancestors), and `Referrer-Policy: no-referrer` on all routes.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/app/api/quota-probe/route.ts",
+        "line": 26
+      },
+      "description": "POST /api/quota-probe performs a live outbound API call (Anthropic or OpenAI) on every invocation with no rate limiting or throttling. The probe module itself documents that Anthropic returns 429 when polled too fast, confirming the endpoint is abusable to burn the user's quota and trigger provider rate limits.",
+      "remediation": "Add a per-provider cooldown (e.g. reject with 429 if a probe ran within the last N seconds) and/or a token-bucket limiter on the route before calling probeClaudeQuota/probeCodexQuota.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "src/lib/ingest/auto.ts",
+        "line": 16
+      },
+      "description": "auto.ts (a core ingest module) imports getSetting/setSetting/getSessionsForLeaderboard from ../queries and drives leaderboard HTTP submission, mixing framework-adjacent scheduling concerns with domain ingest logic. The background scheduler and leaderboard submission are entangled with the ingest pipeline rather than isolated behind an interface.",
+      "remediation": "Separate the periodic scheduler and leaderboard submission into their own modules with explicit interfaces, and have the ingest trigger call them via injected callbacks rather than importing query helpers directly.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "src/lib/llm/classify.ts",
+        "line": 160
+      },
+      "description": "classifyBatch re-sends every row it is given to the LLM with no check against already-classified sessions and no response cache; the only guard is getUnclassifiedRows filtering on category IS NULL. Any caller that passes rows already classified (or re-runs after a partial failure) pays for the same classification twice, and identical prompt payloads are never deduplicated or cached.",
+      "remediation": "Skip rows that already have a category inside classifyBatch and cache LLM responses keyed by a hash of the prompt payload so identical batches are not re-billed.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "database-unused-indexes-6",
+      "module": "database",
+      "severity": "low",
+      "location": {
+        "file": "src/lib/db/schema.ts",
+        "line": 47
+      },
+      "description": "The schema declares indexes that the provided query code never uses: sessions_provider_idx (queries filter provider only inside getTimeline, which already orders by started_at), sessions_model_idx (no query in the provided files filters on model), and messages_timestamp_idx (no provided query filters messages by timestamp). Each unused index adds write amplification on every ingest insert.",
+      "remediation": "Drop indexes that no query uses (sessions_model_idx, messages_timestamp_idx) or confirm their consumers exist; keep only indexes backed by an actual query predicate.",
+      "effort": "S",
+      "confidence": 0.45
+    },
+    {
+      "id": "database-max-lifetime-missing-5",
+      "module": "database",
+      "severity": "low",
+      "location": {
+        "file": "src/lib/db/client.ts",
+        "line": 6
+      },
+      "description": "The module-level `_db`/`_sqlite` singleton is never closed or recycled. In a long-running standalone server, if the underlying DB file is replaced or the process forks, the cached handle persists for the process lifetime with no max-lifetime or health-check mechanism.",
+      "remediation": "Add a close/reopen path (e.g. on SIGTERM and on detected file replacement) and expose a resetDb() that closes the handle so a stale connection is not reused indefinitely.",
+      "effort": "XS",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-error-detail-1",
+      "module": "security",
+      "severity": "info",
+      "location": {
+        "file": "src/app/api/ingest-local/route.ts",
+        "line": 17
+      },
+      "description": "The ingest endpoint returns the raw exception message to the client (`error: (e as Error).message`) with a 500 status. Internal error text (paths, SQL, stack-adjacent detail) is exposed to any caller that can reach the local server.",
+      "remediation": "Return a generic error message to the client and log the detailed exception server-side; only include sanitized, non-sensitive detail in the response.",
+      "effort": "XS",
+      "confidence": 0.6
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "database-full-table-scan-3",
+          "security-logs-contain-secrets-12",
+          "flows-missing-idempotency-3",
+          "database-irreversible-migration-1",
+          "flows-fire-and-forget-critical-1",
+          "security-gha-overpermissive-2",
+          "security-no-input-validation-14",
+          "security-secret-in-code-1",
+          "structure-high-coupling-1",
+          "database-iteration-overload-5",
+          "database-risky-migration-3",
+          "database-missing-index-fk-1",
+          "database-n-plus-one-risk-1",
+          "flows-missing-dlq-2",
+          "database-overfetch-relation-1",
+          "database-sequential-pagination-1",
+          "security-db-conn-string-6",
+          "security-env-file-committed-3",
+          "database-missing-app-pool-8",
+          "cost-no-automated-tests-4",
+          "security-gha-job-no-timeout-7",
+          "database-undersized-pool-2",
+          "security-gha-no-concurrency-prod-10",
+          "structure-service-sql-5"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "database-connection-timeout-high-3",
+          "flows-missing-timeout-6",
+          "security-missing-headers-10",
+          "structure-repository-logic-4",
+          "flows-error-leaks-stack-6",
+          "flows-missing-error-handler-5",
+          "database-lock-timeout-missing-10",
+          "security-rate-limit-weak-6",
+          "structure-config-logic-8",
+          "structure-low-cohesion-5",
+          "flows-missing-rate-limit-8",
+          "database-heavy-migration-5",
+          "database-missing-index-where-4",
+          "structure-framework-leak-3",
+          "structure-service-orchestration-3",
+          "security-cors-wildcard-2",
+          "security-no-security-maintenance-7"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "database-missing-bloat-monitoring-5",
+          "database-missing-composite-index-5",
+          "database-missing-index-hot-path-2",
+          "database-missing-prefetch-4",
+          "flows-retry-no-backoff-4",
+          "security-gha-action-unpinned-5",
+          "cost-gha-no-timeout-9",
+          "flows-message-schema-no-version-1",
+          "security-unmaintained-dep-4",
+          "database-effective-cache-misconfigured-4",
+          "database-statement-timeout-missing-9",
+          "cost-gha-no-dependency-cache-5",
+          "cost-llm-high-usage-1",
+          "github-log-pattern-2",
+          "cost-api-no-usage-monitoring-9",
+          "database-oversized-pool-1",
+          "database-pg-stat-statements-disabled-1",
+          "cost-api-no-retry-strategy-8",
+          "security-weak-rng-10",
+          "cost-api-no-response-cache-5",
+          "security-gha-workspace-not-cleaned-6",
+          "cost-documentation-poor-7",
+          "cost-slow-build-1",
+          "github-commit-history-1",
+          "github-log-pattern-4",
+          "cost-no-performance-budget-10",
+          "github-issue-health-1",
+          "cost-gha-infinite-artifacts-6",
+          "structure-dto-logic-7",
+          "flows-missing-request-id-7",
+          "database-unused-indexes-6",
+          "flows-missing-cors-9",
+          "database-max-lifetime-missing-5",
+          "database-idle-timeout-missing-4",
+          "security-error-detail-1",
+          "github-log-pattern-1",
+          "github-log-pattern-3",
+          "github-issue-health-2"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "flows-missing-timeout-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-idempotency-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-rate-limit-8": [
+        "structure-high-coupling-1"
+      ],
+      "flows-error-leaks-stack-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-error-handler-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-fire-and-forget-critical-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-dlq-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-retry-no-backoff-4": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-schema-no-version-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-request-id-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-cors-9": [
+        "structure-high-coupling-1"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "database-full-table-scan-3",
+      "severity": "critical",
+      "module": "database",
+      "confidence": 0.65,
+      "score": 84.5,
+      "canonical_rule": "database-full-table-scan-3"
+    },
+    {
+      "id": "security-logs-contain-secrets-12",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.55,
+      "score": 82.5,
+      "canonical_rule": "security-logs-contain-secrets-12"
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 75,
+      "canonical_rule": "flows-missing-idempotency-3"
+    },
+    {
+      "id": "database-irreversible-migration-1",
+      "severity": "critical",
+      "module": "database",
+      "confidence": 0.55,
+      "score": 71.5,
+      "canonical_rule": "database-irreversible-migration-1"
+    },
+    {
+      "id": "flows-fire-and-forget-critical-1",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 70,
+      "canonical_rule": "flows-fire-and-forget-critical-1"
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.7,
+      "score": 52.5,
+      "canonical_rule": "security-gha-overpermissive-2"
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 45,
+      "canonical_rule": "security-no-input-validation-14"
+    },
+    {
+      "id": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.3,
+      "score": 45,
+      "canonical_rule": "security-secret-in-code-1"
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.8,
+      "score": 44,
+      "canonical_rule": "structure-high-coupling-1"
+    },
+    {
+      "id": "database-iteration-overload-5",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 39,
+      "canonical_rule": "database-iteration-overload-5"
+    },
+    {
+      "id": "database-risky-migration-3",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 39,
+      "canonical_rule": "database-risky-migration-3"
+    },
+    {
+      "id": "database-missing-index-fk-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.55,
+      "score": 35.75,
+      "canonical_rule": "database-missing-index-fk-1"
+    },
+    {
+      "id": "database-n-plus-one-risk-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.55,
+      "score": 35.75,
+      "canonical_rule": "database-n-plus-one-risk-1"
+    },
+    {
+      "id": "flows-missing-dlq-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 35,
+      "canonical_rule": "flows-missing-dlq-2"
+    },
+    {
+      "id": "database-overfetch-relation-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 32.5,
+      "canonical_rule": "database-overfetch-relation-1"
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 32.5,
+      "canonical_rule": "database-sequential-pagination-1"
+    },
+    {
+      "id": "security-db-conn-string-6",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.4,
+      "score": 30,
+      "canonical_rule": "security-db-conn-string-6"
+    },
+    {
+      "id": "security-env-file-committed-3",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.4,
+      "score": 30,
+      "canonical_rule": "security-env-file-committed-3"
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.45,
+      "score": 29.25,
+      "canonical_rule": "database-missing-app-pool-8"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 28,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.9,
+      "score": 27,
+      "canonical_rule": "security-gha-job-no-timeout-7"
+    },
+    {
+      "id": "database-undersized-pool-2",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.4,
+      "score": 26,
+      "canonical_rule": "database-undersized-pool-2"
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.8,
+      "score": 24,
+      "canonical_rule": "security-gha-no-concurrency-prod-10"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.85,
+      "score": 18.7,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "database-connection-timeout-high-3",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.7,
+      "score": 18.2,
+      "canonical_rule": "database-connection-timeout-high-3"
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.9,
+      "score": 18,
+      "canonical_rule": "flows-missing-timeout-6"
+    },
+    {
+      "id": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 18,
+      "canonical_rule": "security-missing-headers-10"
+    },
+    {
+      "id": "structure-repository-logic-4",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.8,
+      "score": 17.6,
+      "canonical_rule": "structure-repository-logic-4"
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.85,
+      "score": 17,
+      "canonical_rule": "flows-error-leaks-stack-6"
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.85,
+      "score": 17,
+      "canonical_rule": "flows-missing-error-handler-5"
+    },
+    {
+      "id": "database-lock-timeout-missing-10",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.65,
+      "score": 16.9,
+      "canonical_rule": "database-lock-timeout-missing-10"
+    },
+    {
+      "id": "security-rate-limit-weak-6",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.55,
+      "score": 16.5,
+      "canonical_rule": "security-rate-limit-weak-6"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 16.5,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 16.5,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.8,
+      "score": 16,
+      "canonical_rule": "flows-missing-rate-limit-8"
+    },
+    {
+      "id": "database-heavy-migration-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 15.6,
+      "canonical_rule": "database-heavy-migration-5"
+    },
+    {
+      "id": "database-missing-index-where-4",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 15.6,
+      "canonical_rule": "database-missing-index-where-4"
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-framework-leak-3"
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-service-orchestration-3"
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 15,
+      "canonical_rule": "security-cors-wildcard-2"
+    },
+    {
+      "id": "security-no-security-maintenance-7",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 15,
+      "canonical_rule": "security-no-security-maintenance-7"
+    },
+    {
+      "id": "database-missing-bloat-monitoring-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 13,
+      "canonical_rule": "database-missing-bloat-monitoring-5"
+    },
+    {
+      "id": "database-missing-composite-index-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 13,
+      "canonical_rule": "database-missing-composite-index-5"
+    },
+    {
+      "id": "database-missing-index-hot-path-2",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 13,
+      "canonical_rule": "database-missing-index-hot-path-2"
+    },
+    {
+      "id": "database-missing-prefetch-4",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 13,
+      "canonical_rule": "database-missing-prefetch-4"
+    },
+    {
+      "id": "flows-retry-no-backoff-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.65,
+      "score": 13,
+      "canonical_rule": "flows-retry-no-backoff-4"
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.9,
+      "score": 12.6,
+      "canonical_rule": "security-gha-action-unpinned-5"
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.75,
+      "score": 12,
+      "canonical_rule": "cost-gha-no-timeout-9"
+    },
+    {
+      "id": "flows-message-schema-no-version-1",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 12,
+      "canonical_rule": "flows-message-schema-no-version-1"
+    },
+    {
+      "id": "security-unmaintained-dep-4",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.4,
+      "score": 12,
+      "canonical_rule": "security-unmaintained-dep-4"
+    },
+    {
+      "id": "database-effective-cache-misconfigured-4",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.45,
+      "score": 11.7,
+      "canonical_rule": "database-effective-cache-misconfigured-4"
+    },
+    {
+      "id": "database-statement-timeout-missing-9",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.45,
+      "score": 11.7,
+      "canonical_rule": "database-statement-timeout-missing-9"
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 11.2,
+      "canonical_rule": "cost-gha-no-dependency-cache-5"
+    },
+    {
+      "id": "cost-llm-high-usage-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 11.2,
+      "canonical_rule": "cost-llm-high-usage-1"
+    },
+    {
+      "id": "github-log-pattern-2",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.75,
+      "score": 10.5,
+      "canonical_rule": "github-log-pattern-2"
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.65,
+      "score": 10.4,
+      "canonical_rule": "cost-api-no-usage-monitoring-9"
+    },
+    {
+      "id": "database-oversized-pool-1",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.4,
+      "score": 10.4,
+      "canonical_rule": "database-oversized-pool-1"
+    },
+    {
+      "id": "database-pg-stat-statements-disabled-1",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.4,
+      "score": 10.4,
+      "canonical_rule": "database-pg-stat-statements-disabled-1"
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-api-no-retry-strategy-8"
+    },
+    {
+      "id": "security-weak-rng-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.3,
+      "score": 9,
+      "canonical_rule": "security-weak-rng-10"
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.55,
+      "score": 8.8,
+      "canonical_rule": "cost-api-no-response-cache-5"
+    },
+    {
+      "id": "security-gha-workspace-not-cleaned-6",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 8.4,
+      "canonical_rule": "security-gha-workspace-not-cleaned-6"
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-documentation-poor-7"
+    },
+    {
+      "id": "cost-slow-build-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-slow-build-1"
+    },
+    {
+      "id": "github-commit-history-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 7.7,
+      "canonical_rule": "github-commit-history-1"
+    },
+    {
+      "id": "github-log-pattern-4",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 7.7,
+      "canonical_rule": "github-log-pattern-4"
+    },
+    {
+      "id": "cost-no-performance-budget-10",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.45,
+      "score": 7.2,
+      "canonical_rule": "cost-no-performance-budget-10"
+    },
+    {
+      "id": "github-issue-health-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-issue-health-1"
+    },
+    {
+      "id": "cost-gha-infinite-artifacts-6",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-gha-infinite-artifacts-6"
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 3.58,
+      "canonical_rule": "structure-dto-logic-7"
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 3,
+      "canonical_rule": "flows-missing-request-id-7"
+    },
+    {
+      "id": "database-unused-indexes-6",
+      "severity": "low",
+      "module": "database",
+      "confidence": 0.45,
+      "score": 2.93,
+      "canonical_rule": "database-unused-indexes-6"
+    },
+    {
+      "id": "flows-missing-cors-9",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 2.75,
+      "canonical_rule": "flows-missing-cors-9"
+    },
+    {
+      "id": "database-max-lifetime-missing-5",
+      "severity": "low",
+      "module": "database",
+      "confidence": 0.4,
+      "score": 2.6,
+      "canonical_rule": "database-max-lifetime-missing-5"
+    },
+    {
+      "id": "database-idle-timeout-missing-4",
+      "severity": "low",
+      "module": "database",
+      "confidence": 0.35,
+      "score": 2.27,
+      "canonical_rule": "database-idle-timeout-missing-4"
+    },
+    {
+      "id": "security-error-detail-1",
+      "severity": "info",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 0.9,
+      "canonical_rule": "security-error-detail-1"
+    },
+    {
+      "id": "github-log-pattern-1",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.7,
+      "score": 0.49,
+      "canonical_rule": "github-log-pattern-1"
+    },
+    {
+      "id": "github-log-pattern-3",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 0.42,
+      "canonical_rule": "github-log-pattern-3"
+    },
+    {
+      "id": "github-issue-health-2",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 0.35,
+      "canonical_rule": "github-issue-health-2"
+    }
+  ]
+}

@@ -1,0 +1,2686 @@
+{
+  "target": "aurora-synth",
+  "mock": false,
+  "created_at": "2026-10-05T21:19:14.245Z",
+  "judge_model": "deepseek-chat",
+  "judge_base_url": "https://api.deepseek.com/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\aurora-synth",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "aa204456bfbfff49f79322bfea4673f22d4b4de3",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 79,
+    "toolkit": 6,
+    "orchestrated": 28,
+    "naive": 45,
+    "judged": 79,
+    "unverifiable": 77
+  },
+  "summary_by_arm": {
+    "naive": {
+      "claims": 45,
+      "judged": 45,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 45,
+      "judgeGrounded": 16,
+      "mechGrounded": 0,
+      "mechUngrounded": 45,
+      "mismatch": 16,
+      "actionableSum": 114,
+      "actionableN": 45,
+      "security": 7,
+      "securityFn": 0,
+      "claimsWithCitations": 0,
+      "citationsTotal": 0,
+      "weakCitations": 0,
+      "meanActionability": 2.53,
+      "precision": null,
+      "judgeGroundedRate": 0.356
+    },
+    "orchestrated": {
+      "claims": 28,
+      "judged": 28,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 28,
+      "judgeGrounded": 28,
+      "mechGrounded": 19,
+      "mechUngrounded": 9,
+      "mismatch": 9,
+      "actionableSum": 96,
+      "actionableN": 28,
+      "security": 6,
+      "securityFn": 0,
+      "claimsWithCitations": 28,
+      "citationsTotal": 28,
+      "weakCitations": 0,
+      "meanActionability": 3.43,
+      "precision": null,
+      "judgeGroundedRate": 1
+    },
+    "toolkit": {
+      "claims": 6,
+      "judged": 6,
+      "real": 0,
+      "falseCount": 2,
+      "unverifiable": 4,
+      "judgeGrounded": 6,
+      "mechGrounded": 2,
+      "mechUngrounded": 4,
+      "mismatch": 4,
+      "actionableSum": 19,
+      "actionableN": 6,
+      "security": 3,
+      "securityFn": 2,
+      "claimsWithCitations": 6,
+      "citationsTotal": 6,
+      "weakCitations": 0,
+      "meanActionability": 3.17,
+      "precision": 0,
+      "judgeGroundedRate": 1
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "2. Correctness / bug risks in the visible code",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Title-only placeholder with no actual claim or cited code; nothing to evaluate.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "security-gha-workspace-not-cleaned-6",
+      "title": "security-gha-workspace-not-cleaned-6",
+      "severity": "medium",
+      "module": "github",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Cited file exists but code not shown; workspace-persistence risk is speculative for a static-site build.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "tools/build-site.mjs",
+            "line": 13,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 22,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-1",
+      "title": "github-commit-history-1",
+      "severity": "medium",
+      "module": "github",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Commit history/changelog absence cannot be verified from the file tree; generic process advice.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "README.md",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 206,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "structure-service-orchestration-3",
+      "title": "structure-service-orchestration-3",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "jam.js exists but its contents are not shown, so the fused-responsibility claim cannot be confirmed.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/ui/demo/jam.js",
+            "line": 13,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 808,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "2.6 `env(safe-area-inset-top)` without `viewport-fit=cover`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Claim itself admits index.html is not shown; conditional speculation, not a confirmed defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "2.7 `@keyframes mt-eq` animates `background-size` on a multi-layer background",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "CSS snippet shown but no file/line citation and no way to confirm it exists in this repo.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "5.2 `.gitignore` does not ignore `.claude/`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": ".claude/launch.json is in the tree, but whether ignoring it is correct is a judgment call, not a defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "toolkit",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "launch.json contains only a name, node, script path and port — no credential; 'critical' severity is unjustified.",
+        "votes": {
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".claude/launch.json",
+            "line": 6,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 12,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "3.4 `.dc__titleMain` uses `color: transparent` with `background-clip: text`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "No file/line citation and code not shown; generic CSS fallback advice.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-36",
+      "title": "7.2 `mix-blend-mode: screen` on animated elements",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "No citation; performance speculation about blend modes without evidence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C11",
+      "arm": "orchestrated",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "No CI workflow visible in tree, but package.json contents are not shown to confirm the test script claim.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 9,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 24,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C12",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-1",
+      "title": "github-log-pattern-1",
+      "severity": "info",
+      "module": "github",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "tools/test.mjs exists but its output behavior is not shown; claim is unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "tools/test.mjs",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 2586,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C13",
+      "arm": "orchestrated",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "patchTools.js exists but its contents are not shown; embedded-config claim cannot be confirmed.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/ui/app/patchTools.js",
+            "line": 16,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 403,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C14",
+      "arm": "orchestrated",
+      "source_id": "performance-no-slo-6",
+      "title": "performance-no-slo-6",
+      "severity": "low",
+      "module": "performance",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Absence of a documented SLO is a process preference, not a defect; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/worklet/processor.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 327,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C15",
+      "arm": "naive",
+      "source_id": "naive-claim-43",
+      "title": "9. Minor / stylistic",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Long list of stylistic nits with no citations; mostly unverifiable and low-value.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C16",
+      "arm": "toolkit",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "index.html exists but is not shown; missing CSP is plausible but unconfirmed here.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "index.html",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 52,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C17",
+      "arm": "naive",
+      "source_id": "naive-claim-38",
+      "title": "7.4 `will-change` is absent",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "No citation; will-change advice is generic and self-admittedly double-edged.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C18",
+      "arm": "orchestrated",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "package.json not shown; unpinned npx wrangler claim cannot be verified from evidence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 12,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 24,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C19",
+      "arm": "naive",
+      "source_id": "naive-claim-44",
+      "title": "10. Things I could not verify (files not provided)",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Explicit list of things not verified; not a defect claim at all.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-31",
+      "title": "6.1 `docs/` mixes HTML demos and Markdown",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "docs/ HTML demos do exist in the tree, but README linkage is not shown; minor organizational nit.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "2.9 `.ac-knob__aura` uses `display: none` then `display: block` in a media-independent rule",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "No citation; claim itself hedges that opacity may be set in JS.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C22",
+      "arm": "naive",
+      "source_id": "naive-claim-39",
+      "title": "7.5 `scroll-behavior: smooth` on `.dc__body`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "No citation; speculative jank concern with a standard reduced-motion suggestion.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C23",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-1",
+      "title": "github-issue-health-1",
+      "severity": "medium",
+      "module": "github",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "No .github/ISSUE_TEMPLATE in tree, but this is process advice, not a code defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "README.md",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 206,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C24",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-1",
+      "title": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "main.js exists but its imports are not shown; coupling claim cannot be confirmed.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/ui/main.js",
+            "line": 7,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 733,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C25",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "4.1 Bilingual labels are hardcoded in CSS class names and structure",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "No citation; bilingual CSS class claim unverifiable from shown evidence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-45",
+      "title": "Summary of highest-priority fixes",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Summary list of prior unverified items; no new evidence or citations.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C27",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "2.11 `-webkit-user-select: none; user-select: none;` on `.ac-knob` etc.",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "No citation; minor UX preference, not a defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C28",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "2.4 `color-mix(in oklab, …)` used pervasively with no fallback",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "No citation; color-mix support claim is plausible but unverifiable here.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C29",
+      "arm": "orchestrated",
+      "source_id": "structure-dto-logic-7",
+      "title": "structure-dto-logic-7",
+      "severity": "low",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "songsView.js exists but contents not shown; view/DTO mixing claim unconfirmed.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/ui/demo/songsView.js",
+            "line": 23,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 646,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C30",
+      "arm": "orchestrated",
+      "source_id": "security-gha-auto-deploy-prod-9",
+      "title": "security-gha-auto-deploy-prod-9",
+      "severity": "high",
+      "module": "github",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "wrangler.jsonc exists but contents not shown; production-deploy claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "wrangler.jsonc",
+            "line": 6,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 8,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C31",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "1.4 `css/demo.css` is 67 KB",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "CSS files exist but sizes are not shown; maintainability opinion, not a defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C32",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "2.10 `clip: rect(0 0 0 0)` in `.ac-sr-only`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "No citation; deprecated clip usage is harmless and unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C33",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "2.3 `overflow: hidden; overflow: clip;` pairs",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "No citation; claim itself concedes the pattern is intentional.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C34",
+      "arm": "orchestrated",
+      "source_id": "security-gha-no-concurrency-prod-10",
+      "title": "security-gha-no-concurrency-prod-10",
+      "severity": "medium",
+      "module": "github",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "package.json not shown; deploy race is speculative for a single-maintainer static site.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 9,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 24,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C35",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "5.4 `tools/selfsigned.mjs` + `.cert/` in `.gitignore`",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "selfsigned.mjs exists in tree, but the secure-context claim is documentation advice, not a defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C36",
+      "arm": "orchestrated",
+      "source_id": "performance-no-perf-budgets-10",
+      "title": "performance-no-perf-budgets-10",
+      "severity": "medium",
+      "module": "performance",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "processor.js exists but contents not shown; missing perf budget is process advice.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/worklet/processor.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 327,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C37",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "3.3 `prefers-reduced-motion` coverage is partial",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "No citation; reduced-motion coverage claim unverifiable from shown evidence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C38",
+      "arm": "orchestrated",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "github",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "package.json not shown; timeout concern is speculative operational advice.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 9,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 24,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C39",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "3.5 `env(safe-area-inset-*)` only on one element",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "No citation; safe-area audit suggestion is generic.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C40",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "No CI workflow in tree, but caching advice is generic and not a defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 24,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C41",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "2.8 `animation: dc-rim 6s linear infinite` on a `conic-gradient` with `@property`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "No citation; conic-gradient animation cost is plausible but unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C42",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "3.1 `outline: none` on focusable elements",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "No citation; WCAG claim depends on unshown CSS.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C43",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "2.1 `@property --dc-a` is declared *after* it is used",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "No citation; @property support concern is plausible but unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C44",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "package.json not shown; npx caching claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 12,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 24,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C45",
+      "arm": "naive",
+      "source_id": "naive-claim-41",
+      "title": "8.2 No CSP visible",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "index.html not shown; CSP advice is generic.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C46",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "1.2 `tools/` is a second, unversioned application",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "tools/video/** does exist in tree, but 'second application' is an opinion, not a defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C47",
+      "arm": "naive",
+      "source_id": "naive-claim-35",
+      "title": "7.1 `backdrop-filter: blur(20px) saturate(1.25)` on a full-screen overlay",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "No citation; backdrop-filter perf concern is speculative.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C48",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "2.2 `mask-composite` / `-webkit-mask-composite` mismatch",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "No citation; mask-composite mismatch claim unverifiable from shown evidence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C49",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "2.5 `oklch(from …)` relative color syntax",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "No citation; claim itself says the degradation is acceptable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C50",
+      "arm": "naive",
+      "source_id": "naive-claim-40",
+      "title": "8.1 `tools/serve.mjs` + self-signed cert",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "serve.mjs exists but contents not shown; .env exposure is speculative.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C51",
+      "arm": "orchestrated",
+      "source_id": "security-unmaintained-dep-4",
+      "title": "security-unmaintained-dep-4",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "package.json not shown; dependency-tracking claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 12,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 24,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C52",
+      "arm": "toolkit",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "package.json not shown; test-script absence unverifiable, and check scripts do exist in tree.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 24,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C53",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "4.2 `:lang(zh)` selector in `css/jam.css`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "No citation; :lang() behavior claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C54",
+      "arm": "orchestrated",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "github",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "wrangler.jsonc not shown; token-scoping claim is speculative security advice.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "wrangler.jsonc",
+            "line": 6,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 8,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C55",
+      "arm": "orchestrated",
+      "source_id": "structure-layer-violation-1",
+      "title": "structure-layer-violation-1",
+      "severity": "high",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "store.js exists but contents not shown; layering-violation claim unconfirmed.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/ui/app/store.js",
+            "line": 18,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 804,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C56",
+      "arm": "naive",
+      "source_id": "naive-claim-42",
+      "title": "8.3 `wrangler.jsonc` may expose account IDs",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "wrangler.jsonc not shown; claim is a 'verify' suggestion, not a defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C57",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "4.3 `text-transform: uppercase` on Chinese text",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "No citation; CJK uppercase/letter-spacing nit unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C58",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1.1 No module system declared, but 171 files with `import`/`export`-style code",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "package.json not shown; module-system claim is hedged speculation.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C59",
+      "arm": "orchestrated",
+      "source_id": "security-directory-listing-8",
+      "title": "security-directory-listing-8",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "serve.mjs exists but contents not shown; directory-listing claim unconfirmed.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "tools/serve.mjs",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 283,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C60",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "1.3 Duplicated token fallback blocks",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "No citation; duplicated token block claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C61",
+      "arm": "orchestrated",
+      "source_id": "security-gha-secret-leak-3",
+      "title": "security-gha-secret-leak-3",
+      "severity": "critical",
+      "module": "github",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "serve.mjs exists but contents not shown; 'critical' key-exposure claim is speculative.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "tools/serve.mjs",
+            "line": 37,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 283,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C62",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "5.3 `wrangler.jsonc` present but no `wrangler` in devDependencies (not shown)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "wrangler.jsonc exists but contents not shown; claim is a 'verify' suggestion.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C63",
+      "arm": "orchestrated",
+      "source_id": "cost-no-performance-budget-10",
+      "title": "cost-no-performance-budget-10",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "test.mjs exists but contents not shown; missing perf budget is process advice.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "tools/test.mjs",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 2586,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C64",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "5.1 `.claude/launch.json` hardcodes port 5173",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "launch.json does hardcode port 5173, but committing editor config is a preference, not a defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C65",
+      "arm": "naive",
+      "source_id": "naive-claim-33",
+      "title": "6.3 No `CONTRIBUTING.md`, no `CHANGELOG.md`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Absence of CONTRIBUTING/CHANGELOG is process advice, not a code defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C66",
+      "arm": "orchestrated",
+      "source_id": "cost-slow-build-1",
+      "title": "cost-slow-build-1",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "build-site.mjs exists but contents not shown; incremental-build claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "tools/build-site.mjs",
+            "line": 14,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 22,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C67",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "3.2 `aria-pressed` on toggle buttons without `role`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "No citation; aria-pressed claim is largely self-refuting ('this is fine').",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C68",
+      "arm": "naive",
+      "source_id": "naive-claim-34",
+      "title": "6.4 `LICENSE` present but license type unknown",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "LICENSE exists but contents not shown; claim is a 'verify' suggestion.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C69",
+      "arm": "toolkit",
+      "source_id": "security-env-file-committed-3",
+      "title": "security-env-file-committed-3",
+      "severity": "high",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "false",
+        "real": false,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": ".gitignore shown lacks .env/.dev.vars patterns; plausible real gap for a Workers project.",
+        "votes": {
+          "false": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".gitignore",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 7,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C70",
+      "arm": "orchestrated",
+      "source_id": "performance-no-adaptive-timeout-6",
+      "title": "performance-no-adaptive-timeout-6",
+      "severity": "medium",
+      "module": "performance",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "audio.js exists but contents not shown; fixed-timeout claim unconfirmed.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/ui/audio.js",
+            "line": 29,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 245,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C71",
+      "arm": "toolkit",
+      "source_id": "code-console-log-7",
+      "title": "code-console-log-7",
+      "severity": "low",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "serve.mjs exists but contents not shown; logging claim is low-value process advice.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "tools/serve.mjs",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 283,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C72",
+      "arm": "naive",
+      "source_id": "naive-claim-37",
+      "title": "7.3 `filter: blur(80px)` on 55vmax × 30vmax elements",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "No citation; blur cost claim is speculative.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C73",
+      "arm": "naive",
+      "source_id": "naive-claim-32",
+      "title": "6.2 `docs/video/STORYBOARD.md` and `tools/video/README.md` overlap",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Multiple video READMEs do exist in tree, but overlap is an organizational nit.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C74",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "5.5 No test runner config visible",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Check scripts exist in tree, but their nature is not shown; claim is hedged.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C75",
+      "arm": "orchestrated",
+      "source_id": "performance-no-regression-detection-5",
+      "title": "performance-no-regression-detection-5",
+      "severity": "medium",
+      "module": "performance",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "package.json not shown; benchmark-absence claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 6,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 24,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C76",
+      "arm": "orchestrated",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "serve.mjs exists but contents not shown; header-hardening claim unconfirmed.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "tools/serve.mjs",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 283,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C77",
+      "arm": "orchestrated",
+      "source_id": "performance-no-backpressure-10",
+      "title": "performance-no-backpressure-10",
+      "severity": "medium",
+      "module": "performance",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "processor.js/audio.js exist but contents not shown; backpressure claim unconfirmed.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/worklet/processor.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 327,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C78",
+      "arm": "naive",
+      "source_id": "naive-claim-30",
+      "title": "5.6 `tools/video/overlays/assets/app-sample.jpg` committed",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "app-sample.jpg is in the tree, but committing a sample asset is a minor preference, not a defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C79",
+      "arm": "orchestrated",
+      "source_id": "performance-no-load-testing-3",
+      "title": "performance-no-load-testing-3",
+      "severity": "medium",
+      "module": "performance",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "package.json not shown; missing soak-test claim unverifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 6,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 24,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

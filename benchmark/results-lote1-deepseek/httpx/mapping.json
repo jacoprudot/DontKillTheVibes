@@ -1,0 +1,365 @@
+{
+  "target": "httpx",
+  "mock": false,
+  "created_at": "2026-10-05T16:09:57.626Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "2.4 `docs/advanced/authentication.md` claims digest auth \"provides encryption\"",
+      "security_relevant": true
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-32",
+      "title": "6. Code-level concerns (inferred from file tree)",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-41",
+      "title": "7.5 `tests/models/whatwg.json` is a large fixture",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "4.7 `dependabot.yml` groups all pip packages into one PR",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "5.2 `.gitignore` does not ignore `.ruff_cache/` or `.tox/`",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-35",
+      "title": "6.3 `httpx/_main.py` (CLI) is tested by `tests/test_main.py`",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "3.4 Typo: \"prefered\" → \"preferred\"",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "1.2 `scripts/publish` is referenced but does not exist",
+      "security_relevant": false
+    },
+    {
+      "label": "C9",
+      "arm": "toolkit",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "Removed",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-30",
+      "title": "5.5 `tests/fixtures/.netrc-nopassword` is committed",
+      "security_relevant": true
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-39",
+      "title": "7.3 No `tests/test_urlparse.py`",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "3.3 `0.28.0` entry mixes prose and bullet lists inconsistently",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "3.6 Typo: \"dependancy\" → \"dependency\"",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "2.3 `docs/advanced/authentication.md` uses `os.environ` without importing `os`",
+      "security_relevant": true
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-46",
+      "title": "9. Minor / stylistic",
+      "security_relevant": true
+    },
+    {
+      "label": "C17",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "3.1 `[UNRELEASED]` section is missing a version/date header",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-31",
+      "title": "5.6 `docs/img/` contains large binary assets",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "naive",
+      "source_id": "naive-claim-38",
+      "title": "7.2 `tests/common.py` is a shared helper",
+      "security_relevant": false
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "4.4 `test-suite.yml` runs `scripts/build` on every matrix entry",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. Broken / missing references in CI and scripts",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "4.6 `dependabot.yml` has a trailing space in `schedule:`",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "2.1 `docs/advanced/clients.md` links to a non-existent anchor",
+      "security_relevant": false
+    },
+    {
+      "label": "C24",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "5.3 `requirements.txt` exists but no `requirements-dev.txt` or lock file",
+      "security_relevant": false
+    },
+    {
+      "label": "C25",
+      "arm": "naive",
+      "source_id": "naive-claim-42",
+      "title": "8.1 `publish.yml` uses `TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}`",
+      "security_relevant": true
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "3.7 `0.23.1` note contradicts itself",
+      "security_relevant": false
+    },
+    {
+      "label": "C27",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "3.5 Typo: \"shouldn've\" → \"shouldn't have\"",
+      "security_relevant": false
+    },
+    {
+      "label": "C28",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "4.1 `publish.yml` triggers on **any** tag push",
+      "security_relevant": false
+    },
+    {
+      "label": "C29",
+      "arm": "naive",
+      "source_id": "naive-claim-33",
+      "title": "6.1 `httpx/_urlparse.py` and `httpx/_urls.py` both exist",
+      "security_relevant": false
+    },
+    {
+      "label": "C30",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "5.4 `docs/CNAME` exists but no `docs/index.md` front-matter check",
+      "security_relevant": false
+    },
+    {
+      "label": "C31",
+      "arm": "naive",
+      "source_id": "naive-claim-36",
+      "title": "6.4 `httpx/_status_codes.py` is a generated file",
+      "security_relevant": true
+    },
+    {
+      "label": "C32",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "0.28.1 (6th December, 2024)",
+      "security_relevant": false
+    },
+    {
+      "label": "C33",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "2.2 `docs/advanced/clients.md` references `#merging-of-parameters`",
+      "security_relevant": false
+    },
+    {
+      "label": "C34",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "5.1 `.gitignore` does not ignore `.venv/`",
+      "security_relevant": false
+    },
+    {
+      "label": "C35",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C36",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "1.3 `scripts/coverage` is invoked but the coverage threshold is not enforced in the workflow",
+      "security_relevant": false
+    },
+    {
+      "label": "C37",
+      "arm": "naive",
+      "source_id": "naive-claim-43",
+      "title": "8.2 `publish.yml` triggers on tag push without a test gate",
+      "security_relevant": false
+    },
+    {
+      "label": "C38",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "4.2 `publish.yml` uses Python 3.9 while `test-suite.yml` tests 3.9–3.13",
+      "security_relevant": false
+    },
+    {
+      "label": "C39",
+      "arm": "naive",
+      "source_id": "naive-claim-37",
+      "title": "7.1 `tests/concurrency.py` is not a test file",
+      "security_relevant": false
+    },
+    {
+      "label": "C40",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "1.1 `scripts/build` is referenced but does not exist",
+      "security_relevant": false
+    },
+    {
+      "label": "C41",
+      "arm": "naive",
+      "source_id": "naive-claim-44",
+      "title": "8.3 `docs/advanced/authentication.md` recommends `NetRCAuth(file=os.environ.get(\"NETRC\"))`",
+      "security_relevant": true
+    },
+    {
+      "label": "C42",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "4.5 `test-suite.yml` does not test on Windows or macOS",
+      "security_relevant": false
+    },
+    {
+      "label": "C43",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C44",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "4.3 `test-suite.yml` runs `scripts/check` on every matrix entry",
+      "security_relevant": false
+    },
+    {
+      "label": "C45",
+      "arm": "naive",
+      "source_id": "naive-claim-34",
+      "title": "6.2 `httpx/_decoders.py` supports zstd via optional dependency",
+      "security_relevant": false
+    },
+    {
+      "label": "C46",
+      "arm": "naive",
+      "source_id": "naive-claim-47",
+      "title": "Summary of the most serious issues",
+      "security_relevant": true
+    },
+    {
+      "label": "C47",
+      "arm": "naive",
+      "source_id": "naive-claim-40",
+      "title": "7.4 No `tests/test_urls.py`",
+      "security_relevant": true
+    },
+    {
+      "label": "C48",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "2.6 `docs/advanced/clients.md` upload-progress example is truncated mid-code-block",
+      "security_relevant": false
+    },
+    {
+      "label": "C49",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "2.5 `docs/advanced/clients.md` progress-bar examples are subtly wrong",
+      "security_relevant": false
+    },
+    {
+      "label": "C50",
+      "arm": "naive",
+      "source_id": "naive-claim-45",
+      "title": "8.4 `docs/advanced/authentication.md` custom auth example mutates the request in place",
+      "security_relevant": true
+    },
+    {
+      "label": "C51",
+      "arm": "toolkit",
+      "source_id": "security-gha-no-concurrency-prod-10",
+      "title": "security-gha-no-concurrency-prod-10",
+      "security_relevant": false
+    }
+  ]
+}

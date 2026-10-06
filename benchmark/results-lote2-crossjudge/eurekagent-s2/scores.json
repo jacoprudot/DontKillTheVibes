@@ -1,0 +1,351 @@
+{
+  "target": "eurekagent-s2",
+  "mock": false,
+  "created_at": "2026-10-06T00:13:53.294Z",
+  "judge_model": "qwen3.5:9b",
+  "judge_base_url": "http://localhost:11434/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\eurekagent",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "fb96df897dfb99797a77623aa0dd9ee178fe89d2",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 8,
+    "toolkit": 0,
+    "orchestrated": 8,
+    "naive": 0,
+    "judged": 8,
+    "unverifiable": 8
+  },
+  "summary_by_arm": {
+    "orchestrated": {
+      "claims": 8,
+      "judged": 8,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 8,
+      "judgeGrounded": 0,
+      "mechGrounded": 3,
+      "mechUngrounded": 5,
+      "mismatch": 0,
+      "actionableSum": 40,
+      "actionableN": 8,
+      "security": 2,
+      "securityFn": 0,
+      "claimsWithCitations": 8,
+      "citationsTotal": 8,
+      "weakCitations": 0,
+      "meanActionability": 5,
+      "precision": null,
+      "judgeGroundedRate": 0
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "orchestrated",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "github",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 5,
+        "reason": "Code snippet not provided; cannot verify if build.sh lacks timeout or retry logic at line 12.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "docker/build.sh",
+            "line": 12,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 24,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "flows-message-ordering-needed-4",
+      "title": "flows-message-ordering-needed-4",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 5,
+        "reason": "Snippet for src/monitor/server.py unavailable; sequence number implementation in SSE endpoint unverifiable from evidence shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/monitor/server.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 470,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "flows-no-time-travel-9",
+      "title": "flows-no-time-travel-9",
+      "severity": "low",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 5,
+        "reason": "Code at runtime.py location not visible; cannot confirm if JSON state is mutated in-place without history log.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/runtime.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 393,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "security-cve-critical-1",
+      "title": "security-cve-critical-1",
+      "severity": "critical",
+      "module": "github",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 5,
+        "reason": "Dockerfile content hidden; unable to verify base image tag usage or digest pinning at line 1.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "docker/Dockerfile",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 48,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "orchestrated",
+      "source_id": "security-oauth-secret-8",
+      "title": "security-oauth-secret-8",
+      "severity": "critical",
+      "module": "github",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 5,
+        "reason": "Container manager code not shown in src/docker/container.py; cannot confirm if ~/.claude.json is copied into workspace.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/docker/container.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 772,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "orchestrated",
+      "source_id": "security-binary-dep-10",
+      "title": "security-binary-dep-10",
+      "severity": "medium",
+      "module": "github",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 5,
+        "reason": "Dockerfile snippet missing for line 3; unable to verify apt/npm sources or package pinning status in build script.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "docker/Dockerfile",
+            "line": 3,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 48,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "orchestrated",
+      "source_id": "cost-db-growth-3",
+      "title": "cost-db-growth-3",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 5,
+        "reason": "Backend code not visible at cited path; cannot confirm database retention policy implementation regarding submission rows.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/backend.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 243,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "orchestrated",
+      "source_id": "flows-message-retention-too-short-6",
+      "title": "flows-message-retention-too-short-6",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 5,
+        "reason": "Monitor data.py snippet unavailable; scan cache TTL configuration and invalidation logic unverifiable from evidence shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/monitor/data.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 1225,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "target": "deutsia-radio-s2-x1",
+  "mock": false,
+  "created_at": "2026-10-06T01:23:33.745Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "orchestrated",
+      "source_id": "structure-repository-logic-4",
+      "title": "structure-repository-logic-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "database-sequential-pagination-1",
+      "title": "database-sequential-pagination-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "structure-service-orchestration-3",
+      "title": "structure-service-orchestration-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-3",
+      "title": "github-issue-health-3",
+      "security_relevant": false
+    }
+  ]
+}

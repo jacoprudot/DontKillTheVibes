@@ -1,0 +1,302 @@
+{
+  "metadata": {
+    "repo": "eurekagent",
+    "assessed_at": "2026-06-01T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "F",
+    "total_findings": 14,
+    "critical_count": 2,
+    "by_severity": {
+      "high": 2,
+      "medium": 6,
+      "critical": 2,
+      "low": 3,
+      "info": 1
+    },
+    "effort_estimate": {
+      "S": 4,
+      "M": 7,
+      "XS": 3
+    }
+  },
+  "findings": [
+    {
+      "id": "code-generic-catch-2",
+      "module": "code",
+      "severity": "high",
+      "effort": "S",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 262
+      },
+      "description": "The hook's top-level exception handler catches the generic Exception and only writes a debug entry plus a stderr print, so any failure in the search-logging path is silently swallowed and the caller (Claude Code) never learns that web-search history was not recorded.",
+      "remediation": "Catch the specific exceptions you can handle (json.JSONDecodeError, OSError, KeyError) and re-raise or exit non-zero for anything else so the hook failure surfaces instead of being hidden behind a debug line.",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "try:\n    handler(tool_input, tool_response)\nexcept Exception as e:\n    _debug({\"error\": str(e), \"tool_name\": tool_name, \"timestamp\": _now()})\n    print(f\"[log_web_search] ERROR: {e}\", file=sys.stderr)",
+        "metric": "1 broad except Exception block wrapping the entire dispatch"
+      }
+    },
+    {
+      "id": "code-catch-and-continue-9",
+      "module": "code",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 247
+      },
+      "description": "The stdin/JSON parse guard catches bare Exception and returns silently, so a malformed hook payload (or a broken pipe) is indistinguishable from 'no event to process' and the hook exits 0 without logging anything — the failure is absorbed and processing continues as if nothing happened.",
+      "remediation": "Catch json.JSONDecodeError explicitly and log the raw payload length to stderr before returning, so malformed events are diagnosable rather than invisible.",
+      "confidence": 0.8,
+      "evidence": {
+        "snippet": "try:\n    raw = sys.stdin.read()\n    event = json.loads(raw) if raw.strip() else {}\nexcept Exception:\n    return",
+        "metric": "1 silent except Exception around stdin parsing"
+      }
+    },
+    {
+      "id": "code-empty-catch-1",
+      "module": "code",
+      "severity": "critical",
+      "effort": "XS",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 118
+      },
+      "description": "The double-decoding fallback for MCP tool responses swallows JSONDecodeError and TypeError with a bare pass, leaving `parsed` in an unknown state that is then treated as a result list — malformed search payloads are silently dropped or mis-parsed.",
+      "remediation": "Log the decode failure (or set a sentinel) instead of `pass`, and skip the entry explicitly when the payload cannot be decoded.",
+      "confidence": 0.75,
+      "evidence": {
+        "snippet": "if isinstance(parsed, str):\n    try:\n        parsed = json.loads(parsed)\n    except (json.JSONDecodeError, TypeError):\n        pass",
+        "metric": "2 pass-only except blocks in the decode path (lines 118 and 126)"
+      }
+    },
+    {
+      "id": "code-long-function-7",
+      "module": "code",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 88
+      },
+      "description": "`_handle_web_search_prime` is a ~60-line function that mixes response-shape normalization (string, dict, list, double-encoded JSON) with entry construction and file appending, making the parsing rules hard to follow and test.",
+      "remediation": "Extract the normalization into a dedicated `_normalize_search_payload(text) -> list[dict]` helper and keep the handler limited to mapping normalized items to history entries.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "def _handle_web_search_prime(tool_input: dict, tool_response: dict | str | None) -> None:\n    query = tool_input.get(\"search_query\", \"\")\n    text = _extract_text_from_response(tool_response)\n    ...\n    if isinstance(parsed, list) and len(parsed) >= 1 and isinstance(parsed[0], dict):\n        if \"text\" in parsed[0] and \"title\" not in parsed[0]:",
+        "metric": "~60 lines, 4 nested isinstance branches"
+      }
+    },
+    {
+      "id": "code-exact-duplication-significant-2",
+      "module": "code",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 100
+      },
+      "description": "The same 'append a fallback entry with empty url/title and a truncated summary' block is repeated three times (unparsable JSON, no text captured, and the WebSearch no-URL case), duplicating the entry schema in several places.",
+      "remediation": "Introduce a single `_append_fallback(tool, query, summary)` helper and call it from all three sites so the JSONL schema is defined once.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "_append({\"tool\": \"web-search-prime\", \"query\": query,\n          \"url\": \"\", \"title\": \"\", \"summary\": text[:500],\n          \"timestamp\": _now()})",
+        "metric": "3 near-identical _append fallback blocks"
+      }
+    },
+    {
+      "id": "code-missing-return-type-8",
+      "module": "code",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 88
+      },
+      "description": "Several handler functions in the hook (`_handle_web_search_prime`, `_handle_web_search`, `_handle_playwright_navigate`, `_handle_playwright_snapshot`) lack return type annotations even though the module otherwise uses `from __future__ import annotations` and annotates parameters.",
+      "remediation": "Add `-> None` return annotations to all handler functions for consistency with the rest of the module.",
+      "confidence": 0.8,
+      "evidence": {
+        "snippet": "def _handle_web_search_prime(tool_input: dict, tool_response: dict | str | None) -> None:\n    query = tool_input.get(\"search_query\", \"\")",
+        "metric": "4 handlers without return annotations"
+      }
+    },
+    {
+      "id": "code-print-statement-5",
+      "module": "code",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 264
+      },
+      "description": "The hook writes its error output with `print(..., file=sys.stderr)` rather than the `logging` module, so there is no level control and no way to route hook diagnostics through the host's logging configuration.",
+      "remediation": "Use `logging.getLogger(__name__).error(...)` (or `warning`) so hook diagnostics respect the standard logging configuration.",
+      "confidence": 0.75,
+      "evidence": {
+        "snippet": "print(f\"[log_web_search] ERROR: {e}\", file=sys.stderr)",
+        "metric": "1 print-to-stderr in the error path"
+      }
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "module": "security",
+      "severity": "high",
+      "effort": "M",
+      "location": {
+        "file": ".claude/hooks/protect_result_files.py",
+        "line": 88
+      },
+      "description": "`_resolve_tool_path` builds a path from the raw tool argument and resolves it without any containment check against the workspace root, so a tool call with an absolute path or `../` traversal is evaluated against whatever it resolves to — the protection logic trusts the caller-supplied path.",
+      "remediation": "Resolve the path and verify it is inside the expected workspace root (e.g. `/workspace`) before applying any allow/deny decision; reject paths that escape the root outright.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "expanded = Path(raw_path).expanduser()\nif not expanded.is_absolute():\n    expanded = Path(cwd) / expanded\ntry:\n    return expanded.resolve(strict=False)",
+        "metric": "no root-containment check before resolve()"
+      }
+    },
+    {
+      "id": "security-gha-secret-leak-3",
+      "module": "security",
+      "severity": "critical",
+      "effort": "XS",
+      "location": {
+        "file": ".claude/hooks/protect_result_files.py",
+        "line": 196
+      },
+      "description": "The Bash-command guards rely on regex matching against the raw command string (`_contains_cuda_override`, `_is_write_to_protected_result`, `_contains_internal_dir_shell_op`), which is trivially bypassable with quoting, variable expansion, or base64-encoded payloads — the guard is a string filter, not a validated policy, so protected artifacts can be exfiltrated or overwritten.",
+      "remediation": "Parse the command with a shell-aware tokenizer (e.g. `shlex`) and evaluate the resolved argv, or move enforcement into the sandbox/container layer rather than pattern-matching command text.",
+      "confidence": 0.65,
+      "evidence": {
+        "snippet": "patterns = [\n    r'(?:^|[\\s|;&`(])(?:export\\s+)?CUDA_VISIBLE_DEVICES\\s*=',\n    r'\\bos\\.environ\\s*\\[\\s*([\\'\"])CUDA_VISIBLE_DEVICES\\1\\s*\\]\\s*=',\n]",
+        "metric": "4 regex patterns used as the sole CUDA-override control"
+      }
+    },
+    {
+      "id": "security-error-detail-1",
+      "module": "security",
+      "severity": "info",
+      "effort": "XS",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 264
+      },
+      "description": "The hook prints the raw exception message to stderr, which is surfaced back into the agent session and can leak internal paths or payload fragments from the host environment.",
+      "remediation": "Log the full exception server-side and emit a generic message (e.g. 'web search logging failed') to the session output.",
+      "confidence": 0.6,
+      "evidence": {
+        "snippet": "print(f\"[log_web_search] ERROR: {e}\", file=sys.stderr)",
+        "metric": "raw exception string emitted to session stderr"
+      }
+    },
+    {
+      "id": "structure-controller-logic-6",
+      "module": "structure",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 88
+      },
+      "description": "The hook module mixes transport concerns (reading the Claude Code event envelope, key-name fallbacks for tool_response/tool_output/tool_result) with domain logic (search-result normalization, URL extraction, summary truncation) in a single file, so the transport contract and the parsing rules cannot evolve independently.",
+      "remediation": "Split the module into a thin `hook_entrypoint` that extracts the event envelope and a `search_log` module that owns normalization and persistence.",
+      "confidence": 0.65,
+      "evidence": {
+        "snippet": "tool_response = (\n    event.get(\"tool_response\")\n    or event.get(\"tool_output\")\n    or event.get(\"tool_result\")\n)",
+        "metric": "transport-envelope handling and result parsing co-located in one 270-line module"
+      }
+    },
+    {
+      "id": "structure-config-logic-8",
+      "module": "structure",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 22
+      },
+      "description": "Operational paths (`/workspace/round_state/web_search_history.jsonl`, `.../web_search_hook_debug.jsonl`) are hardcoded as module-level constants, so the hook cannot be pointed at a different workspace or test directory without editing source.",
+      "remediation": "Read the history/debug paths from environment variables (e.g. `EUREKA_ROUND_STATE_DIR`) with the current values as defaults.",
+      "confidence": 0.75,
+      "evidence": {
+        "snippet": "_HISTORY_PATH = Path(\"/workspace/round_state/web_search_history.jsonl\")\n_DEBUG_PATH = Path(\"/workspace/round_state/web_search_hook_debug.jsonl\")",
+        "metric": "2 hardcoded absolute paths"
+      }
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "module": "structure",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": ".claude/hooks/protect_result_files.py",
+        "line": 14
+      },
+      "description": "The set of protected result filenames and the protected internal directory name are hardcoded module constants, so adding a new controller-owned artifact requires editing the hook source rather than updating configuration.",
+      "remediation": "Move `PROTECTED_RESULT_FILES` and `PROTECTED_INTERNAL_DIR` into a config file or environment-driven list loaded at hook startup.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "PROTECTED_RESULT_FILES = {\"intermediate_results.jsonl\", \"best_result.jsonl\"}\nPROTECTED_INTERNAL_DIR = \".eureka_internal\"",
+        "metric": "2 hardcoded protection lists"
+      }
+    },
+    {
+      "id": "code-copy-paste-variant-6",
+      "module": "code",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 160
+      },
+      "description": "`_handle_playwright_navigate` and `_handle_playwright_snapshot` repeat the same 'regex the response text for Page Title / Page URL, then append an entry' pattern with only the field names changed, duplicating the extraction logic.",
+      "remediation": "Extract a shared `_extract_page_metadata(text) -> tuple[str, str]` helper and have both handlers call it before appending their entries.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "title = \"\"\nm = re.search(r\"Page Title:\\s*(.+)\", text)\nif m:\n    title = m.group(1).strip()",
+        "metric": "Page Title/Page URL regex extraction duplicated across 2 handlers"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "code-empty-catch-1",
+        "code-generic-catch-2",
+        "code-print-statement-5",
+        "code-missing-return-type-8",
+        "security-error-detail-1"
+      ],
+      "60_days": [
+        "security-no-input-validation-14",
+        "security-gha-secret-leak-3",
+        "structure-config-logic-8",
+        "structure-dto-logic-7",
+        "code-exact-duplication-significant-2",
+        "code-copy-paste-variant-6"
+      ],
+      "90_days": [
+        "structure-controller-logic-6",
+        "code-long-function-7",
+        "code-catch-and-continue-9"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "structure-controller-logic-6",
+        "to": "code-long-function-7",
+        "type": "blocks"
+      },
+      {
+        "from": "code-exact-duplication-significant-2",
+        "to": "code-copy-paste-variant-6",
+        "type": "blocks"
+      }
+    ]
+  }
+}

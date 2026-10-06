@@ -1,0 +1,4451 @@
+{
+  "target": "ai-job-agent",
+  "mock": false,
+  "created_at": "2026-10-05T20:49:36.833Z",
+  "judge_model": "deepseek-chat",
+  "judge_base_url": "https://api.deepseek.com/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\ai-job-agent",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "9ce47d29b5fcfd37ea2fdd5588c8d178bbfa7305",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 129,
+    "toolkit": 12,
+    "orchestrated": 57,
+    "naive": 60,
+    "judged": 129,
+    "unverifiable": 116
+  },
+  "summary_by_arm": {
+    "naive": {
+      "claims": 60,
+      "judged": 60,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 60,
+      "judgeGrounded": 58,
+      "mechGrounded": 0,
+      "mechUngrounded": 60,
+      "mismatch": 58,
+      "actionableSum": 145,
+      "actionableN": 60,
+      "security": 7,
+      "securityFn": 0,
+      "claimsWithCitations": 0,
+      "citationsTotal": 0,
+      "weakCitations": 0,
+      "meanActionability": 2.42,
+      "precision": null,
+      "judgeGroundedRate": 0.967
+    },
+    "orchestrated": {
+      "claims": 57,
+      "judged": 57,
+      "real": 6,
+      "falseCount": 0,
+      "unverifiable": 51,
+      "judgeGrounded": 57,
+      "mechGrounded": 35,
+      "mechUngrounded": 22,
+      "mismatch": 22,
+      "actionableSum": 171,
+      "actionableN": 57,
+      "security": 15,
+      "securityFn": 0,
+      "claimsWithCitations": 57,
+      "citationsTotal": 57,
+      "weakCitations": 2,
+      "meanActionability": 3,
+      "precision": 1,
+      "judgeGroundedRate": 1
+    },
+    "toolkit": {
+      "claims": 12,
+      "judged": 12,
+      "real": 7,
+      "falseCount": 0,
+      "unverifiable": 5,
+      "judgeGrounded": 12,
+      "mechGrounded": 12,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 40,
+      "actionableN": 12,
+      "security": 2,
+      "securityFn": 0,
+      "claimsWithCitations": 12,
+      "citationsTotal": 12,
+      "weakCitations": 2,
+      "meanActionability": 3.33,
+      "precision": 1,
+      "judgeGroundedRate": 1
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-53",
+      "title": "56. `bin/job-agent.sh` — `tmux split-window -v -p 40 -t \"${SESSION}:main\"` may fail if the session was just created",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Code not shown; tmux race claim is speculative and low-priority.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "database-connection-timeout-high-3",
+      "title": "database-connection-timeout-high-3",
+      "severity": "medium",
+      "module": "database",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "urlopen timeout claim plausible but code at cited line not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/tracker-status-update.py",
+            "line": 84,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 200,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "code-exact-duplication-massive-1",
+      "title": "code-exact-duplication-massive-1",
+      "severity": "high",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Duplication claim plausible but scripts not shown to verify.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/greenhouse-apply.js",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 252,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-rate-limit-8",
+      "title": "flows-missing-rate-limit-8",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Rate-limiting concern is generic advice; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/linkedin-easy-apply.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 706,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Workflow snippet confirms npm install with no cache step.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 20,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "orchestrated",
+      "source_id": "flows-message-not-idempotent-8",
+      "title": "flows-message-not-idempotent-8",
+      "severity": "high",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Idempotency claim plausible but function code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/tracker-status-update.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 200,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "9. `bin/doctor.sh` — `set -u` with unguarded `$REPO` in remediation hints",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Speculative reasoning about doctor.sh; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "29. `.github/workflows/test.yml` — `skill-files` job duplicates the smoke test",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Redundancy claim plausible but workflow not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C9",
+      "arm": "toolkit",
+      "source_id": "cost-gha-always-on-8",
+      "title": "cost-gha-always-on-8",
+      "severity": "low",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms no paths filter on push/PR triggers.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 4,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C10",
+      "arm": "orchestrated",
+      "source_id": "structure-service-sql-5",
+      "title": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Design concern; function code not shown to verify.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/google-sheet-sync.py",
+            "line": 97,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 147,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-60",
+      "title": "63. `.github/workflows/test.yml` — `branches: [main]` on both `push` and `pull_request`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Speculative default-branch concern; not verifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "21. `bin/smoke-test.sh` — `run` uses `head -1` on stderr/stdout, hiding multi-line failures",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "head -1 diagnostic claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C13",
+      "arm": "orchestrated",
+      "source_id": "flows-no-state-persistence-6",
+      "title": "flows-no-state-persistence-6",
+      "severity": "low",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "State-persistence concern; script not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/outlook-send.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 130,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-54",
+      "title": "57. `bin/job-agent.sh` — `exec \"$0\" \"$@\"` after install re-runs the whole script including the tmux check",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Edge-case speculation; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C15",
+      "arm": "orchestrated",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Hardcoded email claim unverifiable without file contents.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/send-cold-email.js",
+            "line": 19,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 251,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `bin/doctor.sh` — `REPO_PATH` branch is unreachable",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Unreachable-branch claim speculative; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C17",
+      "arm": "orchestrated",
+      "source_id": "database-sequential-pagination-1",
+      "title": "database-sequential-pagination-1",
+      "severity": "high",
+      "module": "database",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Range-scan claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/google-sheet-sync.py",
+            "line": 47,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 147,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `bin/smoke-test.sh` — \"quoted commas\" test doesn't test CSV parsing",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Test-quality claim plausible but test code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C19",
+      "arm": "orchestrated",
+      "source_id": "cost-documentation-poor-7",
+      "title": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Docs gap claim plausible but not verifiable from digest.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/google-sheet-sync.py",
+            "line": 33,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 147,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C20",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms npm install without cache in setup-node step.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 22,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-44",
+      "title": "46. `.gitignore` — `chrome-data/` ignored, but no mention of Playwright's browser cache",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 1,
+        "reason": "Vague .gitignore comment nit; not a real defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C22",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-1",
+      "title": "github-issue-health-1",
+      "severity": "medium",
+      "module": "github",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Missing templates claim plausible but CONTRIBUTING not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "CONTRIBUTING.md",
+            "line": 20,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 135,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. `bin/smoke-test.sh` — `set -e` + `run` returning non-zero aborts the whole suite",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "set -e abort claim plausible but script not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C24",
+      "arm": "orchestrated",
+      "source_id": "flows-error-leaks-stack-6",
+      "title": "flows-error-leaks-stack-6",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Stack-trace leak claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/outlook-triage.js",
+            "line": 198,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 201,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C25",
+      "arm": "naive",
+      "source_id": "naive-claim-40",
+      "title": "41. `.gitignore` — `*.json.bak` is too narrow",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Minor .gitignore pattern nit; not verifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-49",
+      "title": "52. `bin/smoke-test.sh` — `skip` function doesn't actually skip anything",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Naming nit; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C27",
+      "arm": "naive",
+      "source_id": "naive-claim-36",
+      "title": "37. `CLAUDE.md` — skill table omits `/job-recap`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Missing skill in table claim plausible but CLAUDE.md not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C28",
+      "arm": "orchestrated",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Config-scatter claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/google-sheet-sync.py",
+            "line": 33,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 147,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C29",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "15. `.github/workflows/test.yml` — `npm install` without lockfile",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Lockfile-ignored claim plausible but .gitignore not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C30",
+      "arm": "orchestrated",
+      "source_id": "flows-message-retention-too-long-7",
+      "title": "flows-message-retention-too-long-7",
+      "severity": "low",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Retention-policy concern is generic; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/outlook-triage.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 201,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C31",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-hot-path-2",
+      "title": "database-missing-index-hot-path-2",
+      "severity": "medium",
+      "module": "database",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Re-parse claim plausible but script not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/mirror-tracker.mjs",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 296,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C32",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-circuit-breaker-7",
+      "title": "flows-missing-circuit-breaker-7",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Circuit-breaker claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/greenhouse-apply.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 252,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C33",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-high-usage-1",
+      "title": "cost-gha-high-usage-1",
+      "severity": "medium",
+      "module": "github",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms no concurrency group or path filter.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 4,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C34",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "26. `bin/doctor.sh` — `node -e` invoked once per field (N+1 process spawns)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "N+1 spawn claim plausible but doctor.sh not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C35",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-cors-9",
+      "title": "flows-missing-cors-9",
+      "severity": "low",
+      "module": "flows",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "CORS fallback claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/lever-apply.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 362,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C36",
+      "arm": "naive",
+      "source_id": "naive-claim-58",
+      "title": "61. `.github/workflows/test.yml` — `npm install` runs before `npm run smoke`, but smoke test doesn't need deps",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Speculative; depends on package.json not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C37",
+      "arm": "naive",
+      "source_id": "naive-claim-34",
+      "title": "35. `CHANGELOG.md` — \"BUNDLED array extended from 9 → 13 skills\" but doctor says 14",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Count-inconsistency claim plausible but CHANGELOG not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C38",
+      "arm": "toolkit",
+      "source_id": "security-gha-no-concurrency-prod-10",
+      "title": "security-gha-no-concurrency-prod-10",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms no concurrency group on push trigger.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 4,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C39",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "18. `bin/doctor.sh` — `npx --no-install playwright install --dry-run chromium` may hit the network",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "npx hang claim speculative; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C40",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "13. `bin/job-agent.sh` — `exec \"$0\" \"$@\"` after install loses the original argv semantics",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 1,
+        "reason": "Minor argv nit; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C41",
+      "arm": "orchestrated",
+      "source_id": "security-weak-rng-10",
+      "title": "security-weak-rng-10",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 1,
+        "reason": "Self-admitted non-finding; no real defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/send-cold-email.js",
+            "line": 123,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 251,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C42",
+      "arm": "orchestrated",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms jobs without timeout-minutes.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 10,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C43",
+      "arm": "naive",
+      "source_id": "naive-claim-57",
+      "title": "60. `bin/job-agent.sh` — no check for `claude` version",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Version-check nit; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C44",
+      "arm": "orchestrated",
+      "source_id": "flows-retry-no-backoff-4",
+      "title": "flows-retry-no-backoff-4",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Backoff claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/ashby-apply.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 235,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C45",
+      "arm": "toolkit",
+      "source_id": "security-gha-no-container-8",
+      "title": "security-gha-no-container-8",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Container-isolation advice is generic; not a real defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 11,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C46",
+      "arm": "naive",
+      "source_id": "naive-claim-41",
+      "title": "42. `.gitignore` — `data/applications.md` and `data/outreach.md` ignored, but `data/` directory itself isn't",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Speculative mkdir concern; script not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C47",
+      "arm": "orchestrated",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Injection claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/outlook-send.js",
+            "line": 33,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 130,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C48",
+      "arm": "orchestrated",
+      "source_id": "database-missing-app-pool-8",
+      "title": "database-missing-app-pool-8",
+      "severity": "high",
+      "module": "database",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Per-cell urlopen claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/tracker-status-update.py",
+            "line": 83,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 200,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C49",
+      "arm": "naive",
+      "source_id": "naive-claim-52",
+      "title": "55. `bin/job-agent.sh` — `tmux set-option -t \"$SESSION\" status off` is per-session, not per-window",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 1,
+        "reason": "Self-admitted minor nit; not a real defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C50",
+      "arm": "orchestrated",
+      "source_id": "flows-auth-order-1",
+      "title": "flows-auth-order-1",
+      "severity": "high",
+      "module": "flows",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Auth-check claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/linkedin-easy-apply.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 706,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C51",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms actions pinned to mutable tags.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 14,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C52",
+      "arm": "naive",
+      "source_id": "naive-claim-45",
+      "title": "47. `bin/doctor.sh` — `printf \"  %-58s\"` with long skill names overflows",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 1,
+        "reason": "Cosmetic alignment nit; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C53",
+      "arm": "naive",
+      "source_id": "naive-claim-42",
+      "title": "43. `.gitignore` — `reports/`, `output/`, `interview-prep/` ignored but no `.gitkeep`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Speculative .gitkeep concern; scripts not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C54",
+      "arm": "orchestrated",
+      "source_id": "database-iteration-overload-5",
+      "title": "database-iteration-overload-5",
+      "severity": "high",
+      "module": "database",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "O(n*m) claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/tracker-status-update.py",
+            "line": 110,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 200,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C55",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-timeout-9",
+      "title": "cost-gha-no-timeout-9",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms jobs without timeout-minutes.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 11,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C56",
+      "arm": "orchestrated",
+      "source_id": "flows-message-ordering-needed-4",
+      "title": "flows-message-ordering-needed-4",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Concurrency claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/google-sheet-sync.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 147,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C57",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "27. `bin/doctor.sh` — placeholder detection is heuristic and locale-dependent",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Placeholder-heuristic claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C58",
+      "arm": "orchestrated",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "github",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms no top-level permissions block.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 9,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C59",
+      "arm": "naive",
+      "source_id": "naive-claim-59",
+      "title": "62. `.github/workflows/test.yml` — no `timeout-minutes` on jobs",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms no timeout-minutes on jobs.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C60",
+      "arm": "orchestrated",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms actions pinned to mutable tags.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 14,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C61",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. `.github/workflows/test.yml` — idempotency check is broken",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Idempotency-check claim plausible but workflow not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C62",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Timeout claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/outlook-send.js",
+            "line": 31,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 130,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C63",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "23. `bin/smoke-test.sh` — header-injection test only checks `Bcc`",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Test-coverage claim plausible but test not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C64",
+      "arm": "orchestrated",
+      "source_id": "flows-validation-too-early-3",
+      "title": "flows-validation-too-early-3",
+      "severity": "low",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Async-validation claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/lever-apply.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 362,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C65",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. `bin/smoke-test.sh` — `run()` swallows the real exit code",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Exit-code capture claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C66",
+      "arm": "toolkit",
+      "source_id": "cost-gha-wasteful-retries-3",
+      "title": "cost-gha-wasteful-retries-3",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "continue-on-error claim plausible but workflow not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 44,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C67",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-idempotency-3",
+      "title": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Duplicate-send claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/outlook-send.js",
+            "line": 120,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 130,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C68",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-1",
+      "title": "github-commit-history-1",
+      "severity": "medium",
+      "module": "github",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Changelog-date claim speculative; not verifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "CHANGELOG.md",
+            "line": 7,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 88,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C69",
+      "arm": "orchestrated",
+      "source_id": "flows-consumer-group-lag-3",
+      "title": "flows-consumer-group-lag-3",
+      "severity": "high",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Lag-metric claim is feature request; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/job-dashboard.mjs",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 1521,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C70",
+      "arm": "orchestrated",
+      "source_id": "cost-dev-setup-missing-3",
+      "title": "cost-dev-setup-missing-3",
+      "severity": "high",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Setup-verification claim plausible but setup.sh not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "setup.sh",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 225,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C71",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "25. `bin/doctor.sh` — `REMEDIATIONS` array is populated but never printed",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Self-admitted truncation; not verifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C72",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "20. `bin/smoke-test.sh` — writes to fixed `/tmp/smoke-stdout` and `/tmp/smoke-stderr`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Fixed /tmp path claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C73",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-where-4",
+      "title": "database-missing-index-where-4",
+      "severity": "medium",
+      "module": "database",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Key-column claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/tracker-status-update.py",
+            "line": 112,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 200,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C74",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-dlq-2",
+      "title": "flows-missing-dlq-2",
+      "severity": "high",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Dead-letter claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/tracker-status-update.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 200,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C75",
+      "arm": "naive",
+      "source_id": "naive-claim-48",
+      "title": "50. `bin/doctor.sh` — `2>/dev/null` on `[ \"$NODE_MAJOR\" -ge 18 ]` hides real errors",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Code-smell nit; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C76",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Swallowed-error claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/lever-apply.js",
+            "line": 63,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 362,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C77",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "14. `.github/workflows/test.yml` — ShellCheck is `continue-on-error: true` and also `|| true`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Shellcheck suppression claim plausible but workflow not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C78",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "24. `bin/smoke-test.sh` — `set -eu` + `run` returning non-zero (duplicate of #2, but worth flagging in the summary)",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Duplicate of C23; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C79",
+      "arm": "orchestrated",
+      "source_id": "structure-low-cohesion-5",
+      "title": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Module-cohesion claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/job-dashboard.mjs",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 1521,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C80",
+      "arm": "toolkit",
+      "source_id": "security-gha-workspace-not-cleaned-6",
+      "title": "security-gha-workspace-not-cleaned-6",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Cleanup concern is generic; not a real defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 24,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C81",
+      "arm": "naive",
+      "source_id": "naive-claim-31",
+      "title": "32. `.github/workflows/test.yml` — `actions/checkout@v4` and `actions/setup-node@v4` not pinned to SHA",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms actions pinned to mutable tags.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C82",
+      "arm": "toolkit",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms jobs without timeout-minutes.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 9,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C83",
+      "arm": "orchestrated",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Test-coverage claim plausible but package.json not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 8,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 46,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C84",
+      "arm": "orchestrated",
+      "source_id": "database-full-table-scan-3",
+      "title": "database-full-table-scan-3",
+      "severity": "critical",
+      "module": "database",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Range-truncation claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/tracker-status-update.py",
+            "line": 52,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 200,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C85",
+      "arm": "toolkit",
+      "source_id": "code-ignores-return-value-6",
+      "title": "code-ignores-return-value-6",
+      "severity": "medium",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Exit-status claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "bin/job-agent.sh",
+            "line": 47,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 194,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C86",
+      "arm": "orchestrated",
+      "source_id": "flows-validation-placement-2",
+      "title": "flows-validation-placement-2",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Email-validation claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/send-cold-email.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 251,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C87",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Correlation-id suggestion is enhancement; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/send-cold-email.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 251,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C88",
+      "arm": "toolkit",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms no top-level permissions block.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C89",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-security-headers-10",
+      "title": "flows-missing-security-headers-10",
+      "severity": "low",
+      "module": "flows",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "CSP/link claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/generate-tailored-cv.mjs",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 278,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C90",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-visibility-timeout-9",
+      "title": "flows-missing-visibility-timeout-9",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Mark-read claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/outlook-triage.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 201,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C91",
+      "arm": "naive",
+      "source_id": "naive-claim-30",
+      "title": "31. `.github/workflows/test.yml` — no `permissions:` block",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms no permissions block in workflow.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C92",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "11. `bin/job-agent.sh` — `eval \"$INSTALL_CMD\"` on a user-influenced string",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "eval code-smell claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C93",
+      "arm": "orchestrated",
+      "source_id": "flows-retry-no-max-5",
+      "title": "flows-retry-no-max-5",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Retry-cap claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/greenhouse-apply.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 252,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C94",
+      "arm": "orchestrated",
+      "source_id": "cost-no-license-tracking-5",
+      "title": "cost-no-license-tracking-5",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "License-inventory suggestion is generic; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 29,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 46,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C95",
+      "arm": "naive",
+      "source_id": "naive-claim-51",
+      "title": "54. `bin/smoke-test.sh` — `run \"interactive mode falls back gracefully when not a TTY\"` uses `|| true`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Weak-assertion claim plausible but test not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C96",
+      "arm": "naive",
+      "source_id": "naive-claim-38",
+      "title": "39. `CLAUDE.md` — table row for `/job-interview` is truncated mid-sentence",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 1,
+        "reason": "Self-admitted truncation; not verifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C97",
+      "arm": "orchestrated",
+      "source_id": "flows-message-breaking-schema-2",
+      "title": "flows-message-breaking-schema-2",
+      "severity": "high",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Column-drop claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/tracker-status-update.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 200,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C98",
+      "arm": "naive",
+      "source_id": "naive-claim-43",
+      "title": "44. `.gitignore` — `.claude/` ignored, but `skills/install.sh` writes to `~/.claude/skills/`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 1,
+        "reason": "Comment-clarity nit; not a real defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C99",
+      "arm": "naive",
+      "source_id": "naive-claim-46",
+      "title": "48. `bin/doctor.sh` — color codes emitted even when not a TTY",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "TTY-color claim plausible but scripts not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C100",
+      "arm": "naive",
+      "source_id": "naive-claim-39",
+      "title": "40. `.gitignore` — ignores `config/candidate-profile.md` but not `config/candidate-profile.template.md`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 1,
+        "reason": "Self-admitted no issue; not a defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C101",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "16. `.gitignore` ignores `package-lock.json` — but `package.json` is committed",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Lockfile anti-pattern claim plausible but .gitignore not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C102",
+      "arm": "orchestrated",
+      "source_id": "flows-fire-and-forget-critical-1",
+      "title": "flows-fire-and-forget-critical-1",
+      "severity": "critical",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Fire-and-forget send claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/outlook-send.js",
+            "line": 120,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 130,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C103",
+      "arm": "orchestrated",
+      "source_id": "code-exact-duplication-significant-2",
+      "title": "code-exact-duplication-significant-2",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "CSV-parser duplication claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/mirror-tracker.mjs",
+            "line": 30,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 296,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C104",
+      "arm": "naive",
+      "source_id": "naive-claim-37",
+      "title": "38. `CLAUDE.md` — \"Two ways to drive it\" lists 13 skills in the intro",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Missing skill in list claim plausible but CLAUDE.md not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C105",
+      "arm": "naive",
+      "source_id": "naive-claim-35",
+      "title": "36. `CHANGELOG.md` — \"Fixed\" section claims a fix that isn't verifiable",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Changelog-claim critique speculative; not verifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C106",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "17. `bin/doctor.sh` — Playwright check is fragile string-matching",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "String-matching claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C107",
+      "arm": "toolkit",
+      "source_id": "cost-gha-expensive-runner-4",
+      "title": "cost-gha-expensive-runner-4",
+      "severity": "low",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Runner-size suggestion is generic; not a defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 11,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C108",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-2",
+      "title": "structure-high-coupling-2",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Python-coupling claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/linkedin-easy-apply.js",
+            "line": 60,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 706,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C109",
+      "arm": "orchestrated",
+      "source_id": "flows-dlq-not-monitored-5",
+      "title": "flows-dlq-not-monitored-5",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Silent-drop claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/tracker-status-update.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 200,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C110",
+      "arm": "naive",
+      "source_id": "naive-claim-55",
+      "title": "58. `bin/job-agent.sh` — iTerm AppleScript assumes iTerm is running",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "iTerm-launch nit; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C111",
+      "arm": "naive",
+      "source_id": "naive-claim-50",
+      "title": "53. `bin/smoke-test.sh` — `run \"snapshot is non-TTY safe (returns to TTY check)\"` name is confusing",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Test-name mismatch claim plausible but test not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C112",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "28. `bin/doctor.sh` — `[[ ... ]]` is bash-only, but the shebang is `#!/usr/bin/env bash`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Portability nit; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C113",
+      "arm": "naive",
+      "source_id": "naive-claim-56",
+      "title": "59. `bin/job-agent.sh` — Terminal.app fallback opens two *windows*, not tabs",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Terminal-window claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C114",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `bin/smoke-test.sh` — \"handles empty CSV\" test is a no-op",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "No-op test claim plausible but test not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C115",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "10. `bin/job-agent.sh` — AppleScript injection via `$REPO`",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "AppleScript injection claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C116",
+      "arm": "orchestrated",
+      "source_id": "code-long-parameter-list-8",
+      "title": "code-long-parameter-list-8",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Positional-arg claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/outlook-send.js",
+            "line": 28,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 130,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C117",
+      "arm": "orchestrated",
+      "source_id": "security-gha-workspace-not-cleaned-6",
+      "title": "security-gha-workspace-not-cleaned-6",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Cleanup concern is generic; not a real defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 44,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C118",
+      "arm": "naive",
+      "source_id": "naive-claim-33",
+      "title": "[1.0.0] — 2026-04-22",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Future-date claim speculative; not verifiable.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C119",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "22. `bin/smoke-test.sh` — `run \"install.sh --uninstall removes the symlinks\"` then re-installs without checking",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Uninstall-test claim plausible but test not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C120",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "30. `.github/workflows/test.yml` — `skill-files` glob `skills/job-*/SKILL.md` will match `skills/job-apply/SKILL.md` etc., but not `skills/README.md`",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Glob-robustness nit; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C121",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-timeout-9",
+      "title": "cost-gha-no-timeout-9",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet confirms jobs without timeout-minutes.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/test.yml",
+            "line": 9,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 75,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C122",
+      "arm": "orchestrated",
+      "source_id": "flows-inconsistent-response-4",
+      "title": "flows-inconsistent-response-4",
+      "severity": "low",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Output-shape claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/outlook-triage.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 201,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C123",
+      "arm": "orchestrated",
+      "source_id": "flows-message-schema-no-version-1",
+      "title": "flows-message-schema-no-version-1",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Schema-version suggestion is enhancement; code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "scripts/send-cold-email.js",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 251,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C124",
+      "arm": "naive",
+      "source_id": "naive-claim-32",
+      "title": "33. `.github/workflows/test.yml` — `sudo apt-get update && sudo apt-get install -y shellcheck` on every run",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "apt-get caching nit; workflow not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C125",
+      "arm": "naive",
+      "source_id": "naive-claim-47",
+      "title": "49. `bin/doctor.sh` — `NODE_MAJOR=${NODE_V%%.*}` fails on pre-release versions",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 1,
+        "reason": "Self-admitted fine; not a defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C126",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. `bin/doctor.sh` — repo resolution order contradicts the docs",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Resolution-order claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C127",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "12. `bin/job-agent.sh` — `read -r REPLY` under `set -e` with no TTY",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "read under set -e claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C128",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "19. `bin/doctor.sh` — `mktemp -d /tmp/ajagent-doctor.XXXXXX` is not portable",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "mktemp portability claim plausible but code not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C129",
+      "arm": "orchestrated",
+      "source_id": "cost-slow-tests-2",
+      "title": "cost-slow-tests-2",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Smoke-test weight claim plausible but script not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "bin/smoke-test.sh",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 231,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

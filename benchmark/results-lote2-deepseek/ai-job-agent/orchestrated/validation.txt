@@ -1,0 +1,29 @@
+WARN: findings[12] (flows-auth-order-1): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[13] (flows-message-breaking-schema-2): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[14] (flows-message-not-idempotent-8): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[18] (cost-dev-setup-missing-3): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[20] (flows-consumer-group-lag-3): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[27] (database-missing-index-hot-path-2): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[34] (flows-missing-rate-limit-8): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[35] (flows-retry-no-backoff-4): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[36] (flows-dlq-not-monitored-5): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[37] (flows-message-ordering-needed-4): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[38] (flows-message-schema-no-version-1): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[39] (flows-missing-circuit-breaker-7): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[40] (flows-missing-visibility-timeout-9): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[41] (flows-retry-no-max-5): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[42] (flows-validation-placement-2): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[45] (security-weak-rng-10): confidence 0.3 below 0.6 — finding may be speculative
+WARN: findings[46] (cost-no-license-tracking-5): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[47] (cost-slow-tests-2): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[48] (github-issue-health-1): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[49] (github-commit-history-1): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[50] (flows-inconsistent-response-4): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[51] (flows-missing-request-id-7): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[52] (flows-missing-cors-9): confidence 0.45 below 0.6 — finding may be speculative
+WARN: findings[53] (flows-missing-security-headers-10): rule "flows-missing-security-headers-10" is deprecated (superseded by security-missing-headers-10) — prefer the replacement
+WARN: findings[53] (flows-missing-security-headers-10): confidence 0.45 below 0.6 — finding may be speculative
+WARN: findings[54] (flows-no-state-persistence-6): confidence 0.45 below 0.6 — finding may be speculative
+WARN: findings[55] (flows-validation-too-early-3): confidence 0.45 below 0.6 — finding may be speculative
+WARN: findings[56] (flows-message-retention-too-long-7): confidence 0.4 below 0.6 — finding may be speculative
+VALID: 57 findings, 28 warning(s)

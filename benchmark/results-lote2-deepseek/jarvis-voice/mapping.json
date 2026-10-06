@@ -1,0 +1,1044 @@
+{
+  "target": "jarvis-voice",
+  "mock": false,
+  "created_at": "2026-10-05T20:19:02.937Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-46",
+      "title": "46. `server.py` imports `base64` but (in the visible portion) never uses it",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "flows-consumer-group-lag-3",
+      "title": "flows-consumer-group-lag-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. `subprocess` shell injection surface in `browser_tools._bring_chromium_to_front`",
+      "security_relevant": true
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "performance-no-perf-budgets-10",
+      "title": "performance-no-perf-budgets-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "24. `frontend/main.js` — `unlockAudio` uses a base64 MP3 data URI",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. `ACTION_PATTERN` is greedy and can match mid-text",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "orchestrated",
+      "source_id": "structure-framework-leak-3",
+      "title": "structure-framework-leak-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-circuit-breaker-7",
+      "title": "flows-missing-circuit-breaker-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-41",
+      "title": "41. `README.md` troubleshooting suggests `taskkill /f /im python.exe`",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "toolkit",
+      "source_id": "github-log-pattern-6",
+      "title": "github-log-pattern-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "orchestrated",
+      "source_id": "security-weak-rng-10",
+      "title": "security-weak-rng-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C12",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "orchestrated",
+      "source_id": "cost-llm-high-usage-1",
+      "title": "cost-llm-high-usage-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C14",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. `refresh_data()` is called at import time, blocking startup",
+      "security_relevant": false
+    },
+    {
+      "label": "C16",
+      "arm": "toolkit",
+      "source_id": "code-print-statement-8",
+      "title": "code-print-statement-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C17",
+      "arm": "toolkit",
+      "source_id": "performance-no-compression-13",
+      "title": "performance-no-compression-13",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "toolkit",
+      "source_id": "flows-missing-idempotency-3",
+      "title": "flows-missing-idempotency-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C19",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-usage-monitoring-9",
+      "title": "cost-api-no-usage-monitoring-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C20",
+      "arm": "toolkit",
+      "source_id": "structure-layer-violation-1",
+      "title": "structure-layer-violation-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "toolkit",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "orchestrated",
+      "source_id": "performance-no-retry-jitter-8",
+      "title": "performance-no-retry-jitter-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "orchestrated",
+      "source_id": "security-logs-contain-secrets-12",
+      "title": "security-logs-contain-secrets-12",
+      "security_relevant": true
+    },
+    {
+      "label": "C24",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C25",
+      "arm": "toolkit",
+      "source_id": "security-file-upload-weak-7",
+      "title": "security-file-upload-weak-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "28. `requirements.txt` missing `sounddevice` and `numpy`",
+      "security_relevant": false
+    },
+    {
+      "label": "C27",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-retry-strategy-8",
+      "title": "cost-api-no-retry-strategy-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C28",
+      "arm": "toolkit",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C29",
+      "arm": "orchestrated",
+      "source_id": "flows-message-schema-no-version-1",
+      "title": "flows-message-schema-no-version-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C30",
+      "arm": "naive",
+      "source_id": "naive-claim-30",
+      "title": "30. `config.example.json` has `\"workspace_path\": \"C:\\\\Users\\\\YOUR_USER\\\\Desktop\\\\jarvis_template\"` but the repo is `jarvis-voice`",
+      "security_relevant": false
+    },
+    {
+      "label": "C31",
+      "arm": "naive",
+      "source_id": "naive-claim-50",
+      "title": "50. `frontend/main.js` — `addTranscript` grows unbounded",
+      "security_relevant": false
+    },
+    {
+      "label": "C32",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "26. `screen_capture.py` — `ImageGrab.grab()` is Windows/macOS only",
+      "security_relevant": false
+    },
+    {
+      "label": "C33",
+      "arm": "toolkit",
+      "source_id": "code-bare-except-1",
+      "title": "code-bare-except-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C34",
+      "arm": "orchestrated",
+      "source_id": "performance-no-compression-13",
+      "title": "performance-no-compression-13",
+      "security_relevant": false
+    },
+    {
+      "label": "C35",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "29. `requirements.txt` pins `websockets` but the app uses FastAPI's WebSocket",
+      "security_relevant": false
+    },
+    {
+      "label": "C36",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "18. `clap-trigger.py` never resets `last_clap_time` on timeout",
+      "security_relevant": false
+    },
+    {
+      "label": "C37",
+      "arm": "orchestrated",
+      "source_id": "structure-adapter-violation-10",
+      "title": "structure-adapter-violation-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C38",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "13. `get_system_prompt` uses `.replace(\"{time}\", ...)` on a string that also contains literal `{weather_block}` f-string braces",
+      "security_relevant": false
+    },
+    {
+      "label": "C39",
+      "arm": "toolkit",
+      "source_id": "github-log-pattern-9",
+      "title": "github-log-pattern-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C40",
+      "arm": "orchestrated",
+      "source_id": "flows-message-retention-too-long-7",
+      "title": "flows-message-retention-too-long-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C41",
+      "arm": "orchestrated",
+      "source_id": "performance-no-load-testing-3",
+      "title": "performance-no-load-testing-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C42",
+      "arm": "orchestrated",
+      "source_id": "structure-service-sql-5",
+      "title": "structure-service-sql-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C43",
+      "arm": "orchestrated",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "security_relevant": true
+    },
+    {
+      "label": "C44",
+      "arm": "toolkit",
+      "source_id": "flows-missing-rate-limit-8",
+      "title": "flows-missing-rate-limit-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C45",
+      "arm": "toolkit",
+      "source_id": "security-logs-contain-secrets-12",
+      "title": "security-logs-contain-secrets-12",
+      "security_relevant": true
+    },
+    {
+      "label": "C46",
+      "arm": "orchestrated",
+      "source_id": "flows-error-leaks-stack-6",
+      "title": "flows-error-leaks-stack-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C47",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "19. `launch-session.ps1` uses `Start-Sleep -Seconds 3` then queries processes",
+      "security_relevant": true
+    },
+    {
+      "label": "C48",
+      "arm": "naive",
+      "source_id": "naive-claim-32",
+      "title": "32. No logging framework",
+      "security_relevant": true
+    },
+    {
+      "label": "C49",
+      "arm": "orchestrated",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C50",
+      "arm": "orchestrated",
+      "source_id": "performance-no-request-collapsing-4",
+      "title": "performance-no-request-collapsing-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C51",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-security-headers-10",
+      "title": "flows-missing-security-headers-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C52",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-1",
+      "title": "structure-high-coupling-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C53",
+      "arm": "naive",
+      "source_id": "naive-claim-45",
+      "title": "45. `browser_tools.py` imports `re`, `unquote`, `parse_qs`, `urlparse` but never uses them",
+      "security_relevant": false
+    },
+    {
+      "label": "C54",
+      "arm": "orchestrated",
+      "source_id": "flows-retry-no-backoff-4",
+      "title": "flows-retry-no-backoff-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C55",
+      "arm": "orchestrated",
+      "source_id": "flows-message-ordering-needed-4",
+      "title": "flows-message-ordering-needed-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C56",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. `_get_browser` is not concurrency-safe",
+      "security_relevant": false
+    },
+    {
+      "label": "C57",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-visibility-timeout-9",
+      "title": "flows-missing-visibility-timeout-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C58",
+      "arm": "orchestrated",
+      "source_id": "structure-service-orchestration-3",
+      "title": "structure-service-orchestration-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C59",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `open_url` / `visit` accept arbitrary URLs with no scheme allowlist",
+      "security_relevant": true
+    },
+    {
+      "label": "C60",
+      "arm": "toolkit",
+      "source_id": "github-commit-history-1",
+      "title": "github-commit-history-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C61",
+      "arm": "naive",
+      "source_id": "naive-claim-49",
+      "title": "49. `browser_tools` uses a persistent `_context` but `visit` closes pages",
+      "security_relevant": false
+    },
+    {
+      "label": "C62",
+      "arm": "orchestrated",
+      "source_id": "performance-no-response-streaming-5",
+      "title": "performance-no-response-streaming-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C63",
+      "arm": "toolkit",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C64",
+      "arm": "naive",
+      "source_id": "naive-claim-51",
+      "title": "🔵 Minor / Style",
+      "security_relevant": false
+    },
+    {
+      "label": "C65",
+      "arm": "orchestrated",
+      "source_id": "flows-no-state-persistence-6",
+      "title": "flows-no-state-persistence-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C66",
+      "arm": "toolkit",
+      "source_id": "performance-no-adaptive-timeout-6",
+      "title": "performance-no-adaptive-timeout-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C67",
+      "arm": "orchestrated",
+      "source_id": "flows-validation-too-early-3",
+      "title": "flows-validation-too-early-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C68",
+      "arm": "toolkit",
+      "source_id": "security-gha-secret-leak-3",
+      "title": "security-gha-secret-leak-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C69",
+      "arm": "naive",
+      "source_id": "naive-claim-52",
+      "title": "Summary of highest-priority fixes",
+      "security_relevant": true
+    },
+    {
+      "label": "C70",
+      "arm": "toolkit",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "security_relevant": true
+    },
+    {
+      "label": "C71",
+      "arm": "toolkit",
+      "source_id": "code-print-statement-5",
+      "title": "code-print-statement-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C72",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "25. `frontend/main.js` — `ws://` hardcoded",
+      "security_relevant": true
+    },
+    {
+      "label": "C73",
+      "arm": "orchestrated",
+      "source_id": "flows-message-breaking-schema-2",
+      "title": "flows-message-breaking-schema-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C74",
+      "arm": "toolkit",
+      "source_id": "flows-missing-dlq-2",
+      "title": "flows-missing-dlq-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C75",
+      "arm": "orchestrated",
+      "source_id": "security-cors-wildcard-2",
+      "title": "security-cors-wildcard-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C76",
+      "arm": "naive",
+      "source_id": "naive-claim-43",
+      "title": "43. `README.md` clone URL doesn't match the repo name",
+      "security_relevant": true
+    },
+    {
+      "label": "C77",
+      "arm": "orchestrated",
+      "source_id": "security-unmaintained-dep-4",
+      "title": "security-unmaintained-dep-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C78",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-dlq-2",
+      "title": "flows-missing-dlq-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C79",
+      "arm": "orchestrated",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C80",
+      "arm": "orchestrated",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C81",
+      "arm": "naive",
+      "source_id": "naive-claim-47",
+      "title": "47. `browser_tools.search_and_read` uses `duckduckgo.com/?q=` not the Lite endpoint",
+      "security_relevant": false
+    },
+    {
+      "label": "C82",
+      "arm": "orchestrated",
+      "source_id": "performance-io-bound-sync-2",
+      "title": "performance-io-bound-sync-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C83",
+      "arm": "naive",
+      "source_id": "naive-claim-39",
+      "title": "39. `.claude/settings.local.json` is committed with empty permissions",
+      "security_relevant": true
+    },
+    {
+      "label": "C84",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "20. `launch-session.ps1` `Snap-Window` doesn't check `MainWindowHandle -ne 0`",
+      "security_relevant": true
+    },
+    {
+      "label": "C85",
+      "arm": "naive",
+      "source_id": "naive-claim-31",
+      "title": "31. No tests at all",
+      "security_relevant": false
+    },
+    {
+      "label": "C86",
+      "arm": "naive",
+      "source_id": "naive-claim-38",
+      "title": "38. `CLAUDE.md` instructs Claude Code to edit `server.py` placeholders",
+      "security_relevant": false
+    },
+    {
+      "label": "C87",
+      "arm": "toolkit",
+      "source_id": "cost-llm-high-usage-1",
+      "title": "cost-llm-high-usage-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C88",
+      "arm": "naive",
+      "source_id": "naive-claim-42",
+      "title": "42. `README.md` says \"MIT\" license but there's no `LICENSE` file",
+      "security_relevant": false
+    },
+    {
+      "label": "C89",
+      "arm": "orchestrated",
+      "source_id": "flows-retry-no-max-5",
+      "title": "flows-retry-no-max-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C90",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "22. `frontend/main.js` — `isListening` is set but `recognition.onend` also sets it",
+      "security_relevant": false
+    },
+    {
+      "label": "C91",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C92",
+      "arm": "orchestrated",
+      "source_id": "flows-fire-and-forget-critical-1",
+      "title": "flows-fire-and-forget-critical-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C93",
+      "arm": "naive",
+      "source_id": "naive-claim-48",
+      "title": "48. `browser_tools.fetch_news` hardcodes `worldmonitor.app`",
+      "security_relevant": false
+    },
+    {
+      "label": "C94",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "23. `frontend/main.js` — audio queue never cleared on disconnect",
+      "security_relevant": false
+    },
+    {
+      "label": "C95",
+      "arm": "orchestrated",
+      "source_id": "flows-dlq-on-repeat-failures-10",
+      "title": "flows-dlq-on-repeat-failures-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C96",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-response-cache-5",
+      "title": "cost-api-no-response-cache-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C97",
+      "arm": "toolkit",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C98",
+      "arm": "toolkit",
+      "source_id": "flows-retry-no-backoff-4",
+      "title": "flows-retry-no-backoff-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C99",
+      "arm": "toolkit",
+      "source_id": "security-secret-in-history-2",
+      "title": "security-secret-in-history-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C100",
+      "arm": "naive",
+      "source_id": "naive-claim-33",
+      "title": "33. `server.py` mixes concerns",
+      "security_relevant": false
+    },
+    {
+      "label": "C101",
+      "arm": "naive",
+      "source_id": "naive-claim-40",
+      "title": "40. `.gitignore` doesn't ignore `.claude/settings.local.json`",
+      "security_relevant": false
+    },
+    {
+      "label": "C102",
+      "arm": "toolkit",
+      "source_id": "database-missing-app-pool-8",
+      "title": "database-missing-app-pool-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C103",
+      "arm": "orchestrated",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C104",
+      "arm": "orchestrated",
+      "source_id": "structure-low-cohesion-5",
+      "title": "structure-low-cohesion-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C105",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "14. `WEATHER_INFO = \"\"` initialized as string, then reassigned to dict/None",
+      "security_relevant": false
+    },
+    {
+      "label": "C106",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "21. `frontend/main.js` — `recognition` may be undefined",
+      "security_relevant": false
+    },
+    {
+      "label": "C107",
+      "arm": "toolkit",
+      "source_id": "code-empty-catch-1",
+      "title": "code-empty-catch-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C108",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `webbrowser.open` executed via `run_in_executor` with no validation",
+      "security_relevant": false
+    },
+    {
+      "label": "C109",
+      "arm": "toolkit",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C110",
+      "arm": "toolkit",
+      "source_id": "cost-deprecated-version-10",
+      "title": "cost-deprecated-version-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C111",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "16. `get_tasks_sync` hardcodes `Tasks.md`",
+      "security_relevant": false
+    },
+    {
+      "label": "C112",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. `open_url` uses deprecated `asyncio.get_event_loop()`",
+      "security_relevant": false
+    },
+    {
+      "label": "C113",
+      "arm": "naive",
+      "source_id": "naive-claim-35",
+      "title": "35. `conversations: dict[str, list]` is never bounded",
+      "security_relevant": true
+    },
+    {
+      "label": "C114",
+      "arm": "naive",
+      "source_id": "naive-claim-44",
+      "title": "44. `SETUP.md` is referenced but not shown",
+      "security_relevant": false
+    },
+    {
+      "label": "C115",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C116",
+      "arm": "orchestrated",
+      "source_id": "flows-message-not-compressed-10",
+      "title": "flows-message-not-compressed-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C117",
+      "arm": "toolkit",
+      "source_id": "cost-api-no-usage-monitoring-9",
+      "title": "cost-api-no-usage-monitoring-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C118",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-client-rate-limit-4",
+      "title": "cost-api-no-client-rate-limit-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C119",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. API keys stored in plaintext `config.json` and read at import time",
+      "security_relevant": true
+    },
+    {
+      "label": "C120",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. `httpx.AsyncClient` created at import, never closed",
+      "security_relevant": true
+    },
+    {
+      "label": "C121",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "27. `screen_capture.py` — model name `claude-haiku-4-5-20251001` is hardcoded",
+      "security_relevant": false
+    },
+    {
+      "label": "C122",
+      "arm": "toolkit",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C123",
+      "arm": "toolkit",
+      "source_id": "security-cors-wildcard-2",
+      "title": "security-cors-wildcard-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C124",
+      "arm": "orchestrated",
+      "source_id": "cost-documentation-poor-7",
+      "title": "cost-documentation-poor-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C125",
+      "arm": "toolkit",
+      "source_id": "cost-api-no-response-cache-5",
+      "title": "cost-api-no-response-cache-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C126",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-rate-limit-8",
+      "title": "flows-missing-rate-limit-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C127",
+      "arm": "toolkit",
+      "source_id": "cost-dev-setup-missing-3",
+      "title": "cost-dev-setup-missing-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C128",
+      "arm": "toolkit",
+      "source_id": "cost-documentation-poor-7",
+      "title": "cost-documentation-poor-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C129",
+      "arm": "orchestrated",
+      "source_id": "flows-dlq-not-monitored-5",
+      "title": "flows-dlq-not-monitored-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C130",
+      "arm": "toolkit",
+      "source_id": "performance-no-connection-pool-7",
+      "title": "performance-no-connection-pool-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C131",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. Bare `except:` clauses swallow everything",
+      "security_relevant": true
+    },
+    {
+      "label": "C132",
+      "arm": "naive",
+      "source_id": "naive-claim-36",
+      "title": "36. No rate limiting on the WebSocket",
+      "security_relevant": true
+    },
+    {
+      "label": "C133",
+      "arm": "orchestrated",
+      "source_id": "flows-message-retention-too-short-6",
+      "title": "flows-message-retention-too-short-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C134",
+      "arm": "naive",
+      "source_id": "naive-claim-37",
+      "title": "37. `frontend/index.html` loads `/static/style.css` but there's no static mount shown",
+      "security_relevant": false
+    },
+    {
+      "label": "C135",
+      "arm": "orchestrated",
+      "source_id": "flows-message-not-encrypted-9",
+      "title": "flows-message-not-encrypted-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C136",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "17. `clap-trigger.py` has a race in the callback",
+      "security_relevant": false
+    },
+    {
+      "label": "C137",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. `extract_action` strips text before the action but not after",
+      "security_relevant": true
+    },
+    {
+      "label": "C138",
+      "arm": "naive",
+      "source_id": "naive-claim-34",
+      "title": "34. Hardcoded German everywhere",
+      "security_relevant": false
+    },
+    {
+      "label": "C139",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `search_and_read` never closes its page",
+      "security_relevant": true
+    },
+    {
+      "label": "C140",
+      "arm": "orchestrated",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C141",
+      "arm": "toolkit",
+      "source_id": "code-unhandled-promise-4",
+      "title": "code-unhandled-promise-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C142",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. `_bring_chromium_to_front` is synchronous inside async code",
+      "security_relevant": false
+    },
+    {
+      "label": "C143",
+      "arm": "orchestrated",
+      "source_id": "cost-no-performance-budget-10",
+      "title": "cost-no-performance-budget-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C144",
+      "arm": "orchestrated",
+      "source_id": "performance-no-keep-alive-9",
+      "title": "performance-no-keep-alive-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C145",
+      "arm": "orchestrated",
+      "source_id": "performance-no-connection-pool-7",
+      "title": "performance-no-connection-pool-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C146",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-cors-9",
+      "title": "flows-missing-cors-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C147",
+      "arm": "toolkit",
+      "source_id": "structure-high-coupling-2",
+      "title": "structure-high-coupling-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C148",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-idempotency-3",
+      "title": "flows-missing-idempotency-3",
+      "security_relevant": true
+    }
+  ]
+}

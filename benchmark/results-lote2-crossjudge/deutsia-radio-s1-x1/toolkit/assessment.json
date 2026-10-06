@@ -1,0 +1,86 @@
+{
+  "metadata": {
+    "repo": "deutsia-radio",
+    "assessed_at": "2025-06-11T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-20250514",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "D",
+    "total_findings": 6,
+    "critical_count": 0,
+    "by_severity": {
+      "high": 2,
+      "medium": 4
+    },
+    "effort_estimate": {
+      "XS": 1,
+      "M": 5
+    }
+  },
+  "findings": [
+    {
+      "id": "security-debug-in-prod-1",
+      "module": "security",
+      "severity": "high",
+      "effort": "XS",
+      "location": {
+        "file": "app/src/main/AndroidManifest.xml",
+        "line": 28
+      },
+      "description": "The application manifest sets android:usesCleartextTraffic=\"true\", which permits all HTTP (non-TLS) traffic in production. Combined with the app's clearnet station support, this allows stream URLs and cover-art fetches to be downgraded to plaintext, exposing listening behavior and metadata to network observers.",
+      "remediation": "Set android:usesCleartextTraffic=\"false\" and add a network security config that whitelists only the specific clearnet hosts that genuinely require HTTP, or migrate all clearnet streams to HTTPS.",
+      "confidence": 0.9
+    },
+    {
+      "id": "security-gha-auto-deploy-prod-9",
+      "module": "security",
+      "severity": "high",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 4
+      },
+      "description": "The build workflow triggers on every push to main and runs a full Gradle assembleDebug without any environment protection, manual approval, or concurrency guard. Any merge to main immediately produces a build artifact, and there is no gate preventing unreviewed or malicious commits from being built and potentially distributed.",
+      "remediation": "Add a concurrency group (concurrency: group: build-${{ github.ref }}) and require environment protection rules or manual approval for any step that publishes artifacts to release channels.",
+      "confidence": 0.75
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 12
+      },
+      "description": "None of the four workflows (build.yml, test.yml, trivy.yml, scorecard.yml) set timeout-minutes on their jobs. A hung Gradle daemon, stalled network fetch, or stuck vulnerability scan can leave a job running indefinitely, consuming runner minutes and blocking the workflow queue.",
+      "remediation": "Add timeout-minutes: 30 (or an appropriate value) to every job in build.yml, test.yml, trivy.yml, and scorecard.yml.",
+      "confidence": 0.85
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-debug-in-prod-1",
+        "security-gha-job-no-timeout-7"
+      ],
+      "60_days": [
+        "security-gha-auto-deploy-prod-9",
+        "security-gha-no-container-8"
+      ],
+      "90_days": [
+        "security-gha-workspace-not-cleaned-6",
+        "security-gha-action-unpinned-5"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "security-gha-no-container-8",
+        "to": "security-gha-workspace-not-cleaned-6",
+        "type": "blocks"
+      }
+    ]
+  }
+}

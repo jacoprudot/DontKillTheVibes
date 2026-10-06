@@ -1,0 +1,351 @@
+{
+  "target": "cyberpunk-hud-s1",
+  "mock": false,
+  "created_at": "2026-10-05T23:41:10.291Z",
+  "judge_model": "qwen3.5:9b",
+  "judge_base_url": "http://localhost:11434/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\cyberpunk-hud",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "6dbc1460155c2a12ffbbb4bdf6a90d712ea35f08",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 8,
+    "toolkit": 8,
+    "orchestrated": 0,
+    "naive": 0,
+    "judged": 8,
+    "unverifiable": 8
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 8,
+      "judged": 8,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 8,
+      "judgeGrounded": 0,
+      "mechGrounded": 6,
+      "mechUngrounded": 2,
+      "mismatch": 0,
+      "actionableSum": 27,
+      "actionableN": 8,
+      "security": 1,
+      "securityFn": 0,
+      "claimsWithCitations": 8,
+      "citationsTotal": 8,
+      "weakCitations": 0,
+      "meanActionability": 3.38,
+      "precision": null,
+      "judgeGroundedRate": 0
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "code-logs-secrets-10",
+      "title": "code-logs-secrets-10",
+      "severity": "critical",
+      "module": "code",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Code snippet not available; cannot verify friction log content or credential handling.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "docs/friction-log-cyberpunk-hud.md",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 368,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "toolkit",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Snippet shows only class declaration/signals, missing module-level constants claimed in text.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "autoload/game_state.gd",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 113,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "code-long-function-7",
+      "title": "code-long-function-7",
+      "severity": "medium",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Snippet displays constants section; _ready() function body and length not visible for verification.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "cyberpunk_hud.gd",
+            "line": 24,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 218,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "toolkit",
+      "source_id": "structure-layer-violation-1",
+      "title": "structure-layer-violation-1",
+      "severity": "high",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Same snippet as C3 lacks GameState access logic or node path resolution code in view.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "cyberpunk_hud.gd",
+            "line": 24,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 218,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "toolkit",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "CLAUDE.md content missing; file tree partial prevents verifying CI workflow and test suite existence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "CLAUDE.md",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 44,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "toolkit",
+      "source_id": "code-copy-paste-variant-6",
+      "title": "code-copy-paste-variant-6",
+      "severity": "medium",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Snippet shows constants, not _ready() initialization logic or node path arrays mentioned.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "cyberpunk_hud.gd",
+            "line": 24,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 218,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "toolkit",
+      "source_id": "code-moderate-complexity-3",
+      "title": "code-moderate-complexity-3",
+      "severity": "medium",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Function snippet truncated; cannot verify full branching complexity or cyclomatic count from partial view.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "cyberpunk_hud.gd",
+            "line": 130,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 218,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "toolkit",
+      "source_id": "code-many-params-10",
+      "title": "code-many-params-10",
+      "severity": "low",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Snippet shows only signals/signature, missing module-level state variables claimed in text.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "autoload/game_state.gd",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 113,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

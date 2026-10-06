@@ -1,0 +1,883 @@
+{
+  "metadata": {
+    "repo": "cyberpunk-hud",
+    "assessed_at": "2026-10-05T21:06:54.600Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 21,
+    "findings_raw": 72,
+    "findings_dropped": 0,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 2,
+    "total_findings": 71,
+    "by_severity": {
+      "critical": 2,
+      "high": 8,
+      "medium": 33,
+      "low": 11,
+      "info": 17
+    },
+    "by_module": {
+      "structure": 6,
+      "flows": 20,
+      "cost": 7,
+      "performance": 6,
+      "github": 32
+    },
+    "effort_estimate": {
+      "XS": 17,
+      "S": 12,
+      "M": 40,
+      "L": 2
+    }
+  },
+  "findings": [
+    {
+      "id": "flows-missing-dlq-2",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "autoload/game_state.gd",
+        "line": 95
+      },
+      "description": "log_message events are emitted into the HUD feed with no dead-letter or overflow handling: _on_log_message shifts the five visible labels and drops the oldest entry, so any message emitted while the feed is saturated is silently discarded with no record.",
+      "remediation": "Persist overflow log messages to a bounded ring buffer (or a file) instead of dropping them, and expose the buffer so dropped/undelivered messages can be inspected rather than lost.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "autoload/game_state.gd",
+        "line": 39
+      },
+      "description": "_process() in the state singleton orchestrates multiple unrelated subsystems in one loop: shield regen, health regen, random direct-hit damage, cooldown ticking, periodic take_damage, log emission and credit bursts — the state object is acting as a demo orchestrator rather than holding state.",
+      "remediation": "Move the per-frame simulation (regen, random damage, log/credit timers) into a dedicated DemoDriver/Simulation node and keep GameState as a passive state holder that only exposes signals and mutators.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "github-commit-history-1",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "CLAUDE.md",
+        "line": 0
+      },
+      "description": "The repository contains no LICENSE file and no license declaration in README.md or CLAUDE.md, despite being a public demo project that documents its origin and build process. Without a license, the code is all-rights-reserved by default, which blocks reuse and creates legal ambiguity for anyone cloning the demo.",
+      "remediation": "Add a LICENSE file (e.g. MIT or Apache-2.0) at the repository root and reference it from README.md so the terms of reuse are explicit.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "github-issue-health-5",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "docs/prompt-friction-fixes.md",
+        "line": 0
+      },
+      "description": "The friction-fix prompt says fixes should be done on a new branch from main because they modify server/plugin code, but this repository contains no server or plugin source — only the HUD demo and docs. The scope statement does not match the repository contents.",
+      "remediation": "Clarify in the prompt that the server/plugin fixes belong to the godot-ai repository, and keep this repo's copy limited to the HUD artifact and friction log.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "github-issue-health-9",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "docs/prompt-hud-v3.md",
+        "line": 0
+      },
+      "description": "The v3 prompt references a branch 'polish/v2-terminal' and a godot-ai plugin version requirement (v1.1.0+) but the repository provides no way to verify which branch or plugin version is actually in use, and the branch is not documented anywhere else.",
+      "remediation": "Record the required plugin version and working branch in CLAUDE.md or a VERSIONS file so the v3 instructions can be validated against the checked-out state.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "github-log-pattern-4",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "docs/friction-log-cyberpunk-hud.md",
+        "line": 0
+      },
+      "description": "The friction log records that theme_create fails with 'Error 19 (ERR_FILE_NOT_FOUND or ERR_FILE_CANT_WRITE)' when the parent directory is missing (entry #1). The log itself is unsure which of the two error codes applies, indicating the error was not captured precisely.",
+      "remediation": "Re-run the failing call and record the exact error code and message rather than the ambiguous 'or' form, so the fix can target the correct failure path.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "github-log-pattern-9",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "docs/friction-log-cyberpunk-hud.md",
+        "line": 0
+      },
+      "description": "The friction log records that node_rename on the scene root returns 'INVALID_PARAMS: Cannot rename the scene root' (entry #2), but the restriction is not documented in any user-facing reference in this repository, so callers only discover it by failure.",
+      "remediation": "Document the scene-root rename restriction in CLAUDE.md alongside the other known tool limitations, and note the editor-UI alternative.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "github-issue-health-6",
+      "module": "github",
+      "severity": "info",
+      "location": {
+        "file": "docs/prompt-hud-v2.md",
+        "line": 8
+      },
+      "description": "The v2 prompt instructs editing test_project/cyberpunk_hud.tscn and test_project/themes/cyberpunk.tres, but no test_project/ directory exists in this repository — the HUD lives at the repo root. The file paths in the prompt are stale.",
+      "remediation": "Update the prompt's file paths to match the actual repository layout (cyberpunk_hud.tscn, themes/cyberpunk.tres at the root) or move the HUD into test_project/ as the prompt assumes.",
+      "effort": "XS",
+      "confidence": 0.7
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "flows-fire-and-forget-critical-1",
+          "structure-high-coupling-1",
+          "flows-missing-idempotency-3",
+          "cost-no-automated-tests-4",
+          "cost-dev-setup-missing-3",
+          "cost-no-code-review-6",
+          "github-issue-health-3",
+          "flows-message-not-idempotent-8",
+          "github-log-pattern-6",
+          "flows-missing-dlq-2",
+          "structure-low-cohesion-5",
+          "structure-high-coupling-2",
+          "structure-config-logic-8",
+          "structure-service-orchestration-3",
+          "performance-no-perf-budgets-10",
+          "flows-missing-error-handler-5",
+          "performance-no-regression-detection-5",
+          "performance-no-cost-perf-tradeoff-8",
+          "performance-no-load-testing-3",
+          "github-issue-health-7",
+          "cost-documentation-poor-7",
+          "flows-state-inefficient-access-7"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "cost-no-license-tracking-5",
+          "flows-state-expensive-update-5",
+          "flows-state-missing-defaults-10",
+          "cost-no-performance-budget-10",
+          "flows-message-retention-too-short-6",
+          "flows-missing-timeout-6",
+          "cost-no-oss-policy-9",
+          "github-commit-history-1",
+          "github-commit-history-6",
+          "github-commit-history-9",
+          "github-issue-health-5",
+          "flows-message-ordering-needed-4",
+          "flows-validation-placement-2",
+          "github-issue-health-1",
+          "github-issue-health-9"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "flows-missing-visibility-timeout-9",
+          "github-issue-health-11",
+          "github-log-pattern-2",
+          "github-log-pattern-4",
+          "github-log-pattern-5",
+          "github-log-pattern-9",
+          "structure-dto-logic-7",
+          "performance-no-slo-6",
+          "performance-no-tech-debt-alloc-9",
+          "flows-inconsistent-response-4",
+          "flows-no-state-persistence-6",
+          "flows-state-excessive-nesting-8",
+          "flows-validation-too-early-3",
+          "github-commit-history-10",
+          "flows-missing-request-id-7",
+          "flows-missing-cors-9",
+          "flows-missing-security-headers-10",
+          "github-issue-health-8",
+          "github-issue-health-12",
+          "github-commit-history-2",
+          "github-issue-health-6",
+          "github-commit-history-3",
+          "github-issue-health-10",
+          "github-commit-history-5",
+          "github-commit-history-7",
+          "github-commit-history-8",
+          "github-issue-health-2",
+          "github-issue-health-4",
+          "github-commit-history-4",
+          "github-log-pattern-1",
+          "github-log-pattern-10",
+          "github-log-pattern-3",
+          "github-log-pattern-7",
+          "github-log-pattern-8"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "flows-missing-error-handler-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-fire-and-forget-critical-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-idempotency-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-request-id-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-timeout-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-dlq-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-not-idempotent-8": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-visibility-timeout-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-ordering-needed-4": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-retention-too-short-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-no-state-persistence-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-state-expensive-update-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-state-inefficient-access-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-state-missing-defaults-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-state-excessive-nesting-8": [
+        "structure-high-coupling-1"
+      ],
+      "flows-validation-placement-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-validation-too-early-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-inconsistent-response-4": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-cors-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-security-headers-10": [
+        "structure-high-coupling-1"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "flows-fire-and-forget-critical-1",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 55,
+      "canonical_rule": "flows-fire-and-forget-critical-1"
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.8,
+      "score": 44,
+      "canonical_rule": "structure-high-coupling-1"
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 40,
+      "canonical_rule": "flows-missing-idempotency-3"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.75,
+      "score": 30,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 28,
+      "canonical_rule": "cost-dev-setup-missing-3"
+    },
+    {
+      "id": "cost-no-code-review-6",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 24,
+      "canonical_rule": "cost-no-code-review-6"
+    },
+    {
+      "id": "github-issue-health-3",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.65,
+      "score": 22.75,
+      "canonical_rule": "github-issue-health-3"
+    },
+    {
+      "id": "flows-message-not-idempotent-8",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 22.5,
+      "canonical_rule": "flows-message-not-idempotent-8"
+    },
+    {
+      "id": "github-log-pattern-6",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 21,
+      "canonical_rule": "github-log-pattern-6"
+    },
+    {
+      "id": "flows-missing-dlq-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 20,
+      "canonical_rule": "flows-missing-dlq-2"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.8,
+      "score": 17.6,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "structure-high-coupling-2",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 16.5,
+      "canonical_rule": "structure-high-coupling-2"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-service-orchestration-3"
+    },
+    {
+      "id": "performance-no-perf-budgets-10",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.6,
+      "score": 14.4,
+      "canonical_rule": "performance-no-perf-budgets-10"
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "flows-missing-error-handler-5"
+    },
+    {
+      "id": "performance-no-regression-detection-5",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.55,
+      "score": 13.2,
+      "canonical_rule": "performance-no-regression-detection-5"
+    },
+    {
+      "id": "performance-no-cost-perf-tradeoff-8",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 12,
+      "canonical_rule": "performance-no-cost-perf-tradeoff-8"
+    },
+    {
+      "id": "performance-no-load-testing-3",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 12,
+      "canonical_rule": "performance-no-load-testing-3"
+    },
+    {
+      "id": "github-issue-health-7",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.8,
+      "score": 11.2,
+      "canonical_rule": "github-issue-health-7"
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 11.2,
+      "canonical_rule": "cost-documentation-poor-7"
+    },
+    {
+      "id": "flows-state-inefficient-access-7",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 11,
+      "canonical_rule": "flows-state-inefficient-access-7"
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.65,
+      "score": 10.4,
+      "canonical_rule": "cost-no-license-tracking-5"
+    },
+    {
+      "id": "flows-state-expensive-update-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-state-expensive-update-5"
+    },
+    {
+      "id": "flows-state-missing-defaults-10",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-state-missing-defaults-10"
+    },
+    {
+      "id": "cost-no-performance-budget-10",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-no-performance-budget-10"
+    },
+    {
+      "id": "flows-message-retention-too-short-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 9,
+      "canonical_rule": "flows-message-retention-too-short-6"
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 9,
+      "canonical_rule": "flows-missing-timeout-6"
+    },
+    {
+      "id": "cost-no-oss-policy-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.55,
+      "score": 8.8,
+      "canonical_rule": "cost-no-oss-policy-9"
+    },
+    {
+      "id": "github-commit-history-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 8.4,
+      "canonical_rule": "github-commit-history-1"
+    },
+    {
+      "id": "github-commit-history-6",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 8.4,
+      "canonical_rule": "github-commit-history-6"
+    },
+    {
+      "id": "github-commit-history-9",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 8.4,
+      "canonical_rule": "github-commit-history-9"
+    },
+    {
+      "id": "github-issue-health-5",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 8.4,
+      "canonical_rule": "github-issue-health-5"
+    },
+    {
+      "id": "flows-message-ordering-needed-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 8,
+      "canonical_rule": "flows-message-ordering-needed-4"
+    },
+    {
+      "id": "flows-validation-placement-2",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 8,
+      "canonical_rule": "flows-validation-placement-2"
+    },
+    {
+      "id": "github-issue-health-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 7.7,
+      "canonical_rule": "github-issue-health-1"
+    },
+    {
+      "id": "github-issue-health-9",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 7.7,
+      "canonical_rule": "github-issue-health-9"
+    },
+    {
+      "id": "flows-missing-visibility-timeout-9",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.35,
+      "score": 7,
+      "canonical_rule": "flows-missing-visibility-timeout-9"
+    },
+    {
+      "id": "github-issue-health-11",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-issue-health-11"
+    },
+    {
+      "id": "github-log-pattern-2",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-log-pattern-2"
+    },
+    {
+      "id": "github-log-pattern-4",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-log-pattern-4"
+    },
+    {
+      "id": "github-log-pattern-5",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-log-pattern-5"
+    },
+    {
+      "id": "github-log-pattern-9",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-log-pattern-9"
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 3.3,
+      "canonical_rule": "structure-dto-logic-7"
+    },
+    {
+      "id": "performance-no-slo-6",
+      "severity": "low",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 3,
+      "canonical_rule": "performance-no-slo-6"
+    },
+    {
+      "id": "performance-no-tech-debt-alloc-9",
+      "severity": "low",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 3,
+      "canonical_rule": "performance-no-tech-debt-alloc-9"
+    },
+    {
+      "id": "flows-inconsistent-response-4",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-inconsistent-response-4"
+    },
+    {
+      "id": "flows-no-state-persistence-6",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-no-state-persistence-6"
+    },
+    {
+      "id": "flows-state-excessive-nesting-8",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 2.25,
+      "canonical_rule": "flows-state-excessive-nesting-8"
+    },
+    {
+      "id": "flows-validation-too-early-3",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 2.25,
+      "canonical_rule": "flows-validation-too-early-3"
+    },
+    {
+      "id": "github-commit-history-10",
+      "severity": "low",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 2.1,
+      "canonical_rule": "github-commit-history-10"
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 2,
+      "canonical_rule": "flows-missing-request-id-7"
+    },
+    {
+      "id": "flows-missing-cors-9",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.3,
+      "score": 1.5,
+      "canonical_rule": "flows-missing-cors-9"
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.3,
+      "score": 1.5,
+      "canonical_rule": "flows-missing-security-headers-10"
+    },
+    {
+      "id": "github-issue-health-8",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.8,
+      "score": 0.56,
+      "canonical_rule": "github-issue-health-8"
+    },
+    {
+      "id": "github-issue-health-12",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.75,
+      "score": 0.52,
+      "canonical_rule": "github-issue-health-12"
+    },
+    {
+      "id": "github-commit-history-2",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.7,
+      "score": 0.49,
+      "canonical_rule": "github-commit-history-2"
+    },
+    {
+      "id": "github-issue-health-6",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.7,
+      "score": 0.49,
+      "canonical_rule": "github-issue-health-6"
+    },
+    {
+      "id": "github-commit-history-3",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.65,
+      "score": 0.45,
+      "canonical_rule": "github-commit-history-3"
+    },
+    {
+      "id": "github-issue-health-10",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.65,
+      "score": 0.45,
+      "canonical_rule": "github-issue-health-10"
+    },
+    {
+      "id": "github-commit-history-5",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 0.42,
+      "canonical_rule": "github-commit-history-5"
+    },
+    {
+      "id": "github-commit-history-7",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 0.42,
+      "canonical_rule": "github-commit-history-7"
+    },
+    {
+      "id": "github-commit-history-8",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 0.42,
+      "canonical_rule": "github-commit-history-8"
+    },
+    {
+      "id": "github-issue-health-2",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 0.42,
+      "canonical_rule": "github-issue-health-2"
+    },
+    {
+      "id": "github-issue-health-4",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 0.42,
+      "canonical_rule": "github-issue-health-4"
+    },
+    {
+      "id": "github-commit-history-4",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 0.39,
+      "canonical_rule": "github-commit-history-4"
+    },
+    {
+      "id": "github-log-pattern-1",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 0.35,
+      "canonical_rule": "github-log-pattern-1"
+    },
+    {
+      "id": "github-log-pattern-10",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 0.35,
+      "canonical_rule": "github-log-pattern-10"
+    },
+    {
+      "id": "github-log-pattern-3",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 0.35,
+      "canonical_rule": "github-log-pattern-3"
+    },
+    {
+      "id": "github-log-pattern-7",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 0.35,
+      "canonical_rule": "github-log-pattern-7"
+    },
+    {
+      "id": "github-log-pattern-8",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 0.35,
+      "canonical_rule": "github-log-pattern-8"
+    }
+  ]
+}

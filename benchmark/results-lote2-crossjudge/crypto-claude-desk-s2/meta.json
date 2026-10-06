@@ -1,0 +1,169 @@
+{
+  "mock": false,
+  "target": "crypto-claude-desk",
+  "url": "https://github.com/hugoguerrap/crypto-claude-desk",
+  "commit": "298cfd58408aa86ef3c7ce863c0c19858636df7a",
+  "model": "deepseek-chat",
+  "base_url": "https://api.deepseek.com/v1",
+  "target_dir": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\crypto-claude-desk",
+  "timestamp": "2026-10-05T21:02:32.773Z",
+  "digest": {
+    "file": "digest.json",
+    "tree_files": 121,
+    "included_files": 11,
+    "chars": 40034,
+    "skipped_content": 113,
+    "skipped_sensitive": 0
+  },
+  "arms": {
+    "toolkit": {
+      "ok": true,
+      "output": "toolkit/assessment.json"
+    },
+    "naive": {
+      "ok": true,
+      "output": "naive.md"
+    },
+    "orchestrated": {
+      "ok": true,
+      "requested": true,
+      "output": "orchestrated/assessment.json"
+    }
+  },
+  "arm_c": {
+    "requested": true,
+    "runner": "scripts/dktv-orchestrate.mjs",
+    "max_files": 25,
+    "max_chars": 200000,
+    "max_tokens": 16384,
+    "metrics": {
+      "run_mode": "real",
+      "repo": "crypto-claude-desk",
+      "assessed_at": "2026-10-05T21:00:29.330Z",
+      "report_path": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\results-lote2-deepseek\\crypto-claude-desk\\orchestrated\\assessment-report.md",
+      "report_written": true,
+      "findings_total": 76,
+      "findings_evaluated": 90,
+      "weak_before": 46,
+      "weak_after": 27,
+      "repaired": 19,
+      "repair_failed": 2,
+      "repair_calls": 6,
+      "weak_over_cap": 25,
+      "stamped_total": 72,
+      "stamped_severity": 54,
+      "stamped_effort": 61,
+      "rules_unknown": 0,
+      "llm_calls": 22,
+      "repair_budget": {
+        "max_calls": 8,
+        "max_findings_per_module": 5,
+        "window_radius": 40,
+        "window_chars_cap": 6000,
+        "prompt_chars_cap": 40000,
+        "calls_used": 6
+      },
+      "per_module": {
+        "database": {
+          "weak_before": 4,
+          "weak_after": 0,
+          "repaired": 4,
+          "repair_failed": 0,
+          "repair_calls": 1,
+          "weak_over_cap": 0,
+          "stamped_total": 10,
+          "stamped_severity": 8,
+          "stamped_effort": 5,
+          "rules_unknown": 0
+        },
+        "code": {
+          "weak_before": 2,
+          "weak_after": 0,
+          "repaired": 2,
+          "repair_failed": 0,
+          "repair_calls": 1,
+          "weak_over_cap": 0,
+          "stamped_total": 12,
+          "stamped_severity": 6,
+          "stamped_effort": 11,
+          "rules_unknown": 0
+        },
+        "structure": {
+          "weak_before": 9,
+          "weak_after": 4,
+          "repaired": 5,
+          "repair_failed": 0,
+          "repair_calls": 1,
+          "weak_over_cap": 4,
+          "stamped_total": 6,
+          "stamped_severity": 4,
+          "stamped_effort": 4,
+          "rules_unknown": 0
+        },
+        "flows": {
+          "weak_before": 0,
+          "weak_after": 0,
+          "repaired": 0,
+          "repair_failed": 0,
+          "repair_calls": 0,
+          "weak_over_cap": 0,
+          "stamped_total": 0,
+          "stamped_severity": 0,
+          "stamped_effort": 0,
+          "rules_unknown": 0
+        },
+        "security": {
+          "weak_before": 0,
+          "weak_after": 0,
+          "repaired": 0,
+          "repair_failed": 0,
+          "repair_calls": 0,
+          "weak_over_cap": 0,
+          "stamped_total": 3,
+          "stamped_severity": 3,
+          "stamped_effort": 3,
+          "rules_unknown": 0
+        },
+        "cost": {
+          "weak_before": 4,
+          "weak_after": 0,
+          "repaired": 4,
+          "repair_failed": 0,
+          "repair_calls": 1,
+          "weak_over_cap": 0,
+          "stamped_total": 11,
+          "stamped_severity": 7,
+          "stamped_effort": 11,
+          "rules_unknown": 0
+        },
+        "performance": {
+          "weak_before": 1,
+          "weak_after": 0,
+          "repaired": 1,
+          "repair_failed": 0,
+          "repair_calls": 1,
+          "weak_over_cap": 0,
+          "stamped_total": 6,
+          "stamped_severity": 6,
+          "stamped_effort": 5,
+          "rules_unknown": 0
+        },
+        "github": {
+          "weak_before": 26,
+          "weak_after": 23,
+          "repaired": 3,
+          "repair_failed": 2,
+          "repair_calls": 1,
+          "weak_over_cap": 21,
+          "stamped_total": 24,
+          "stamped_severity": 20,
+          "stamped_effort": 22,
+          "rules_unknown": 0
+        }
+      },
+      "report_language": "en"
+    }
+  },
+  "note": "Arms A and B share one digest (identical input, different prompt/tooling). Arm C (B2) does its own per-module file selection, so its input differs by design.",
+  "api_key_recorded": false
+}

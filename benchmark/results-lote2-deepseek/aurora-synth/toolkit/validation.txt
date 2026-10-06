@@ -1,0 +1,4 @@
+WARN: findings[2] (security-missing-headers-10): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[3] (code-console-log-7): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[4] (cost-gha-no-dependency-cache-5): confidence 0.5 below 0.6 — finding may be speculative
+VALID: 6 findings, 3 warning(s)

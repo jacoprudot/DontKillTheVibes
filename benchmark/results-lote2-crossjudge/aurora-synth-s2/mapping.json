@@ -1,0 +1,64 @@
+{
+  "target": "aurora-synth-s2",
+  "mock": false,
+  "created_at": "2026-10-05T23:20:25.752Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "orchestrated",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "security-directory-listing-8",
+      "title": "security-directory-listing-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-1",
+      "title": "structure-high-coupling-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "orchestrated",
+      "source_id": "security-unmaintained-dep-4",
+      "title": "security-unmaintained-dep-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "orchestrated",
+      "source_id": "performance-no-slo-6",
+      "title": "performance-no-slo-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C7",
+      "arm": "orchestrated",
+      "source_id": "cost-slow-build-1",
+      "title": "cost-slow-build-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C8",
+      "arm": "orchestrated",
+      "source_id": "structure-service-orchestration-3",
+      "title": "structure-service-orchestration-3",
+      "security_relevant": false
+    }
+  ]
+}

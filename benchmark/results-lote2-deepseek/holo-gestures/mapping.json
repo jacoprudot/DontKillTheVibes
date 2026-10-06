@@ -1,0 +1,533 @@
+{
+  "target": "holo-gestures",
+  "mock": false,
+  "created_at": "2026-10-05T20:42:16.219Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "orchestrated",
+      "source_id": "performance-no-keep-alive-9",
+      "title": "performance-no-keep-alive-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. `errors=\"ignore\"` on note reads",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "security-vcs-insecure-9",
+      "title": "security-vcs-insecure-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "19. `rest = [l for l in lines[1:] if not l.startswith(\"#\")]`",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "orchestrated",
+      "source_id": "security-logs-contain-secrets-12",
+      "title": "security-logs-contain-secrets-12",
+      "security_relevant": true
+    },
+    {
+      "label": "C7",
+      "arm": "orchestrated",
+      "source_id": "flows-fire-and-forget-critical-1",
+      "title": "flows-fire-and-forget-critical-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "toolkit",
+      "source_id": "code-empty-catch-1",
+      "title": "code-empty-catch-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. `vendor/` is referenced but absent",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-idempotency-3",
+      "title": "flows-missing-idempotency-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "toolkit",
+      "source_id": "code-long-function-7",
+      "title": "code-long-function-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C12",
+      "arm": "orchestrated",
+      "source_id": "security-directory-listing-8",
+      "title": "security-directory-listing-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. `holo.json` ships with an empty folder, but README tells users to edit it",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-security-headers-10",
+      "title": "flows-missing-security-headers-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "orchestrated",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C16",
+      "arm": "orchestrated",
+      "source_id": "structure-service-sql-5",
+      "title": "structure-service-sql-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C17",
+      "arm": "orchestrated",
+      "source_id": "cost-no-oss-policy-9",
+      "title": "cost-no-oss-policy-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "16. `server.py` docstring says \"port 4890\" but `HOLO_PORT` env var overrides it",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "toolkit",
+      "source_id": "code-generic-catch-2",
+      "title": "code-generic-catch-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C20",
+      "arm": "orchestrated",
+      "source_id": "cost-license-attribution-missing-2",
+      "title": "cost-license-attribution-missing-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "orchestrated",
+      "source_id": "cost-dev-setup-missing-3",
+      "title": "cost-dev-setup-missing-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. `server.py` docstring contradicts the README and the actual architecture",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. `notes_dir()` trusts `holo.json` without confinement",
+      "security_relevant": true
+    },
+    {
+      "label": "C24",
+      "arm": "toolkit",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "security_relevant": false
+    },
+    {
+      "label": "C25",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "14. README claims `?probe=1` runs \"26/26\" but there's no test file",
+      "security_relevant": false
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. Duplicate CSS rule",
+      "security_relevant": false
+    },
+    {
+      "label": "C27",
+      "arm": "toolkit",
+      "source_id": "code-missing-docstring-10",
+      "title": "code-missing-docstring-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C28",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-rate-limit-8",
+      "title": "flows-missing-rate-limit-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C29",
+      "arm": "orchestrated",
+      "source_id": "performance-no-compression-13",
+      "title": "performance-no-compression-13",
+      "security_relevant": false
+    },
+    {
+      "label": "C30",
+      "arm": "toolkit",
+      "source_id": "code-ignores-return-value-6",
+      "title": "code-ignores-return-value-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C31",
+      "arm": "orchestrated",
+      "source_id": "cost-no-license-tracking-5",
+      "title": "cost-no-license-tracking-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C32",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C33",
+      "arm": "toolkit",
+      "source_id": "flows-missing-rate-limit-8",
+      "title": "flows-missing-rate-limit-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C34",
+      "arm": "toolkit",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C35",
+      "arm": "orchestrated",
+      "source_id": "structure-controller-logic-6",
+      "title": "structure-controller-logic-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C36",
+      "arm": "orchestrated",
+      "source_id": "code-catch-and-continue-9",
+      "title": "code-catch-and-continue-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C37",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C38",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-1",
+      "title": "github-log-pattern-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C39",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "22. `#dbg` is `display:none` with no documented way to enable it",
+      "security_relevant": false
+    },
+    {
+      "label": "C40",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C41",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-1",
+      "title": "github-commit-history-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C42",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "20. `load_tree()` is defined but its body is truncated in the provided content",
+      "security_relevant": false
+    },
+    {
+      "label": "C43",
+      "arm": "orchestrated",
+      "source_id": "security-no-security-maintenance-7",
+      "title": "security-no-security-maintenance-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C44",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `PAGE_CACHE` is a one-element list used as a mutable global",
+      "security_relevant": false
+    },
+    {
+      "label": "C45",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "13. `LICENSE` copyright year is 2026",
+      "security_relevant": false
+    },
+    {
+      "label": "C46",
+      "arm": "orchestrated",
+      "source_id": "code-bare-except-1",
+      "title": "code-bare-except-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C47",
+      "arm": "orchestrated",
+      "source_id": "code-missing-validation-4",
+      "title": "code-missing-validation-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C48",
+      "arm": "toolkit",
+      "source_id": "code-missing-validation-4",
+      "title": "code-missing-validation-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C49",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-cors-9",
+      "title": "flows-missing-cors-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C50",
+      "arm": "toolkit",
+      "source_id": "code-print-statement-5",
+      "title": "code-print-statement-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C51",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-1",
+      "title": "github-issue-health-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C52",
+      "arm": "orchestrated",
+      "source_id": "cost-documentation-poor-7",
+      "title": "cost-documentation-poor-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C53",
+      "arm": "orchestrated",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "security_relevant": false
+    },
+    {
+      "label": "C54",
+      "arm": "orchestrated",
+      "source_id": "flows-error-leaks-stack-6",
+      "title": "flows-error-leaks-stack-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C55",
+      "arm": "orchestrated",
+      "source_id": "security-cors-wildcard-2",
+      "title": "security-cors-wildcard-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C56",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. `holo.html` is 89 KB in a single file",
+      "security_relevant": false
+    },
+    {
+      "label": "C57",
+      "arm": "orchestrated",
+      "source_id": "security-gha-secret-leak-3",
+      "title": "security-gha-secret-leak-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C58",
+      "arm": "orchestrated",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C59",
+      "arm": "orchestrated",
+      "source_id": "code-ignores-return-value-6",
+      "title": "code-ignores-return-value-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C60",
+      "arm": "orchestrated",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C61",
+      "arm": "orchestrated",
+      "source_id": "security-debug-in-prod-1",
+      "title": "security-debug-in-prod-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C62",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `#gl` canvas sizing comment is load-bearing but fragile",
+      "security_relevant": false
+    },
+    {
+      "label": "C63",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "21. `holo.html` inline JS has no error boundary",
+      "security_relevant": true
+    },
+    {
+      "label": "C64",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. `props/*.glb` are committed as raw binary in the repo",
+      "security_relevant": false
+    },
+    {
+      "label": "C65",
+      "arm": "toolkit",
+      "source_id": "security-error-detail-1",
+      "title": "security-error-detail-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C66",
+      "arm": "toolkit",
+      "source_id": "security-cors-wildcard-2",
+      "title": "security-cors-wildcard-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C67",
+      "arm": "toolkit",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C68",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "18. `_note()` title extraction is fragile",
+      "security_relevant": false
+    },
+    {
+      "label": "C69",
+      "arm": "orchestrated",
+      "source_id": "cost-license-share-alike-3",
+      "title": "cost-license-share-alike-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C70",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `load_notes` silently truncates and hides errors",
+      "security_relevant": true
+    },
+    {
+      "label": "C71",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. `POST /api/state` writes to disk with no validation shown",
+      "security_relevant": true
+    },
+    {
+      "label": "C72",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "17. No `requirements.txt`, no `pyproject.toml`, no version pin",
+      "security_relevant": false
+    },
+    {
+      "label": "C73",
+      "arm": "orchestrated",
+      "source_id": "performance-io-bound-sync-2",
+      "title": "performance-io-bound-sync-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C74",
+      "arm": "orchestrated",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C75",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. `sample-notes/` filenames are inconsistent",
+      "security_relevant": false
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "target": "rich-c1",
+  "mock": false,
+  "created_at": "2026-10-05T19:50:17.712Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": true
+    }
+  ]
+}

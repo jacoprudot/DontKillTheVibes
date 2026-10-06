@@ -1,0 +1,351 @@
+{
+  "target": "obs-airplay-s2",
+  "mock": false,
+  "created_at": "2026-10-06T00:51:40.945Z",
+  "judge_model": "qwen3.5:9b",
+  "judge_base_url": "http://localhost:11434/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\obs-airplay",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "a1b57cd56b276e7e2d381c8083f76cd80e2a2e0b",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 8,
+    "toolkit": 0,
+    "orchestrated": 8,
+    "naive": 0,
+    "judged": 8,
+    "unverifiable": 8
+  },
+  "summary_by_arm": {
+    "orchestrated": {
+      "claims": 8,
+      "judged": 8,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 8,
+      "judgeGrounded": 8,
+      "mechGrounded": 6,
+      "mechUngrounded": 2,
+      "mismatch": 2,
+      "actionableSum": 37,
+      "actionableN": 8,
+      "security": 2,
+      "securityFn": 0,
+      "claimsWithCitations": 8,
+      "citationsTotal": 8,
+      "weakCitations": 1,
+      "meanActionability": 4.63,
+      "precision": null,
+      "judgeGroundedRate": 1
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Code digest missing; cannot verify logging implementation from provided evidence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/airplay-source.c",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 879,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "structure-service-sql-5",
+      "title": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet shows headers only, not callback logic required to verify architecture mixing claim.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/airplay-source.c",
+            "line": 7,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 879,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "code-print-statement-5",
+      "title": "code-print-statement-5",
+      "severity": "low",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Code digest missing; cannot confirm fprintf usage or logging API calls from provided evidence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/video-decoder.c",
+            "line": 50,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 293,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "performance-serialization-format-2",
+      "title": "performance-serialization-format-2",
+      "severity": "medium",
+      "module": "performance",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Code digest missing; buffer format and conversion logic not visible in snippet.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/video-decoder.c",
+            "line": 239,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 293,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "orchestrated",
+      "source_id": "code-mutex-missing-4",
+      "title": "code-mutex-missing-4",
+      "severity": "medium",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet shows struct end/helpers but lacks timestamp anchor fields/mutex usage details to verify race condition claim.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/airplay-source.c",
+            "line": 96,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 879,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-infinite-artifacts-6",
+      "title": "cost-gha-infinite-artifacts-6",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Workflow snippet cuts off before artifact upload steps; retention policy presence cannot be verified from shown lines.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/build.yml",
+            "line": 13,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 406,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "orchestrated",
+      "source_id": "performance-no-backpressure-10",
+      "title": "performance-no-backpressure-10",
+      "severity": "medium",
+      "module": "performance",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Code digest missing; mutex holding and queue logic not visible in provided evidence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/airplay-source.c",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 879,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "orchestrated",
+      "source_id": "code-unchecked-error-1",
+      "title": "code-unchecked-error-1",
+      "severity": "high",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Code digest missing; cannot verify context reset or field caching behavior from snippet.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/audio-decoder.c",
+            "line": 152,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 324,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

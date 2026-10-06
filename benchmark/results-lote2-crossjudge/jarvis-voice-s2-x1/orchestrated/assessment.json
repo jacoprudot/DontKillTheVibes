@@ -1,0 +1,740 @@
+{
+  "metadata": {
+    "repo": "jarvis-voice",
+    "assessed_at": "2026-10-05T20:15:58.567Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 21,
+    "findings_raw": 66,
+    "findings_dropped": 4,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 4,
+    "total_findings": 59,
+    "by_severity": {
+      "critical": 4,
+      "high": 9,
+      "medium": 38,
+      "low": 8
+    },
+    "by_module": {
+      "structure": 7,
+      "flows": 26,
+      "security": 8,
+      "cost": 9,
+      "performance": 9
+    },
+    "effort_estimate": {
+      "XS": 5,
+      "S": 9,
+      "M": 44,
+      "L": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "structure-high-coupling-1",
+      "module": "structure",
+      "severity": "high",
+      "location": {
+        "file": "server.py",
+        "line": 44
+      },
+      "description": "server.py directly instantiates and holds global clients (anthropic.AsyncAnthropic, httpx.AsyncClient) and imports browser_tools and screen_capture at module scope, tightly coupling the HTTP/WebSocket layer to concrete external integrations and browser automation. Any change to those modules or clients forces changes in the server module.",
+      "remediation": "Introduce thin service wrappers (e.g. LLMService, TTSService, BrowserService) injected into the request handlers, so server.py depends on abstractions rather than concrete clients and modules.",
+      "effort": "L",
+      "confidence": 0.65
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "browser_tools.py",
+        "line": 0
+      },
+      "description": "search_and_read and visit return the raw exception string (str(e)) to the caller, which is then fed into the LLM context and can surface internal stack/path details to the user.",
+      "remediation": "Log the full exception server-side and return a generic, user-safe error message such as 'Suche fehlgeschlagen' without the raw exception text.",
+      "effort": "S",
+      "confidence": 0.75
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "requirements.txt",
+        "line": 1
+      },
+      "description": "Dependencies are declared with floating version ranges (>=) and no lockfile or hash pinning, so builds resolve to whatever latest version exists at install time. A compromised or malicious upstream release would be pulled in silently.",
+      "remediation": "Pin dependencies to exact versions and add a lockfile with hashes (e.g. pip-compile --generate-hashes) so installs are reproducible and tamper-evident.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 33
+      },
+      "description": "The server calls two metered third-party APIs (Anthropic messages.create and ElevenLabs text-to-speech) but records no usage, cost or quota metrics anywhere — only debug prints of status codes and byte sizes. There is no way to detect runaway spend or an exhausted ElevenLabs free-tier character quota before the assistant silently stops speaking.",
+      "remediation": "Add per-call usage logging for Anthropic (response.usage tokens) and ElevenLabs (characters synthesized), aggregate them into a counter/metric, and alert when daily cost or monthly character quota approaches a threshold.",
+      "effort": "M",
+      "confidence": 0.75
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "security-secret-in-code-1",
+          "flows-fire-and-forget-critical-1",
+          "security-logs-contain-secrets-12",
+          "flows-missing-idempotency-3",
+          "security-no-input-validation-14",
+          "performance-no-connection-pool-7",
+          "structure-high-coupling-1",
+          "flows-message-not-encrypted-9",
+          "flows-missing-dlq-2",
+          "cost-no-automated-tests-4",
+          "flows-consumer-group-lag-3",
+          "flows-message-breaking-schema-2",
+          "flows-dlq-on-repeat-failures-10",
+          "performance-io-bound-sync-2",
+          "performance-no-retry-jitter-8",
+          "structure-low-cohesion-5",
+          "flows-missing-timeout-6",
+          "performance-no-response-streaming-5"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "security-cors-wildcard-2",
+          "structure-config-logic-8",
+          "flows-missing-error-handler-5",
+          "structure-framework-leak-3",
+          "structure-service-sql-5",
+          "flows-error-leaks-stack-6",
+          "flows-missing-rate-limit-8",
+          "flows-missing-visibility-timeout-9",
+          "security-missing-headers-10",
+          "flows-missing-circuit-breaker-7",
+          "flows-retry-no-backoff-4",
+          "flows-retry-no-max-5",
+          "security-gha-action-unpinned-5"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "performance-no-compression-13",
+          "performance-no-request-collapsing-4",
+          "structure-service-orchestration-3",
+          "cost-api-no-usage-monitoring-9",
+          "flows-message-schema-no-version-1",
+          "performance-no-keep-alive-9",
+          "performance-no-load-testing-3",
+          "performance-no-perf-budgets-10",
+          "security-unmaintained-dep-4",
+          "security-weak-rng-10",
+          "cost-llm-high-usage-1",
+          "flows-dlq-not-monitored-5",
+          "flows-message-ordering-needed-4",
+          "cost-api-no-retry-strategy-8",
+          "flows-message-retention-too-short-6",
+          "cost-api-no-client-rate-limit-4",
+          "cost-api-no-response-cache-5",
+          "cost-documentation-poor-7",
+          "cost-no-performance-budget-10",
+          "cost-gha-no-dependency-cache-5",
+          "flows-missing-request-id-7",
+          "flows-no-state-persistence-6",
+          "structure-adapter-violation-10",
+          "flows-missing-security-headers-10",
+          "flows-message-retention-too-long-7",
+          "flows-missing-cors-9",
+          "flows-validation-too-early-3",
+          "flows-message-not-compressed-10"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "flows-missing-timeout-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-error-handler-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-error-leaks-stack-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-idempotency-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-request-id-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-rate-limit-8": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-cors-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-security-headers-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-dlq-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-retry-no-backoff-4": [
+        "structure-high-coupling-1"
+      ],
+      "flows-retry-no-max-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-fire-and-forget-critical-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-validation-too-early-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-schema-no-version-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-breaking-schema-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-no-state-persistence-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-not-encrypted-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-not-compressed-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-circuit-breaker-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-visibility-timeout-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-consumer-group-lag-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-dlq-not-monitored-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-dlq-on-repeat-failures-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-ordering-needed-4": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-retention-too-long-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-retention-too-short-6": [
+        "structure-high-coupling-1"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.7,
+      "score": 105,
+      "canonical_rule": "security-secret-in-code-1"
+    },
+    {
+      "id": "flows-fire-and-forget-critical-1",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 75,
+      "canonical_rule": "flows-fire-and-forget-critical-1"
+    },
+    {
+      "id": "security-logs-contain-secrets-12",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 75,
+      "canonical_rule": "security-logs-contain-secrets-12"
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 70,
+      "canonical_rule": "flows-missing-idempotency-3"
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 45,
+      "canonical_rule": "security-no-input-validation-14"
+    },
+    {
+      "id": "performance-no-connection-pool-7",
+      "severity": "high",
+      "module": "performance",
+      "confidence": 0.7,
+      "score": 42,
+      "canonical_rule": "performance-no-connection-pool-7"
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 35.75,
+      "canonical_rule": "structure-high-coupling-1"
+    },
+    {
+      "id": "flows-message-not-encrypted-9",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 35,
+      "canonical_rule": "flows-message-not-encrypted-9"
+    },
+    {
+      "id": "flows-missing-dlq-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 30,
+      "canonical_rule": "flows-missing-dlq-2"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 28,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "flows-consumer-group-lag-3",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 27.5,
+      "canonical_rule": "flows-consumer-group-lag-3"
+    },
+    {
+      "id": "flows-message-breaking-schema-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 27.5,
+      "canonical_rule": "flows-message-breaking-schema-2"
+    },
+    {
+      "id": "flows-dlq-on-repeat-failures-10",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 25,
+      "canonical_rule": "flows-dlq-on-repeat-failures-10"
+    },
+    {
+      "id": "performance-io-bound-sync-2",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.8,
+      "score": 19.2,
+      "canonical_rule": "performance-io-bound-sync-2"
+    },
+    {
+      "id": "performance-no-retry-jitter-8",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.75,
+      "score": 18,
+      "canonical_rule": "performance-no-retry-jitter-8"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.8,
+      "score": 17.6,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.85,
+      "score": 17,
+      "canonical_rule": "flows-missing-timeout-6"
+    },
+    {
+      "id": "performance-no-response-streaming-5",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.7,
+      "score": 16.8,
+      "canonical_rule": "performance-no-response-streaming-5"
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.55,
+      "score": 16.5,
+      "canonical_rule": "security-cors-wildcard-2"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 16.5,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.8,
+      "score": 16,
+      "canonical_rule": "flows-missing-error-handler-5"
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-framework-leak-3"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 15,
+      "canonical_rule": "flows-error-leaks-stack-6"
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 15,
+      "canonical_rule": "flows-missing-rate-limit-8"
+    },
+    {
+      "id": "flows-missing-visibility-timeout-9",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 15,
+      "canonical_rule": "flows-missing-visibility-timeout-9"
+    },
+    {
+      "id": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 15,
+      "canonical_rule": "security-missing-headers-10"
+    },
+    {
+      "id": "flows-missing-circuit-breaker-7",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "flows-missing-circuit-breaker-7"
+    },
+    {
+      "id": "flows-retry-no-backoff-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "flows-retry-no-backoff-4"
+    },
+    {
+      "id": "flows-retry-no-max-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "flows-retry-no-max-5"
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.45,
+      "score": 13.5,
+      "canonical_rule": "security-gha-action-unpinned-5"
+    },
+    {
+      "id": "performance-no-compression-13",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.55,
+      "score": 13.2,
+      "canonical_rule": "performance-no-compression-13"
+    },
+    {
+      "id": "performance-no-request-collapsing-4",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.55,
+      "score": 13.2,
+      "canonical_rule": "performance-no-request-collapsing-4"
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.55,
+      "score": 12.1,
+      "canonical_rule": "structure-service-orchestration-3"
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.75,
+      "score": 12,
+      "canonical_rule": "cost-api-no-usage-monitoring-9"
+    },
+    {
+      "id": "flows-message-schema-no-version-1",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 12,
+      "canonical_rule": "flows-message-schema-no-version-1"
+    },
+    {
+      "id": "performance-no-keep-alive-9",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 12,
+      "canonical_rule": "performance-no-keep-alive-9"
+    },
+    {
+      "id": "performance-no-load-testing-3",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 12,
+      "canonical_rule": "performance-no-load-testing-3"
+    },
+    {
+      "id": "performance-no-perf-budgets-10",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 12,
+      "canonical_rule": "performance-no-perf-budgets-10"
+    },
+    {
+      "id": "security-unmaintained-dep-4",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.4,
+      "score": 12,
+      "canonical_rule": "security-unmaintained-dep-4"
+    },
+    {
+      "id": "security-weak-rng-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.4,
+      "score": 12,
+      "canonical_rule": "security-weak-rng-10"
+    },
+    {
+      "id": "cost-llm-high-usage-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 11.2,
+      "canonical_rule": "cost-llm-high-usage-1"
+    },
+    {
+      "id": "flows-dlq-not-monitored-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 11,
+      "canonical_rule": "flows-dlq-not-monitored-5"
+    },
+    {
+      "id": "flows-message-ordering-needed-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 11,
+      "canonical_rule": "flows-message-ordering-needed-4"
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.65,
+      "score": 10.4,
+      "canonical_rule": "cost-api-no-retry-strategy-8"
+    },
+    {
+      "id": "flows-message-retention-too-short-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-message-retention-too-short-6"
+    },
+    {
+      "id": "cost-api-no-client-rate-limit-4",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-api-no-client-rate-limit-4"
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-api-no-response-cache-5"
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-documentation-poor-7"
+    },
+    {
+      "id": "cost-no-performance-budget-10",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-no-performance-budget-10"
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-gha-no-dependency-cache-5"
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 3.75,
+      "canonical_rule": "flows-missing-request-id-7"
+    },
+    {
+      "id": "flows-no-state-persistence-6",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 3.5,
+      "canonical_rule": "flows-no-state-persistence-6"
+    },
+    {
+      "id": "structure-adapter-violation-10",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 3.3,
+      "canonical_rule": "structure-adapter-violation-10"
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.65,
+      "score": 3.25,
+      "canonical_rule": "flows-missing-security-headers-10"
+    },
+    {
+      "id": "flows-message-retention-too-long-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 3,
+      "canonical_rule": "flows-message-retention-too-long-7"
+    },
+    {
+      "id": "flows-missing-cors-9",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 3,
+      "canonical_rule": "flows-missing-cors-9"
+    },
+    {
+      "id": "flows-validation-too-early-3",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 3,
+      "canonical_rule": "flows-validation-too-early-3"
+    },
+    {
+      "id": "flows-message-not-compressed-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 2.75,
+      "canonical_rule": "flows-message-not-compressed-10"
+    }
+  ]
+}

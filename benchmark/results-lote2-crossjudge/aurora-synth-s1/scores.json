@@ -1,0 +1,275 @@
+{
+  "target": "aurora-synth-s1",
+  "mock": false,
+  "created_at": "2026-10-05T23:18:10.416Z",
+  "judge_model": "qwen3.5:9b",
+  "judge_base_url": "http://localhost:11434/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\aurora-synth",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "aa204456bfbfff49f79322bfea4673f22d4b4de3",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 6,
+    "toolkit": 6,
+    "orchestrated": 0,
+    "naive": 0,
+    "judged": 6,
+    "unverifiable": 4
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 6,
+      "judged": 6,
+      "real": 2,
+      "falseCount": 0,
+      "unverifiable": 4,
+      "judgeGrounded": 2,
+      "mechGrounded": 2,
+      "mechUngrounded": 4,
+      "mismatch": 0,
+      "actionableSum": 21,
+      "actionableN": 6,
+      "security": 3,
+      "securityFn": 0,
+      "claimsWithCitations": 6,
+      "citationsTotal": 6,
+      "weakCitations": 0,
+      "meanActionability": 3.5,
+      "precision": 1,
+      "judgeGroundedRate": 0.333
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "security-env-file-committed-3",
+      "title": "security-env-file-committed-3",
+      "severity": "high",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Missing environment patterns in .gitignore is a security risk for Cloudflare Workers projects.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".gitignore",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 7,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "toolkit",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Cannot verify package.json content or CI configuration from provided digest snippets.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 24,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Content of index.html is not available to confirm CSP headers are missing.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "index.html",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 52,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "toolkit",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Committing IDE launch configs with local port bindings indicates poor hygiene and potential info leakage.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".claude/launch.json",
+            "line": 6,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 12,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "toolkit",
+      "source_id": "code-console-log-7",
+      "title": "code-console-log-7",
+      "severity": "low",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Cannot verify console output routing or logger implementation in tools/serve.mjs content.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "tools/serve.mjs",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 283,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "CI workflow existence and caching strategy cannot be verified without access to .github/workflows directory contents.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "package.json",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 24,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

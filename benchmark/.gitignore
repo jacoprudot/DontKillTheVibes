@@ -9,3 +9,10 @@ tmp/
 # Local-only target list with the real repo URLs. The tracked repos.json is the
 # anonymized version (target-N labels); this file is never committed.
 repos.local.json
+
+# Raw per-module agent transcripts from Arm C orchestrated runs (lote 2).
+# ~3.7 MB of LLM output; the graded artifacts (assessment.json, scores.json,
+# SUMMARY.md) and input digests ARE committed. Excluded transcripts are listed
+# with sha256 in results-lote2-deepseek/MODULES-EXCLUDED.sha256 so the evidence
+# is hash-verifiable without shipping the bulk.
+results-lote2-deepseek/*/orchestrated/modules/

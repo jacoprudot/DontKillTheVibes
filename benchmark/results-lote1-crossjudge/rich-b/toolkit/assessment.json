@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "repo": "Textualize/rich",
+    "assessed_at": "2025-01-01T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "D",
+    "total_findings": 7,
+    "critical_count": 0,
+    "by_severity": {
+      "medium": 5,
+      "high": 1,
+      "low": 1
+    },
+    "effort_estimate": {
+      "M": 5,
+      "XS": 1,
+      "S": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "security-gha-fork-pr-4",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/newissue.yml",
+        "line": 22
+      },
+      "description": "The issue-triage workflow uses `juliangruber/read-file-action@v1`, a tag reference rather than a pinned SHA. This workflow runs on `issues: opened` events and reads repository files, so a hijacked action tag would run with the workflow's token.",
+      "remediation": "Pin `juliangruber/read-file-action` to a specific commit SHA; the sibling `peter-evans/create-or-update-comment` step in the same file already demonstrates the pinned-SHA convention.",
+      "confidence": 0.8,
+      "evidence": {
+        "snippet": "uses: juliangruber/read-file-action@v1",
+        "metric": "tag reference, not SHA"
+      }
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "module": "security",
+      "severity": "high",
+      "effort": "XS",
+      "location": {
+        "file": ".github/workflows/newissue.yml",
+        "line": 6
+      },
+      "description": "The `add-comment` job declares `permissions: issues: write` but also performs `actions/checkout` and runs `pip install FAQtory` plus `faqtory suggest` against the checked-out repository. The job therefore executes repository-controlled code while holding a write token, and the permission block does not restrict `contents` to read-only.",
+      "remediation": "Add an explicit least-privilege block: `permissions: { contents: read, issues: write }` so the checkout step cannot push, and consider running the FAQtory step in a job without the write token.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "permissions:\n      issues: write",
+        "metric": "job runs checkout + pip install with a write-scoped token"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-gha-overpermissive-2",
+        "cost-gha-no-dependency-cache-5",
+        "cost-gha-always-on-8"
+      ],
+      "60_days": [
+        "security-gha-action-unpinned-5",
+        "security-gha-fork-pr-4",
+        "security-gha-job-no-timeout-7",
+        "security-gha-no-concurrency-prod-10"
+      ],
+      "90_days": []
+    },
+    "dependencies": [
+      {
+        "from": "security-gha-overpermissive-2",
+        "to": "security-gha-action-unpinned-5",
+        "type": "blocks"
+      }
+    ]
+  }
+}

@@ -1,0 +1,227 @@
+{
+  "metadata": {
+    "repo": "tsenart/vegeta",
+    "assessed_at": "2025-01-15T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "F",
+    "total_findings": 10,
+    "critical_count": 1,
+    "by_severity": {
+      "critical": 1,
+      "medium": 6,
+      "high": 3
+    },
+    "effort_estimate": {
+      "XS": 2,
+      "M": 7,
+      "S": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "security-gha-secret-leak-3",
+      "module": "security",
+      "severity": "critical",
+      "effort": "XS",
+      "location": {
+        "file": ".github/workflows/ci.yml",
+        "line": 148
+      },
+      "description": "The release workflow pipes the GPG private key secret into gpg via echo, which risks exposing the secret in workflow logs if command tracing or error output is enabled.",
+      "remediation": "Avoid echoing secrets; import the key from a file written with a masked step, or use a dedicated action that reads the secret without printing it, and ensure `set -x` is never active around secret handling.",
+      "evidence": {
+        "snippet": "echo \"${{ secrets.VEGETA_GPG_KEY }}\" | gpg --batch --yes --pinentry-mode loopback --import",
+        "metric": "1 secret-handling step with echo"
+      },
+      "confidence": 0.6
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/ci.yml",
+        "line": 24
+      },
+      "description": "GitHub Actions are referenced by mutable version tags (actions/checkout@v4, actions/setup-go@v5, actions/upload-artifact@v4, softprops/action-gh-release@v1) rather than pinned commit SHAs, exposing the release pipeline to supply-chain attacks if a tag is moved.",
+      "remediation": "Pin every third-party action to a full commit SHA (e.g. actions/checkout@<sha>) and let Dependabot update the pins.",
+      "evidence": {
+        "snippet": "uses: actions/checkout@v4 / uses: actions/setup-go@v5 / uses: softprops/action-gh-release@v1",
+        "metric": "5+ actions referenced by tag"
+      },
+      "confidence": 0.85
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/ci.yml",
+        "line": 18
+      },
+      "description": "None of the qa, build, or release jobs define timeout-minutes, so a hung test, build, or gpg step can occupy a runner indefinitely.",
+      "remediation": "Add `timeout-minutes` (e.g. 15 for qa, 30 for build/release) to each job definition.",
+      "evidence": {
+        "snippet": "jobs:\n  qa:\n    name: Quality Assurance\n    runs-on: ubuntu-latest",
+        "metric": "3 jobs without timeout"
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "module": "security",
+      "severity": "high",
+      "effort": "XS",
+      "location": {
+        "file": ".github/workflows/ci.yml",
+        "line": 1
+      },
+      "description": "The workflow does not declare a top-level `permissions:` block, so jobs inherit the repository default token permissions, which may be read-write for all scopes.",
+      "remediation": "Add a top-level `permissions: contents: read` and grant `contents: write` only to the release job that needs it.",
+      "evidence": {
+        "snippet": "name: CI\non:\n  push:\n    tags:\n      - \"v*.*.*\"",
+        "metric": "no permissions block declared"
+      },
+      "confidence": 0.7
+    },
+    {
+      "id": "security-gha-auto-deploy-prod-9",
+      "module": "security",
+      "severity": "high",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/ci.yml",
+        "line": 126
+      },
+      "description": "The release job runs automatically on any pushed v*.*.* tag and publishes a GitHub release with signed artifacts and no manual approval gate or environment protection.",
+      "remediation": "Gate the release job behind a protected GitHub Environment requiring manual approval, or require a signed tag verified before publishing.",
+      "evidence": {
+        "snippet": "release:\n    name: Release\n    if: startsWith(github.ref, 'refs/tags/v')",
+        "metric": "release triggered directly by tag push"
+      },
+      "confidence": 0.65
+    },
+    {
+      "id": "code-unchecked-error-1",
+      "module": "code",
+      "severity": "high",
+      "effort": "S",
+      "location": {
+        "file": "attack.go",
+        "line": 192
+      },
+      "description": "The Prometheus exporter server is started with `go srv.ListenAndServe()` and its returned error is discarded, so a bind failure (e.g. port already in use) is silently ignored and the exporter never runs.",
+      "remediation": "Capture the error from ListenAndServe and surface it, e.g. `go func() { if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed { log.Printf(...) } }()`.",
+      "evidence": {
+        "snippet": "defer srv.Close()\n\t\tgo srv.ListenAndServe()",
+        "metric": "error return value ignored"
+      },
+      "confidence": 0.9
+    },
+    {
+      "id": "code-error-assigned-unused-2",
+      "module": "code",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "encode.go",
+        "line": 83
+      },
+      "description": "In encode(), the multiCloser returned by decoder() is deferred before its error is checked, so when decoder() fails the deferred mc.Close() runs on a partially constructed closer and the returned error is inspected only after the defer is registered.",
+      "remediation": "Check the error from decoder() before registering the defer, or restructure so `defer mc.Close()` is only registered after `err == nil`.",
+      "evidence": {
+        "snippet": "dec, mc, err := decoder(files)\n\tdefer mc.Close()\n\tif err != nil {\n\t\treturn err\n\t}",
+        "metric": "defer registered before error check"
+      },
+      "confidence": 0.75
+    },
+    {
+      "id": "code-ignores-return-value-6",
+      "module": "code",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "attack.go",
+        "line": 192
+      },
+      "description": "The error returned by the Prometheus HTTP server goroutine is never observed, so operators receive no signal when the metrics endpoint fails to start.",
+      "remediation": "Route the ListenAndServe error into the attack error path or log it with the configured logger so failures are visible.",
+      "evidence": {
+        "snippet": "go srv.ListenAndServe()",
+        "metric": "1 ignored error return"
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/ci.yml",
+        "line": 27
+      },
+      "description": "The qa and build jobs run `actions/setup-go@v5` without enabling the built-in module cache (`cache: true`), so Go modules are re-downloaded on every run, wasting CI minutes.",
+      "remediation": "Set `cache: true` (or `cache-dependency-path: go.sum`) on the setup-go steps to reuse the module cache across runs.",
+      "evidence": {
+        "snippet": "uses: actions/setup-go@v5\n        with:\n          go-version: \"1.22\"",
+        "metric": "no cache configured on 2 setup-go steps"
+      },
+      "confidence": 0.85
+    },
+    {
+      "id": "cost-gha-matrix-inefficient-10",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/ci.yml",
+        "line": 52
+      },
+      "description": "The build matrix expands to 14 OS/arch combinations on every tagged release, including rarely used targets (freebsd/386, openbsd/arm64, windows/386), multiplying runner minutes for each release.",
+      "remediation": "Trim the matrix to actively supported targets or split rarely used targets into a separate, manually triggered workflow.",
+      "evidence": {
+        "snippet": "matrix:\n        target:\n          - \"windows/amd64\"\n          ... 14 entries",
+        "metric": "14 matrix combinations per release"
+      },
+      "confidence": 0.7
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-gha-secret-leak-3",
+        "security-gha-overpermissive-2",
+        "security-gha-job-no-timeout-7",
+        "code-unchecked-error-1"
+      ],
+      "60_days": [
+        "security-gha-action-unpinned-5",
+        "code-ignores-return-value-6",
+        "cost-gha-no-dependency-cache-5"
+      ],
+      "90_days": [
+        "security-gha-auto-deploy-prod-9",
+        "cost-gha-matrix-inefficient-10"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "security-gha-overpermissive-2",
+        "to": "security-gha-auto-deploy-prod-9",
+        "type": "blocks"
+      },
+      {
+        "from": "code-unchecked-error-1",
+        "to": "code-ignores-return-value-6",
+        "type": "blocks"
+      }
+    ]
+  }
+}

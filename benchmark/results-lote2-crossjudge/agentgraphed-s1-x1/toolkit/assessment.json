@@ -1,0 +1,132 @@
+{
+  "metadata": {
+    "repo": "sudomichael/agentgraphed",
+    "assessed_at": "2026-06-12T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "D",
+    "total_findings": 11,
+    "critical_count": 0,
+    "by_severity": {
+      "medium": 7,
+      "high": 2,
+      "low": 2
+    },
+    "effort_estimate": {
+      "M": 6,
+      "XS": 1,
+      "S": 4
+    }
+  },
+  "findings": [
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/publish.yml",
+        "line": 84
+      },
+      "description": "Third-party GitHub Action softprops/action-gh-release is referenced by mutable tag (@v2) rather than a pinned commit SHA. A compromised or retagged upstream release could execute arbitrary code in a workflow that holds contents:write and id-token:write permissions, enabling repository tampering or npm publish hijack.",
+      "remediation": "Pin every third-party action to a full commit SHA (e.g. softprops/action-gh-release@<40-char-sha>) and let Dependabot/Renovate bump the SHA. Apply the same pinning to actions/checkout and actions/setup-node in ci.yml and publish.yml.",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "uses: softprops/action-gh-release@v2",
+        "metric": "1 unpinned third-party action in a write-permissioned workflow"
+      }
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "module": "security",
+      "severity": "high",
+      "effort": "XS",
+      "location": {
+        "file": ".github/workflows/publish.yml",
+        "line": 30
+      },
+      "description": "The publish job grants contents:write at the job level, which is broader than needed for the steps that run. The only step requiring write access is the release-creation step; the build, install-verification and npm publish steps run with the same elevated token, so any compromised dependency or action in those steps inherits repository write access.",
+      "remediation": "Split the release-creation step into its own job with contents:write, and keep the build/publish job at contents:read plus id-token:write. Alternatively scope permissions per-step where the runner supports it.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "permissions:\n  contents: write   # softprops/action-gh-release needs this to create the GitHub Release page\n  id-token: write   # for npm provenance attestation",
+        "metric": "job-level write permission shared across 6 steps"
+      }
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/publish.yml",
+        "line": 24
+      },
+      "description": "The publish workflow has no concurrency group. Two tags pushed in quick succession (or a re-run racing a fresh tag) can start two publish jobs simultaneously; both will attempt `npm publish` and `softprops/action-gh-release` for overlapping refs, producing duplicate releases or a partial publish that leaves the registry and the GitHub Release page inconsistent.",
+      "remediation": "Add a workflow-level concurrency block, e.g. `concurrency: { group: publish-${{ github.ref }}, cancel-in-progress: false }`, so publishes for the same tag serialize.",
+      "confidence": 0.75,
+      "evidence": {
+        "snippet": "on:\n  push:\n    tags: ['v*.*.*']\n\njobs:\n  publish:",
+        "metric": "no concurrency key in publish.yml"
+      }
+    },
+    {
+      "id": "security-gha-no-container-8",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/publish.yml",
+        "line": 28
+      },
+      "description": "The publish job runs directly on the ubuntu-latest runner host rather than inside a container. The job installs dependencies (`npm ci`), runs arbitrary package lifecycle scripts, and holds id-token:write; without container isolation, anything written to the runner filesystem or environment persists for the remainder of the job and is shared with the release-creation step.",
+      "remediation": "Run the build/publish steps inside a `container:` (e.g. node:22-bookworm) so the workspace and environment are isolated from the runner host, or split the release step into a separate job that does not run npm lifecycle scripts.",
+      "confidence": 0.6,
+      "evidence": {
+        "snippet": "jobs:\n  publish:\n    runs-on: ubuntu-latest\n    permissions:",
+        "metric": "no container: directive on publish job"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-gha-overpermissive-2",
+        "security-gha-job-no-timeout-7",
+        "cost-gha-no-timeout-9",
+        "code-unhandled-promise-4"
+      ],
+      "60_days": [
+        "security-gha-action-unpinned-5",
+        "security-gha-no-concurrency-prod-10",
+        "cost-gha-no-dependency-cache-5",
+        "code-promise-chain-missing-catch-5"
+      ],
+      "90_days": [
+        "security-gha-no-container-8",
+        "cost-gha-always-on-8",
+        "code-missing-return-type-8"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "security-gha-overpermissive-2",
+        "to": "security-gha-no-container-8",
+        "type": "blocks"
+      },
+      {
+        "from": "security-gha-job-no-timeout-7",
+        "to": "security-gha-no-concurrency-prod-10",
+        "type": "blocks"
+      },
+      {
+        "from": "code-unhandled-promise-4",
+        "to": "code-missing-return-type-8",
+        "type": "blocks"
+      }
+    ]
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "metadata": {
+    "repo": "eurekagent",
+    "assessed_at": "2026-06-01T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "F",
+    "total_findings": 14,
+    "critical_count": 2,
+    "by_severity": {
+      "high": 2,
+      "medium": 6,
+      "critical": 2,
+      "low": 3,
+      "info": 1
+    },
+    "effort_estimate": {
+      "S": 4,
+      "M": 7,
+      "XS": 3
+    }
+  },
+  "findings": [
+    {
+      "id": "structure-controller-logic-6",
+      "module": "structure",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 88
+      },
+      "description": "The hook module mixes transport concerns (reading the Claude Code event envelope, key-name fallbacks for tool_response/tool_output/tool_result) with domain logic (search-result normalization, URL extraction, summary truncation) in a single file, so the transport contract and the parsing rules cannot evolve independently.",
+      "remediation": "Split the module into a thin `hook_entrypoint` that extracts the event envelope and a `search_log` module that owns normalization and persistence.",
+      "confidence": 0.65,
+      "evidence": {
+        "snippet": "tool_response = (\n    event.get(\"tool_response\")\n    or event.get(\"tool_output\")\n    or event.get(\"tool_result\")\n)",
+        "metric": "transport-envelope handling and result parsing co-located in one 270-line module"
+      }
+    },
+    {
+      "id": "structure-config-logic-8",
+      "module": "structure",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 22
+      },
+      "description": "Operational paths (`/workspace/round_state/web_search_history.jsonl`, `.../web_search_hook_debug.jsonl`) are hardcoded as module-level constants, so the hook cannot be pointed at a different workspace or test directory without editing source.",
+      "remediation": "Read the history/debug paths from environment variables (e.g. `EUREKA_ROUND_STATE_DIR`) with the current values as defaults.",
+      "confidence": 0.75,
+      "evidence": {
+        "snippet": "_HISTORY_PATH = Path(\"/workspace/round_state/web_search_history.jsonl\")\n_DEBUG_PATH = Path(\"/workspace/round_state/web_search_hook_debug.jsonl\")",
+        "metric": "2 hardcoded absolute paths"
+      }
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "module": "structure",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": ".claude/hooks/protect_result_files.py",
+        "line": 14
+      },
+      "description": "The set of protected result filenames and the protected internal directory name are hardcoded module constants, so adding a new controller-owned artifact requires editing the hook source rather than updating configuration.",
+      "remediation": "Move `PROTECTED_RESULT_FILES` and `PROTECTED_INTERNAL_DIR` into a config file or environment-driven list loaded at hook startup.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "PROTECTED_RESULT_FILES = {\"intermediate_results.jsonl\", \"best_result.jsonl\"}\nPROTECTED_INTERNAL_DIR = \".eureka_internal\"",
+        "metric": "2 hardcoded protection lists"
+      }
+    },
+    {
+      "id": "code-copy-paste-variant-6",
+      "module": "code",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 160
+      },
+      "description": "`_handle_playwright_navigate` and `_handle_playwright_snapshot` repeat the same 'regex the response text for Page Title / Page URL, then append an entry' pattern with only the field names changed, duplicating the extraction logic.",
+      "remediation": "Extract a shared `_extract_page_metadata(text) -> tuple[str, str]` helper and have both handlers call it before appending their entries.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "title = \"\"\nm = re.search(r\"Page Title:\\s*(.+)\", text)\nif m:\n    title = m.group(1).strip()",
+        "metric": "Page Title/Page URL regex extraction duplicated across 2 handlers"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "code-empty-catch-1",
+        "code-generic-catch-2",
+        "code-print-statement-5",
+        "code-missing-return-type-8",
+        "security-error-detail-1"
+      ],
+      "60_days": [
+        "security-no-input-validation-14",
+        "security-gha-secret-leak-3",
+        "structure-config-logic-8",
+        "structure-dto-logic-7",
+        "code-exact-duplication-significant-2",
+        "code-copy-paste-variant-6"
+      ],
+      "90_days": [
+        "structure-controller-logic-6",
+        "code-long-function-7",
+        "code-catch-and-continue-9"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "structure-controller-logic-6",
+        "to": "code-long-function-7",
+        "type": "blocks"
+      },
+      {
+        "from": "code-exact-duplication-significant-2",
+        "to": "code-copy-paste-variant-6",
+        "type": "blocks"
+      }
+    ]
+  }
+}

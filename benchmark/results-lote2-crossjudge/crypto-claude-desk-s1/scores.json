@@ -1,0 +1,351 @@
+{
+  "target": "crypto-claude-desk-s1",
+  "mock": false,
+  "created_at": "2026-10-05T23:30:53.924Z",
+  "judge_model": "qwen3.5:9b",
+  "judge_base_url": "http://localhost:11434/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\crypto-claude-desk",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "298cfd58408aa86ef3c7ce863c0c19858636df7a",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 8,
+    "toolkit": 8,
+    "orchestrated": 0,
+    "naive": 0,
+    "judged": 8,
+    "unverifiable": 5
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 8,
+      "judged": 8,
+      "real": 3,
+      "falseCount": 0,
+      "unverifiable": 5,
+      "judgeGrounded": 3,
+      "mechGrounded": 8,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 26,
+      "actionableN": 8,
+      "security": 4,
+      "securityFn": 0,
+      "claimsWithCitations": 8,
+      "citationsTotal": 8,
+      "weakCitations": 7,
+      "meanActionability": 3.25,
+      "precision": 1,
+      "judgeGroundedRate": 0.375
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Snippet shows schema properties, not timeout config; citation content mismatch prevents verification.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".claude/workflows/close-learning.js",
+            "line": 44,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 119,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "toolkit",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Schema definition shown does not contain hardcoded symbols or prompt strings as claimed.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".claude/workflows/close-learning.js",
+            "line": 44,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 119,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "flows-fire-and-forget-critical-1",
+      "title": "flows-fire-and-forget-critical-1",
+      "severity": "critical",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 4,
+        "reason": "Snippet shows pipeline call but lacks explicit filter logic; cannot verify failure handling from evidence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".claude/workflows/close-learning.js",
+            "line": 78,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 119,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "toolkit",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 3,
+        "reason": "Hardcoded symbol list visible in snippet supports claim about embedded business logic and injection risk.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".claude/workflows/close-learning.js",
+            "line": 60,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 119,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "toolkit",
+      "source_id": "security-gha-secret-leak-3",
+      "title": "security-gha-secret-leak-3",
+      "severity": "critical",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet shows raw data interpolation into prompts, confirming PII/secret leakage risk without masking.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".claude/workflows/close-learning.js",
+            "line": 78,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 119,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "toolkit",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Schema properties shown at cited line do not match claim about hardcoded symbols or secret injection pattern.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".claude/workflows/close-learning.js",
+            "line": 44,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 119,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "toolkit",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Plugin manifest header confirms existence of global config; broad exposure is a valid security risk in this context.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".claude-plugin/plugin.json",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 21,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "toolkit",
+      "source_id": "flows-missing-idempotency-3",
+      "title": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Snippet shows function start/comments but lacks validation call logic to verify idempotency guard absence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".claude/workflows/close-learning.js",
+            "line": 70,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 119,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

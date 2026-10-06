@@ -1,0 +1,876 @@
+{
+  "target": "obs-airplay",
+  "mock": false,
+  "created_at": "2026-10-05T21:12:17.416Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "code-many-params-10",
+      "title": "code-many-params-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-47",
+      "title": "48. `airplay-source.c` — `MAX_TIMESTAMP_DRIFT_NS 3000000000ULL` (3 seconds)",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "code-var-usage-3",
+      "title": "code-var-usage-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "17. `.github/workflows/build.yml` — `curl -L` without `--fail`",
+      "security_relevant": true
+    },
+    {
+      "label": "C5",
+      "arm": "orchestrated",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "23. `.github/workflows/build.yml` — no caching",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "toolkit",
+      "source_id": "cost-no-license-tracking-5",
+      "title": "cost-no-license-tracking-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "20. `.github/workflows/build.yml` — `sed -i` patches to UxPlay are fragile",
+      "security_relevant": false
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. `airplay-source.c` — `warned_h265` is never reset",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "29. `CMakeLists.txt` — `OBS_SDK_VERSION` cache variable but `OBS_SRC_DIR` uses it",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "24. `.github/workflows/build.yml` — `deps/` is in `.gitignore` but the workflow writes to it",
+      "security_relevant": false
+    },
+    {
+      "label": "C12",
+      "arm": "orchestrated",
+      "source_id": "security-weak-rng-10",
+      "title": "security-weak-rng-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. `airplay-source.c` — `cb_conn_destroy` decrements without a matching increment guarantee",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "orchestrated",
+      "source_id": "code-print-statement-5",
+      "title": "code-print-statement-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "naive",
+      "source_id": "naive-claim-48",
+      "title": "49. `airplay-source.c` — `#include <time.h>` and `#include <pthread.h>` at the top, but `pthread.h` is only available via w32-pthreads on Windows",
+      "security_relevant": false
+    },
+    {
+      "label": "C16",
+      "arm": "orchestrated",
+      "source_id": "cost-no-license-tracking-5",
+      "title": "cost-no-license-tracking-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C17",
+      "arm": "toolkit",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "28. `CMakeLists.txt` — `project(... LANGUAGES C)` but libplist is built as C/CXX",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "naive",
+      "source_id": "naive-claim-59",
+      "title": "60. `build.bat` — no `setlocal`",
+      "security_relevant": false
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-60",
+      "title": "61. `build.bat` — `cmake .. -G \"Visual Studio 17 2022\"` hardcodes VS 2022",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. `airplay-source.c` — `obs_source_output_video` called with stack-allocated `obs_source_frame`",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "13. `airplay-source.c` — `frame.pts` used as `obs_frame.timestamp` without unit conversion",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-36",
+      "title": "36. `airplay-source.c` — `MAX_AUDIO_FRAMES_PER_PACKET 8192` and `MAX_AUDIO_PACKET_SIZE (1024*1024)`",
+      "security_relevant": false
+    },
+    {
+      "label": "C24",
+      "arm": "orchestrated",
+      "source_id": "structure-low-cohesion-5",
+      "title": "structure-low-cohesion-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C25",
+      "arm": "naive",
+      "source_id": "naive-claim-50",
+      "title": "51. `README.md` — firewall instructions contradict the installers",
+      "security_relevant": false
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-39",
+      "title": "39. `airplay-source.c` — `parse_hw_addr` writes into `hw` without bounds on `hw`'s actual size",
+      "security_relevant": false
+    },
+    {
+      "label": "C27",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-timeout-9",
+      "title": "cost-gha-no-timeout-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C28",
+      "arm": "orchestrated",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C29",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `installer.iss` `[Files]` wildcard is fine, but `[Run]` firewall rules are not idempotent",
+      "security_relevant": false
+    },
+    {
+      "label": "C30",
+      "arm": "naive",
+      "source_id": "naive-claim-34",
+      "title": "34. `airplay-source.c` — `cb_video_pause` / `cb_video_resume` are empty",
+      "security_relevant": false
+    },
+    {
+      "label": "C31",
+      "arm": "toolkit",
+      "source_id": "security-weak-rng-10",
+      "title": "security-weak-rng-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C32",
+      "arm": "orchestrated",
+      "source_id": "code-missing-error-main-10",
+      "title": "code-missing-error-main-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C33",
+      "arm": "orchestrated",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C34",
+      "arm": "naive",
+      "source_id": "naive-claim-30",
+      "title": "30. `CMakeLists.txt` — `PREFIX \"\"` on a MODULE library",
+      "security_relevant": false
+    },
+    {
+      "label": "C35",
+      "arm": "orchestrated",
+      "source_id": "code-mutex-missing-4",
+      "title": "code-mutex-missing-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C36",
+      "arm": "orchestrated",
+      "source_id": "performance-serialization-format-2",
+      "title": "performance-serialization-format-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C37",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. `airplay-source.c` — `parse_hw_addr` has no validation",
+      "security_relevant": false
+    },
+    {
+      "label": "C38",
+      "arm": "toolkit",
+      "source_id": "code-logs-secrets-10",
+      "title": "code-logs-secrets-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C39",
+      "arm": "orchestrated",
+      "source_id": "structure-service-sql-5",
+      "title": "structure-service-sql-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C40",
+      "arm": "naive",
+      "source_id": "naive-claim-45",
+      "title": "45. `airplay-source.c` — `cb_conn_destroy` calls `obs_source_output_video(ctx->source, NULL)` without checking `ctx->source`",
+      "security_relevant": false
+    },
+    {
+      "label": "C41",
+      "arm": "orchestrated",
+      "source_id": "performance-no-load-testing-3",
+      "title": "performance-no-load-testing-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C42",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. `airplay-source.c` — `video_frame_count` is not atomic",
+      "security_relevant": false
+    },
+    {
+      "label": "C43",
+      "arm": "orchestrated",
+      "source_id": "performance-no-perf-budgets-10",
+      "title": "performance-no-perf-budgets-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C44",
+      "arm": "toolkit",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C45",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. `installer.iss` `[UninstallDelete]` deletes `{app}` recursively",
+      "security_relevant": false
+    },
+    {
+      "label": "C46",
+      "arm": "orchestrated",
+      "source_id": "cost-license-share-alike-3",
+      "title": "cost-license-share-alike-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C47",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. `CMakeLists.txt` hardcodes a developer's personal Scoop path",
+      "security_relevant": false
+    },
+    {
+      "label": "C48",
+      "arm": "orchestrated",
+      "source_id": "code-missing-return-type-8",
+      "title": "code-missing-return-type-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C49",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "14. `airplay-source.c` — `MAX_VIDEO_PACKET_SIZE` is 32 MB, allocated per packet?",
+      "security_relevant": false
+    },
+    {
+      "label": "C50",
+      "arm": "naive",
+      "source_id": "naive-claim-37",
+      "title": "37. `airplay-source.c` — `#define getpid _getpid` after including `<process.h>`",
+      "security_relevant": false
+    },
+    {
+      "label": "C51",
+      "arm": "naive",
+      "source_id": "naive-claim-42",
+      "title": "42. `airplay-source.c` — `InterlockedExchange(&ctx->width, frame.width)` after `obs_source_output_video`",
+      "security_relevant": false
+    },
+    {
+      "label": "C52",
+      "arm": "naive",
+      "source_id": "naive-claim-33",
+      "title": "33. `airplay-source.c` — `cb_conn_feedback` is empty",
+      "security_relevant": false
+    },
+    {
+      "label": "C53",
+      "arm": "orchestrated",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C54",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C55",
+      "arm": "naive",
+      "source_id": "naive-claim-55",
+      "title": "56. `LICENSE` — LGPL-2.1 text is truncated",
+      "security_relevant": false
+    },
+    {
+      "label": "C56",
+      "arm": "orchestrated",
+      "source_id": "cost-license-attribution-missing-2",
+      "title": "cost-license-attribution-missing-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C57",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `airplay-source.c` — `srand()` called on every MAC generation",
+      "security_relevant": false
+    },
+    {
+      "label": "C58",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-idempotency-3",
+      "title": "flows-missing-idempotency-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C59",
+      "arm": "orchestrated",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C60",
+      "arm": "toolkit",
+      "source_id": "code-ignores-return-value-6",
+      "title": "code-ignores-return-value-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C61",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-infinite-artifacts-6",
+      "title": "cost-gha-infinite-artifacts-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C62",
+      "arm": "naive",
+      "source_id": "naive-claim-40",
+      "title": "40. `airplay-source.c` — `blog(LOG_INFO, \"[AirPlay] video_process: ... ntp=%llu\", ...)` uses `%llu` for `uint64_t`",
+      "security_relevant": false
+    },
+    {
+      "label": "C63",
+      "arm": "orchestrated",
+      "source_id": "security-logs-contain-secrets-12",
+      "title": "security-logs-contain-secrets-12",
+      "security_relevant": true
+    },
+    {
+      "label": "C64",
+      "arm": "naive",
+      "source_id": "naive-claim-41",
+      "title": "41. `airplay-source.c` — `obs_frame.timestamp = frame.pts > 0 ? (uint64_t)frame.pts : timestamp;`",
+      "security_relevant": false
+    },
+    {
+      "label": "C65",
+      "arm": "orchestrated",
+      "source_id": "code-logs-secrets-10",
+      "title": "code-logs-secrets-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C66",
+      "arm": "orchestrated",
+      "source_id": "structure-framework-leak-3",
+      "title": "structure-framework-leak-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C67",
+      "arm": "orchestrated",
+      "source_id": "code-ignores-return-value-6",
+      "title": "code-ignores-return-value-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C68",
+      "arm": "orchestrated",
+      "source_id": "cost-dev-setup-missing-3",
+      "title": "cost-dev-setup-missing-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C69",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. `airplay-source.c` — `map_timestamp` re-anchor logic can produce non-monotonic timestamps",
+      "security_relevant": false
+    },
+    {
+      "label": "C70",
+      "arm": "naive",
+      "source_id": "naive-claim-49",
+      "title": "50. `airplay-source.c` — `#include <stdlib.h>` for `srand`/`rand`/`strtol`, `<string.h>` for `strlen`",
+      "security_relevant": false
+    },
+    {
+      "label": "C71",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C72",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "25. `CMakeLists.txt` — `find_library` fallback ignores `OPENSSL_DIR`",
+      "security_relevant": false
+    },
+    {
+      "label": "C73",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C74",
+      "arm": "naive",
+      "source_id": "naive-claim-31",
+      "title": "31. `airplay-source.c` — `is_stopping` uses `InterlockedCompareExchange` as a read",
+      "security_relevant": false
+    },
+    {
+      "label": "C75",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. `CMakeLists.txt` is Windows-only despite `build.sh` claiming Linux/macOS support",
+      "security_relevant": false
+    },
+    {
+      "label": "C76",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-timeout-9",
+      "title": "cost-gha-no-timeout-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C77",
+      "arm": "toolkit",
+      "source_id": "code-print-statement-8",
+      "title": "code-print-statement-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C78",
+      "arm": "naive",
+      "source_id": "naive-claim-54",
+      "title": "55. `README.md` — version mismatch",
+      "security_relevant": false
+    },
+    {
+      "label": "C79",
+      "arm": "naive",
+      "source_id": "naive-claim-56",
+      "title": "57. `.gitignore` — `deps/` is ignored, but `build.sh` and `build.bat` assume `deps/` exists",
+      "security_relevant": false
+    },
+    {
+      "label": "C80",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C81",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "22. `.github/workflows/build.yml` — no artifact upload",
+      "security_relevant": false
+    },
+    {
+      "label": "C82",
+      "arm": "naive",
+      "source_id": "naive-claim-58",
+      "title": "59. `build.bat` — `set FFMPEG_CMAKE=` inside an `if` block",
+      "security_relevant": false
+    },
+    {
+      "label": "C83",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-dlq-2",
+      "title": "flows-missing-dlq-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C84",
+      "arm": "naive",
+      "source_id": "naive-claim-38",
+      "title": "38. `airplay-source.c` — `srand`/`rand` for MAC generation",
+      "security_relevant": false
+    },
+    {
+      "label": "C85",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C86",
+      "arm": "orchestrated",
+      "source_id": "performance-no-request-collapsing-4",
+      "title": "performance-no-request-collapsing-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C87",
+      "arm": "naive",
+      "source_id": "naive-claim-32",
+      "title": "32. `airplay-source.c` — `cb_conn_teardown` logs but does nothing",
+      "security_relevant": false
+    },
+    {
+      "label": "C88",
+      "arm": "naive",
+      "source_id": "naive-claim-51",
+      "title": "52. `README.md` — \"Clone with submodules\" but there are no submodules",
+      "security_relevant": true
+    },
+    {
+      "label": "C89",
+      "arm": "toolkit",
+      "source_id": "cost-gha-always-on-8",
+      "title": "cost-gha-always-on-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C90",
+      "arm": "toolkit",
+      "source_id": "code-missing-return-type-8",
+      "title": "code-missing-return-type-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C91",
+      "arm": "naive",
+      "source_id": "naive-claim-35",
+      "title": "35. `airplay-source.c` — `audio_output_logged`, `warned_no_adec`, `warned_audio_ct` are declared but their use isn't shown",
+      "security_relevant": false
+    },
+    {
+      "label": "C92",
+      "arm": "orchestrated",
+      "source_id": "cost-slow-build-1",
+      "title": "cost-slow-build-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C93",
+      "arm": "orchestrated",
+      "source_id": "code-unchecked-error-1",
+      "title": "code-unchecked-error-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C94",
+      "arm": "orchestrated",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C95",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. `installer.iss` `FindOBSPluginDir` is a no-op",
+      "security_relevant": false
+    },
+    {
+      "label": "C96",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "18. `.github/workflows/build.yml` — `unzip -q` without checking",
+      "security_relevant": false
+    },
+    {
+      "label": "C97",
+      "arm": "orchestrated",
+      "source_id": "performance-no-cost-perf-tradeoff-8",
+      "title": "performance-no-cost-perf-tradeoff-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C98",
+      "arm": "naive",
+      "source_id": "naive-claim-44",
+      "title": "44. `airplay-source.c` — `reset_timestamp_mapper` called from `cb_conn_init` without holding `timestamp_mutex` during the check",
+      "security_relevant": false
+    },
+    {
+      "label": "C99",
+      "arm": "orchestrated",
+      "source_id": "performance-no-regression-detection-5",
+      "title": "performance-no-regression-detection-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C100",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C101",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "19. `.github/workflows/build.yml` — `mv deps/ffmpeg7-extract/ffmpeg-* deps/ffmpeg7-runtime`",
+      "security_relevant": false
+    },
+    {
+      "label": "C102",
+      "arm": "orchestrated",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "security_relevant": false
+    },
+    {
+      "label": "C103",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "21. `.github/workflows/build.yml` — `lib /def:...` requires MSVC env",
+      "security_relevant": false
+    },
+    {
+      "label": "C104",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-1",
+      "title": "structure-high-coupling-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C105",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `install.bat` uses a wildcard in `copy`, which does not expand",
+      "security_relevant": false
+    },
+    {
+      "label": "C106",
+      "arm": "orchestrated",
+      "source_id": "security-gha-no-concurrency-prod-10",
+      "title": "security-gha-no-concurrency-prod-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C107",
+      "arm": "orchestrated",
+      "source_id": "performance-no-adaptive-timeout-6",
+      "title": "performance-no-adaptive-timeout-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C108",
+      "arm": "naive",
+      "source_id": "naive-claim-52",
+      "title": "53. `README.md` — build steps reference `deps/uxplay-build` which is never created",
+      "security_relevant": false
+    },
+    {
+      "label": "C109",
+      "arm": "orchestrated",
+      "source_id": "flows-error-leaks-stack-6",
+      "title": "flows-error-leaks-stack-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C110",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "27. `CMakeLists.txt` — `target_link_libraries` with hardcoded `.lib` paths",
+      "security_relevant": false
+    },
+    {
+      "label": "C111",
+      "arm": "toolkit",
+      "source_id": "cost-license-incompatible-1",
+      "title": "cost-license-incompatible-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C112",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "16. `.github/workflows/build.yml` — `choco install openssl` is unpinned",
+      "security_relevant": false
+    },
+    {
+      "label": "C113",
+      "arm": "naive",
+      "source_id": "naive-claim-43",
+      "title": "43. `airplay-source.c` — `video_mutex` held during `obs_source_output_video`",
+      "security_relevant": false
+    },
+    {
+      "label": "C114",
+      "arm": "orchestrated",
+      "source_id": "performance-no-backpressure-10",
+      "title": "performance-no-backpressure-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C115",
+      "arm": "naive",
+      "source_id": "naive-claim-53",
+      "title": "54. `README.md` — \"Built entirely with Claude Code\" is prominent but the license is LGPL-2.1",
+      "security_relevant": false
+    },
+    {
+      "label": "C116",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "26. `CMakeLists.txt` — `install(TARGETS ... DESTINATION $ENV{PROGRAMDATA}/...)`",
+      "security_relevant": false
+    },
+    {
+      "label": "C117",
+      "arm": "orchestrated",
+      "source_id": "code-missing-docstring-10",
+      "title": "code-missing-docstring-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C118",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-circuit-breaker-7",
+      "title": "flows-missing-circuit-breaker-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C119",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-expensive-runner-4",
+      "title": "cost-gha-expensive-runner-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C120",
+      "arm": "naive",
+      "source_id": "naive-claim-46",
+      "title": "46. `airplay-source.c` — `cb_conn_reset` same issue",
+      "security_relevant": false
+    },
+    {
+      "label": "C121",
+      "arm": "naive",
+      "source_id": "naive-claim-57",
+      "title": "58. `.gitignore` — `Makefile` is ignored",
+      "security_relevant": false
+    },
+    {
+      "label": "C122",
+      "arm": "orchestrated",
+      "source_id": "performance-cpu-hotspot-1",
+      "title": "performance-cpu-hotspot-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C123",
+      "arm": "orchestrated",
+      "source_id": "code-missing-validation-4",
+      "title": "code-missing-validation-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C124",
+      "arm": "orchestrated",
+      "source_id": "cost-documentation-poor-7",
+      "title": "cost-documentation-poor-7",
+      "security_relevant": false
+    }
+  ]
+}

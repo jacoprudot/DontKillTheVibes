@@ -1,0 +1,24 @@
+WARN: findings[2] (security-logs-contain-secrets-12): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[10] (flows-consumer-group-lag-3): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[11] (flows-message-breaking-schema-2): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[12] (flows-dlq-on-repeat-failures-10): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[18] (security-cors-wildcard-2): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[26] (security-missing-headers-10): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[30] (security-gha-action-unpinned-5): confidence 0.45 below 0.6 — finding may be speculative
+WARN: findings[31] (performance-no-compression-13): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[32] (performance-no-request-collapsing-4): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[33] (structure-service-orchestration-3): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[36] (performance-no-keep-alive-9): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[37] (performance-no-load-testing-3): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[38] (performance-no-perf-budgets-10): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[39] (security-unmaintained-dep-4): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[40] (security-weak-rng-10): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[42] (flows-dlq-not-monitored-5): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[43] (flows-message-ordering-needed-4): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[45] (flows-message-retention-too-short-6): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[48] (cost-documentation-poor-7): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[49] (cost-no-performance-budget-10): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[50] (cost-gha-no-dependency-cache-5): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[54] (flows-missing-security-headers-10): rule "flows-missing-security-headers-10" is deprecated (superseded by security-missing-headers-10) — prefer the replacement
+WARN: findings[58] (flows-message-not-compressed-10): confidence 0.55 below 0.6 — finding may be speculative
+VALID: 59 findings, 23 warning(s)

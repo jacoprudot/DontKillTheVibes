@@ -1,0 +1,347 @@
+{
+  "target": "chatbot-ui",
+  "mock": false,
+  "created_at": "2026-10-05T05:19:57.062Z",
+  "judge_model": "qwen3.8:27b",
+  "judge_base_url": "http://localhost:11434/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\chatbot-ui",
+  "mock_notice": null,
+  "model_under_test": "qwen2.5-coder:7b",
+  "commit": "81328b61d2a4ab597a7a057be70e785cf756d9f8",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 9,
+    "toolkit": 2,
+    "orchestrated": 0,
+    "naive": 7,
+    "judged": 9,
+    "unverifiable": 9
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 2,
+      "judged": 2,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 2,
+      "judgeGrounded": 0,
+      "mechGrounded": 2,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 3,
+      "actionableN": 2,
+      "security": 0,
+      "securityFn": 0,
+      "claimsWithCitations": 2,
+      "citationsTotal": 2,
+      "weakCitations": 2,
+      "meanActionability": 1.5,
+      "precision": null,
+      "judgeGroundedRate": 0
+    },
+    "naive": {
+      "claims": 7,
+      "judged": 7,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 7,
+      "judgeGrounded": 0,
+      "mechGrounded": 0,
+      "mechUngrounded": 7,
+      "mismatch": 0,
+      "actionableSum": 9,
+      "actionableN": 7,
+      "security": 3,
+      "securityFn": 0,
+      "claimsWithCitations": 0,
+      "citationsTotal": 0,
+      "weakCitations": 0,
+      "meanActionability": 1.29,
+      "precision": null,
+      "judgeGroundedRate": 0
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "structure-highly-unstable-4",
+      "title": "structure-highly-unstable-4",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Snippet only shows an import at line 1; it does not show multiple tests or justify mocking, so the claimed issue is unsupported.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "__tests__/lib/openapi-conversion.test.ts",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 370,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "Performance",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Generic performance/SSR advice with no code shown; Next.js app has API routes and may use server components, so defect is not established.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "Security",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Vague security concerns; .env.example/.gitignore exist but no code shows unsafe credential handling or missing CSRF protection.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "toolkit",
+      "source_id": "structure-high-coupling-1",
+      "title": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Cited line 2 is blank and snippet does not show a ChatUI import; reusing an existing component is normal, not a defect.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "app/[locale]/[workspaceid]/chat/page.tsx",
+            "line": 2,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 59,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "Testing",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "The Playwright login spec itself is a UI test, and missing scenarios cannot be confirmed without the test code.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "Best Practices",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Repo includes .gitignore, ESLint, and Prettier configs; formatting/dependency/gitignore claims are generic or contradicted by visible files.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "Recommendations",
+      "severity": null,
+      "module": null,
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "Broad recommendation list with no citation; several items like adding TypeScript are contradicted by many .ts/.tsx files in the tree.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "Code Quality",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 1,
+        "reason": "File tree shows numerous TypeScript files, refuting the main claim; remaining duplication/error-handling points lack code evidence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "General Issues",
+      "severity": null,
+      "module": null,
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Referenced Playwright package files plausibly exist for a separate test suite; redundancy and unused dependency claims are speculative without code.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": null,
+      "mechanical": {
+        "citations": [],
+        "verified": 0,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,1592 @@
+{
+  "metadata": {
+    "repo": "eurekagent",
+    "assessed_at": "2026-10-05T20:23:43.340Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 22,
+    "findings_raw": 209,
+    "findings_dropped": 65,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 13,
+    "total_findings": 144,
+    "by_severity": {
+      "critical": 13,
+      "high": 31,
+      "medium": 83,
+      "low": 16,
+      "info": 1
+    },
+    "by_module": {
+      "database": 12,
+      "structure": 10,
+      "flows": 37,
+      "security": 9,
+      "cost": 41,
+      "github": 35
+    },
+    "effort_estimate": {
+      "XS": 20,
+      "S": 28,
+      "M": 89,
+      "L": 7
+    }
+  },
+  "findings": [
+    {
+      "id": "security-cve-critical-1",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "docker/Dockerfile",
+        "line": 1
+      },
+      "description": "The base image node:22-bookworm is referenced by a floating tag with no digest pin, so a compromised or vulnerable base image can be pulled silently at build time.",
+      "remediation": "Pin the base image to a specific digest and rebuild deliberately when the base is updated.",
+      "effort": "S",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-oauth-secret-8",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "src/docker/container.py",
+        "line": 0
+      },
+      "description": "The container manager copies the host ~/.claude.json (which contains OAuth/session credentials) into the run workspace, so credentials are duplicated into a directory that may be shared or archived with the run.",
+      "remediation": "Avoid copying the full host config; generate a minimal per-run config containing only the required non-secret settings.",
+      "effort": "XS",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-db-growth-3",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/backend.py",
+        "line": 0
+      },
+      "description": "Every submission writes a submission row plus one submission_run row per run key (including full compilation, result, and system payloads) with no retention, archiving, or pruning policy, so the database grows unbounded with evaluation artifacts.",
+      "remediation": "Add a retention/archival policy for submission and submission_run records (e.g. archive or prune detailed run payloads after N days) and monitor table growth.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-message-ordering-needed-4",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/monitor/server.py",
+        "line": 0
+      },
+      "description": "The SSE endpoint drains the bridge queue and yields events in queue order, but events are also written to pipeline state and files independently; there is no sequence number or ordering guarantee across the SSE stream, the pipeline state file, and the snapshot. A client merging these sources can observe out-of-order stage/score updates.",
+      "remediation": "Attach a monotonically increasing sequence number to each pushed event and to pipeline-state writes, and have the monitor order/deduplicate by that sequence so consumers see a consistent event order.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "flows-message-retention-too-short-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/monitor/data.py",
+        "line": 0
+      },
+      "description": "The scan cache uses a 2-second TTL (_SCAN_TTL = 2.0), so expensive stage-result scans are recomputed frequently during active polling. This is a retention/refresh tuning issue: the cache is too short-lived to absorb the polling load it was added for, causing repeated filesystem scans.",
+      "remediation": "Increase the scan cache TTL (or invalidate it on file mtime change instead of a fixed short TTL) so repeated monitor polls reuse scan results rather than rescanning the workspace every couple of seconds.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-binary-dep-10",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "docker/Dockerfile",
+        "line": 3
+      },
+      "description": "The Dockerfile installs a large set of system libraries and the Claude Code CLI from unpinned apt and npm sources, so binary dependencies can change or be compromised between builds.",
+      "remediation": "Pin apt package versions and the npm CLI version, and verify checksums where possible.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "docker/build.sh",
+        "line": 12
+      },
+      "description": "The docker build is invoked without any timeout or retry bound, so a hung network fetch during the build can block indefinitely with no upper limit on execution time.",
+      "remediation": "Wrap the docker build in a bounded timeout (e.g. `timeout 1800 docker build ...`) and fail fast with a clear error when the limit is exceeded.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "flows-no-time-travel-9",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/runtime.py",
+        "line": 0
+      },
+      "description": "Pipeline state is written by mutating a JSON file in place (read existing, update keys, rewrite), with no event log or history of prior states. There is no way to replay or inspect the sequence of state transitions that led to the current pipeline state, which hampers debugging of stuck or misrouted runs.",
+      "remediation": "Append each pipeline-state transition to an append-only JSONL history (with timestamp and stage) in addition to the current-state file, so the run's state evolution can be replayed and inspected.",
+      "effort": "S",
+      "confidence": 0.4
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "security-gha-secret-leak-3",
+          "security-logs-contain-secrets-12",
+          "database-missing-app-pool-8",
+          "flows-missing-idempotency-3",
+          "flows-fire-and-forget-critical-1",
+          "security-no-input-validation-14",
+          "security-secret-in-code-1",
+          "database-missing-index-fk-1",
+          "structure-high-coupling-1",
+          "security-secret-in-history-2",
+          "database-risky-migration-3",
+          "security-cve-critical-1",
+          "security-oauth-secret-8",
+          "security-private-key-7",
+          "database-sequential-pagination-1",
+          "flows-missing-dlq-2",
+          "cost-llm-very-high-usage-2",
+          "flows-auth-order-1",
+          "flows-consumer-group-lag-3",
+          "flows-message-breaking-schema-2",
+          "flows-message-not-encrypted-9",
+          "security-encryption-weak-5",
+          "security-env-file-committed-3",
+          "security-exploit-in-wild-5",
+          "security-gha-auto-deploy-prod-9",
+          "security-gha-overpermissive-2",
+          "security-gha-pr-target-risk-1",
+          "security-jwt-weak-3",
+          "database-connection-timeout-high-3",
+          "cost-db-no-pooling-10",
+          "cost-no-automated-tests-4",
+          "flows-dlq-on-repeat-failures-10",
+          "flows-redux-mutates-state-1",
+          "database-statement-timeout-missing-9",
+          "security-gha-action-unpinned-5",
+          "cost-dev-setup-missing-3",
+          "cost-license-incompatible-1",
+          "cost-no-code-review-6",
+          "database-lock-timeout-missing-10",
+          "database-missing-index-where-4",
+          "structure-config-logic-8",
+          "structure-low-cohesion-5",
+          "security-missing-headers-10",
+          "security-no-security-maintenance-7"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "security-outdated-server-9",
+          "database-missing-index-hot-path-2",
+          "security-cve-high-2",
+          "security-db-conn-string-6",
+          "security-db-no-tls-11",
+          "security-file-upload-weak-7",
+          "structure-controller-logic-6",
+          "structure-high-coupling-2",
+          "structure-service-sql-5",
+          "structure-framework-leak-3",
+          "structure-service-orchestration-3",
+          "cost-export-restriction-8",
+          "cost-license-share-alike-3",
+          "cost-non-commercial-use-6",
+          "flows-missing-timeout-6",
+          "security-cors-wildcard-2",
+          "database-heavy-migration-5",
+          "security-debug-in-prod-1",
+          "security-weak-crypto-9",
+          "database-missing-bloat-monitoring-5",
+          "flows-error-leaks-stack-6",
+          "flows-message-schema-no-version-1",
+          "flows-missing-error-handler-5",
+          "flows-missing-rate-limit-8",
+          "flows-missing-visibility-timeout-9",
+          "flows-state-inefficient-access-7",
+          "flows-validation-placement-2",
+          "cost-llm-high-usage-1",
+          "database-pg-stat-statements-disabled-1",
+          "flows-dlq-not-monitored-5"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "flows-missing-circuit-breaker-7",
+          "flows-ngrx-selectors-not-memoized-4",
+          "flows-no-schema-registry-8",
+          "flows-state-expensive-update-5",
+          "flows-state-missing-defaults-10",
+          "security-weak-rng-10",
+          "cost-api-no-retry-strategy-8",
+          "cost-api-no-usage-monitoring-9",
+          "cost-db-growth-3",
+          "cost-gha-high-usage-1",
+          "cost-gha-wasteful-retries-3",
+          "cost-slow-build-1",
+          "cost-technical-debt-high-9",
+          "flows-message-ordering-needed-4",
+          "flows-message-retention-too-short-6",
+          "flows-redux-side-effects-2",
+          "flows-vuex-denormalized-state-3",
+          "security-gha-no-container-8",
+          "cost-api-no-client-rate-limit-4",
+          "cost-api-no-response-cache-5",
+          "cost-db-pool-5",
+          "cost-deprecated-version-10",
+          "cost-documentation-poor-7",
+          "cost-gha-infinite-artifacts-6",
+          "cost-gha-matrix-inefficient-10",
+          "cost-gha-no-dependency-cache-5",
+          "cost-gha-no-timeout-9",
+          "cost-license-attribution-missing-2",
+          "cost-no-http-compression-9",
+          "cost-no-knowledge-sharing-8",
+          "cost-no-license-tracking-5",
+          "cost-no-oss-policy-9",
+          "cost-no-performance-budget-10",
+          "cost-overprovisioned-k8s-1",
+          "cost-overprovisioned-k8s-limits-2",
+          "cost-redis-as-db-6",
+          "security-binary-dep-10",
+          "security-cve-medium-3",
+          "security-gha-job-no-timeout-7",
+          "security-gha-workspace-not-cleaned-6",
+          "security-key-rotation-manual-13",
+          "cost-db-backup-4",
+          "cost-patent-risk-4",
+          "cost-trademark-risk-7",
+          "security-directory-listing-8",
+          "security-gha-fork-pr-4",
+          "security-gha-no-concurrency-prod-10",
+          "security-license-incompatible-6",
+          "security-rate-limit-weak-6",
+          "security-session-cookie-not-http-only-4",
+          "security-session-cookie-not-secure-3",
+          "security-transitive-vuln-8",
+          "security-unmaintained-dep-4",
+          "structure-adapter-violation-10",
+          "structure-dto-logic-7",
+          "flows-inconsistent-response-4",
+          "flows-message-retention-too-long-7",
+          "flows-missing-request-id-7",
+          "flows-missing-security-headers-10",
+          "flows-no-state-persistence-6",
+          "cost-gha-expensive-runner-4",
+          "flows-message-not-compressed-10",
+          "flows-missing-cors-9",
+          "flows-no-time-travel-9",
+          "flows-state-excessive-nesting-8",
+          "flows-validation-too-early-3",
+          "cost-api-deprecated-endpoint-10",
+          "security-vcs-insecure-9",
+          "cost-missing-cdn-7",
+          "security-error-detail-1"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "flows-missing-timeout-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-idempotency-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-error-leaks-stack-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-request-id-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-dlq-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-fire-and-forget-critical-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-error-handler-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-circuit-breaker-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-rate-limit-8": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-security-headers-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-cors-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-not-encrypted-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-schema-no-version-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-breaking-schema-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-no-schema-registry-8": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-not-compressed-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-retention-too-long-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-retention-too-short-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-consumer-group-lag-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-dlq-not-monitored-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-dlq-on-repeat-failures-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-visibility-timeout-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-ordering-needed-4": [
+        "structure-high-coupling-1"
+      ],
+      "flows-inconsistent-response-4": [
+        "structure-high-coupling-1"
+      ],
+      "flows-validation-placement-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-validation-too-early-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-auth-order-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-no-state-persistence-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-no-time-travel-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-state-missing-defaults-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-state-excessive-nesting-8": [
+        "structure-high-coupling-1"
+      ],
+      "flows-state-inefficient-access-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-state-expensive-update-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-redux-mutates-state-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-redux-side-effects-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-ngrx-selectors-not-memoized-4": [
+        "structure-high-coupling-1"
+      ],
+      "flows-vuex-denormalized-state-3": [
+        "structure-high-coupling-1"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "security-gha-secret-leak-3",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 75,
+      "canonical_rule": "security-gha-secret-leak-3"
+    },
+    {
+      "id": "security-logs-contain-secrets-12",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.4,
+      "score": 60,
+      "canonical_rule": "security-logs-contain-secrets-12"
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.85,
+      "score": 55.25,
+      "canonical_rule": "database-missing-app-pool-8"
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 55,
+      "canonical_rule": "flows-missing-idempotency-3"
+    },
+    {
+      "id": "flows-fire-and-forget-critical-1",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 45,
+      "canonical_rule": "flows-fire-and-forget-critical-1"
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 45,
+      "canonical_rule": "security-no-input-validation-14"
+    },
+    {
+      "id": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 42,
+      "canonical_rule": "security-secret-in-code-1"
+    },
+    {
+      "id": "database-missing-index-fk-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 39,
+      "canonical_rule": "database-missing-index-fk-1"
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 35.75,
+      "canonical_rule": "structure-high-coupling-1"
+    },
+    {
+      "id": "security-secret-in-history-2",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 35,
+      "canonical_rule": "security-secret-in-history-2"
+    },
+    {
+      "id": "database-risky-migration-3",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 32.5,
+      "canonical_rule": "database-risky-migration-3"
+    },
+    {
+      "id": "security-cve-critical-1",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 28,
+      "canonical_rule": "security-cve-critical-1"
+    },
+    {
+      "id": "security-oauth-secret-8",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 28,
+      "canonical_rule": "security-oauth-secret-8"
+    },
+    {
+      "id": "security-private-key-7",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 28,
+      "canonical_rule": "security-private-key-7"
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.4,
+      "score": 26,
+      "canonical_rule": "database-sequential-pagination-1"
+    },
+    {
+      "id": "flows-missing-dlq-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 25,
+      "canonical_rule": "flows-missing-dlq-2"
+    },
+    {
+      "id": "cost-llm-very-high-usage-2",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 24,
+      "canonical_rule": "cost-llm-very-high-usage-2"
+    },
+    {
+      "id": "flows-auth-order-1",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 22.5,
+      "canonical_rule": "flows-auth-order-1"
+    },
+    {
+      "id": "flows-consumer-group-lag-3",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 22.5,
+      "canonical_rule": "flows-consumer-group-lag-3"
+    },
+    {
+      "id": "flows-message-breaking-schema-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 22.5,
+      "canonical_rule": "flows-message-breaking-schema-2"
+    },
+    {
+      "id": "flows-message-not-encrypted-9",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 22.5,
+      "canonical_rule": "flows-message-not-encrypted-9"
+    },
+    {
+      "id": "security-encryption-weak-5",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 21,
+      "canonical_rule": "security-encryption-weak-5"
+    },
+    {
+      "id": "security-env-file-committed-3",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 21,
+      "canonical_rule": "security-env-file-committed-3"
+    },
+    {
+      "id": "security-exploit-in-wild-5",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 21,
+      "canonical_rule": "security-exploit-in-wild-5"
+    },
+    {
+      "id": "security-gha-auto-deploy-prod-9",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 21,
+      "canonical_rule": "security-gha-auto-deploy-prod-9"
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 21,
+      "canonical_rule": "security-gha-overpermissive-2"
+    },
+    {
+      "id": "security-gha-pr-target-risk-1",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 21,
+      "canonical_rule": "security-gha-pr-target-risk-1"
+    },
+    {
+      "id": "security-jwt-weak-3",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 21,
+      "canonical_rule": "security-jwt-weak-3"
+    },
+    {
+      "id": "database-connection-timeout-high-3",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.8,
+      "score": 20.8,
+      "canonical_rule": "database-connection-timeout-high-3"
+    },
+    {
+      "id": "cost-db-no-pooling-10",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 20,
+      "canonical_rule": "cost-db-no-pooling-10"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 20,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "flows-dlq-on-repeat-failures-10",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 20,
+      "canonical_rule": "flows-dlq-on-repeat-failures-10"
+    },
+    {
+      "id": "flows-redux-mutates-state-1",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 20,
+      "canonical_rule": "flows-redux-mutates-state-1"
+    },
+    {
+      "id": "database-statement-timeout-missing-9",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.75,
+      "score": 19.5,
+      "canonical_rule": "database-statement-timeout-missing-9"
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 18,
+      "canonical_rule": "security-gha-action-unpinned-5"
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 16,
+      "canonical_rule": "cost-dev-setup-missing-3"
+    },
+    {
+      "id": "cost-license-incompatible-1",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 16,
+      "canonical_rule": "cost-license-incompatible-1"
+    },
+    {
+      "id": "cost-no-code-review-6",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 16,
+      "canonical_rule": "cost-no-code-review-6"
+    },
+    {
+      "id": "database-lock-timeout-missing-10",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 15.6,
+      "canonical_rule": "database-lock-timeout-missing-10"
+    },
+    {
+      "id": "database-missing-index-where-4",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 15.6,
+      "canonical_rule": "database-missing-index-where-4"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 15,
+      "canonical_rule": "security-missing-headers-10"
+    },
+    {
+      "id": "security-no-security-maintenance-7",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 15,
+      "canonical_rule": "security-no-security-maintenance-7"
+    },
+    {
+      "id": "security-outdated-server-9",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 15,
+      "canonical_rule": "security-outdated-server-9"
+    },
+    {
+      "id": "database-missing-index-hot-path-2",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.55,
+      "score": 14.3,
+      "canonical_rule": "database-missing-index-hot-path-2"
+    },
+    {
+      "id": "security-cve-high-2",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 14,
+      "canonical_rule": "security-cve-high-2"
+    },
+    {
+      "id": "security-db-conn-string-6",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 14,
+      "canonical_rule": "security-db-conn-string-6"
+    },
+    {
+      "id": "security-db-no-tls-11",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 14,
+      "canonical_rule": "security-db-no-tls-11"
+    },
+    {
+      "id": "security-file-upload-weak-7",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 14,
+      "canonical_rule": "security-file-upload-weak-7"
+    },
+    {
+      "id": "structure-controller-logic-6",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-controller-logic-6"
+    },
+    {
+      "id": "structure-high-coupling-2",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-high-coupling-2"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.55,
+      "score": 12.1,
+      "canonical_rule": "structure-framework-leak-3"
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.55,
+      "score": 12.1,
+      "canonical_rule": "structure-service-orchestration-3"
+    },
+    {
+      "id": "cost-export-restriction-8",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 12,
+      "canonical_rule": "cost-export-restriction-8"
+    },
+    {
+      "id": "cost-license-share-alike-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 12,
+      "canonical_rule": "cost-license-share-alike-3"
+    },
+    {
+      "id": "cost-non-commercial-use-6",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 12,
+      "canonical_rule": "cost-non-commercial-use-6"
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 12,
+      "canonical_rule": "flows-missing-timeout-6"
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.4,
+      "score": 12,
+      "canonical_rule": "security-cors-wildcard-2"
+    },
+    {
+      "id": "database-heavy-migration-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.45,
+      "score": 11.7,
+      "canonical_rule": "database-heavy-migration-5"
+    },
+    {
+      "id": "security-debug-in-prod-1",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 10.5,
+      "canonical_rule": "security-debug-in-prod-1"
+    },
+    {
+      "id": "security-weak-crypto-9",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 10.5,
+      "canonical_rule": "security-weak-crypto-9"
+    },
+    {
+      "id": "database-missing-bloat-monitoring-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.4,
+      "score": 10.4,
+      "canonical_rule": "database-missing-bloat-monitoring-5"
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-error-leaks-stack-6"
+    },
+    {
+      "id": "flows-message-schema-no-version-1",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-message-schema-no-version-1"
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-missing-error-handler-5"
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-missing-rate-limit-8"
+    },
+    {
+      "id": "flows-missing-visibility-timeout-9",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-missing-visibility-timeout-9"
+    },
+    {
+      "id": "flows-state-inefficient-access-7",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-state-inefficient-access-7"
+    },
+    {
+      "id": "flows-validation-placement-2",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-validation-placement-2"
+    },
+    {
+      "id": "cost-llm-high-usage-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-llm-high-usage-1"
+    },
+    {
+      "id": "database-pg-stat-statements-disabled-1",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.35,
+      "score": 9.1,
+      "canonical_rule": "database-pg-stat-statements-disabled-1"
+    },
+    {
+      "id": "flows-dlq-not-monitored-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 9,
+      "canonical_rule": "flows-dlq-not-monitored-5"
+    },
+    {
+      "id": "flows-missing-circuit-breaker-7",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 9,
+      "canonical_rule": "flows-missing-circuit-breaker-7"
+    },
+    {
+      "id": "flows-ngrx-selectors-not-memoized-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 9,
+      "canonical_rule": "flows-ngrx-selectors-not-memoized-4"
+    },
+    {
+      "id": "flows-no-schema-registry-8",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 9,
+      "canonical_rule": "flows-no-schema-registry-8"
+    },
+    {
+      "id": "flows-state-expensive-update-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 9,
+      "canonical_rule": "flows-state-expensive-update-5"
+    },
+    {
+      "id": "flows-state-missing-defaults-10",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 9,
+      "canonical_rule": "flows-state-missing-defaults-10"
+    },
+    {
+      "id": "security-weak-rng-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.3,
+      "score": 9,
+      "canonical_rule": "security-weak-rng-10"
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-api-no-retry-strategy-8"
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-api-no-usage-monitoring-9"
+    },
+    {
+      "id": "cost-db-growth-3",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-db-growth-3"
+    },
+    {
+      "id": "cost-gha-high-usage-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-gha-high-usage-1"
+    },
+    {
+      "id": "cost-gha-wasteful-retries-3",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-gha-wasteful-retries-3"
+    },
+    {
+      "id": "cost-slow-build-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-slow-build-1"
+    },
+    {
+      "id": "cost-technical-debt-high-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-technical-debt-high-9"
+    },
+    {
+      "id": "flows-message-ordering-needed-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 8,
+      "canonical_rule": "flows-message-ordering-needed-4"
+    },
+    {
+      "id": "flows-message-retention-too-short-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 8,
+      "canonical_rule": "flows-message-retention-too-short-6"
+    },
+    {
+      "id": "flows-redux-side-effects-2",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 8,
+      "canonical_rule": "flows-redux-side-effects-2"
+    },
+    {
+      "id": "flows-vuex-denormalized-state-3",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 8,
+      "canonical_rule": "flows-vuex-denormalized-state-3"
+    },
+    {
+      "id": "security-gha-no-container-8",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "security-gha-no-container-8"
+    },
+    {
+      "id": "cost-api-no-client-rate-limit-4",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-api-no-client-rate-limit-4"
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-api-no-response-cache-5"
+    },
+    {
+      "id": "cost-db-pool-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-db-pool-5"
+    },
+    {
+      "id": "cost-deprecated-version-10",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-deprecated-version-10"
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-documentation-poor-7"
+    },
+    {
+      "id": "cost-gha-infinite-artifacts-6",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-gha-infinite-artifacts-6"
+    },
+    {
+      "id": "cost-gha-matrix-inefficient-10",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-gha-matrix-inefficient-10"
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-gha-no-dependency-cache-5"
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-gha-no-timeout-9"
+    },
+    {
+      "id": "cost-license-attribution-missing-2",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-license-attribution-missing-2"
+    },
+    {
+      "id": "cost-no-http-compression-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-no-http-compression-9"
+    },
+    {
+      "id": "cost-no-knowledge-sharing-8",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-no-knowledge-sharing-8"
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-no-license-tracking-5"
+    },
+    {
+      "id": "cost-no-oss-policy-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-no-oss-policy-9"
+    },
+    {
+      "id": "cost-no-performance-budget-10",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-no-performance-budget-10"
+    },
+    {
+      "id": "cost-overprovisioned-k8s-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-overprovisioned-k8s-1"
+    },
+    {
+      "id": "cost-overprovisioned-k8s-limits-2",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-overprovisioned-k8s-limits-2"
+    },
+    {
+      "id": "cost-redis-as-db-6",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-redis-as-db-6"
+    },
+    {
+      "id": "security-binary-dep-10",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "security-binary-dep-10"
+    },
+    {
+      "id": "security-cve-medium-3",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "security-cve-medium-3"
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "security-gha-job-no-timeout-7"
+    },
+    {
+      "id": "security-gha-workspace-not-cleaned-6",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "security-gha-workspace-not-cleaned-6"
+    },
+    {
+      "id": "security-key-rotation-manual-13",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "security-key-rotation-manual-13"
+    },
+    {
+      "id": "cost-db-backup-4",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 4.8,
+      "canonical_rule": "cost-db-backup-4"
+    },
+    {
+      "id": "cost-patent-risk-4",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 4.8,
+      "canonical_rule": "cost-patent-risk-4"
+    },
+    {
+      "id": "cost-trademark-risk-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 4.8,
+      "canonical_rule": "cost-trademark-risk-7"
+    },
+    {
+      "id": "security-directory-listing-8",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-directory-listing-8"
+    },
+    {
+      "id": "security-gha-fork-pr-4",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-gha-fork-pr-4"
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-gha-no-concurrency-prod-10"
+    },
+    {
+      "id": "security-license-incompatible-6",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-license-incompatible-6"
+    },
+    {
+      "id": "security-rate-limit-weak-6",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-rate-limit-weak-6"
+    },
+    {
+      "id": "security-session-cookie-not-http-only-4",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-session-cookie-not-http-only-4"
+    },
+    {
+      "id": "security-session-cookie-not-secure-3",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-session-cookie-not-secure-3"
+    },
+    {
+      "id": "security-transitive-vuln-8",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-transitive-vuln-8"
+    },
+    {
+      "id": "security-unmaintained-dep-4",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-unmaintained-dep-4"
+    },
+    {
+      "id": "structure-adapter-violation-10",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 3.3,
+      "canonical_rule": "structure-adapter-violation-10"
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 3.3,
+      "canonical_rule": "structure-dto-logic-7"
+    },
+    {
+      "id": "flows-inconsistent-response-4",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-inconsistent-response-4"
+    },
+    {
+      "id": "flows-message-retention-too-long-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-message-retention-too-long-7"
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-missing-request-id-7"
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-missing-security-headers-10"
+    },
+    {
+      "id": "flows-no-state-persistence-6",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 2.25,
+      "canonical_rule": "flows-no-state-persistence-6"
+    },
+    {
+      "id": "cost-gha-expensive-runner-4",
+      "severity": "low",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 2,
+      "canonical_rule": "cost-gha-expensive-runner-4"
+    },
+    {
+      "id": "flows-message-not-compressed-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 2,
+      "canonical_rule": "flows-message-not-compressed-10"
+    },
+    {
+      "id": "flows-missing-cors-9",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 2,
+      "canonical_rule": "flows-missing-cors-9"
+    },
+    {
+      "id": "flows-no-time-travel-9",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 2,
+      "canonical_rule": "flows-no-time-travel-9"
+    },
+    {
+      "id": "flows-state-excessive-nesting-8",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 2,
+      "canonical_rule": "flows-state-excessive-nesting-8"
+    },
+    {
+      "id": "flows-validation-too-early-3",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 2,
+      "canonical_rule": "flows-validation-too-early-3"
+    },
+    {
+      "id": "cost-api-deprecated-endpoint-10",
+      "severity": "low",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 1.6,
+      "canonical_rule": "cost-api-deprecated-endpoint-10"
+    },
+    {
+      "id": "security-vcs-insecure-9",
+      "severity": "low",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 1.4,
+      "canonical_rule": "security-vcs-insecure-9"
+    },
+    {
+      "id": "cost-missing-cdn-7",
+      "severity": "low",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 1.2,
+      "canonical_rule": "cost-missing-cdn-7"
+    },
+    {
+      "id": "security-error-detail-1",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 0.28,
+      "canonical_rule": "security-error-detail-1"
+    }
+  ]
+}

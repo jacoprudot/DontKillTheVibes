@@ -1,0 +1,21 @@
+{
+  "metadata": {
+    "repo": "llamacoder",
+    "assessed_at": "2023-10-05T14:30:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "gpt-4",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "A",
+    "total_findings": 0,
+    "critical_count": 0,
+    "by_severity": {},
+    "effort_estimate": {}
+  },
+  "findings": [],
+  "work_plan": {
+    "phases": {},
+    "dependencies": []
+  }
+}

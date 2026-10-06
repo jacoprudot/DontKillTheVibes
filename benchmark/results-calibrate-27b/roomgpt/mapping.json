@@ -1,0 +1,78 @@
+{
+  "target": "roomgpt",
+  "mock": false,
+  "created_at": "2026-10-05T02:35:02.295Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "Code Quality",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "Security",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "Code Organization",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "Testing",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "toolkit",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "Deployment",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "Documentation",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "General Issues",
+      "security_relevant": true
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "Performance",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "toolkit",
+      "source_id": "code-missing-validation-4",
+      "title": "code-missing-validation-4",
+      "security_relevant": false
+    }
+  ]
+}

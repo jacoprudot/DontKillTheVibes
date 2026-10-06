@@ -1,0 +1,351 @@
+{
+  "target": "agentgraphed-s2",
+  "mock": false,
+  "created_at": "2026-10-05T22:59:22.945Z",
+  "judge_model": "qwen3.5:9b",
+  "judge_base_url": "http://localhost:11434/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\agentgraphed",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "0fc90d5961cc42de1c50044d3bbf2b3d54af09cf",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 8,
+    "toolkit": 0,
+    "orchestrated": 8,
+    "naive": 0,
+    "judged": 8,
+    "unverifiable": 8
+  },
+  "summary_by_arm": {
+    "orchestrated": {
+      "claims": 8,
+      "judged": 8,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 8,
+      "judgeGrounded": 8,
+      "mechGrounded": 8,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 36,
+      "actionableN": 8,
+      "security": 5,
+      "securityFn": 0,
+      "claimsWithCitations": 8,
+      "citationsTotal": 8,
+      "weakCitations": 0,
+      "meanActionability": 4.5,
+      "precision": null,
+      "judgeGroundedRate": 1
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "orchestrated",
+      "source_id": "structure-framework-leak-3",
+      "title": "structure-framework-leak-3",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Code content is unavailable; cannot verify import mixing or scheduler entanglement.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/lib/ingest/auto.ts",
+            "line": 16,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 257,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-rate-limit-8",
+      "title": "flows-missing-rate-limit-8",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "API route code not visible to confirm rate limiting logic absence.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/app/api/quota-probe/route.ts",
+            "line": 26,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 74,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-response-cache-5",
+      "title": "cost-api-no-response-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "LLM classification module implementation hidden; cannot verify caching or deduplication.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/lib/llm/classify.ts",
+            "line": 160,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 276,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "CI job snippet truncated before timeout property could be verified as absent/present.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/ci.yml",
+            "line": 8,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 42,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C5",
+      "arm": "orchestrated",
+      "source_id": "security-error-detail-1",
+      "title": "security-error-detail-1",
+      "severity": "info",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Error handling code not visible; cannot confirm raw exception exposure to client.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/app/api/ingest-local/route.ts",
+            "line": 17,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 28,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C6",
+      "arm": "orchestrated",
+      "source_id": "database-unused-indexes-6",
+      "title": "database-unused-indexes-6",
+      "severity": "low",
+      "module": "database",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Schema file content unavailable; cannot verify index usage in query logic.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/lib/db/schema.ts",
+            "line": 47,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 96,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C7",
+      "arm": "orchestrated",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Next.js config snippet truncated before headers block could be verified as absent.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "next.config.mjs",
+            "line": 2,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 16,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C8",
+      "arm": "orchestrated",
+      "source_id": "database-max-lifetime-missing-5",
+      "title": "database-max-lifetime-missing-5",
+      "severity": "low",
+      "module": "database",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "DB client singleton management code not visible; cannot verify lifecycle handling.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/lib/db/client.ts",
+            "line": 6,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 381,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

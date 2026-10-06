@@ -1,0 +1,656 @@
+{
+  "metadata": {
+    "repo": "obs-airplay",
+    "assessed_at": "2026-10-05T20:12:18.242Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 23,
+    "findings_raw": 245,
+    "findings_dropped": 153,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 4,
+    "total_findings": 50,
+    "by_severity": {
+      "critical": 4,
+      "high": 10,
+      "medium": 31,
+      "low": 5
+    },
+    "by_module": {
+      "code": 6,
+      "structure": 5,
+      "flows": 7,
+      "security": 6,
+      "cost": 11,
+      "performance": 9,
+      "github": 6
+    },
+    "effort_estimate": {
+      "XS": 5,
+      "S": 7,
+      "M": 36,
+      "L": 2
+    }
+  },
+  "findings": [
+    {
+      "id": "code-unchecked-error-1",
+      "module": "code",
+      "severity": "high",
+      "location": {
+        "file": "src/audio-decoder.c",
+        "line": 152
+      },
+      "description": "audio_decoder_set_format() frees the existing codec context and swr context but does not reset dec->swr_in_channels/swr_in_fmt, leaving stale swr input configuration cached after a format change; ensure_swr() may then reuse a mismatched swr context.",
+      "remediation": "Reset all cached swr input fields (swr_in_rate, swr_in_channels, swr_in_fmt) whenever the swr context is freed in audio_decoder_set_format().",
+      "effort": "S",
+      "confidence": 0.55
+    },
+    {
+      "id": "performance-serialization-format-2",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "src/video-decoder.c",
+        "line": 239
+      },
+      "description": "The frame handoff to OBS uses an uncompressed RGBA intermediate buffer rather than a format OBS can consume without conversion. This is an inefficient serialization format for the video path: the decoder already produces a planar YUV frame, and converting it to packed RGBA only to have OBS convert it again wastes CPU and memory bandwidth per frame.",
+      "remediation": "Pass the decoded frame to OBS in a format OBS natively accepts (NV12/I420) so no intermediate packed-RGBA conversion is required on the frame path.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "performance-no-backpressure-10",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 0
+      },
+      "description": "The video and audio callbacks decode and immediately push frames to OBS while holding the per-stream mutex, with no backpressure or queue-depth control. If OBS cannot consume frames as fast as the sender produces them, the callback blocks on the mutex and the network receive path is throttled implicitly rather than by an explicit bounded queue, so there is no mechanism to shed or coalesce frames under overload.",
+      "remediation": "Introduce a bounded frame queue between the network callback and the OBS output path, dropping or coalescing the oldest frames when the queue is full so overload degrades gracefully instead of blocking the receive thread.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "structure-service-sql-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 7
+      },
+      "description": "airplay-source.c mixes the OBS source lifecycle/registration layer with protocol-level concerns: it directly drives UxPlay's raop/dnssd components, owns decoder instances, manages mutexes and timestamp mapping, and performs packet validation. This is a god-file that combines transport orchestration, decoding coordination and OBS output, so any change to the AirPlay protocol or to OBS output semantics forces edits in the same translation unit.",
+      "remediation": "Split the file: keep only the OBS source registration and settings in airplay-source.c, and extract the UxPlay callback handling, timestamp mapping and packet validation into a dedicated session/transport module (e.g. airplay-session.c) that exposes a narrow interface to the OBS layer.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "code-mutex-missing-4",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 96
+      },
+      "description": "map_timestamp() reads and writes the shared timestamp anchor fields (timestamp_anchor_set, remote_timestamp_anchor, local_timestamp_anchor) under timestamp_mutex, but reset_timestamp_mapper() and the anchor fields are also touched from connection callbacks; the anchor state is only guarded when timestamp_mutex_ready is true, and the ready flag itself is read without synchronization, so a callback racing with teardown can observe a partially initialized mutex.",
+      "remediation": "Initialize the mutexes before any callback can run and guard the *_mutex_ready flags with an atomic or initialize them once at source creation so map_timestamp/reset_timestamp_mapper never race with initialization.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-gha-infinite-artifacts-6",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 13
+      },
+      "description": "The workflow builds a plugin DLL plus four FFmpeg runtime DLLs and an OpenSSL DLL, but no `actions/upload-artifact` step with a retention policy is present in the job. If artifacts are added without `retention-days`, or if the build output is uploaded on every push/PR run, storage accumulates indefinitely and incurs ongoing artifact storage cost.",
+      "remediation": "When uploading build artifacts, set an explicit short `retention-days` (e.g. 7) and upload only on tagged releases or master pushes rather than on every pull request, to avoid unbounded artifact storage growth.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "code-print-statement-5",
+      "module": "code",
+      "severity": "low",
+      "location": {
+        "file": "src/video-decoder.c",
+        "line": 50
+      },
+      "description": "The video decoder writes diagnostics directly to stderr with fprintf() instead of using the OBS logging API (blog/ap_log) used everywhere else in the plugin. These messages bypass OBS's log subsystem, are not captured in OBS logs, and are not routed through the plugin's log level filtering.",
+      "remediation": "Replace the fprintf(stderr, ...) calls in video_decoder_create() with blog(LOG_INFO/LOG_ERROR, ...) or the ap_info/ap_error macros from src/log.h so diagnostics appear in the OBS log.",
+      "effort": "S",
+      "confidence": 0.95
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 0
+      },
+      "description": "Log lines emitted across the connection and decode callbacks (connection init/destroy/reset, video_process, audio pkt) carry no correlation identifier, so interleaved events from multiple concurrent AirPlay connections cannot be attributed to a specific session when diagnosing failures.",
+      "remediation": "Introduce a per-connection request/session id assigned in cb_conn_init and include it in every blog() call for that connection so log lines can be correlated.",
+      "effort": "S",
+      "confidence": 0.5
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "security-logs-contain-secrets-12",
+          "security-no-input-validation-14",
+          "flows-missing-idempotency-3",
+          "security-secret-in-code-1",
+          "performance-cpu-hotspot-1",
+          "code-missing-validation-4",
+          "structure-high-coupling-1",
+          "cost-no-automated-tests-4",
+          "code-logs-secrets-10",
+          "cost-dev-setup-missing-3",
+          "security-gha-overpermissive-2",
+          "code-unchecked-error-1",
+          "security-gha-action-unpinned-5",
+          "security-gha-job-no-timeout-7",
+          "security-weak-rng-10"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "security-gha-no-concurrency-prod-10",
+          "flows-missing-dlq-2",
+          "cost-license-share-alike-3",
+          "structure-config-logic-8",
+          "structure-framework-leak-3",
+          "performance-no-perf-budgets-10",
+          "performance-no-load-testing-3",
+          "performance-no-regression-detection-5",
+          "code-ignores-return-value-6",
+          "structure-low-cohesion-5",
+          "cost-gha-no-timeout-9"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "performance-no-cost-perf-tradeoff-8",
+          "performance-serialization-format-2",
+          "cost-gha-no-dependency-cache-5",
+          "performance-no-backpressure-10",
+          "structure-service-sql-5",
+          "cost-slow-build-1",
+          "flows-missing-timeout-6",
+          "performance-no-adaptive-timeout-6",
+          "performance-no-request-collapsing-4",
+          "flows-missing-error-handler-5",
+          "cost-no-license-tracking-5",
+          "code-missing-error-main-10",
+          "code-mutex-missing-4",
+          "flows-error-leaks-stack-6",
+          "flows-missing-circuit-breaker-7",
+          "cost-documentation-poor-7",
+          "cost-license-attribution-missing-2",
+          "code-var-usage-3",
+          "cost-gha-infinite-artifacts-6",
+          "code-print-statement-5",
+          "cost-gha-expensive-runner-4",
+          "flows-missing-request-id-7",
+          "code-missing-docstring-10",
+          "code-missing-return-type-8"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "flows-missing-timeout-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-idempotency-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-error-handler-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-error-leaks-stack-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-request-id-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-dlq-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-circuit-breaker-7": [
+        "structure-high-coupling-1"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "security-logs-contain-secrets-12",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 90,
+      "canonical_rule": "security-logs-contain-secrets-12"
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.7,
+      "score": 52.5,
+      "canonical_rule": "security-no-input-validation-14"
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 50,
+      "canonical_rule": "flows-missing-idempotency-3"
+    },
+    {
+      "id": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.7,
+      "score": 49,
+      "canonical_rule": "security-secret-in-code-1"
+    },
+    {
+      "id": "performance-cpu-hotspot-1",
+      "severity": "high",
+      "module": "performance",
+      "confidence": 0.7,
+      "score": 42,
+      "canonical_rule": "performance-cpu-hotspot-1"
+    },
+    {
+      "id": "code-missing-validation-4",
+      "severity": "high",
+      "module": "code",
+      "confidence": 0.7,
+      "score": 35,
+      "canonical_rule": "code-missing-validation-4"
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 33,
+      "canonical_rule": "structure-high-coupling-1"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.75,
+      "score": 30,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "code-logs-secrets-10",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 28,
+      "canonical_rule": "code-logs-secrets-10"
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 28,
+      "canonical_rule": "cost-dev-setup-missing-3"
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.8,
+      "score": 28,
+      "canonical_rule": "security-gha-overpermissive-2"
+    },
+    {
+      "id": "code-unchecked-error-1",
+      "severity": "high",
+      "module": "code",
+      "confidence": 0.55,
+      "score": 27.5,
+      "canonical_rule": "code-unchecked-error-1"
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.9,
+      "score": 27,
+      "canonical_rule": "security-gha-action-unpinned-5"
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.85,
+      "score": 25.5,
+      "canonical_rule": "security-gha-job-no-timeout-7"
+    },
+    {
+      "id": "security-weak-rng-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.85,
+      "score": 25.5,
+      "canonical_rule": "security-weak-rng-10"
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.8,
+      "score": 24,
+      "canonical_rule": "security-gha-no-concurrency-prod-10"
+    },
+    {
+      "id": "flows-missing-dlq-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 22.5,
+      "canonical_rule": "flows-missing-dlq-2"
+    },
+    {
+      "id": "cost-license-share-alike-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 20,
+      "canonical_rule": "cost-license-share-alike-3"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.9,
+      "score": 19.8,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.85,
+      "score": 18.7,
+      "canonical_rule": "structure-framework-leak-3"
+    },
+    {
+      "id": "performance-no-perf-budgets-10",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.75,
+      "score": 18,
+      "canonical_rule": "performance-no-perf-budgets-10"
+    },
+    {
+      "id": "performance-no-load-testing-3",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.7,
+      "score": 16.8,
+      "canonical_rule": "performance-no-load-testing-3"
+    },
+    {
+      "id": "performance-no-regression-detection-5",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.7,
+      "score": 16.8,
+      "canonical_rule": "performance-no-regression-detection-5"
+    },
+    {
+      "id": "code-ignores-return-value-6",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.8,
+      "score": 16,
+      "canonical_rule": "code-ignores-return-value-6"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-gha-no-timeout-9"
+    },
+    {
+      "id": "performance-no-cost-perf-tradeoff-8",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.6,
+      "score": 14.4,
+      "canonical_rule": "performance-no-cost-perf-tradeoff-8"
+    },
+    {
+      "id": "performance-serialization-format-2",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.6,
+      "score": 14.4,
+      "canonical_rule": "performance-serialization-format-2"
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.85,
+      "score": 13.6,
+      "canonical_rule": "cost-gha-no-dependency-cache-5"
+    },
+    {
+      "id": "performance-no-backpressure-10",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.55,
+      "score": 13.2,
+      "canonical_rule": "performance-no-backpressure-10"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "cost-slow-build-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.8,
+      "score": 12.8,
+      "canonical_rule": "cost-slow-build-1"
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 12,
+      "canonical_rule": "flows-missing-timeout-6"
+    },
+    {
+      "id": "performance-no-adaptive-timeout-6",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 12,
+      "canonical_rule": "performance-no-adaptive-timeout-6"
+    },
+    {
+      "id": "performance-no-request-collapsing-4",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 12,
+      "canonical_rule": "performance-no-request-collapsing-4"
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 11,
+      "canonical_rule": "flows-missing-error-handler-5"
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.65,
+      "score": 10.4,
+      "canonical_rule": "cost-no-license-tracking-5"
+    },
+    {
+      "id": "code-missing-error-main-10",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "code-missing-error-main-10"
+    },
+    {
+      "id": "code-mutex-missing-4",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "code-mutex-missing-4"
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-error-leaks-stack-6"
+    },
+    {
+      "id": "flows-missing-circuit-breaker-7",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-missing-circuit-breaker-7"
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-documentation-poor-7"
+    },
+    {
+      "id": "cost-license-attribution-missing-2",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.55,
+      "score": 8.8,
+      "canonical_rule": "cost-license-attribution-missing-2"
+    },
+    {
+      "id": "code-var-usage-3",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 8.4,
+      "canonical_rule": "code-var-usage-3"
+    },
+    {
+      "id": "cost-gha-infinite-artifacts-6",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-gha-infinite-artifacts-6"
+    },
+    {
+      "id": "code-print-statement-5",
+      "severity": "low",
+      "module": "code",
+      "confidence": 0.95,
+      "score": 4.75,
+      "canonical_rule": "code-print-statement-5"
+    },
+    {
+      "id": "cost-gha-expensive-runner-4",
+      "severity": "low",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 2.8,
+      "canonical_rule": "cost-gha-expensive-runner-4"
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-missing-request-id-7"
+    },
+    {
+      "id": "code-missing-docstring-10",
+      "severity": "low",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 1.4,
+      "canonical_rule": "code-missing-docstring-10"
+    },
+    {
+      "id": "code-missing-return-type-8",
+      "severity": "low",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 1.4,
+      "canonical_rule": "code-missing-return-type-8"
+    }
+  ]
+}

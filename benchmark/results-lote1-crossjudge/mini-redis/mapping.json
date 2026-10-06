@@ -1,0 +1,15 @@
+{
+  "target": "mini-redis",
+  "mock": false,
+  "created_at": "2026-10-05T17:44:22.269Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "security_relevant": false
+    }
+  ]
+}

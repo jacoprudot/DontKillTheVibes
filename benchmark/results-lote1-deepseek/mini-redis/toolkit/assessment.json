@@ -1,0 +1,130 @@
+{
+  "metadata": {
+    "repo": "tokio-rs/mini-redis",
+    "assessed_at": "2025-01-01T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "D",
+    "total_findings": 6,
+    "critical_count": 0,
+    "by_severity": {
+      "high": 3,
+      "medium": 3
+    },
+    "effort_estimate": {
+      "S": 2,
+      "M": 4
+    }
+  },
+  "findings": [
+    {
+      "id": "code-unhandled-promise-4",
+      "module": "code",
+      "severity": "high",
+      "effort": "S",
+      "location": {
+        "file": "src/clients/buffered_client.rs",
+        "line": 57
+      },
+      "description": "The background connection task is spawned with tokio::spawn and its JoinHandle is discarded, so if the run() loop panics or the connection task terminates unexpectedly, no caller ever observes the failure. Every BufferedClient handle will then block forever on oneshot::Receiver::await because the sender side is dropped without a response being sent, turning a task failure into a silent hang rather than a surfaced error.",
+      "remediation": "Retain the JoinHandle returned by tokio::spawn and either propagate its result to callers or wrap the run() loop so that a task failure is logged and all pending oneshot senders are completed with an error before the task exits.",
+      "confidence": 0.75
+    },
+    {
+      "id": "code-generic-catch-2",
+      "module": "code",
+      "severity": "high",
+      "effort": "S",
+      "location": {
+        "file": "src/clients/buffered_client.rs",
+        "line": 35
+      },
+      "description": "The response from the connection is forwarded with `let _ = tx.send(response);`, discarding the Result. When the requesting task has already gone away the send fails, and the error is silently swallowed with no logging, so a dropped requester is indistinguishable from a successful response and any systemic pattern of abandoned requests is invisible.",
+      "remediation": "Handle the send result explicitly: log at debug/warn level when tx.send returns Err so abandoned requests are observable, or document the intentional discard with an explicit comment and a tracing::debug! call.",
+      "confidence": 0.7
+    },
+    {
+      "id": "code-ignores-return-value-6",
+      "module": "code",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "src/clients/buffered_client.rs",
+        "line": 57
+      },
+      "description": "The spawned task's return value (the JoinHandle) is never awaited or stored, so the BufferedClient has no way to detect that its backing connection task has exited. Combined with the fixed channel capacity of 32, a dead task causes senders to fill the channel and then block indefinitely on `self.tx.send(...).await` in get()/set().",
+      "remediation": "Store the JoinHandle in BufferedClient and expose a method to await task completion, or use a watch/oneshot channel to signal task termination so callers can fail fast instead of blocking on a full channel.",
+      "confidence": 0.65
+    },
+    {
+      "id": "code-missing-validation-4",
+      "module": "code",
+      "severity": "high",
+      "effort": "M",
+      "location": {
+        "file": "src/bin/server.rs",
+        "line": 34
+      },
+      "description": "The server binds the TCP listener to the hardcoded loopback address `127.0.0.1:{port}` with no configuration option and no authentication or access-control layer on the accepted connections. Any local process can issue arbitrary GET/SET/PUBLISH/SUBSCRIBE commands against the in-memory store, and there is no mechanism to restrict or authenticate clients.",
+      "remediation": "Make the bind address configurable via CLI/env (defaulting to loopback), and document explicitly that mini-redis has no authentication so it must never be exposed beyond localhost; if exposure is required, add a minimal AUTH command or a connection allowlist.",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "module": "flows",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "src/clients/client.rs",
+        "line": 78
+      },
+      "description": "Client::connect performs TcpStream::connect(addr).await with no connect timeout, and the subsequent read_response()/write_frame() calls on the Connection have no read or write deadline either. A server that accepts the TCP connection but never responds will cause client calls to hang indefinitely, and there is no retry or circuit-breaker wrapper around the connection.",
+      "remediation": "Wrap TcpStream::connect and the frame read/write operations in tokio::time::timeout with configurable connect/read/write deadlines, returning a clear timeout error to the caller instead of hanging.",
+      "confidence": 0.7
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "module": "flows",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "src/bin/server.rs",
+        "line": 36
+      },
+      "description": "server::run(listener, signal::ctrl_c()).await is invoked and its result is discarded (the function returns ()), so any fatal error raised during the accept loop or graceful-shutdown sequence is not surfaced to the process exit code. Operators running the server cannot distinguish a clean shutdown from an internal failure via the exit status.",
+      "remediation": "Have server::run return a Result and propagate it from main so that fatal server errors produce a non-zero exit code and are logged, rather than being silently swallowed.",
+      "confidence": 0.6
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "code-unhandled-promise-4",
+        "code-generic-catch-2"
+      ],
+      "60_days": [
+        "code-ignores-return-value-6",
+        "flows-missing-timeout-6"
+      ],
+      "90_days": [
+        "code-missing-validation-4",
+        "flows-missing-error-handler-5"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "code-ignores-return-value-6",
+        "to": "code-unhandled-promise-4",
+        "type": "blocks"
+      },
+      {
+        "from": "flows-missing-error-handler-5",
+        "to": "code-unhandled-promise-4",
+        "type": "blocks"
+      }
+    ]
+  }
+}

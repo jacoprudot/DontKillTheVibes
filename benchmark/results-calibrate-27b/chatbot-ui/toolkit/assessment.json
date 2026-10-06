@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "repo": "chatbot-ui",
+    "assessed_at": "2023-10-05T14:30:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "gpt-4",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "D",
+    "total_findings": 2,
+    "critical_count": 0,
+    "by_severity": {
+      "high": 1,
+      "medium": 1
+    },
+    "effort_estimate": {
+      "L": 1,
+      "M": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "structure-high-coupling-1",
+      "module": "structure",
+      "severity": "high",
+      "location": {
+        "file": "app/[locale]/[workspaceid]/chat/page.tsx",
+        "line": 2
+      },
+      "description": "ChatPage imports ChatUI, which is likely used in multiple places.",
+      "remediation": "Consider creating a shared component for ChatUI if it's reused.",
+      "effort": "L",
+      "confidence": 0.85,
+      "tags": [
+        "coupling",
+        "structure"
+      ],
+      "relatedFindings": [],
+      "evidence": {
+        "snippet": "import { ChatUI } from '@/components/chat/chat-ui'",
+        "metric": "2 imports of ChatUI in the file",
+        "benchmark": "High coupling if multiple components import the same component"
+      }
+    },
+    {
+      "id": "structure-highly-unstable-4",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "__tests__/lib/openapi-conversion.test.ts",
+        "line": 1
+      },
+      "description": "openapiToFunctions function is used in multiple tests.",
+      "remediation": "Refactor to use a mock or stub if the function changes frequently.",
+      "effort": "M",
+      "confidence": 0.85,
+      "tags": [
+        "dependency-cycle",
+        "structure"
+      ],
+      "relatedFindings": [],
+      "evidence": {
+        "snippet": "import { openapiToFunctions } from '@/lib/openapi-conversion'",
+        "metric": "2 tests using openapiToFunctions",
+        "benchmark": "Highly unstable if function changes frequently"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "structure-high-coupling-1"
+      ],
+      "60_days": [
+        "structure-highly-unstable-4"
+      ],
+      "90_days": []
+    },
+    "dependencies": []
+  }
+}

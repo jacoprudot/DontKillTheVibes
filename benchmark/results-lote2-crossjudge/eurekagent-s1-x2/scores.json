@@ -1,0 +1,199 @@
+{
+  "target": "eurekagent-s1-x2",
+  "mock": false,
+  "created_at": "2026-10-06T01:48:23.584Z",
+  "judge_model": "qwen3.5:9b",
+  "judge_base_url": "http://localhost:11434/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\eurekagent",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "fb96df897dfb99797a77623aa0dd9ee178fe89d2",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 4,
+    "toolkit": 4,
+    "orchestrated": 0,
+    "naive": 0,
+    "judged": 4,
+    "unverifiable": 1
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 4,
+      "judged": 4,
+      "real": 3,
+      "falseCount": 0,
+      "unverifiable": 1,
+      "judgeGrounded": 4,
+      "mechGrounded": 4,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 16,
+      "actionableN": 4,
+      "security": 0,
+      "securityFn": 0,
+      "claimsWithCitations": 4,
+      "citationsTotal": 4,
+      "weakCitations": 2,
+      "meanActionability": 4,
+      "precision": 1,
+      "judgeGroundedRate": 1
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "code-copy-paste-variant-6",
+      "title": "code-copy-paste-variant-6",
+      "severity": "medium",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 2,
+        "reason": "Cannot verify duplication from snippet; second function not shown.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".claude/hooks/log_web_search.py",
+            "line": 160,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 270,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "toolkit",
+      "source_id": "structure-controller-logic-6",
+      "title": "structure-controller-logic-6",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Mixing transport and domain logic is visible in the provided code block.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".claude/hooks/log_web_search.py",
+            "line": 88,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 270,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "structure-dto-logic-7",
+      "title": "structure-dto-logic-7",
+      "severity": "low",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Hardcoded constants are clearly present; moving to config/env is a specific fix.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".claude/hooks/protect_result_files.py",
+            "line": 14,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 398,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "toolkit",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Hardcoded paths are visible in the snippet; env var fallback is a concrete solution.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": true,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".claude/hooks/log_web_search.py",
+            "line": 22,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 270,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,1058 @@
+{
+  "target": "crypto-claude-desk",
+  "mock": false,
+  "created_at": "2026-10-05T21:02:32.872Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-1",
+      "title": "github-issue-health-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "cost-llm-very-high-usage-2",
+      "title": "cost-llm-very-high-usage-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "code-print-statement-5",
+      "title": "code-print-statement-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-51",
+      "title": "51. `.claude-plugin/marketplace.json` — `owner` has no `email` or `url`",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "orchestrated",
+      "source_id": "database-statement-timeout-missing-9",
+      "title": "database-statement-timeout-missing-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "toolkit",
+      "source_id": "flows-fire-and-forget-critical-1",
+      "title": "flows-fire-and-forget-critical-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "orchestrated",
+      "source_id": "database-sequential-pagination-1",
+      "title": "database-sequential-pagination-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "orchestrated",
+      "source_id": "cost-no-http-compression-9",
+      "title": "cost-no-http-compression-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-60",
+      "title": "60. No tests for the workflow file",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-usage-monitoring-9",
+      "title": "cost-api-no-usage-monitoring-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "16. `.gitignore` — ignores `data/reports/*` but the app reads from it",
+      "security_relevant": false
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-46",
+      "title": "46. `agents/portfolio-manager.md` — trade ID generation is racy",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-48",
+      "title": "48. `agents/portfolio-manager.md` — PnL formula doesn't handle liquidation",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "orchestrated",
+      "source_id": "structure-service-sql-5",
+      "title": "structure-service-sql-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C15",
+      "arm": "orchestrated",
+      "source_id": "security-cors-wildcard-2",
+      "title": "security-cors-wildcard-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C16",
+      "arm": "orchestrated",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C17",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "19. `agents/market-monitor.md` — \"NEVER use crypto-data for prices\" but `crypto-data` is the only MCP listed for metadata",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-6",
+      "title": "github-log-pattern-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C19",
+      "arm": "orchestrated",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-40",
+      "title": "40. `close-learning.js` — `correct` is computed but only used in the log and return",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "orchestrated",
+      "source_id": "security-gha-secret-leak-3",
+      "title": "security-gha-secret-leak-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C22",
+      "arm": "orchestrated",
+      "source_id": "database-irreversible-migration-1",
+      "title": "database-irreversible-migration-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "orchestrated",
+      "source_id": "cost-dev-setup-missing-3",
+      "title": "cost-dev-setup-missing-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C24",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "20. `agents/news-sentiment.md` — `maxTurns: 20` with a very long execution strategy",
+      "security_relevant": false
+    },
+    {
+      "label": "C25",
+      "arm": "toolkit",
+      "source_id": "flows-missing-idempotency-3",
+      "title": "flows-missing-idempotency-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C26",
+      "arm": "orchestrated",
+      "source_id": "security-gha-auto-deploy-prod-9",
+      "title": "security-gha-auto-deploy-prod-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C27",
+      "arm": "orchestrated",
+      "source_id": "database-missing-bloat-monitoring-5",
+      "title": "database-missing-bloat-monitoring-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C28",
+      "arm": "naive",
+      "source_id": "naive-claim-42",
+      "title": "42. `agents/portfolio-manager.md` — `memory: project` same issue",
+      "security_relevant": false
+    },
+    {
+      "label": "C29",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-2",
+      "title": "github-commit-history-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C30",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "24. `agents/learning-agent.md` — `maxTurns: 15` for five missions",
+      "security_relevant": false
+    },
+    {
+      "label": "C31",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. `agents/portfolio-manager.md` — leverage table vs. spot/futures table conflict",
+      "security_relevant": false
+    },
+    {
+      "label": "C32",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-4",
+      "title": "github-log-pattern-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C33",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-10",
+      "title": "github-log-pattern-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C34",
+      "arm": "naive",
+      "source_id": "naive-claim-36",
+      "title": "36. `close-learning.js` — `generate_summary()` \"si corresponde\" is undefined",
+      "security_relevant": false
+    },
+    {
+      "label": "C35",
+      "arm": "orchestrated",
+      "source_id": "database-heavy-migration-5",
+      "title": "database-heavy-migration-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C36",
+      "arm": "orchestrated",
+      "source_id": "code-ignores-return-value-6",
+      "title": "code-ignores-return-value-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C37",
+      "arm": "orchestrated",
+      "source_id": "cost-llm-high-usage-1",
+      "title": "cost-llm-high-usage-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C38",
+      "arm": "orchestrated",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "security_relevant": true
+    },
+    {
+      "label": "C39",
+      "arm": "orchestrated",
+      "source_id": "cost-slow-tests-2",
+      "title": "cost-slow-tests-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C40",
+      "arm": "toolkit",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "security_relevant": true
+    },
+    {
+      "label": "C41",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-1",
+      "title": "github-log-pattern-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C42",
+      "arm": "naive",
+      "source_id": "naive-claim-57",
+      "title": "57. `agents/market-monitor.md` — `model: haiku` for a \"real-time market intelligence\" agent",
+      "security_relevant": false
+    },
+    {
+      "label": "C43",
+      "arm": "orchestrated",
+      "source_id": "database-full-table-scan-3",
+      "title": "database-full-table-scan-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C44",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. `agents/risk-specialist.md` — \"AMPLIFY downside risk score by 10-15\" is unitless",
+      "security_relevant": false
+    },
+    {
+      "label": "C45",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "17. `.gitignore` — `data/create/*` and `data/logs/*` are ignored but no `.gitkeep` is committed for them",
+      "security_relevant": false
+    },
+    {
+      "label": "C46",
+      "arm": "orchestrated",
+      "source_id": "performance-no-retry-jitter-8",
+      "title": "performance-no-retry-jitter-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C47",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "13. `.claude-plugin/marketplace.json` — `source: \"./\"` with a nested plugin",
+      "security_relevant": false
+    },
+    {
+      "label": "C48",
+      "arm": "naive",
+      "source_id": "naive-claim-44",
+      "title": "44. `agents/portfolio-manager.md` — \"max 3 open trades\" but no per-symbol limit",
+      "security_relevant": false
+    },
+    {
+      "label": "C49",
+      "arm": "orchestrated",
+      "source_id": "code-exact-duplication-significant-2",
+      "title": "code-exact-duplication-significant-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C50",
+      "arm": "orchestrated",
+      "source_id": "cost-documentation-poor-7",
+      "title": "cost-documentation-poor-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C51",
+      "arm": "orchestrated",
+      "source_id": "performance-no-connection-pool-7",
+      "title": "performance-no-connection-pool-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C52",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "23. `agents/learning-agent.md` — \"FIVE missions\" but Mission 4 has a \"Step 1b\" and Mission 5 is pattern library",
+      "security_relevant": false
+    },
+    {
+      "label": "C53",
+      "arm": "orchestrated",
+      "source_id": "code-bare-except-1",
+      "title": "code-bare-except-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C54",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "22. `agents/news-sentiment.md` — Polymarket example is stale",
+      "security_relevant": false
+    },
+    {
+      "label": "C55",
+      "arm": "toolkit",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C56",
+      "arm": "orchestrated",
+      "source_id": "database-missing-app-pool-8",
+      "title": "database-missing-app-pool-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C57",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "26. `agents/portfolio-manager.md` — Polymarket veto thresholds are arbitrary and undocumented",
+      "security_relevant": false
+    },
+    {
+      "label": "C58",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. `agents/portfolio-manager.md` — PnL formula ignores fees/funding and is wrong for shorts with leverage",
+      "security_relevant": false
+    },
+    {
+      "label": "C59",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "25. `agents/portfolio-manager.md` — \"max 3 open trades, max 50% of portfolio allocated\" but no definition of \"portfolio\"",
+      "security_relevant": false
+    },
+    {
+      "label": "C60",
+      "arm": "orchestrated",
+      "source_id": "code-missing-return-type-8",
+      "title": "code-missing-return-type-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C61",
+      "arm": "orchestrated",
+      "source_id": "database-risky-migration-3",
+      "title": "database-risky-migration-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C62",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. `close-learning.js` — `return` at top level of a workflow file",
+      "security_relevant": false
+    },
+    {
+      "label": "C63",
+      "arm": "orchestrated",
+      "source_id": "structure-repository-logic-4",
+      "title": "structure-repository-logic-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C64",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "28. `agents/risk-specialist.md` — \"Step 5.5\" inserted between Step 5 and Step 6",
+      "security_relevant": false
+    },
+    {
+      "label": "C65",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. `close-learning.js` — hardcoded symbol list is stale/fragile",
+      "security_relevant": false
+    },
+    {
+      "label": "C66",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-client-rate-limit-4",
+      "title": "cost-api-no-client-rate-limit-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C67",
+      "arm": "orchestrated",
+      "source_id": "structure-dto-logic-7",
+      "title": "structure-dto-logic-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C68",
+      "arm": "toolkit",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C69",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-retry-strategy-8",
+      "title": "cost-api-no-retry-strategy-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C70",
+      "arm": "orchestrated",
+      "source_id": "security-gha-workspace-not-cleaned-6",
+      "title": "security-gha-workspace-not-cleaned-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C71",
+      "arm": "naive",
+      "source_id": "naive-claim-45",
+      "title": "45. `agents/portfolio-manager.md` — `get_portfolio_state()` called twice (Step 0 and Step 6.1)",
+      "security_relevant": false
+    },
+    {
+      "label": "C72",
+      "arm": "orchestrated",
+      "source_id": "structure-framework-leak-3",
+      "title": "structure-framework-leak-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C73",
+      "arm": "orchestrated",
+      "source_id": "structure-low-cohesion-5",
+      "title": "structure-low-cohesion-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C74",
+      "arm": "toolkit",
+      "source_id": "security-gha-secret-leak-3",
+      "title": "security-gha-secret-leak-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C75",
+      "arm": "orchestrated",
+      "source_id": "code-missing-error-main-10",
+      "title": "code-missing-error-main-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C76",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-7",
+      "title": "github-log-pattern-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C77",
+      "arm": "orchestrated",
+      "source_id": "security-gha-fork-pr-4",
+      "title": "security-gha-fork-pr-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C78",
+      "arm": "orchestrated",
+      "source_id": "security-gha-pr-target-risk-1",
+      "title": "security-gha-pr-target-risk-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C79",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "27. `agents/portfolio-manager.md` — `record_trade` field list vs. `learning` JSON",
+      "security_relevant": false
+    },
+    {
+      "label": "C80",
+      "arm": "orchestrated",
+      "source_id": "database-max-lifetime-missing-5",
+      "title": "database-max-lifetime-missing-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C81",
+      "arm": "naive",
+      "source_id": "naive-claim-30",
+      "title": "30. `agents/risk-specialist.md` — \"AMPLIFY downside risk score by 10-15\" applied to a 0-100 scale",
+      "security_relevant": false
+    },
+    {
+      "label": "C82",
+      "arm": "orchestrated",
+      "source_id": "security-gha-no-concurrency-prod-10",
+      "title": "security-gha-no-concurrency-prod-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C83",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. `close-learning.js` — `pipeline` is used but never imported/defined",
+      "security_relevant": false
+    },
+    {
+      "label": "C84",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. `agents/portfolio-manager.md` — position sizing table is internally inconsistent",
+      "security_relevant": false
+    },
+    {
+      "label": "C85",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-1",
+      "title": "structure-high-coupling-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C86",
+      "arm": "naive",
+      "source_id": "naive-claim-41",
+      "title": "41. `agents/learning-agent.md` — `memory: project` but no memory schema",
+      "security_relevant": false
+    },
+    {
+      "label": "C87",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-8",
+      "title": "github-log-pattern-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C88",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "14. `.claude-plugin/plugin.json` — `mcpServers` points to a file, not an object",
+      "security_relevant": false
+    },
+    {
+      "label": "C89",
+      "arm": "orchestrated",
+      "source_id": "performance-no-adaptive-timeout-6",
+      "title": "performance-no-adaptive-timeout-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C90",
+      "arm": "orchestrated",
+      "source_id": "performance-no-compression-13",
+      "title": "performance-no-compression-13",
+      "security_relevant": false
+    },
+    {
+      "label": "C91",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-9",
+      "title": "github-log-pattern-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C92",
+      "arm": "naive",
+      "source_id": "naive-claim-47",
+      "title": "47. `agents/portfolio-manager.md` — `close_trade` doesn't validate exit price against SL/TP",
+      "security_relevant": false
+    },
+    {
+      "label": "C93",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. `agents/risk-specialist.md` — Step 0 track-record call has no `strategy_type`",
+      "security_relevant": false
+    },
+    {
+      "label": "C94",
+      "arm": "naive",
+      "source_id": "naive-claim-35",
+      "title": "35. `close-learning.js` — `get_prediction_track_record()` called with no args in synthesis",
+      "security_relevant": false
+    },
+    {
+      "label": "C95",
+      "arm": "naive",
+      "source_id": "naive-claim-56",
+      "title": "56. `close-learning.js` — `phase('Descubrir')` etc. use Spanish phase names",
+      "security_relevant": false
+    },
+    {
+      "label": "C96",
+      "arm": "naive",
+      "source_id": "naive-claim-37",
+      "title": "37. `close-learning.js` — `NO uses la herramienta Edit` repeated three times",
+      "security_relevant": false
+    },
+    {
+      "label": "C97",
+      "arm": "orchestrated",
+      "source_id": "structure-adapter-violation-10",
+      "title": "structure-adapter-violation-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C98",
+      "arm": "toolkit",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C99",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "29. `agents/risk-specialist.md` — DefiLlama chain names are hardcoded",
+      "security_relevant": false
+    },
+    {
+      "label": "C100",
+      "arm": "orchestrated",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C101",
+      "arm": "orchestrated",
+      "source_id": "cost-no-license-tracking-5",
+      "title": "cost-no-license-tracking-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C102",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `agents/learning-agent.md` — Mission 4 references a tool that isn't in the declared MCP set",
+      "security_relevant": false
+    },
+    {
+      "label": "C103",
+      "arm": "naive",
+      "source_id": "naive-claim-43",
+      "title": "43. `agents/portfolio-manager.md` — \"There are no formulas. You are the consensus engine\"",
+      "security_relevant": false
+    },
+    {
+      "label": "C104",
+      "arm": "orchestrated",
+      "source_id": "cost-no-performance-budget-10",
+      "title": "cost-no-performance-budget-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C105",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `close-learning.js` — schema/return mismatch",
+      "security_relevant": false
+    },
+    {
+      "label": "C106",
+      "arm": "orchestrated",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C107",
+      "arm": "naive",
+      "source_id": "naive-claim-54",
+      "title": "54. `.gitignore` — `GUIA-DEL-PROYECTO.md` is ignored",
+      "security_relevant": false
+    },
+    {
+      "label": "C108",
+      "arm": "orchestrated",
+      "source_id": "performance-no-keep-alive-9",
+      "title": "performance-no-keep-alive-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C109",
+      "arm": "orchestrated",
+      "source_id": "structure-layer-violation-1",
+      "title": "structure-layer-violation-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C110",
+      "arm": "orchestrated",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C111",
+      "arm": "naive",
+      "source_id": "naive-claim-38",
+      "title": "38. `close-learning.js` — `pipeline` vs `agent` semantics",
+      "security_relevant": false
+    },
+    {
+      "label": "C112",
+      "arm": "orchestrated",
+      "source_id": "code-missing-validation-4",
+      "title": "code-missing-validation-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C113",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. `agents/learning-agent.md` — tool/permission contradiction",
+      "security_relevant": true
+    },
+    {
+      "label": "C114",
+      "arm": "naive",
+      "source_id": "naive-claim-58",
+      "title": "58. `agents/news-sentiment.md` — `model: sonnet` but `maxTurns: 20`",
+      "security_relevant": false
+    },
+    {
+      "label": "C115",
+      "arm": "orchestrated",
+      "source_id": "code-copy-paste-variant-6",
+      "title": "code-copy-paste-variant-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C116",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-2",
+      "title": "github-issue-health-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C117",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-3",
+      "title": "github-log-pattern-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C118",
+      "arm": "toolkit",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C119",
+      "arm": "toolkit",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C120",
+      "arm": "orchestrated",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C121",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. `.claude/launch.json` — `runtimeExecutable: \"npm\"` with `--prefix`",
+      "security_relevant": false
+    },
+    {
+      "label": "C122",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "21. `agents/news-sentiment.md` — sentiment scale is inconsistent",
+      "security_relevant": false
+    },
+    {
+      "label": "C123",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-fk-1",
+      "title": "database-missing-index-fk-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C124",
+      "arm": "naive",
+      "source_id": "naive-claim-32",
+      "title": "32. `close-learning.js` uses `get_crypto_prices` (crypto-data) for prices",
+      "security_relevant": false
+    },
+    {
+      "label": "C125",
+      "arm": "orchestrated",
+      "source_id": "code-missing-docstring-10",
+      "title": "code-missing-docstring-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C126",
+      "arm": "naive",
+      "source_id": "naive-claim-59",
+      "title": "59. `agents/learning-agent.md` — `model: opus` with `maxTurns: 15`",
+      "security_relevant": false
+    },
+    {
+      "label": "C127",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-2",
+      "title": "github-log-pattern-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C128",
+      "arm": "orchestrated",
+      "source_id": "performance-no-request-collapsing-4",
+      "title": "performance-no-request-collapsing-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C129",
+      "arm": "naive",
+      "source_id": "naive-claim-50",
+      "title": "50. `agents/risk-specialist.md` — file truncated",
+      "security_relevant": false
+    },
+    {
+      "label": "C130",
+      "arm": "naive",
+      "source_id": "naive-claim-33",
+      "title": "33. `close-learning.js` — `fetch_ohlcv_data` from `crypto-exchange` but the agent's MCP list doesn't include it",
+      "security_relevant": false
+    },
+    {
+      "label": "C131",
+      "arm": "naive",
+      "source_id": "naive-claim-49",
+      "title": "49. `agents/portfolio-manager.md` — \"Two Books\" table truncated in the provided file",
+      "security_relevant": false
+    },
+    {
+      "label": "C132",
+      "arm": "toolkit",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C133",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `close-learning.js` — `find_expired_predictions` argument is a stringified JSON",
+      "security_relevant": false
+    },
+    {
+      "label": "C134",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "18. `.python-version` says `3.12` but `pyproject.toml` is not shown",
+      "security_relevant": false
+    },
+    {
+      "label": "C135",
+      "arm": "naive",
+      "source_id": "naive-claim-52",
+      "title": "52. `.claude-plugin/plugin.json` — `author.name` is \"Crypto Trading Desk Contributors\" but `repository` is a personal GitHub URL",
+      "security_relevant": false
+    },
+    {
+      "label": "C136",
+      "arm": "orchestrated",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C137",
+      "arm": "naive",
+      "source_id": "naive-claim-39",
+      "title": "39. `close-learning.js` — `verdicts.filter(Boolean)` silently drops failures",
+      "security_relevant": false
+    },
+    {
+      "label": "C138",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-where-4",
+      "title": "database-missing-index-where-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C139",
+      "arm": "naive",
+      "source_id": "naive-claim-53",
+      "title": "53. `.claude/launch.json` — `version: \"0.0.1\"`",
+      "security_relevant": false
+    },
+    {
+      "label": "C140",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-5",
+      "title": "github-log-pattern-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C141",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-response-cache-5",
+      "title": "cost-api-no-response-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C142",
+      "arm": "toolkit",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C143",
+      "arm": "toolkit",
+      "source_id": "code-logs-secrets-10",
+      "title": "code-logs-secrets-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C144",
+      "arm": "naive",
+      "source_id": "naive-claim-34",
+      "title": "34. `close-learning.js` — `validate_prediction()` argument names don't match the agent doc",
+      "security_relevant": false
+    },
+    {
+      "label": "C145",
+      "arm": "naive",
+      "source_id": "naive-claim-55",
+      "title": "55. `close-learning.js` — Spanish prompts, English schemas",
+      "security_relevant": false
+    },
+    {
+      "label": "C146",
+      "arm": "toolkit",
+      "source_id": "flows-missing-dlq-2",
+      "title": "flows-missing-dlq-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C147",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-1",
+      "title": "github-commit-history-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C148",
+      "arm": "naive",
+      "source_id": "naive-claim-31",
+      "title": "31. No single source of truth for MCP tool names",
+      "security_relevant": false
+    },
+    {
+      "label": "C149",
+      "arm": "orchestrated",
+      "source_id": "database-connection-timeout-high-3",
+      "title": "database-connection-timeout-high-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C150",
+      "arm": "toolkit",
+      "source_id": "code-unhandled-promise-4",
+      "title": "code-unhandled-promise-4",
+      "security_relevant": false
+    }
+  ]
+}

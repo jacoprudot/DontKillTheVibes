@@ -1,0 +1,16 @@
+WARN: findings[2] (security-gha-secret-leak-3): confidence 0.35 below 0.6 — finding may be speculative
+WARN: findings[6] (security-gha-auto-deploy-prod-9): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[11] (security-unmaintained-dep-4): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[13] (security-gha-overpermissive-2): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[14] (performance-no-adaptive-timeout-6): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[17] (cost-slow-build-1): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[18] (cost-gha-no-dependency-cache-5): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[19] (cost-no-performance-budget-10): confidence 0.45 below 0.6 — finding may be speculative
+WARN: findings[20] (security-gha-job-no-timeout-7): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[21] (security-gha-no-concurrency-prod-10): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[22] (security-gha-workspace-not-cleaned-6): confidence 0.35 below 0.6 — finding may be speculative
+WARN: findings[23] (github-commit-history-1): confidence 0.3 below 0.6 — finding may be speculative
+WARN: findings[24] (github-issue-health-1): confidence 0.3 below 0.6 — finding may be speculative
+WARN: findings[26] (structure-dto-logic-7): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[27] (github-log-pattern-1): confidence 0.35 below 0.6 — finding may be speculative
+VALID: 28 findings, 15 warning(s)

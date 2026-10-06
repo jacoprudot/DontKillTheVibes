@@ -1,0 +1,215 @@
+{
+  "metadata": {
+    "repo": "zubair-trabzada/holo-gestures",
+    "assessed_at": "2026-02-14T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "F",
+    "total_findings": 14,
+    "critical_count": 1,
+    "by_severity": {
+      "medium": 7,
+      "high": 3,
+      "info": 1,
+      "critical": 1,
+      "low": 2
+    },
+    "effort_estimate": {
+      "M": 8,
+      "XS": 3,
+      "S": 3
+    }
+  },
+  "findings": [
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "README.md",
+        "line": 0
+      },
+      "description": "No CI/CD workflow files exist in the repository, so the README's stated verification workflow ('run ?probe=1 and make sure it still says 26/26') is entirely manual and unpinned. There is no automated pipeline pinning actions to SHAs, no automated test gate, and no supply-chain control over the build. The README instructs contributors to run `npx @gltf-transform/cli copy in.glb out.glb`, which pulls an unpinned npm package at run time.",
+      "remediation": "Add a GitHub Actions workflow that runs the ?probe=1 battery headlessly on every push, and pin any third-party actions to full commit SHAs. Replace the ad-hoc `npx @gltf-transform/cli` instruction with a pinned devDependency version.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "Change something, then run `?probe=1` and make sure it still says 26/26. That's the whole workflow.",
+        "metric": "0 workflow files in .github/workflows/"
+      }
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "README.md",
+        "line": 0
+      },
+      "description": "The project has no CI jobs at all, so no job timeout, concurrency control, or isolation exists for the only automated verification path (the in-page ?probe=1 battery). Long-running or hung verification is undetectable and unbounded.",
+      "remediation": "Introduce a CI job with an explicit `timeout-minutes` and `concurrency` group so the probe battery cannot hang indefinitely and parallel runs cannot collide.",
+      "confidence": 0.6,
+      "evidence": {
+        "snippet": "?probe=1 — the built-in test battery runs the real engine on synthetic frames (26/26)",
+        "metric": "0 CI jobs defined"
+      }
+    },
+    {
+      "id": "code-empty-catch-1",
+      "module": "code",
+      "severity": "critical",
+      "effort": "XS",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "server.py contains two silent exception swallowers: `except Exception: pass` in notes_dir() and `except OSError: pass` in load_notes(). A malformed holo.json, a permissions error, or a missing notes directory all produce an empty or fallback result with zero signal, making the failure mode indistinguishable from 'the user has no notes'.",
+      "remediation": "Replace both bare swallows with explicit handling: log the exception (or re-raise a domain-specific error) so the operator can see why the configured folder was rejected, and keep the sample-notes fallback only for the genuinely-absent-config case.",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "try:\n        cfg = json.load(open(os.path.join(ROOT, \"holo.json\")))\n        d = os.path.expanduser(cfg.get(\"folder\", \"\"))\n        if d and os.path.isdir(d):\n            return d\n    except Exception:\n        pass",
+        "metric": "2 empty/blanket except blocks"
+      }
+    },
+    {
+      "id": "code-generic-catch-2",
+      "module": "code",
+      "severity": "high",
+      "effort": "S",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "The holo.json loader catches the broadest possible exception type (`except Exception`) and does not rethrow or log. This hides JSON decode errors, permission errors, and unexpected type errors behind the same silent fallback, so a corrupted config is never surfaced to the user.",
+      "remediation": "Catch the specific exceptions expected (json.JSONDecodeError, OSError) and log them; let genuinely unexpected exceptions propagate so they are visible during development.",
+      "confidence": 0.8,
+      "evidence": {
+        "snippet": "except Exception:\n        pass",
+        "metric": "Blanket except without rethrow or log"
+      }
+    },
+    {
+      "id": "code-print-statement-5",
+      "module": "code",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "server.py uses the stdlib http.server ThreadingHTTPServer with no logging configuration. The default BaseHTTPRequestHandler log_message writes to stderr in an unstructured, unconfigurable format, and the module docstring gives no indication of a logging setup, so operational visibility into request handling, errors, and the notes-folder fallback is effectively absent.",
+      "remediation": "Configure the logging module at startup (level, format, destination) and override log_message to emit structured records, so request handling and the sample-notes fallback are observable.",
+      "confidence": 0.6,
+      "evidence": {
+        "snippet": "from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer",
+        "metric": "No logging configuration in server.py"
+      }
+    },
+    {
+      "id": "code-missing-docstring-10",
+      "module": "code",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "The public helper functions in server.py (notes_dir, _note, load_notes, load_tree) lack docstrings. Only the module-level docstring and load_tree carry any documentation, and load_tree's docstring is truncated mid-sentence ('One level deep: subfold...'), leaving the tree-loading contract undocumented.",
+      "remediation": "Add concise docstrings to notes_dir, _note, load_notes, and load_tree describing parameters, return shape, and the fallback behavior, and complete the truncated load_tree docstring.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "def load_tree(limit_files=14):\n    \"\"\"One level deep: subfold",
+        "metric": "4 public functions without complete docstrings"
+      }
+    },
+    {
+      "id": "code-long-function-7",
+      "module": "code",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "server.py mixes several concerns in a single module: HTTP routing and request handling, configuration loading with fallback, filesystem traversal, markdown parsing and truncation, and page caching. The _note function alone performs file reading, title extraction, heading stripping, and two separate truncation limits (420 and 4000 chars) with magic numbers inline.",
+      "remediation": "Split the module into focused units: a config loader, a notes repository (filesystem + parsing), and a thin HTTP handler. Extract the 420/4000 truncation limits into named constants.",
+      "confidence": 0.65,
+      "evidence": {
+        "snippet": "return {\"name\": n, \"title\": title, \"body\": \"\\n\".join(rest)[:420],\n            \"full\": \"\\n\".join(lines[1:])[:4000]}",
+        "metric": "Single module handling routing, config, IO, parsing, and caching"
+      }
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "module": "flows",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "There is no global error handler in server.py. Exceptions raised inside the request handler (for example from the unvalidated /api/state write, or from a notes directory that disappears between the isdir check and the listdir call) will surface as the default BaseHTTPRequestHandler traceback response rather than a structured error, and the client receives no consistent error contract.",
+      "remediation": "Override handle_one_request or wrap the routing logic in a try/except that logs the exception server-side and returns a consistent JSON error envelope with an appropriate status code.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "class BaseHTTPRequestHandler",
+        "metric": "No error-handling middleware or wrapper in the request path"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "code-empty-catch-1",
+        "code-generic-catch-2",
+        "security-cors-wildcard-2",
+        "security-error-detail-1"
+      ],
+      "60_days": [
+        "security-no-input-validation-14",
+        "code-missing-validation-4",
+        "flows-missing-error-handler-5",
+        "flows-missing-rate-limit-8"
+      ],
+      "90_days": [
+        "security-gha-action-unpinned-5",
+        "security-gha-job-no-timeout-7",
+        "code-long-function-7",
+        "code-ignores-return-value-6",
+        "code-print-statement-5",
+        "code-missing-docstring-10"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "code-empty-catch-1",
+        "to": "security-error-detail-1",
+        "type": "blocks"
+      },
+      {
+        "from": "code-generic-catch-2",
+        "to": "security-error-detail-1",
+        "type": "blocks"
+      },
+      {
+        "from": "security-no-input-validation-14",
+        "to": "flows-missing-error-handler-5",
+        "type": "blocks"
+      },
+      {
+        "from": "code-missing-validation-4",
+        "to": "flows-missing-rate-limit-8",
+        "type": "blocks"
+      },
+      {
+        "from": "security-gha-action-unpinned-5",
+        "to": "security-gha-job-no-timeout-7",
+        "type": "blocks"
+      }
+    ]
+  }
+}

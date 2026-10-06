@@ -1,0 +1,43 @@
+{
+  "mock": false,
+  "target": "vegeta",
+  "url": "https://github.com/tsenart/vegeta",
+  "commit": "cf5811269046c672a604b1eb352204d30f16ae4a",
+  "model": "deepseek-chat",
+  "base_url": "https://api.deepseek.com/v1",
+  "target_dir": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\vegeta",
+  "timestamp": "2026-10-05T16:04:20.024Z",
+  "digest": {
+    "file": "digest.json",
+    "tree_files": 74,
+    "included_files": 21,
+    "chars": 40034,
+    "skipped_content": 53,
+    "skipped_sensitive": 0
+  },
+  "arms": {
+    "toolkit": {
+      "ok": true,
+      "output": "toolkit/assessment.json"
+    },
+    "naive": {
+      "ok": true,
+      "output": "naive.md"
+    },
+    "orchestrated": {
+      "ok": false,
+      "requested": false,
+      "output": "orchestrated/assessment.json"
+    }
+  },
+  "arm_c": {
+    "requested": false,
+    "runner": "scripts/dktv-orchestrate.mjs",
+    "max_files": 25,
+    "max_chars": 200000,
+    "max_tokens": 16384,
+    "metrics": null
+  },
+  "note": "Arms A and B share one digest (identical input, different prompt/tooling). Arm C (B2) does its own per-module file selection, so its input differs by design.",
+  "api_key_recorded": false
+}

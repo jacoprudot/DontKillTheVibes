@@ -1,0 +1,190 @@
+{
+  "target": "mini-redis",
+  "mock": false,
+  "created_at": "2026-10-05T16:01:38.774Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. `src/bin/server.rs` binds to `127.0.0.1` only",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. `README.md` says \"There is no support for persistence yet\" but also lists `SET` with expiration. Expiration is in-memory only, which is consistent, but the README doesn't mention that `SET` with TTL is supported (only `SET` is listed). The supported-commands list is incomplete relative to the CLI.",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. `BufferedClient` swallows the `Set` response type",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `otel` feature is not exercised in a way that catches breakage",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. `src/bin/cli.rs` uses `tracing_subscriber::fmt::try_init()?` and then prints to stdout",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "20. `examples/chat.rs` aside, `examples/` has no `README` or index",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "toolkit",
+      "source_id": "code-generic-catch-2",
+      "title": "code-generic-catch-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "toolkit",
+      "source_id": "code-missing-validation-4",
+      "title": "code-missing-validation-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C9",
+      "arm": "toolkit",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. `README.md` links to `src/clients/client.rs` but the file tree shows `src/clients/client.rs` exists — however the README's \"Client library\" section links to `client.rs` while the actual public re-export is `mini_redis::clients::Client`. The link is fine, but the README never mentions `BlockingClient` or `BufferedClient`, which are two of the more interesting patterns in the crate.",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "toolkit",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. `BufferedClient` has a hard-coded channel capacity and no backpressure documentation",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. `duration_from_ms_str` accepts `u64` milliseconds but the CLI help says \"Expire the value after specified amount of time\"",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. `examples/chat.rs` is a stub that panics",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "toolkit",
+      "source_id": "code-ignores-return-value-6",
+      "title": "code-ignores-return-value-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `Cargo.toml` metadata is stale/inconsistent",
+      "security_relevant": true
+    },
+    {
+      "label": "C17",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "18. No `rust-version` (MSRV) in `Cargo.toml`",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "13. `.gitignore` ignores `/target` and `**/*.rs.bk` but not `Cargo.lock` — good, since this is a binary crate. However, `Cargo.lock` is committed (it's in the file tree), which is correct for a binary but should be noted; for a library-only crate it would be wrong. Since this ships binaries, committing it is right.",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. `BlockingClient` doc examples are `no_run` and rely on wall-clock timing",
+      "security_relevant": false
+    },
+    {
+      "label": "C20",
+      "arm": "toolkit",
+      "source_id": "code-unhandled-promise-4",
+      "title": "code-unhandled-promise-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "19. `tests/frame_validation.rs` exists but no corresponding validation logic is visible",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `BlockingClient` creates a fresh runtime per client and never shuts it down",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "14. `examples/hello_world.rs` and `examples/sub.rs` declare `pub async fn main()`",
+      "security_relevant": false
+    },
+    {
+      "label": "C24",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "17. `Cargo.toml` uses `tokio = { version = \"1\", features = [\"full\"] }` in `[dependencies]` and then re-declares `tokio` in `[dev-dependencies]` with `test-util`",
+      "security_relevant": false
+    },
+    {
+      "label": "C25",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. CI does not run `clippy` or `cargo test --all-targets`",
+      "security_relevant": false
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "16. `set_up_logging` return type differs between feature configurations",
+      "security_relevant": false
+    }
+  ]
+}

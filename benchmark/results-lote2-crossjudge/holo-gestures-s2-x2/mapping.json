@@ -1,0 +1,36 @@
+{
+  "target": "holo-gestures-s2-x2",
+  "mock": false,
+  "created_at": "2026-10-06T01:55:39.295Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "orchestrated",
+      "source_id": "security-directory-listing-8",
+      "title": "security-directory-listing-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "cost-license-attribution-missing-2",
+      "title": "cost-license-attribution-missing-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "security-no-security-maintenance-7",
+      "title": "security-no-security-maintenance-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "cost-dev-setup-missing-3",
+      "title": "cost-dev-setup-missing-3",
+      "security_relevant": false
+    }
+  ]
+}

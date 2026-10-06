@@ -1,0 +1,85 @@
+{
+  "target": "rich-c2",
+  "mock": false,
+  "created_at": "2026-10-05T19:56:44.598Z",
+  "judge_model": "qwen3.5:9b",
+  "judge_base_url": "http://localhost:11434/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\rich",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 1,
+    "toolkit": 1,
+    "orchestrated": 0,
+    "naive": 0,
+    "judged": 1,
+    "unverifiable": 0
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 1,
+      "judged": 1,
+      "real": 1,
+      "falseCount": 0,
+      "unverifiable": 0,
+      "judgeGrounded": 1,
+      "mechGrounded": 1,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 5,
+      "actionableN": 1,
+      "security": 1,
+      "securityFn": 0,
+      "claimsWithCitations": 1,
+      "citationsTotal": 1,
+      "weakCitations": 0,
+      "meanActionability": 5,
+      "precision": 1,
+      "judgeGroundedRate": 1
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "security-gha-fork-pr-4",
+      "title": "security-gha-fork-pr-4",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 5,
+        "reason": "Unpinned action tags are supply chain risks; pinning to SHA ensures immutability and security.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/newissue.yml",
+            "line": 22,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 30,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,1412 @@
+{
+  "metadata": {
+    "repo": "ai-job-agent",
+    "assessed_at": "2026-10-05T20:46:16.365Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 22,
+    "findings_raw": 76,
+    "findings_dropped": 19,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 4,
+    "total_findings": 57,
+    "by_severity": {
+      "critical": 4,
+      "high": 13,
+      "medium": 33,
+      "low": 7
+    },
+    "by_module": {
+      "database": 7,
+      "structure": 7,
+      "flows": 26,
+      "security": 6,
+      "cost": 7,
+      "github": 4
+    },
+    "effort_estimate": {
+      "XS": 5,
+      "S": 12,
+      "M": 39,
+      "L": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "security-secret-in-code-1",
+      "module": "security",
+      "severity": "critical",
+      "location": {
+        "file": "scripts/send-cold-email.js",
+        "line": 19
+      },
+      "description": "The script's own documentation hardcodes a real personal Gmail address (`k.akbarme@gmail.com`) as the example `from`/`reply_to` value, and the same address is used as the default sender in the payload examples. Committing a real personal email address into the repository exposes the maintainer's identity/contact to anyone who clones it and encourages users to copy a live address into their configs.",
+      "remediation": "Replace the hardcoded personal address in the docstring and examples with a neutral placeholder such as `you@example.com`, and require the sender address to come from configuration or an environment variable.",
+      "effort": "XS",
+      "confidence": 0.7
+    },
+    {
+      "id": "database-full-table-scan-3",
+      "module": "database",
+      "severity": "critical",
+      "location": {
+        "file": "scripts/tracker-status-update.py",
+        "line": 52
+      },
+      "description": "fetch_rows() pulls the whole sheet range 'A2:M400' into memory on every invocation and main() then indexes into it by position (idx = sheet_row - 2). This is a full-table scan used as a lookup structure, and it silently truncates at 400 rows so any sheet_row beyond that is reported as out-of-range and never updated.",
+      "remediation": "Fetch only the rows that need updating (batch the requested sheet_row values into a single ranges=...:batchGet call) instead of reading A2:M400 wholesale, and remove the hardcoded 400-row ceiling so the range is derived from the sheet's actual dimensions.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "flows-fire-and-forget-critical-1",
+      "module": "flows",
+      "severity": "critical",
+      "location": {
+        "file": "scripts/outlook-send.js",
+        "line": 120
+      },
+      "description": "After clicking Send the script waits a fixed 2000ms and then prints 'Email sent!' and closes the browser, without confirming the message actually left the Outbox. A send that fails server-side is reported as success (fire-and-forget), so the caller records a sent row that never went out.",
+      "remediation": "After clicking Send, verify the compose window closed / the message appears in Sent Items (or poll for an error banner) before reporting success, and exit non-zero if the send cannot be confirmed.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "module": "flows",
+      "severity": "critical",
+      "location": {
+        "file": "scripts/outlook-send.js",
+        "line": 120
+      },
+      "description": "The send flow clicks the Send button unconditionally with no idempotency guard or dedupe key. If the script is re-run (or the click is retried after a transient failure), the same email is sent again to the recipient, producing duplicate outbound messages.",
+      "remediation": "Before clicking Send, check for an existing sent marker (e.g. a message-id recorded in outreach-log.csv or a local lock file keyed by recipient+subject) and skip the send if the same message was already dispatched.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "database-iteration-overload-5",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "scripts/tracker-status-update.py",
+        "line": 110
+      },
+      "description": "update_local_tracker() performs a nested loop over every CSV row for every update (for row in rows: for update in updates:), i.e. O(rows x updates) comparisons with repeated clean()/lower() normalization on each comparison. With a few hundred applications and a batch of status updates this is quadratic work on every run.",
+      "remediation": "Build a lookup dict keyed by the normalized (company, role, location) tuple once, then resolve each update with a single O(1) dict lookup instead of scanning all rows per update.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "code-exact-duplication-massive-1",
+      "module": "structure",
+      "severity": "high",
+      "location": {
+        "file": "scripts/greenhouse-apply.js",
+        "line": 1
+      },
+      "description": "The five ATS filler scripts (ashby-apply.js, greenhouse-apply.js, jobvite-apply.js, lever-apply.js, linkedin-easy-apply.js) are near-identical copies of the same ~200-line skeleton: identical argv parsing, identical `sleep()` helper, identical `monitorSubmission()` polling loop with the same 180-iteration captcha/submitted regex checks, identical `main()` CDP/launch/context/page setup, identical `finally` teardown, and identical `main().catch()` error handler. Only the per-ATS field-filling functions differ.",
+      "remediation": "Extract the shared skeleton (argv parsing, sleep, browser bootstrap, submission monitor, teardown, error handler) into a single scripts/lib/ats-runner.js module and have each ATS script supply only its form-filling strategy, eliminating the duplicated control flow.",
+      "effort": "L",
+      "confidence": 0.9
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "scripts/tracker-status-update.py",
+        "line": 83
+      },
+      "description": "update_sheet() issues one urllib.request.urlopen call per status cell and one per notes cell, sequentially, with no connection reuse or pooling and no batching. A batch of N updates produces 2N separate HTTPS connections to the Sheets API, each paying full TLS handshake cost.",
+      "remediation": "Use the Sheets API values:batchUpdate endpoint to send all cell updates in a single request, and reuse a single HTTP connection (e.g. requests.Session or http.client.HTTPConnection) across calls instead of opening a new urlopen per cell.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "scripts/google-sheet-sync.py",
+        "line": 47
+      },
+      "description": "fetch_next_row() reads the entire range 'A2:M2000' in a single request and derives the next row from len(values), so the append position is computed from a full unbounded scan of the sheet rather than a bounded/offset-based lookup. As the tracker grows past the hardcoded 2000-row window the computed start_row silently becomes wrong and duplicate/overwritten rows result.",
+      "remediation": "Replace the fixed A2:M2000 full-range read with a bounded lookup (e.g. request only the key column with a large but explicit range, or use the Sheets API append endpoint's own position detection) and validate the returned row count against the requested range before computing start_row.",
+      "effort": "S",
+      "confidence": 0.7
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "module": "security",
+      "severity": "high",
+      "location": {
+        "file": "scripts/outlook-send.js",
+        "line": 33
+      },
+      "description": "The recipient address, subject and body file path are taken straight from `process.argv` and used without any validation or sanitization. A crafted `to` value containing newlines or additional header syntax is typed directly into the Outlook compose field, and an arbitrary `bodyFile` path is read from disk, so the script can be driven to send mail to unintended recipients or exfiltrate local file contents.",
+      "remediation": "Validate the recipient against an email-address regex, reject values containing CR/LF or header separators, and restrict bodyFile/attachment paths to an allow-listed directory before use.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-missing-dlq-2",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "scripts/tracker-status-update.py",
+        "line": 0
+      },
+      "description": "`tracker-status-update.py` processes a batch of status updates and silently drops any update whose `sheet_row` is out of range (collected into `skipped_out_of_range`) or that lacks a `sheet_row` (skipped with `continue`). There is no dead-letter record of the failed updates for later retry or inspection.",
+      "remediation": "Write skipped/failed updates to a dead-letter file (e.g. `data/status-update-dlq.json`) with the reason, and exit non-zero when any update was dropped so the caller can retry them.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 9
+      },
+      "description": "The workflow declares no top-level `permissions:` block, so every job receives the repository default GITHUB_TOKEN permissions (historically read/write on contents, issues, packages). The smoke/lint/skill-files jobs only need to read the checkout.",
+      "remediation": "Add a top-level `permissions: contents: read` block (and grant any extra scope per-job only where required) so the GITHUB_TOKEN is least-privilege for all three jobs.",
+      "effort": "XS",
+      "confidence": 0.85
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "package.json",
+        "line": 8
+      },
+      "description": "The only test entry point is `smoke` (bin/smoke-test.sh), which explicitly skips every network/auth-gated path (ATS form fillers, Outlook triage, Google Sheets sync, real msmtp send). There is no unit or integration test suite, so regressions in the bulk of the automation surface are only caught manually, driving rework cost.",
+      "remediation": "Add a real automated test suite (e.g. node:test or vitest) covering the ATS form-fill helpers, CSV parsing, and payload validation, and wire it into the CI workflow.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "flows-auth-order-1",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "scripts/linkedin-easy-apply.js",
+        "line": 0
+      },
+      "description": "The LinkedIn flow builds cookies from the local Chrome cookie store via `buildCookies()` and injects them, but the script does not verify the session is authenticated before driving the Easy Apply UI. If the cookies are stale/expired, the automation proceeds against a logged-out page and fails deep in the flow rather than at an auth check.",
+      "remediation": "After injecting cookies, navigate to a lightweight authenticated endpoint (e.g. /feed) and assert the user is logged in before starting the apply flow, aborting with a clear 'session expired' error otherwise.",
+      "effort": "S",
+      "confidence": 0.55
+    },
+    {
+      "id": "flows-message-breaking-schema-2",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "scripts/tracker-status-update.py",
+        "line": 0
+      },
+      "description": "`update_local_tracker` rewrites the CSV using `fieldnames` derived from the existing header and `extrasaction='ignore'`, so any new column added by another writer is silently dropped on the next status update. This is a backward-incompatible schema change applied without versioning.",
+      "remediation": "Preserve unknown columns by merging the existing header with any new fields before writing, and version the tracker schema so writers agree on the column set instead of silently discarding columns.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "flows-message-not-idempotent-8",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "scripts/tracker-status-update.py",
+        "line": 0
+      },
+      "description": "`update_local_tracker` matches rows by company/role/location and overwrites `status` and appends notes on every run. Re-running the same update JSON re-applies the change and can append duplicate notes, so the update is not idempotent.",
+      "remediation": "Make the update idempotent by keying on a stable row id (the `key` column) and skipping rows whose status already equals the target, and dedupe notes before appending.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 14
+      },
+      "description": "GitHub Actions are referenced by mutable version tags (`actions/checkout@v4`, `actions/setup-node@v4`) instead of immutable commit SHAs. A compromised or retagged upstream action would execute arbitrary code in the workflow with access to the runner and any secrets.",
+      "remediation": "Pin every third-party action to a full 40-character commit SHA (e.g. `actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11`) and use Dependabot or a similar tool to keep the pins updated.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 10
+      },
+      "description": "None of the workflow jobs (`smoke`, `lint`, `skill-files`) declare `timeout-minutes`. A hung step (e.g. a stalled `npm install` or a Playwright launch that never returns) can occupy a runner for the default 360 minutes, burning CI minutes and delaying feedback.",
+      "remediation": "Add `timeout-minutes: 10` (or an appropriate bound) to each job in .github/workflows/test.yml so runaway steps are killed promptly.",
+      "effort": "M",
+      "confidence": 0.85
+    },
+    {
+      "id": "database-connection-timeout-high-3",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/tracker-status-update.py",
+        "line": 84
+      },
+      "description": "Every urllib.request.urlopen call in update_sheet() (and fetch_rows()) is made without a timeout argument, so a hung or slow Sheets API response blocks the script indefinitely with no upper bound on connection or read time.",
+      "remediation": "Pass an explicit timeout to every urlopen call (e.g. urllib.request.urlopen(req, timeout=30)) and handle socket.timeout so a stalled API call fails fast instead of hanging the batch update.",
+      "effort": "XS",
+      "confidence": 0.85
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "setup.sh",
+        "line": 1
+      },
+      "description": "setup.sh installs dependencies and copies config templates but never verifies the toolchain end-to-end or runs the smoke test, and there is no documented one-command way to confirm a working dev environment. New contributors must discover bin/doctor.sh and bin/smoke-test.sh on their own.",
+      "remediation": "Have setup.sh finish by invoking `bash bin/doctor.sh` (or the smoke test) and print the result, so a broken environment is surfaced during setup rather than at first use.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "code-exact-duplication-significant-2",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/mirror-tracker.mjs",
+        "line": 30
+      },
+      "description": "The RFC 4180-lite CSV parser (`parseCSV`) is duplicated verbatim between scripts/job-dashboard.mjs and scripts/mirror-tracker.mjs, including the identical BOM-stripping logic and quoted-field state machine. The two copies have already drifted (one returns an array of objects, the other returns {header, rows}).",
+      "remediation": "Move the CSV parser into a shared module (e.g. scripts/lib/csv.mjs) exporting a single parse function, and have both job-dashboard.mjs and mirror-tracker.mjs import it so the parsing rules stay in sync.",
+      "effort": "M",
+      "confidence": 0.95
+    },
+    {
+      "id": "flows-consumer-group-lag-3",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "scripts/job-dashboard.mjs",
+        "line": 0
+      },
+      "description": "The dashboard's follow-up urgency is computed from `last_follow_up_at`/`sent_at` in outreach-log.csv, but there is no tracking of how far behind the follow-up cadence has fallen (no lag metric). Overdue follow-ups accumulate without a measurable backlog signal.",
+      "remediation": "Compute and display a follow-up backlog/lag metric (count and age of overdue follow-ups) in the dashboard so the cadence falling behind is visible rather than only per-row urgency.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-gha-workspace-not-cleaned-6",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 44
+      },
+      "description": "The `lint` job installs shellcheck via `sudo apt-get install` and the `smoke` job runs `npm install` on the shared GitHub-hosted runner without any cleanup step. On self-hosted or reused runners this leaves installed packages and node_modules behind, which can leak state between jobs or into subsequent workflow runs.",
+      "remediation": "Add a cleanup step (or use ephemeral/containerized runners) that removes installed tooling and node_modules after the job, or run these jobs inside a container so the workspace is discarded.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/job-dashboard.mjs",
+        "line": 1
+      },
+      "description": "job-dashboard.mjs is a single module that simultaneously owns ANSI/terminal rendering, CSV parsing, repo-root path resolution, date/urgency analysis, sparkline math, table layout, and the interactive TUI event loop — unrelated responsibilities bundled into one file with no internal seams.",
+      "remediation": "Split the module into focused units: a csv parser, a repo-root resolver, an analysis layer (status counts, urgency, rows-per-day), and a rendering/TUI layer, so each concern can evolve and be tested independently.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "database-missing-index-where-4",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/tracker-status-update.py",
+        "line": 112
+      },
+      "description": "Row matching is done by comparing normalized company/role/location strings with no key column and no index: the CSV template (templates/tracker.template.csv) has a 'key' column, but this updater ignores it and re-derives identity by scanning and lowercasing text fields, so lookups are unindexed and ambiguous when two applications share company+role+location.",
+      "remediation": "Use the existing 'key' column from the tracker CSV as the primary lookup key (build a dict from key -> row once) instead of matching on lowercased company/role/location text.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-high-coupling-2",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/linkedin-easy-apply.js",
+        "line": 60
+      },
+      "description": "`buildCookies()` shells out to `python3 -c` with an inline Python program that imports browser_cookie3, coupling the Node script to a specific Python interpreter, an optional pip package, and a hardcoded Chrome cookie file path. The Node layer cannot function without the Python runtime being present and correctly configured.",
+      "remediation": "Isolate the cookie extraction behind a small documented adapter (e.g. a scripts/cookies.py invoked with a stable JSON contract) or read the cookie store directly, so the Node script depends on a defined interface rather than an embedded Python snippet.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/outlook-send.js",
+        "line": 31
+      },
+      "description": "The CDP connection to the browser is established with `chromium.connectOverCDP(...)` without any timeout, and the subsequent `page.locator(...).click()` / `.fill()` calls on the Outlook compose UI have no explicit timeouts either. If the debug endpoint is unreachable or the Outlook UI never renders the compose form, the script hangs indefinitely instead of failing fast.",
+      "remediation": "Pass an explicit timeout to connectOverCDP (e.g. `chromium.connectOverCDP(url, { timeout: 15000 })`) and set `page.setDefaultTimeout(15000)` after obtaining the page so every locator action fails fast rather than hanging.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 11
+      },
+      "description": "None of the three jobs (smoke, lint, skill-files) declare a `timeout-minutes` value. A hung `npm run smoke`, a stalled `apt-get update`, or a wedged Playwright launch will burn the default 360-minute GitHub Actions limit per job, multiplying billed runner minutes.",
+      "remediation": "Add `timeout-minutes: 10` (or a suitable bound) to each job in .github/workflows/test.yml so a stuck step is killed instead of consuming the full default timeout.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "database-missing-index-hot-path-2",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/mirror-tracker.mjs",
+        "line": 0
+      },
+      "description": "mirror() re-reads and re-parses both application-tracker.csv and outreach-log.csv from disk on every invocation and in watch mode on every debounced change, with no cached parse or incremental update, so the full CSV is re-scanned each time even when only one row changed.",
+      "remediation": "Cache the parsed CSV in memory and re-parse only the file whose mtime changed, or apply an incremental append/diff instead of re-reading and re-parsing the entire tracker on every watch tick.",
+      "effort": "S",
+      "confidence": 0.55
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/lever-apply.js",
+        "line": 63
+      },
+      "description": "`dismissCookieBanner` and `ensureLeverApplyForm` wrap locator interactions in `try { ... } catch {}` blocks that swallow every error silently. A genuine failure (selector changed, page crashed) is indistinguishable from the expected 'banner not present' case, so the form-fill flow proceeds with no diagnostic.",
+      "remediation": "Catch only the expected timeout/not-found errors and log or rethrow unexpected ones (e.g. `catch (err) { if (!/Timeout|not found/i.test(err.message)) throw err; }`) so real failures surface instead of being silently ignored.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 22
+      },
+      "description": "The smoke job runs `npm install --no-audit --no-fund` on every push and pull request without any dependency caching (no actions/cache or setup-node `cache: npm`). Every CI run re-downloads the full npm dependency tree, wasting runner minutes and bandwidth on each of the three jobs.",
+      "remediation": "Add `cache: 'npm'` to the actions/setup-node@v4 step (or an actions/cache step keyed on package-lock.json) so node_modules is restored between runs instead of re-downloaded.",
+      "effort": "M",
+      "confidence": 0.85
+    },
+    {
+      "id": "code-long-parameter-list-8",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/outlook-send.js",
+        "line": 28
+      },
+      "description": "The script's entry contract is a positional 4-argument CLI (`<to> <subject> <bodyFile> [attachmentPath]`) parsed directly from process.argv, and the same positional-argument pattern is repeated across all ATS scripts (`<jobUrl> <configPath>`). Positional argument lists of this shape are hard to extend and easy to mis-order.",
+      "remediation": "Accept a single JSON payload (as send-cold-email.js and generate-tailored-cv.mjs already do) or use named flags so callers pass an explicit object rather than an ordered positional list.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-config-logic-8",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/google-sheet-sync.py",
+        "line": 33
+      },
+      "description": "Configuration values (SPREADSHEET_ID, SHEET_NAME) are read from environment variables at module import time and default to placeholder sentinels ('YOUR_SHEET_ID'), while the same constants are re-declared independently in scripts/tracker-status-update.py — configuration is scattered across modules rather than centralized.",
+      "remediation": "Centralize sheet configuration (spreadsheet id, sheet name, range) in one shared config module or a single config file loaded by both scripts, and fail fast with a clear error when the placeholder is still set.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-service-sql-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/google-sheet-sync.py",
+        "line": 97
+      },
+      "description": "`rows_from_csv()` mixes data-access concerns (reading the CSV, calling `fetch_next_row()` which performs an authenticated Sheets API request) with presentation/business logic (cleaning fields, defaulting `source`/`applied_by`, and synthesizing the `=TODAY()-A{sheet_row}` formula and `make_key()` slug). The row-shaping logic is entangled with the network fetch.",
+      "remediation": "Split the function: a pure `format_row(row, sheet_row)` that maps a CSV dict to the sheet row, and a separate orchestration step that fetches the start row and appends, so the formatting logic is testable without network access.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/outlook-triage.js",
+        "line": 198
+      },
+      "description": "The top-level catch prints the full error stack to stderr (`console.error(err && err.stack ? err.stack : String(err))`). When run from the /job-triage skill the stack trace (including absolute local paths and internal call frames) is surfaced to the user/log output.",
+      "remediation": "Print a concise error message to stderr and only include the stack when a DEBUG/VERBOSE env var is set, so routine failures do not leak internal paths and frames.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/linkedin-easy-apply.js",
+        "line": 0
+      },
+      "description": "The LinkedIn Easy Apply flow drives the LinkedIn web UI with no client-side rate limiting or pacing between applications. Repeated rapid submissions from the same account risk triggering LinkedIn's anti-automation throttling or account restrictions.",
+      "remediation": "Add a configurable minimum delay between applications (e.g. 30-60s) and a per-run application cap, and back off on HTTP 429 / captcha responses before retrying.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "flows-retry-no-backoff-4",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/ashby-apply.js",
+        "line": 0
+      },
+      "description": "`monitorSubmission` polls in a fixed 1000ms `sleep` loop for up to 180 iterations with no exponential backoff or jitter. On a slow or rate-limited endpoint this produces a steady stream of requests rather than backing off.",
+      "remediation": "Replace the fixed 1s poll with exponential backoff plus jitter (e.g. 1s, 2s, 4s… capped) so repeated polling does not hammer the endpoint.",
+      "effort": "XS",
+      "confidence": 0.55
+    },
+    {
+      "id": "flows-dlq-not-monitored-5",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/tracker-status-update.py",
+        "line": 0
+      },
+      "description": "Skipped updates (`skipped_out_of_range`) are only printed in the JSON result and never surfaced as an alert or metric. Nothing monitors for dropped status updates, so silent data loss in the tracker goes unnoticed.",
+      "remediation": "Emit a non-zero exit code and a structured warning when any update is skipped, and have the calling skill surface skipped rows to the user so they can be corrected and retried.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-message-ordering-needed-4",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/google-sheet-sync.py",
+        "line": 0
+      },
+      "description": "`rows_from_csv` computes `start_row` from `fetch_next_row()` and then appends rows in CSV order. If two sync runs overlap, both can compute the same next row and append concurrently, interleaving rows out of order in the sheet.",
+      "remediation": "Serialize sheet appends (e.g. a lock file or a single-writer queue) and re-read the next row immediately before the append so concurrent runs cannot interleave or overwrite each other's rows.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-message-schema-no-version-1",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/send-cold-email.js",
+        "line": 0
+      },
+      "description": "The JSON payload accepted by `send-cold-email.js` (from/to/subject/body/in_reply_to/references/account) has no schema version field. As the payload shape evolves, callers and the outreach-log rows cannot tell which schema a given message was produced under.",
+      "remediation": "Add a `schema_version` field to the payload and to the emitted JSON/outreach-log row, and validate it on read so future shape changes can be handled without breaking existing records.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-missing-circuit-breaker-7",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/greenhouse-apply.js",
+        "line": 0
+      },
+      "description": "The Greenhouse flow retries submission and captcha handling in a 180-iteration loop with no circuit breaker. If the ATS endpoint is down or consistently rejecting, the script keeps hammering it for the full loop duration instead of failing fast.",
+      "remediation": "Add a circuit breaker: after N consecutive failed submission attempts or repeated non-2xx responses, stop retrying, log the failure, and exit non-zero so the caller can back off.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-missing-visibility-timeout-9",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/outlook-triage.js",
+        "line": 0
+      },
+      "description": "The triage flow reads messages from Outlook Web and, unless `--keep-unread` is passed, leaves them marked as read. There is no visibility/lease timeout or explicit acknowledgement step, so a message that is read but whose extraction fails is effectively consumed and will not be re-processed on the next run.",
+      "remediation": "Only mark a message read after its extraction has been persisted successfully, and record a processed message id so failed extractions remain unread and are retried on the next triage run.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-retry-no-max-5",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/greenhouse-apply.js",
+        "line": 0
+      },
+      "description": "The captcha-token retry path re-clicks submit whenever a token is present, guarded only by a single `retriedWithToken` boolean, while the surrounding loop runs 180 times. There is no explicit maximum retry count tied to submission attempts, so retries are bounded only by the loop length rather than a deliberate cap.",
+      "remediation": "Define an explicit maximum number of submission retries (e.g. 2) and stop retrying once it is reached, logging that the submission could not be confirmed.",
+      "effort": "XS",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-validation-placement-2",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/send-cold-email.js",
+        "line": 0
+      },
+      "description": "Payload validation happens in `readPayload` only for presence of from/to/subject/body; the recipient addresses themselves are never validated (no email-format check) before the message is handed to msmtp. Invalid addresses fail deep in the SMTP layer rather than at the boundary.",
+      "remediation": "Validate recipient (and from/reply_to) addresses against a basic email-format check in `readPayload` and fail with exit code 2 before building the message, so bad input is rejected at the boundary.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-gha-high-usage-1",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 4
+      },
+      "description": "The workflow triggers on every push to main and every pull request to main across three separate ubuntu-latest jobs, with no path filtering or concurrency group. Docs-only or skill-markdown-only changes still spin up the full smoke + lint + skill-files matrix.",
+      "remediation": "Add a `concurrency` group with `cancel-in-progress: true` and `paths-ignore` for docs/markdown-only changes so redundant runs are cancelled and trivial commits do not consume runner minutes.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/google-sheet-sync.py",
+        "line": 33
+      },
+      "description": "Both Google Sheets scripts ship with placeholder configuration (`SPREADSHEET_ID = os.environ.get(\"SPREADSHEET_ID\", \"YOUR_SHEET_ID\")`) and no documented procedure for creating the service account, granting sheet access, or obtaining the ID. Users must reverse-engineer the setup, which is a recurring support/onboarding cost.",
+      "remediation": "Document the Google Sheets setup end-to-end (gcloud auth, sharing the sheet with the ADC principal, setting SPREADSHEET_ID/SHEET_NAME) in the README and fail fast with a clear error when the placeholder is still in place.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-weak-rng-10",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/send-cold-email.js",
+        "line": 123
+      },
+      "description": "Message-IDs are generated with `crypto.randomBytes(12)`, which is cryptographically strong, but the surrounding code treats the generated identifier as a security-relevant token for threading and logging. No weakness is present in the RNG itself; this finding is recorded only to note that the identifier is not validated for uniqueness across concurrent sends.",
+      "remediation": "No change required to the RNG; if message-id uniqueness matters for threading, include a per-process counter or timestamp component in addition to the random bytes.",
+      "effort": "M",
+      "confidence": 0.3
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "package.json",
+        "line": 29
+      },
+      "description": "The project declares `\"license\": \"MIT\"` and depends on playwright-core, but there is no automated license inventory or attribution check anywhere in the repo or CI. As dependencies are added, incompatible or attribution-required licenses can slip in unnoticed.",
+      "remediation": "Add a license-checking step (e.g. license-checker or a CI job that generates a third-party notices file) so dependency licenses are tracked and attribution obligations are met.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-slow-tests-2",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "bin/smoke-test.sh",
+        "line": 1
+      },
+      "description": "The smoke test is the sole automated gate and it is heavyweight: it runs install.sh in a sandbox, re-installs, exercises the dashboard and mirror scripts, and loops over all 14 skill files twice. Combined with the uncached npm install in CI, the feedback loop is slow for a repo of this size.",
+      "remediation": "Split the smoke test into fast (pure-function/CSV) and slow (install/browser) tiers so the common case runs in seconds, and cache dependencies in CI.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "github-issue-health-1",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "CONTRIBUTING.md",
+        "line": 20
+      },
+      "description": "CONTRIBUTING.md directs contributors to open issues and PRs but the repository ships no issue templates, PR template, or triage labels referenced anywhere in the provided files, so incoming reports (which the doc asks to include ATS platform, error output, and redacted CSV rows) have no structured intake path.",
+      "remediation": "Add .github/ISSUE_TEMPLATE/bug_report.md and .github/pull_request_template.md capturing the fields CONTRIBUTING.md already asks for (ATS platform, error output, redacted tracker rows) and reference them from the contributing guide.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "github-commit-history-1",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "CHANGELOG.md",
+        "line": 7
+      },
+      "description": "The changelog dates are internally inconsistent with the project's own timeline: v1.2.0 is dated 2026-04-26 and v1.1.0 2026-04-25, i.e. four days after v1.0.0 (2026-04-22) yet the README claims 228+ applications were already submitted and refined across the whole search. The release cadence (three releases in four days, each a large feature set) does not match the described history.",
+      "remediation": "Reconcile the CHANGELOG dates with the actual commit history (use `git log --format=%ad --date=short` per tag) and correct any release date that does not match the tagged commit, so the changelog reflects real history.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-inconsistent-response-4",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "scripts/outlook-triage.js",
+        "line": 0
+      },
+      "description": "The triage commands return heterogeneous shapes: `search` returns an array of result objects, `extract` returns an object with `selected/sender/body`, `mark-read` returns `{index, nowRead}`, and `clear-search` returns undefined. Consumers must special-case each command, making the CLI output inconsistent.",
+      "remediation": "Wrap every command's result in a uniform envelope (e.g. `{ok:true, command, data}`) so callers can parse the output the same way regardless of which subcommand ran.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "scripts/send-cold-email.js",
+        "line": 0
+      },
+      "description": "The cold-email send flow emits a Message-ID but no correlation/request id that ties the send to the outreach-log row or the invoking skill run. When multiple sends happen in one session there is no single id to trace a message through logs, the CSV, and follow-ups.",
+      "remediation": "Generate a run/request id (e.g. a UUID per invocation) and include it in the JSON output and the outreach-log row alongside messageId, so each send can be correlated end-to-end.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-missing-cors-9",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "scripts/lever-apply.js",
+        "line": 0
+      },
+      "description": "`setLeverLocation` issues an in-page `fetch('/searchLocations?...')` from the page context with `credentials: 'same-origin'`. This relies on the target site's CORS/same-origin policy and will silently fail (returning `{ok:false}`) if the endpoint rejects the request, with no fallback path.",
+      "remediation": "Handle the CORS/same-origin failure explicitly: on a failed fetch, fall back to typing the location and selecting from the rendered dropdown, and log the failure reason so the user knows the location was not resolved.",
+      "effort": "S",
+      "confidence": 0.45
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "scripts/generate-tailored-cv.mjs",
+        "line": 0
+      },
+      "description": "`generate-tailored-cv.mjs` renders user-supplied markdown into an HTML document via `page.setContent(html)` and then to PDF. The generated HTML has no Content-Security-Policy or other hardening, and `renderInline` allows arbitrary `[text](url)` link targets, so a crafted CV markdown could embed unexpected URLs in the rendered document.",
+      "remediation": "Add a restrictive `<meta http-equiv=\"Content-Security-Policy\">` to the generated HTML and validate/sanitize link URLs (allow only http/https) in `renderInline` before rendering.",
+      "effort": "S",
+      "confidence": 0.45
+    },
+    {
+      "id": "flows-no-state-persistence-6",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "scripts/outlook-send.js",
+        "line": 0
+      },
+      "description": "`outlook-send.js` keeps no persistent state about which emails it has composed or sent; the only record is stdout. If the process is interrupted after clicking Send but before logging, there is no durable record to reconcile against the outreach log.",
+      "remediation": "Persist a send record (recipient, subject, message-id, timestamp, status) to a durable store before and after the Send click so interrupted runs can be reconciled.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "flows-validation-too-early-3",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "scripts/lever-apply.js",
+        "line": 0
+      },
+      "description": "`fillLeverForm` collects `missingRequired` by querying `[required]` elements immediately after filling, before the page's own client-side validation and any async field initialization have settled. Fields that populate asynchronously can be reported as missing, causing a false 'blocked' result.",
+      "remediation": "Re-check required fields after a short settle/wait (or after the form's validation event fires) before deciding the form is blocked, so asynchronously-populated fields are not falsely flagged.",
+      "effort": "S",
+      "confidence": 0.45
+    },
+    {
+      "id": "flows-message-retention-too-long-7",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "scripts/outlook-triage.js",
+        "line": 0
+      },
+      "description": "Triage reads and leaves messages in the mailbox with no retention/cleanup policy, and `extract` returns the full message body text which callers may persist. Personal email content accumulates indefinitely with no defined retention window.",
+      "remediation": "Define and document a retention policy for extracted message bodies (e.g. keep only the matched snippet for N days) and avoid persisting full bodies beyond what the triage decision requires.",
+      "effort": "S",
+      "confidence": 0.4
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "security-secret-in-code-1",
+          "database-full-table-scan-3",
+          "flows-fire-and-forget-critical-1",
+          "flows-missing-idempotency-3",
+          "database-iteration-overload-5",
+          "code-exact-duplication-massive-1",
+          "database-missing-app-pool-8",
+          "database-sequential-pagination-1",
+          "security-no-input-validation-14",
+          "flows-missing-dlq-2",
+          "security-gha-overpermissive-2",
+          "cost-no-automated-tests-4",
+          "flows-auth-order-1",
+          "flows-message-breaking-schema-2",
+          "flows-message-not-idempotent-8",
+          "security-gha-action-unpinned-5",
+          "security-gha-job-no-timeout-7",
+          "database-connection-timeout-high-3"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "cost-dev-setup-missing-3",
+          "code-exact-duplication-significant-2",
+          "flows-consumer-group-lag-3",
+          "security-gha-workspace-not-cleaned-6",
+          "structure-low-cohesion-5",
+          "database-missing-index-where-4",
+          "structure-high-coupling-2",
+          "flows-missing-timeout-6",
+          "cost-gha-no-timeout-9",
+          "database-missing-index-hot-path-2",
+          "flows-missing-error-handler-5",
+          "cost-gha-no-dependency-cache-5"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "code-long-parameter-list-8",
+          "structure-config-logic-8",
+          "structure-service-sql-5",
+          "flows-error-leaks-stack-6",
+          "flows-missing-rate-limit-8",
+          "flows-retry-no-backoff-4",
+          "flows-dlq-not-monitored-5",
+          "flows-message-ordering-needed-4",
+          "flows-message-schema-no-version-1",
+          "flows-missing-circuit-breaker-7",
+          "flows-missing-visibility-timeout-9",
+          "flows-retry-no-max-5",
+          "flows-validation-placement-2",
+          "cost-gha-high-usage-1",
+          "cost-documentation-poor-7",
+          "security-weak-rng-10",
+          "cost-no-license-tracking-5",
+          "cost-slow-tests-2",
+          "github-issue-health-1",
+          "github-commit-history-1",
+          "flows-inconsistent-response-4",
+          "flows-missing-request-id-7",
+          "flows-missing-cors-9",
+          "flows-missing-security-headers-10",
+          "flows-no-state-persistence-6",
+          "flows-validation-too-early-3",
+          "flows-message-retention-too-long-7"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "flows-missing-timeout-6": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-idempotency-3": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-error-handler-5": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-error-leaks-stack-6": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-request-id-7": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-rate-limit-8": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-dlq-2": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-visibility-timeout-9": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-message-not-idempotent-8": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-message-ordering-needed-4": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-cors-9": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-security-headers-10": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-fire-and-forget-critical-1": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-inconsistent-response-4": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-message-schema-no-version-1": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-message-breaking-schema-2": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-message-retention-too-long-7": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-dlq-not-monitored-5": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-no-state-persistence-6": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-validation-placement-2": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-validation-too-early-3": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-auth-order-1": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-consumer-group-lag-3": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-circuit-breaker-7": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-retry-no-backoff-4": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-retry-no-max-5": [
+        "code-exact-duplication-massive-1"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.7,
+      "score": 105,
+      "canonical_rule": "security-secret-in-code-1"
+    },
+    {
+      "id": "database-full-table-scan-3",
+      "severity": "critical",
+      "module": "database",
+      "confidence": 0.75,
+      "score": 97.5,
+      "canonical_rule": "database-full-table-scan-3"
+    },
+    {
+      "id": "flows-fire-and-forget-critical-1",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 60,
+      "canonical_rule": "flows-fire-and-forget-critical-1"
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 60,
+      "canonical_rule": "flows-missing-idempotency-3"
+    },
+    {
+      "id": "database-iteration-overload-5",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.8,
+      "score": 52,
+      "canonical_rule": "database-iteration-overload-5"
+    },
+    {
+      "id": "code-exact-duplication-massive-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.9,
+      "score": 49.5,
+      "canonical_rule": "code-exact-duplication-massive-1"
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.7,
+      "score": 45.5,
+      "canonical_rule": "database-missing-app-pool-8"
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.7,
+      "score": 45.5,
+      "canonical_rule": "database-sequential-pagination-1"
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 45,
+      "canonical_rule": "security-no-input-validation-14"
+    },
+    {
+      "id": "flows-missing-dlq-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 30,
+      "canonical_rule": "flows-missing-dlq-2"
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.85,
+      "score": 29.75,
+      "canonical_rule": "security-gha-overpermissive-2"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 28,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "flows-auth-order-1",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 27.5,
+      "canonical_rule": "flows-auth-order-1"
+    },
+    {
+      "id": "flows-message-breaking-schema-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 27.5,
+      "canonical_rule": "flows-message-breaking-schema-2"
+    },
+    {
+      "id": "flows-message-not-idempotent-8",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 27.5,
+      "canonical_rule": "flows-message-not-idempotent-8"
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.9,
+      "score": 27,
+      "canonical_rule": "security-gha-action-unpinned-5"
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.85,
+      "score": 25.5,
+      "canonical_rule": "security-gha-job-no-timeout-7"
+    },
+    {
+      "id": "database-connection-timeout-high-3",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.85,
+      "score": 22.1,
+      "canonical_rule": "database-connection-timeout-high-3"
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.55,
+      "score": 22,
+      "canonical_rule": "cost-dev-setup-missing-3"
+    },
+    {
+      "id": "code-exact-duplication-significant-2",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.95,
+      "score": 20.9,
+      "canonical_rule": "code-exact-duplication-significant-2"
+    },
+    {
+      "id": "flows-consumer-group-lag-3",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 20,
+      "canonical_rule": "flows-consumer-group-lag-3"
+    },
+    {
+      "id": "security-gha-workspace-not-cleaned-6",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 18,
+      "canonical_rule": "security-gha-workspace-not-cleaned-6"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 16.5,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "database-missing-index-where-4",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 15.6,
+      "canonical_rule": "database-missing-index-where-4"
+    },
+    {
+      "id": "structure-high-coupling-2",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-high-coupling-2"
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 15,
+      "canonical_rule": "flows-missing-timeout-6"
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-gha-no-timeout-9"
+    },
+    {
+      "id": "database-missing-index-hot-path-2",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.55,
+      "score": 14.3,
+      "canonical_rule": "database-missing-index-hot-path-2"
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "flows-missing-error-handler-5"
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.85,
+      "score": 13.6,
+      "canonical_rule": "cost-gha-no-dependency-cache-5"
+    },
+    {
+      "id": "code-long-parameter-list-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "code-long-parameter-list-8"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 12,
+      "canonical_rule": "flows-error-leaks-stack-6"
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 11,
+      "canonical_rule": "flows-missing-rate-limit-8"
+    },
+    {
+      "id": "flows-retry-no-backoff-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 11,
+      "canonical_rule": "flows-retry-no-backoff-4"
+    },
+    {
+      "id": "flows-dlq-not-monitored-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-dlq-not-monitored-5"
+    },
+    {
+      "id": "flows-message-ordering-needed-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-message-ordering-needed-4"
+    },
+    {
+      "id": "flows-message-schema-no-version-1",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-message-schema-no-version-1"
+    },
+    {
+      "id": "flows-missing-circuit-breaker-7",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-missing-circuit-breaker-7"
+    },
+    {
+      "id": "flows-missing-visibility-timeout-9",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-missing-visibility-timeout-9"
+    },
+    {
+      "id": "flows-retry-no-max-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-retry-no-max-5"
+    },
+    {
+      "id": "flows-validation-placement-2",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-validation-placement-2"
+    },
+    {
+      "id": "cost-gha-high-usage-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.7,
+      "score": 9.8,
+      "canonical_rule": "cost-gha-high-usage-1"
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-documentation-poor-7"
+    },
+    {
+      "id": "security-weak-rng-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.3,
+      "score": 9,
+      "canonical_rule": "security-weak-rng-10"
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-no-license-tracking-5"
+    },
+    {
+      "id": "cost-slow-tests-2",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-slow-tests-2"
+    },
+    {
+      "id": "github-issue-health-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 7.7,
+      "canonical_rule": "github-issue-health-1"
+    },
+    {
+      "id": "github-commit-history-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-commit-history-1"
+    },
+    {
+      "id": "flows-inconsistent-response-4",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-inconsistent-response-4"
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-missing-request-id-7"
+    },
+    {
+      "id": "flows-missing-cors-9",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 2.25,
+      "canonical_rule": "flows-missing-cors-9"
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 2.25,
+      "canonical_rule": "flows-missing-security-headers-10"
+    },
+    {
+      "id": "flows-no-state-persistence-6",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 2.25,
+      "canonical_rule": "flows-no-state-persistence-6"
+    },
+    {
+      "id": "flows-validation-too-early-3",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 2.25,
+      "canonical_rule": "flows-validation-too-early-3"
+    },
+    {
+      "id": "flows-message-retention-too-long-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 2,
+      "canonical_rule": "flows-message-retention-too-long-7"
+    }
+  ]
+}

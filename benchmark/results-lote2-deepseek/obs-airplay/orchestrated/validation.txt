@@ -1,0 +1,19 @@
+WARN: findings[2] (flows-missing-idempotency-3): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[8] (code-logs-secrets-10): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[11] (code-unchecked-error-1): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[16] (flows-missing-dlq-2): confidence 0.45 below 0.6 — finding may be speculative
+WARN: findings[17] (cost-license-share-alike-3): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[29] (performance-no-backpressure-10): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[33] (performance-no-adaptive-timeout-6): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[34] (performance-no-request-collapsing-4): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[35] (flows-missing-error-handler-5): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[37] (code-missing-error-main-10): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[38] (code-mutex-missing-4): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[39] (flows-error-leaks-stack-6): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[40] (flows-missing-circuit-breaker-7): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[42] (cost-license-attribution-missing-2): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[44] (cost-gha-infinite-artifacts-6): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[47] (flows-missing-request-id-7): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[48] (code-missing-docstring-10): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[49] (code-missing-return-type-8): confidence 0.4 below 0.6 — finding may be speculative
+VALID: 50 findings, 18 warning(s)

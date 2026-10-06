@@ -1,0 +1,820 @@
+{
+  "target": "cyberpunk-hud",
+  "mock": false,
+  "created_at": "2026-10-05T21:08:59.620Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-6",
+      "title": "github-issue-health-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "flows-message-ordering-needed-4",
+      "title": "flows-message-ordering-needed-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "code-moderate-complexity-3",
+      "title": "code-moderate-complexity-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "13. `_toggle_pause` doesn't handle the unpause animation",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-1",
+      "title": "github-commit-history-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "toolkit",
+      "source_id": "code-copy-paste-variant-6",
+      "title": "code-copy-paste-variant-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-2",
+      "title": "github-commit-history-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-12",
+      "title": "github-issue-health-12",
+      "security_relevant": false
+    },
+    {
+      "label": "C9",
+      "arm": "orchestrated",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-30",
+      "title": "Summary of Highest-Priority Fixes",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `hud_loader.gd` uses `load()` instead of `preload()`/`ResourceLoader` and doesn't handle failure cleanly",
+      "security_relevant": false
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "22. Inconsistent null/type guards",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-3",
+      "title": "github-log-pattern-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-3",
+      "title": "github-commit-history-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "toolkit",
+      "source_id": "structure-layer-violation-1",
+      "title": "structure-layer-violation-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C16",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-2",
+      "title": "structure-high-coupling-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C17",
+      "arm": "orchestrated",
+      "source_id": "cost-dev-setup-missing-3",
+      "title": "cost-dev-setup-missing-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "18. `docs/prompt-friction-fixes.md` references paths outside the repo",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-4",
+      "title": "github-issue-health-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C20",
+      "arm": "orchestrated",
+      "source_id": "cost-no-code-review-6",
+      "title": "cost-no-code-review-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "orchestrated",
+      "source_id": "cost-no-license-tracking-5",
+      "title": "cost-no-license-tracking-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-security-headers-10",
+      "title": "flows-missing-security-headers-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C23",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-6",
+      "title": "github-commit-history-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C24",
+      "arm": "orchestrated",
+      "source_id": "performance-no-slo-6",
+      "title": "performance-no-slo-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C25",
+      "arm": "toolkit",
+      "source_id": "code-long-function-7",
+      "title": "code-long-function-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C26",
+      "arm": "orchestrated",
+      "source_id": "flows-inconsistent-response-4",
+      "title": "flows-inconsistent-response-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C27",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-2",
+      "title": "github-log-pattern-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C28",
+      "arm": "orchestrated",
+      "source_id": "cost-no-performance-budget-10",
+      "title": "cost-no-performance-budget-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C29",
+      "arm": "toolkit",
+      "source_id": "structure-high-coupling-2",
+      "title": "structure-high-coupling-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C30",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-visibility-timeout-9",
+      "title": "flows-missing-visibility-timeout-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C31",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. `GameState` mixes demo-driver logic with state",
+      "security_relevant": false
+    },
+    {
+      "label": "C32",
+      "arm": "toolkit",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C33",
+      "arm": "toolkit",
+      "source_id": "code-print-statement-8",
+      "title": "code-print-statement-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C34",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. `_on_ammo_changed` is dead code in practice",
+      "security_relevant": false
+    },
+    {
+      "label": "C35",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C36",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. `_on_log_message` assumes `log_labels` is non-empty",
+      "security_relevant": false
+    },
+    {
+      "label": "C37",
+      "arm": "toolkit",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C38",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "17. `CLAUDE.md` documents stale animations that can't be deleted",
+      "security_relevant": false
+    },
+    {
+      "label": "C39",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `_format_credits` is O(n²) and reinvents the wheel",
+      "security_relevant": false
+    },
+    {
+      "label": "C40",
+      "arm": "orchestrated",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C41",
+      "arm": "orchestrated",
+      "source_id": "cost-documentation-poor-7",
+      "title": "cost-documentation-poor-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C42",
+      "arm": "orchestrated",
+      "source_id": "flows-state-expensive-update-5",
+      "title": "flows-state-expensive-update-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C43",
+      "arm": "toolkit",
+      "source_id": "code-ignores-return-value-6",
+      "title": "code-ignores-return-value-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C44",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-7",
+      "title": "github-log-pattern-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C45",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "26. `GameState` uses `Array[float]` for cooldowns but `cooldown_max` is also `Array[float]`",
+      "security_relevant": false
+    },
+    {
+      "label": "C46",
+      "arm": "orchestrated",
+      "source_id": "performance-no-load-testing-3",
+      "title": "performance-no-load-testing-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C47",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. `_start_hp_breathe` creates an infinite tween with no cleanup",
+      "security_relevant": false
+    },
+    {
+      "label": "C48",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-8",
+      "title": "github-issue-health-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C49",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. `project.godot` is missing from the file contents but referenced everywhere",
+      "security_relevant": false
+    },
+    {
+      "label": "C50",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-dlq-2",
+      "title": "flows-missing-dlq-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C51",
+      "arm": "orchestrated",
+      "source_id": "performance-no-cost-perf-tradeoff-8",
+      "title": "performance-no-cost-perf-tradeoff-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C52",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-1",
+      "title": "github-log-pattern-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C53",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-5",
+      "title": "github-log-pattern-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C54",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C55",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-5",
+      "title": "github-commit-history-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C56",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "21. `README.md` isn't included in the provided contents",
+      "security_relevant": false
+    },
+    {
+      "label": "C57",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-7",
+      "title": "github-issue-health-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C58",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "24. `_on_damage_taken` is an empty handler",
+      "security_relevant": false
+    },
+    {
+      "label": "C59",
+      "arm": "toolkit",
+      "source_id": "code-logs-secrets-10",
+      "title": "code-logs-secrets-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C60",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "16. `CLAUDE.md` references files that don't exist",
+      "security_relevant": false
+    },
+    {
+      "label": "C61",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "27. `_credit_burst` uses `randf() < 0.06` as a magic probability",
+      "security_relevant": false
+    },
+    {
+      "label": "C62",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-7",
+      "title": "github-commit-history-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C63",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-cors-9",
+      "title": "flows-missing-cors-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C64",
+      "arm": "toolkit",
+      "source_id": "code-many-params-10",
+      "title": "code-many-params-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C65",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-1",
+      "title": "structure-high-coupling-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C66",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. `cyberpunk_hud.gd` hard-crashes if `GameState` is absent",
+      "security_relevant": false
+    },
+    {
+      "label": "C67",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "29. No `project.godot` contents means the Godot version claim is unverifiable",
+      "security_relevant": false
+    },
+    {
+      "label": "C68",
+      "arm": "orchestrated",
+      "source_id": "flows-state-inefficient-access-7",
+      "title": "flows-state-inefficient-access-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C69",
+      "arm": "orchestrated",
+      "source_id": "flows-state-excessive-nesting-8",
+      "title": "flows-state-excessive-nesting-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C70",
+      "arm": "orchestrated",
+      "source_id": "flows-state-missing-defaults-10",
+      "title": "flows-state-missing-defaults-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C71",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-4",
+      "title": "github-commit-history-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C72",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-10",
+      "title": "github-issue-health-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C73",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-10",
+      "title": "github-commit-history-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C74",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-idempotency-3",
+      "title": "flows-missing-idempotency-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C75",
+      "arm": "orchestrated",
+      "source_id": "cost-no-oss-policy-9",
+      "title": "cost-no-oss-policy-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C76",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "25. `_on_hp_direct_hit` and `_on_damage_taken` overlap semantically",
+      "security_relevant": false
+    },
+    {
+      "label": "C77",
+      "arm": "orchestrated",
+      "source_id": "flows-message-retention-too-short-6",
+      "title": "flows-message-retention-too-short-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C78",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "28. No tests anywhere",
+      "security_relevant": false
+    },
+    {
+      "label": "C79",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-5",
+      "title": "github-issue-health-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C80",
+      "arm": "orchestrated",
+      "source_id": "flows-validation-placement-2",
+      "title": "flows-validation-placement-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C81",
+      "arm": "toolkit",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C82",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. `_credit_burst` can produce a no-op signal gap",
+      "security_relevant": false
+    },
+    {
+      "label": "C83",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-9",
+      "title": "github-commit-history-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C84",
+      "arm": "toolkit",
+      "source_id": "code-medium-length-8",
+      "title": "code-medium-length-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C85",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-2",
+      "title": "github-issue-health-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C86",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-10",
+      "title": "github-log-pattern-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C87",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-1",
+      "title": "github-issue-health-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C88",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "14. `_bounce_ability` sets `pivot_offset` from `node.size` which may be stale",
+      "security_relevant": false
+    },
+    {
+      "label": "C89",
+      "arm": "orchestrated",
+      "source_id": "flows-message-not-idempotent-8",
+      "title": "flows-message-not-idempotent-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C90",
+      "arm": "orchestrated",
+      "source_id": "flows-validation-too-early-3",
+      "title": "flows-validation-too-early-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C91",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "19. `.gitignore` ignores `addons/` but `CLAUDE.md` instructs symlinking into `addons/`",
+      "security_relevant": false
+    },
+    {
+      "label": "C92",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-9",
+      "title": "github-issue-health-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C93",
+      "arm": "orchestrated",
+      "source_id": "flows-no-state-persistence-6",
+      "title": "flows-no-state-persistence-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C94",
+      "arm": "orchestrated",
+      "source_id": "performance-no-regression-detection-5",
+      "title": "performance-no-regression-detection-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C95",
+      "arm": "orchestrated",
+      "source_id": "performance-no-tech-debt-alloc-9",
+      "title": "performance-no-tech-debt-alloc-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C96",
+      "arm": "orchestrated",
+      "source_id": "performance-no-perf-budgets-10",
+      "title": "performance-no-perf-budgets-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C97",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-8",
+      "title": "github-log-pattern-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C98",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. `GameState._process` emits signals every frame during regen",
+      "security_relevant": false
+    },
+    {
+      "label": "C99",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "23. Magic numbers scattered through `cyberpunk_hud.gd`",
+      "security_relevant": false
+    },
+    {
+      "label": "C100",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "20. `docs/prompt-hud-v3.md` says v3 \"starts as a copy of `hud_v2.tscn`\" but the file tree shows `hud_v3.tscn` exists with no indication it was actually derived",
+      "security_relevant": false
+    },
+    {
+      "label": "C101",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C102",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-11",
+      "title": "github-issue-health-11",
+      "security_relevant": false
+    },
+    {
+      "label": "C103",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-8",
+      "title": "github-commit-history-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C104",
+      "arm": "toolkit",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C105",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-4",
+      "title": "github-log-pattern-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C106",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. `hud_loader.gd` `@export_enum` with `String` type is unusual",
+      "security_relevant": false
+    },
+    {
+      "label": "C107",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `_on_hp_direct_hit` leaks stylebox overrides and duplicates state",
+      "security_relevant": false
+    },
+    {
+      "label": "C108",
+      "arm": "orchestrated",
+      "source_id": "structure-low-cohesion-5",
+      "title": "structure-low-cohesion-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C109",
+      "arm": "orchestrated",
+      "source_id": "structure-dto-logic-7",
+      "title": "structure-dto-logic-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C110",
+      "arm": "orchestrated",
+      "source_id": "structure-service-orchestration-3",
+      "title": "structure-service-orchestration-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C111",
+      "arm": "orchestrated",
+      "source_id": "flows-fire-and-forget-critical-1",
+      "title": "flows-fire-and-forget-critical-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C112",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-6",
+      "title": "github-log-pattern-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C113",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-9",
+      "title": "github-log-pattern-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C114",
+      "arm": "toolkit",
+      "source_id": "flows-state-expensive-update-5",
+      "title": "flows-state-expensive-update-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C115",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-3",
+      "title": "github-issue-health-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C116",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. `_on_cooldown_changed` indexes `_ABILITY_ACCENT_COLORS` without bounds check",
+      "security_relevant": false
+    }
+  ]
+}

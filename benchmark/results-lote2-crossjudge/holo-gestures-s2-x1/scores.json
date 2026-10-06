@@ -1,0 +1,199 @@
+{
+  "target": "holo-gestures-s2-x1",
+  "mock": false,
+  "created_at": "2026-10-06T01:54:54.018Z",
+  "judge_model": "qwen3.5:9b",
+  "judge_base_url": "http://localhost:11434/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\holo-gestures",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "55626ff00f6b49c649a407ffdb3cad174479c637",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 4,
+    "toolkit": 0,
+    "orchestrated": 4,
+    "naive": 0,
+    "judged": 4,
+    "unverifiable": 4
+  },
+  "summary_by_arm": {
+    "orchestrated": {
+      "claims": 4,
+      "judged": 4,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 4,
+      "judgeGrounded": 0,
+      "mechGrounded": 3,
+      "mechUngrounded": 1,
+      "mismatch": 0,
+      "actionableSum": 10,
+      "actionableN": 4,
+      "security": 2,
+      "securityFn": 0,
+      "claimsWithCitations": 4,
+      "citationsTotal": 4,
+      "weakCitations": 0,
+      "meanActionability": 2.5,
+      "precision": null,
+      "judgeGroundedRate": 0
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "orchestrated",
+      "source_id": "security-gha-secret-leak-3",
+      "title": "security-gha-secret-leak-3",
+      "severity": "critical",
+      "module": "github",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Code for server.py line 0 unavailable; README content and vendor file headers not shown to verify instructions or license types.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "ungrounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "server.py",
+            "line": 0,
+            "origin": "structured",
+            "status": "file-level-no-line",
+            "fileLines": 181,
+            "reason": null
+          }
+        ],
+        "verified": 0,
+        "unverified": 1,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "code-missing-validation-4",
+      "title": "code-missing-validation-4",
+      "severity": "high",
+      "module": "code",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Server code at cited location (server.py:156) is explicitly marked as '(not available in digest)', preventing verification of endpoint logic.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "server.py",
+            "line": 156,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 181,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "cost-license-share-alike-3",
+      "title": "cost-license-share-alike-3",
+      "severity": "high",
+      "module": "cost",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 2,
+        "reason": "Root LICENSE content shows MIT text but vendor file headers are not provided to verify Apache-2.0 redistribution claims from the digest alone.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "LICENSE",
+            "line": 1,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 32,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "code-bare-except-1",
+      "title": "code-bare-except-1",
+      "severity": "critical",
+      "module": "code",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": false,
+        "actionable": 3,
+        "reason": "Snippet for server.py:31 is truncated (ends with ellipsis), so exception handling logic inside notes_dir() cannot be verified from provided text.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "server.py",
+            "line": 31,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 181,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

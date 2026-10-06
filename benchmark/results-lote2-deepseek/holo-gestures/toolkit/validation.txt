@@ -1,0 +1,2 @@
+WARN: findings[11] (code-ignores-return-value-6): confidence 0.55 below 0.6 — finding may be speculative
+VALID: 14 findings, 1 warning(s)

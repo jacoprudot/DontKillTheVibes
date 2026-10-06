@@ -1,0 +1,306 @@
+{
+  "metadata": {
+    "repo": "aomkoyo/obs-airplay-receiver",
+    "assessed_at": "2025-01-01T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "F",
+    "total_findings": 14,
+    "critical_count": 1,
+    "by_severity": {
+      "medium": 7,
+      "high": 2,
+      "low": 4,
+      "critical": 1
+    },
+    "effort_estimate": {
+      "M": 8,
+      "XS": 2,
+      "S": 4
+    }
+  },
+  "findings": [
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 15
+      },
+      "description": "Third-party GitHub Actions are referenced by mutable tag (actions/checkout@v4, ilammy/msvc-dev-cmd@v1) instead of a pinned commit SHA, exposing the build to supply-chain attacks if the upstream tag is moved or the action repository is compromised.",
+      "remediation": "Pin every third-party action to a full commit SHA (e.g. actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683) and use Dependabot to keep the pins updated.",
+      "confidence": 0.9,
+      "evidence": {
+        "snippet": "uses: actions/checkout@v4 / uses: ilammy/msvc-dev-cmd@v1",
+        "metric": "2 unpinned actions in the only workflow"
+      }
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 10
+      },
+      "description": "The build job defines no timeout-minutes, so a hung dependency download or compile step can occupy a runner indefinitely, wasting CI minutes and masking failures.",
+      "remediation": "Add `timeout-minutes: 60` (or an appropriate value) to the build job definition.",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "jobs:\n  build:\n    runs-on: windows-latest",
+        "metric": "0 timeout settings in workflow"
+      }
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "module": "security",
+      "severity": "high",
+      "effort": "XS",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 10
+      },
+      "description": "The workflow does not declare a `permissions:` block, so the GITHUB_TOKEN inherits the repository default (often read/write for all scopes). A build job that only checks out code and compiles should run with read-only contents permission.",
+      "remediation": "Add a top-level `permissions: contents: read` block (and grant additional scopes only to the specific job that needs them).",
+      "confidence": 0.8,
+      "evidence": {
+        "snippet": "jobs:\n  build:\n    runs-on: windows-latest",
+        "metric": "no permissions key present"
+      }
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 22
+      },
+      "description": "The workflow installs OpenSSL via Chocolatey and clones/builds UxPlay, libplist and the OBS SDK from source on every run with no caching of the downloaded archives or build outputs, so each CI run pays the full download and compile cost.",
+      "remediation": "Cache deps/ (or the individual archives) with actions/cache keyed on the pinned dependency versions, and cache the libplist/UxPlay build directories so only changed sources recompile.",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "- name: Install OpenSSL via Chocolatey\n  run: choco install openssl -y --no-progress\n- name: Clone UxPlay v1.73.6",
+        "metric": "5 dependencies fetched/built per run"
+      }
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 10
+      },
+      "description": "No job timeout is configured, so a stuck build (e.g. a stalled curl download of the FFmpeg or OBS SDK archive) can consume runner minutes without bound, directly increasing GitHub Actions cost.",
+      "remediation": "Set `timeout-minutes` on the build job and add `--max-time`/`--retry` options to the curl downloads so a hung transfer fails fast.",
+      "confidence": 0.8,
+      "evidence": {
+        "snippet": "jobs:\n  build:\n    runs-on: windows-latest",
+        "metric": "no timeout-minutes on any job"
+      }
+    },
+    {
+      "id": "cost-gha-always-on-8",
+      "module": "cost",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 3
+      },
+      "description": "The workflow triggers on every push and pull_request to master, running the full multi-dependency build for documentation-only or trivial changes.",
+      "remediation": "Add `paths-ignore` (e.g. '**.md', 'LICENSE', '.gitignore') to the push/pull_request triggers so non-code changes do not consume CI minutes.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "on:\n  push:\n    branches: [master]\n  pull_request:\n    branches: [master]",
+        "metric": "no path filters"
+      }
+    },
+    {
+      "id": "security-weak-rng-10",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 139
+      },
+      "description": "generate_random_mac() seeds the C library PRNG with srand(time(NULL) * getpid()) and derives the MAC address from rand(). The seed is predictable and the generator is not cryptographically secure, so the advertised device identity can be guessed or reproduced by an attacker on the same network.",
+      "remediation": "Use a cryptographically secure source (BCryptGenRandom on Windows, or RAND_bytes from the already-linked OpenSSL) to generate the random MAC octets instead of srand/rand.",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "srand((unsigned)(time(NULL) * getpid()));\nint octet = (rand() % 64) << 2 | 0x02;",
+        "metric": "time+pid seed, 32-bit PRNG"
+      }
+    },
+    {
+      "id": "code-ignores-return-value-6",
+      "module": "code",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 139
+      },
+      "description": "The return value of srand() is discarded and, more importantly, the generated MAC is written via snprintf whose truncation result is never checked; callers of generate_random_mac cannot detect a short or failed write. Related: parse_hw_addr() also ignores strtol() error returns, silently producing 0 octets on malformed input.",
+      "remediation": "Check the snprintf return value against the buffer length and validate strtol() results (errno/endptr) in parse_hw_addr, logging and rejecting malformed input instead of silently continuing.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "snprintf(mac, len, \"%02x:%02x:%02x:%02x:%02x:%02x\", ...);\nhw[(*hw_len)++] = (char)strtol(str + i, NULL, 16);",
+        "metric": "2 unchecked conversion returns"
+      }
+    },
+    {
+      "id": "code-missing-return-type-8",
+      "module": "code",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 139
+      },
+      "description": "Several file-local helpers (generate_random_mac, parse_hw_addr, reset_timestamp_mapper, map_timestamp) are declared without explicit return-type documentation and the header airplay-source.h is not shown to declare them, reducing the API contract clarity for a C module that is consumed by plugin-main.c.",
+      "remediation": "Declare all non-static helpers in airplay-source.h with explicit return types and add brief doc comments describing parameters and return values.",
+      "confidence": 0.5,
+      "evidence": {
+        "snippet": "static void generate_random_mac(char *mac, size_t len)\nstatic void parse_hw_addr(const char *str, char *hw, int *hw_len)",
+        "metric": "4+ helpers without header declarations"
+      }
+    },
+    {
+      "id": "code-many-params-10",
+      "module": "code",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 150
+      },
+      "description": "parse_hw_addr takes a raw string plus two out-parameters (hw, hw_len) and performs its own length bookkeeping, which is error-prone; the same pattern repeats across the UxPlay callback signatures that pass cls plus several out-params.",
+      "remediation": "Introduce a small struct (e.g. struct hw_addr { unsigned char bytes[6]; int len; }) and return it by value or via a single out-pointer to reduce parameter count and make the contract explicit.",
+      "confidence": 0.55,
+      "evidence": {
+        "snippet": "static void parse_hw_addr(const char *str, char *hw, int *hw_len)",
+        "metric": "3 parameters with coupled out-state"
+      }
+    },
+    {
+      "id": "code-logs-secrets-10",
+      "module": "code",
+      "severity": "critical",
+      "effort": "XS",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 216
+      },
+      "description": "The video path logs raw packet metadata (byte counts, NAL counts, NTP timestamps) at INFO level for the first five frames. While the current snippet does not print payload bytes, the pattern of logging per-packet protocol details in a media pipeline is a known vector for leaking stream contents or session identifiers if extended; the same file already logs connection lifecycle events that could carry peer identifiers.",
+      "remediation": "Audit all blog() calls in the media callbacks and ensure no packet payloads, keys, or peer-identifying tokens are logged; gate verbose per-packet logging behind a debug flag that is off in release builds.",
+      "confidence": 0.6,
+      "evidence": {
+        "snippet": "blog(LOG_INFO, \"[AirPlay] video_process: %d bytes, %d NALs, ntp=%llu\", data->data_len, data->nal_count, (unsigned long long)data->ntp_time_local);",
+        "metric": "per-packet INFO logging in hot path"
+      }
+    },
+    {
+      "id": "code-print-statement-8",
+      "module": "code",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 216
+      },
+      "description": "Diagnostic logging is emitted directly from the decode hot path using blog(LOG_INFO, ...) guarded only by a frame counter (video_frame_count < 5). This mixes diagnostic output with production logging and has no runtime toggle, so it cannot be silenced without a rebuild.",
+      "remediation": "Route diagnostic output through a dedicated debug log level or a runtime-configurable verbosity flag so operators can disable it without recompiling.",
+      "confidence": 0.6,
+      "evidence": {
+        "snippet": "if (ctx->video_frame_count < 5) {\n    blog(LOG_INFO, \"[AirPlay] video_process: ...\");\n}",
+        "metric": "hard-coded diagnostic logging"
+      }
+    },
+    {
+      "id": "cost-license-incompatible-1",
+      "module": "cost",
+      "severity": "high",
+      "effort": "M",
+      "location": {
+        "file": "LICENSE",
+        "line": 1
+      },
+      "description": "The project is licensed LGPL-2.1 and statically links UxPlay (also LGPL) plus libplist (LGPL-2.1) and OpenSSL (Apache-2.0) into a single plugin DLL. LGPL-2.1 requires that users be able to relink the work against a modified version of the LGPL library; shipping a statically linked, non-relinkable DLL without the corresponding object files or a documented relink mechanism is a license-compliance risk.",
+      "remediation": "Either ship the object files / build scripts needed to relink against modified LGPL components, or switch the LGPL dependencies to dynamic linking, and document the LGPL obligations in the README and installer.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "GNU LESSER GENERAL PUBLIC LICENSE Version 2.1\n...\ntarget_link_libraries(obs-airplay-receiver PRIVATE ${UXPLAY_BUILD_DIR}/airplay.lib ...)",
+        "metric": "static link of LGPL libs into proprietary-style DLL"
+      }
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "README.md",
+        "line": 1
+      },
+      "description": "The repository credits UxPlay, FFmpeg, libplist and OpenSSL but has no automated license-compliance tracking (no FOSSA/Snyk/licensee config, no NOTICE file, no CI license check) despite bundling FFmpeg LGPL binaries and statically linking multiple LGPL libraries.",
+      "remediation": "Add a license-scanning step to CI (e.g. licensee or FOSSA) and generate a NOTICE/THIRD-PARTY-LICENSES file listing every bundled dependency and its license text.",
+      "confidence": 0.75,
+      "evidence": {
+        "snippet": "## Credits\n- [UxPlay](...) - Open Source AirPlay 2 server\n- [FFmpeg](...) - H.264 and AAC-ELD decoding",
+        "metric": "no license-tracking tooling in repo"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-gha-overpermissive-2",
+        "security-gha-action-unpinned-5",
+        "security-gha-job-no-timeout-7",
+        "cost-gha-no-timeout-9",
+        "cost-gha-always-on-8"
+      ],
+      "60_days": [
+        "security-weak-rng-10",
+        "code-ignores-return-value-6",
+        "code-logs-secrets-10",
+        "cost-gha-no-dependency-cache-5"
+      ],
+      "90_days": [
+        "cost-license-incompatible-1",
+        "cost-no-license-tracking-5",
+        "code-many-params-10",
+        "code-missing-return-type-8",
+        "code-print-statement-8"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "security-gha-overpermissive-2",
+        "to": "security-gha-action-unpinned-5",
+        "type": "blocks"
+      },
+      {
+        "from": "security-gha-job-no-timeout-7",
+        "to": "cost-gha-no-timeout-9",
+        "type": "blocks"
+      },
+      {
+        "from": "cost-license-incompatible-1",
+        "to": "cost-no-license-tracking-5",
+        "type": "blocks"
+      }
+    ]
+  }
+}

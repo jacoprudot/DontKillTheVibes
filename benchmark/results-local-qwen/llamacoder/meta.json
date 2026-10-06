@@ -1,0 +1,43 @@
+{
+  "mock": false,
+  "target": "llamacoder",
+  "url": "https://github.com/Nutlope/llamacoder",
+  "commit": "75a3a78e1fa080657b696b95e6d7e393dfa999a5",
+  "model": "qwen2.5-coder:7b",
+  "base_url": "http://localhost:11434/v1",
+  "target_dir": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\llamacoder",
+  "timestamp": "2026-10-04T23:48:55.996Z",
+  "digest": {
+    "file": "digest.json",
+    "tree_files": 255,
+    "included_files": 9,
+    "chars": 20034,
+    "skipped_content": 246,
+    "skipped_sensitive": 1
+  },
+  "arms": {
+    "toolkit": {
+      "ok": true,
+      "output": "toolkit/assessment.json"
+    },
+    "naive": {
+      "ok": true,
+      "output": "naive.md"
+    },
+    "orchestrated": {
+      "ok": false,
+      "requested": false,
+      "output": "orchestrated/assessment.json"
+    }
+  },
+  "arm_c": {
+    "requested": false,
+    "runner": "scripts/dktv-orchestrate.mjs",
+    "max_files": 25,
+    "max_chars": 200000,
+    "max_tokens": 16384,
+    "metrics": null
+  },
+  "note": "Arms A and B share one digest (identical input, different prompt/tooling). Arm C (B2) does its own per-module file selection, so its input differs by design.",
+  "api_key_recorded": false
+}

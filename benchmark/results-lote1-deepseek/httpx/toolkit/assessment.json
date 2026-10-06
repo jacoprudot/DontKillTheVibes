@@ -1,0 +1,110 @@
+{
+  "metadata": {
+    "repo": "encode/httpx",
+    "assessed_at": "2025-01-01T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "C",
+    "total_findings": 4,
+    "critical_count": 0,
+    "by_severity": {
+      "medium": 4
+    },
+    "effort_estimate": {
+      "M": 4
+    }
+  },
+  "findings": [
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/publish.yml",
+        "line": 17
+      },
+      "description": "GitHub Actions are referenced by mutable version tags (`actions/checkout@v4`, `actions/setup-python@v6`) rather than pinned to a full commit SHA. A compromised or retagged upstream action could execute arbitrary code in the release job, which has access to the `PYPI_TOKEN` secret. The same unpinned pattern also appears in .github/workflows/test-suite.yml (lines 20-21).",
+      "remediation": "Pin each action to a full commit SHA (e.g. `actions/checkout@<40-char-sha>`) in both publish.yml and test-suite.yml, and let Dependabot keep the pins updated, so a retagged release cannot silently change the executed code.",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "- uses: \"actions/checkout@v4\"\n- uses: \"actions/setup-python@v6\"",
+        "metric": "2 unpinned action references in the publish workflow; same pattern in test-suite.yml"
+      }
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/publish.yml",
+        "line": 9
+      },
+      "description": "The `publish` job defines no `timeout-minutes`, so a hung install/build/publish step can occupy a runner indefinitely and hold the release environment open. The `tests` job in .github/workflows/test-suite.yml (line 10) has the same gap across all five Python matrix legs.",
+      "remediation": "Add `timeout-minutes: 30` (or an appropriate bound) to the `publish` job and to the `tests` job so a stuck step fails fast instead of running unbounded.",
+      "confidence": 0.8,
+      "evidence": {
+        "snippet": "jobs:\n  publish:\n    name: \"Publish release\"\n    runs-on: \"ubuntu-latest\"",
+        "metric": "no timeout-minutes key present on either job"
+      }
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/publish.yml",
+        "line": 3
+      },
+      "description": "The publish workflow triggers on every pushed tag with no `concurrency` group, so two tag pushes in quick succession can run overlapping release jobs that race to publish to PyPI and deploy docs.",
+      "remediation": "Add a `concurrency: { group: publish, cancel-in-progress: false }` block to the workflow so release jobs are serialized and cannot overlap.",
+      "confidence": 0.75,
+      "evidence": {
+        "snippet": "on:\n  push:\n    tags:\n      - '*'",
+        "metric": "no concurrency group defined for the release workflow"
+      }
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/test-suite.yml",
+        "line": 17
+      },
+      "description": "The test-suite workflow runs `scripts/install` for each of the five Python matrix entries without any `actions/cache` step for pip packages, so dependencies are re-downloaded and re-built on every run and every matrix leg.",
+      "remediation": "Add an `actions/cache` (or `actions/setup-python` `cache: pip`) step keyed on the requirements/lockfile hash before `scripts/install` to reuse downloaded wheels across runs and matrix legs.",
+      "confidence": 0.8,
+      "evidence": {
+        "snippet": "- name: \"Install dependencies\"\n        run: \"scripts/install\"",
+        "metric": "5 matrix legs x every push/PR with no pip cache step"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-gha-action-unpinned-5",
+        "security-gha-job-no-timeout-7"
+      ],
+      "60_days": [
+        "security-gha-no-concurrency-prod-10",
+        "cost-gha-no-dependency-cache-5"
+      ],
+      "90_days": []
+    },
+    "dependencies": [
+      {
+        "from": "security-gha-action-unpinned-5",
+        "to": "security-gha-no-concurrency-prod-10",
+        "type": "blocks"
+      }
+    ]
+  }
+}

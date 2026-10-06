@@ -1,0 +1,43 @@
+{
+  "mock": false,
+  "target": "obs-airplay",
+  "url": "https://github.com/aomkoyo/obs-airplay-receiver",
+  "commit": "a1b57cd56b276e7e2d381c8083f76cd80e2a2e0b",
+  "model": "deepseek-chat",
+  "base_url": "https://api.deepseek.com/v1",
+  "target_dir": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\obs-airplay",
+  "timestamp": "2026-10-05T21:12:17.313Z",
+  "digest": {
+    "file": "digest.json",
+    "tree_files": 18,
+    "included_files": 10,
+    "chars": 40034,
+    "skipped_content": 8,
+    "skipped_sensitive": 0
+  },
+  "arms": {
+    "toolkit": {
+      "ok": true,
+      "output": "toolkit/assessment.json"
+    },
+    "naive": {
+      "ok": true,
+      "output": "naive.md"
+    },
+    "orchestrated": {
+      "ok": true,
+      "requested": true,
+      "output": "orchestrated/assessment.json"
+    }
+  },
+  "arm_c": {
+    "requested": true,
+    "runner": "scripts/dktv-orchestrate.mjs",
+    "max_files": 25,
+    "max_chars": 200000,
+    "max_tokens": 16384,
+    "metrics": null
+  },
+  "note": "Arms A and B share one digest (identical input, different prompt/tooling). Arm C (B2) does its own per-module file selection, so its input differs by design.",
+  "api_key_recorded": false
+}

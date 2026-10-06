@@ -1,0 +1,43 @@
+{
+  "mock": false,
+  "target": "eurekagent",
+  "url": "https://github.com/THU-Team-Eureka/EurekAgent",
+  "commit": "fb96df897dfb99797a77623aa0dd9ee178fe89d2",
+  "model": "deepseek-chat",
+  "base_url": "https://api.deepseek.com/v1",
+  "target_dir": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\eurekagent",
+  "timestamp": "2026-10-05T20:28:03.281Z",
+  "digest": {
+    "file": "digest.json",
+    "tree_files": 163,
+    "included_files": 5,
+    "chars": 40034,
+    "skipped_content": 158,
+    "skipped_sensitive": 0
+  },
+  "arms": {
+    "toolkit": {
+      "ok": true,
+      "output": "toolkit/assessment.json"
+    },
+    "naive": {
+      "ok": true,
+      "output": "naive.md"
+    },
+    "orchestrated": {
+      "ok": false,
+      "requested": true,
+      "output": "orchestrated/assessment.json"
+    }
+  },
+  "arm_c": {
+    "requested": true,
+    "runner": "scripts/dktv-orchestrate.mjs",
+    "max_files": 25,
+    "max_chars": 200000,
+    "max_tokens": 16384,
+    "metrics": null
+  },
+  "note": "Arms A and B share one digest (identical input, different prompt/tooling). Arm C (B2) does its own per-module file selection, so its input differs by design.",
+  "api_key_recorded": false
+}

@@ -1,0 +1,435 @@
+{
+  "metadata": {
+    "repo": "aurora-synth",
+    "assessed_at": "2026-10-05T21:16:09.713Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 21,
+    "findings_raw": 30,
+    "findings_dropped": 1,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 1,
+    "total_findings": 28,
+    "by_severity": {
+      "critical": 1,
+      "high": 5,
+      "medium": 19,
+      "low": 2,
+      "info": 1
+    },
+    "by_module": {
+      "structure": 5,
+      "security": 4,
+      "cost": 4,
+      "performance": 6,
+      "github": 9
+    },
+    "effort_estimate": {
+      "XS": 4,
+      "S": 2,
+      "M": 21,
+      "L": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "structure-high-coupling-1",
+      "module": "structure",
+      "severity": "high",
+      "location": {
+        "file": "src/ui/main.js",
+        "line": 7
+      },
+      "description": "The application entry point imports and wires nearly every subsystem at once (audio, keyboard, dom, i18n, store, controls, library, presetBrowser, topbar, playView, editor, keyboardDock, modals, patchTools, fallbackVisuals, compat) and additionally dynamically imports presets, visuals, filter, fm, wavetables, phrases, demo center and automation. main.js therefore knows the concrete shape of every module, so any change to a view or helper ripples into the entry point.",
+      "remediation": "Introduce a composition root that receives already-constructed subsystems (or a small registry/factory per feature area) so main.js only orchestrates boot order and no longer imports each concrete module directly.",
+      "effort": "L",
+      "confidence": 0.65
+    },
+    {
+      "id": "security-directory-listing-8",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "tools/serve.mjs",
+        "line": 0
+      },
+      "description": "The dev server serves an HTML directory listing for any folder that has no index.html (listing() is called from handler() when stat.isDirectory() and no index file exists). Combined with `npm run lan` (HOST=0.0.0.0), the whole project tree — including source, tools and any non-dot file — is browsable by anyone on the LAN.",
+      "remediation": "Disable directory listings by default (return 404 for directories without an index.html) or gate them behind an explicit --list flag that is off in --lan mode.",
+      "effort": "XS",
+      "confidence": 0.75
+    },
+    {
+      "id": "security-missing-headers-10",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "tools/serve.mjs",
+        "line": 0
+      },
+      "description": "serveFile() sets only Content-Type, Cache-Control, Accept-Ranges, X-Content-Type-Options and Last-Modified. No Content-Security-Policy, X-Frame-Options/frame-ancestors, Referrer-Policy, Permissions-Policy or Strict-Transport-Security is emitted, so the served app (and the LAN https mode) has no browser-enforced hardening against framing, referrer leakage or injected content.",
+      "remediation": "Add a response header block with Content-Security-Policy (default-src 'self'), X-Frame-Options: DENY (or CSP frame-ancestors 'none'), Referrer-Policy: no-referrer and Strict-Transport-Security when serving over https.",
+      "effort": "S",
+      "confidence": 0.7
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "package.json",
+        "line": 12
+      },
+      "description": "The deploy script runs `npx wrangler deploy` without a pinned version, so the deploy tooling is fetched from the registry at run time and can resolve to any (including a compromised) release.",
+      "remediation": "Pin wrangler to an exact version in devDependencies (e.g. \"wrangler\": \"3.x.y\") and invoke it via the local binary instead of npx, or use `npx wrangler@<exact-version>`.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-unmaintained-dep-4",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "package.json",
+        "line": 12
+      },
+      "description": "package.json declares no dependencies or devDependencies at all, so there is no lockfile and no dependency/version tracking; the only third-party code pulled in is the unpinned `npx wrangler` at deploy time, which is never audited or updated deliberately.",
+      "remediation": "Declare the deploy toolchain (wrangler) as a pinned devDependency, commit package-lock.json, and run `npm audit` in CI so dependency versions are tracked and reviewed.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "src/ui/demo/jam.js",
+        "line": 13
+      },
+      "description": "createJamPanel is a single service that orchestrates many unrelated responsibilities: it injects its own CSS, loads/persists settings from localStorage, picks backing presets, generates songs, drives the ensemble transport (songLoad/songPlay/songQueue/songPart), tracks playback state and renders the whole panel UI. Business orchestration, persistence and presentation are fused in one module.",
+      "remediation": "Split the jam panel into a pure generator/settings module (state + persistence + song generation) and a thin view module that renders it, delegating transport calls to the audio bridge.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-slow-build-1",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "tools/build-site.mjs",
+        "line": 14
+      },
+      "description": "The build copies the whole `src` tree and `tools/phrases.mjs` into dist/ with fs.cpSync and then walks the output to count bytes, with no incremental or cached path; every deploy re-copies and re-stats every file even when nothing changed.",
+      "remediation": "Skip unchanged files by comparing mtime/size against the existing dist/ copy (or hash the source tree and short-circuit the copy), so repeat builds only touch modified files.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "performance-no-slo-6",
+      "module": "performance",
+      "severity": "low",
+      "location": {
+        "file": "src/worklet/processor.js",
+        "line": 0
+      },
+      "description": "The audio engine has no documented service-level objective: no stated target for maximum render load, maximum acceptable underrun rate, or maximum startup/warm-up latency. The 72% governor threshold, the 16-quantum warm-up and the 6 s ready timeout exist as constants but are not tied to any declared SLO that could be monitored or alerted on.",
+      "remediation": "Document and instrument an SLO for the audio path (e.g. p99 render load < 70%, zero underruns per 10-minute session, ready within 2 s) and surface it in the state messages so it can be monitored.",
+      "effort": "M",
+      "confidence": 0.6
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "structure-layer-violation-1",
+          "structure-high-coupling-1",
+          "security-gha-secret-leak-3",
+          "cost-no-automated-tests-4",
+          "security-directory-listing-8",
+          "security-missing-headers-10",
+          "security-gha-auto-deploy-prod-9",
+          "security-gha-action-unpinned-5",
+          "performance-no-load-testing-3"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "performance-no-regression-detection-5",
+          "performance-no-perf-budgets-10",
+          "security-unmaintained-dep-4",
+          "performance-no-backpressure-10",
+          "security-gha-overpermissive-2",
+          "performance-no-adaptive-timeout-6"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "structure-config-logic-8",
+          "structure-service-orchestration-3",
+          "cost-slow-build-1",
+          "cost-gha-no-dependency-cache-5",
+          "cost-no-performance-budget-10",
+          "security-gha-job-no-timeout-7",
+          "security-gha-no-concurrency-prod-10",
+          "security-gha-workspace-not-cleaned-6",
+          "github-commit-history-1",
+          "github-issue-health-1",
+          "performance-no-slo-6",
+          "structure-dto-logic-7",
+          "github-log-pattern-1"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {}
+  },
+  "priority_scores": [
+    {
+      "id": "structure-layer-violation-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 38.5,
+      "canonical_rule": "structure-layer-violation-1"
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 35.75,
+      "canonical_rule": "structure-high-coupling-1"
+    },
+    {
+      "id": "security-gha-secret-leak-3",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.35,
+      "score": 24.5,
+      "canonical_rule": "security-gha-secret-leak-3"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 24,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "security-directory-listing-8",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.75,
+      "score": 22.5,
+      "canonical_rule": "security-directory-listing-8"
+    },
+    {
+      "id": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.7,
+      "score": 21,
+      "canonical_rule": "security-missing-headers-10"
+    },
+    {
+      "id": "security-gha-auto-deploy-prod-9",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 19.25,
+      "canonical_rule": "security-gha-auto-deploy-prod-9"
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 18,
+      "canonical_rule": "security-gha-action-unpinned-5"
+    },
+    {
+      "id": "performance-no-load-testing-3",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.7,
+      "score": 16.8,
+      "canonical_rule": "performance-no-load-testing-3"
+    },
+    {
+      "id": "performance-no-regression-detection-5",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.7,
+      "score": 16.8,
+      "canonical_rule": "performance-no-regression-detection-5"
+    },
+    {
+      "id": "performance-no-perf-budgets-10",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.65,
+      "score": 15.6,
+      "canonical_rule": "performance-no-perf-budgets-10"
+    },
+    {
+      "id": "security-unmaintained-dep-4",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 15,
+      "canonical_rule": "security-unmaintained-dep-4"
+    },
+    {
+      "id": "performance-no-backpressure-10",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.6,
+      "score": 14.4,
+      "canonical_rule": "performance-no-backpressure-10"
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 14,
+      "canonical_rule": "security-gha-overpermissive-2"
+    },
+    {
+      "id": "performance-no-adaptive-timeout-6",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.55,
+      "score": 13.2,
+      "canonical_rule": "performance-no-adaptive-timeout-6"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-service-orchestration-3"
+    },
+    {
+      "id": "cost-slow-build-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.55,
+      "score": 8.8,
+      "canonical_rule": "cost-slow-build-1"
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-gha-no-dependency-cache-5"
+    },
+    {
+      "id": "cost-no-performance-budget-10",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.45,
+      "score": 7.2,
+      "canonical_rule": "cost-no-performance-budget-10"
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "security-gha-job-no-timeout-7"
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "security-gha-no-concurrency-prod-10"
+    },
+    {
+      "id": "security-gha-workspace-not-cleaned-6",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.35,
+      "score": 4.9,
+      "canonical_rule": "security-gha-workspace-not-cleaned-6"
+    },
+    {
+      "id": "github-commit-history-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "github-commit-history-1"
+    },
+    {
+      "id": "github-issue-health-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "github-issue-health-1"
+    },
+    {
+      "id": "performance-no-slo-6",
+      "severity": "low",
+      "module": "performance",
+      "confidence": 0.6,
+      "score": 3.6,
+      "canonical_rule": "performance-no-slo-6"
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.55,
+      "score": 3.03,
+      "canonical_rule": "structure-dto-logic-7"
+    },
+    {
+      "id": "github-log-pattern-1",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.35,
+      "score": 0.24,
+      "canonical_rule": "github-log-pattern-1"
+    }
+  ]
+}

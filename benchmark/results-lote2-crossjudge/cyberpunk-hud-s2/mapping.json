@@ -1,0 +1,64 @@
+{
+  "target": "cyberpunk-hud-s2",
+  "mock": false,
+  "created_at": "2026-10-05T23:41:55.542Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "orchestrated",
+      "source_id": "structure-service-orchestration-3",
+      "title": "structure-service-orchestration-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-9",
+      "title": "github-issue-health-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-dlq-2",
+      "title": "flows-missing-dlq-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-4",
+      "title": "github-log-pattern-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-9",
+      "title": "github-log-pattern-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-1",
+      "title": "github-commit-history-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-6",
+      "title": "github-issue-health-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-5",
+      "title": "github-issue-health-5",
+      "security_relevant": false
+    }
+  ]
+}

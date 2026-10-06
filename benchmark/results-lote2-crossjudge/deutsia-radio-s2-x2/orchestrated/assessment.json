@@ -1,0 +1,391 @@
+{
+  "metadata": {
+    "repo": "deutsia-radio",
+    "assessed_at": "2026-10-05T20:32:10.955Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 20,
+    "findings_raw": 36,
+    "findings_dropped": 6,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 1,
+    "total_findings": 29,
+    "by_severity": {
+      "critical": 1,
+      "high": 6,
+      "medium": 18,
+      "low": 2,
+      "info": 2
+    },
+    "by_module": {
+      "database": 7,
+      "structure": 11,
+      "cost": 6,
+      "github": 5
+    },
+    "effort_estimate": {
+      "XS": 2,
+      "S": 4,
+      "M": 20,
+      "L": 3
+    }
+  },
+  "findings": [
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 27
+      },
+      "description": "The build workflow runs `./gradlew assembleDebug --no-daemon` on every push and PR without any Gradle dependency/build cache step (no actions/cache, no gradle/actions/setup-gradle). Every run re-downloads all dependencies and recompiles from scratch, burning CI minutes and bandwidth on each commit.",
+      "remediation": "Add a caching step, e.g. use `gradle/actions/setup-gradle@v4` (or `actions/cache` keyed on `~/.gradle/caches` and `~/.gradle/wrapper` with a hash of the gradle files) before the build step, and drop `--no-daemon` so the Gradle daemon and caches are reused.",
+      "effort": "M",
+      "confidence": 0.85
+    },
+    {
+      "id": "github-issue-health-1",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "SECURITY.md",
+        "line": 5
+      },
+      "description": "The supported-versions table lists only 1.6.x as supported, while the project is already at 1.8.1 (see app/build.gradle.kts versionName and CHANGELOG.md). Users on 1.7.x/1.8.x are told they are unsupported, so security fixes for current releases are not communicated.",
+      "remediation": "Update the supported-versions table in SECURITY.md to cover the current release line (e.g. 1.8.x) and state an explicit support window policy for older versions.",
+      "effort": "M",
+      "confidence": 0.85
+    },
+    {
+      "id": "cost-gha-expensive-runner-4",
+      "module": "cost",
+      "severity": "low",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 14
+      },
+      "description": "The build job runs on `ubuntu-latest` with no matrix or runner-size tuning; combined with the uncached, no-daemon Gradle invocation this maximizes per-run compute cost for a single-module Android build.",
+      "remediation": "Cache Gradle dependencies, remove `--no-daemon`, and consider a smaller/cheaper runner or a single combined build+test job to reduce per-run compute.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "github-issue-health-2",
+      "module": "github",
+      "severity": "info",
+      "location": {
+        "file": "CONTRIBUTING.md",
+        "line": 8
+      },
+      "description": "CONTRIBUTING.md documents bug reporting, feature requests and code style but contains no issue/PR triage guidance, no response-time expectations and no labels/templates guidance, so contributors have no visibility into how issues are handled.",
+      "remediation": "Add a short triage section to CONTRIBUTING.md describing expected response times, label usage and how issues are prioritized, and link to issue templates.",
+      "effort": "XS",
+      "confidence": 0.6
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "database-irreversible-migration-1",
+          "database-missing-index-fk-1",
+          "structure-high-coupling-1",
+          "database-sequential-pagination-1",
+          "database-missing-app-pool-8",
+          "database-missing-index-where-4",
+          "github-issue-health-3",
+          "code-exact-duplication-significant-2",
+          "structure-high-coupling-2"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "structure-framework-leak-3",
+          "structure-low-cohesion-5",
+          "structure-service-orchestration-3",
+          "structure-service-sql-5",
+          "structure-singleton-violation-5",
+          "structure-config-logic-8"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "structure-repository-logic-4",
+          "cost-gha-no-dependency-cache-5",
+          "database-heavy-migration-5",
+          "cost-gha-infinite-artifacts-6",
+          "cost-gha-no-timeout-9",
+          "cost-no-automated-tests-4",
+          "github-issue-health-1",
+          "database-missing-bloat-monitoring-5",
+          "cost-gha-high-usage-1",
+          "github-commit-history-1",
+          "structure-dto-logic-7",
+          "cost-gha-expensive-runner-4",
+          "github-issue-health-2",
+          "github-log-pattern-1"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {}
+  },
+  "priority_scores": [
+    {
+      "id": "database-irreversible-migration-1",
+      "severity": "critical",
+      "module": "database",
+      "confidence": 0.45,
+      "score": 58.5,
+      "canonical_rule": "database-irreversible-migration-1"
+    },
+    {
+      "id": "database-missing-index-fk-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.7,
+      "score": 45.5,
+      "canonical_rule": "database-missing-index-fk-1"
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 41.25,
+      "canonical_rule": "structure-high-coupling-1"
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 39,
+      "canonical_rule": "database-sequential-pagination-1"
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.4,
+      "score": 26,
+      "canonical_rule": "database-missing-app-pool-8"
+    },
+    {
+      "id": "database-missing-index-where-4",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.75,
+      "score": 19.5,
+      "canonical_rule": "database-missing-index-where-4"
+    },
+    {
+      "id": "github-issue-health-3",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 19.25,
+      "canonical_rule": "github-issue-health-3"
+    },
+    {
+      "id": "code-exact-duplication-significant-2",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.8,
+      "score": 17.6,
+      "canonical_rule": "code-exact-duplication-significant-2"
+    },
+    {
+      "id": "structure-high-coupling-2",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 16.5,
+      "canonical_rule": "structure-high-coupling-2"
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-framework-leak-3"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-service-orchestration-3"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "structure-singleton-violation-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-singleton-violation-5"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 14.3,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "structure-repository-logic-4",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 14.3,
+      "canonical_rule": "structure-repository-logic-4"
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.85,
+      "score": 13.6,
+      "canonical_rule": "cost-gha-no-dependency-cache-5"
+    },
+    {
+      "id": "database-heavy-migration-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 13,
+      "canonical_rule": "database-heavy-migration-5"
+    },
+    {
+      "id": "cost-gha-infinite-artifacts-6",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.8,
+      "score": 12.8,
+      "canonical_rule": "cost-gha-infinite-artifacts-6"
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.8,
+      "score": 12.8,
+      "canonical_rule": "cost-gha-no-timeout-9"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 12,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "github-issue-health-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.85,
+      "score": 11.9,
+      "canonical_rule": "github-issue-health-1"
+    },
+    {
+      "id": "database-missing-bloat-monitoring-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.4,
+      "score": 10.4,
+      "canonical_rule": "database-missing-bloat-monitoring-5"
+    },
+    {
+      "id": "cost-gha-high-usage-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-gha-high-usage-1"
+    },
+    {
+      "id": "github-commit-history-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-commit-history-1"
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 3.3,
+      "canonical_rule": "structure-dto-logic-7"
+    },
+    {
+      "id": "cost-gha-expensive-runner-4",
+      "severity": "low",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 1.6,
+      "canonical_rule": "cost-gha-expensive-runner-4"
+    },
+    {
+      "id": "github-issue-health-2",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 0.42,
+      "canonical_rule": "github-issue-health-2"
+    },
+    {
+      "id": "github-log-pattern-1",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 0.28,
+      "canonical_rule": "github-log-pattern-1"
+    }
+  ]
+}

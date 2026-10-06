@@ -1,0 +1,71 @@
+{
+  "target": "vegeta",
+  "mock": false,
+  "created_at": "2026-10-05T16:49:50.095Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "code-error-assigned-unused-2",
+      "title": "code-error-assigned-unused-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "cost-gha-matrix-inefficient-10",
+      "title": "cost-gha-matrix-inefficient-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "toolkit",
+      "source_id": "security-gha-secret-leak-3",
+      "title": "security-gha-secret-leak-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C5",
+      "arm": "toolkit",
+      "source_id": "security-gha-auto-deploy-prod-9",
+      "title": "security-gha-auto-deploy-prod-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "toolkit",
+      "source_id": "code-unchecked-error-1",
+      "title": "code-unchecked-error-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C7",
+      "arm": "toolkit",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C8",
+      "arm": "toolkit",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C9",
+      "arm": "toolkit",
+      "source_id": "code-ignores-return-value-6",
+      "title": "code-ignores-return-value-6",
+      "security_relevant": true
+    }
+  ]
+}

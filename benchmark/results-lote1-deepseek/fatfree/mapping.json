@@ -1,0 +1,267 @@
+{
+  "target": "fatfree",
+  "mock": false,
+  "created_at": "2026-10-05T16:12:34.930Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "28. `welcome.htm` links to `https://github.com/bcosca/fatfree` for docs",
+      "security_relevant": true
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "26. `index.php` `die()` message uses backticks in plain text",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. `composer.json` is missing `require` constraints and metadata",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "22. `layout.htm` uses `<?php echo $ENCODING; ?>` without a default",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "21. `theme.css` uses `!important` unnecessarily",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "16. `index.php` uses `PCRE_VERSION` without importing/qualifying",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "toolkit",
+      "source_id": "cost-no-http-compression-9",
+      "title": "cost-no-http-compression-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `RewriteRule` ordering bug — the `HTTP_AUTHORIZATION` rule is unreachable",
+      "security_relevant": true
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `index.php` sets `DEBUG` before loading config, then config overrides it",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "27. `welcome.htm` uses `onclick=\"return false\"` on checkboxes",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `index.php` mixes Composer and submodule loading with a fragile check",
+      "security_relevant": true
+    },
+    {
+      "label": "C12",
+      "arm": "toolkit",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "14. `.htaccess` has no `Options -Indexes` or `DirectoryIndex` hardening",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "20. `ui/css/base.css` sets `body{overflow:hidden}` and `html{overflow-y:scroll}`",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C16",
+      "arm": "toolkit",
+      "source_id": "security-debug-in-prod-1",
+      "title": "security-debug-in-prod-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C17",
+      "arm": "toolkit",
+      "source_id": "structure-layer-violation-1",
+      "title": "structure-layer-violation-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "19. `ui/css/base.css` uses `overflow:hidden` on `div,table`",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "18. `readme.md` is enormous (121 KB) and duplicated as the `/userref` page",
+      "security_relevant": false
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. `welcome.htm` contains stale/incorrect documentation",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. `ui/layout.htm` references `lib/code.css` which is not in this repo",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. `ui/userref.htm` reads `readme.md` from the filesystem on every request",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. `index.php` uses `array(...)` long syntax and inconsistent indentation",
+      "security_relevant": false
+    },
+    {
+      "label": "C24",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "13. `.gitignore` is incomplete",
+      "security_relevant": true
+    },
+    {
+      "label": "C25",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "25. `.gitmodules` points to `fatfree-core` but `composer.json` also requires it",
+      "security_relevant": false
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "23. No `LICENSE` file",
+      "security_relevant": false
+    },
+    {
+      "label": "C27",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. `ui/layout.htm` hard-codes a `<base>` tag with `$PORT`",
+      "security_relevant": true
+    },
+    {
+      "label": "C28",
+      "arm": "toolkit",
+      "source_id": "security-error-detail-1",
+      "title": "security-error-detail-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C29",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "24. No `CHANGELOG.md`, `CONTRIBUTING.md`, or issue/PR templates",
+      "security_relevant": false
+    },
+    {
+      "label": "C30",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. `DEBUG` is set to `3` in `config.ini` and then overridden to `1` in `index.php`",
+      "security_relevant": true
+    },
+    {
+      "label": "C31",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. `PCRE_VERSION` check is obsolete and misleading",
+      "security_relevant": false
+    },
+    {
+      "label": "C32",
+      "arm": "toolkit",
+      "source_id": "flows-missing-rate-limit-8",
+      "title": "flows-missing-rate-limit-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C33",
+      "arm": "toolkit",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C34",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "17. `config.ini` has no `[routes]` or environment-specific sections",
+      "security_relevant": false
+    },
+    {
+      "label": "C35",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "Summary of the most important fixes",
+      "security_relevant": false
+    },
+    {
+      "label": "C36",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. `SECURITY.md` exposes a personal email with no PGP key or process",
+      "security_relevant": false
+    },
+    {
+      "label": "C37",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. `.htaccess` blocks `app/` and `tmp/` but not `lib/`, `ui/`, `vendor/`, or `config.ini`",
+      "security_relevant": false
+    }
+  ]
+}

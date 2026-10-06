@@ -1,0 +1,50 @@
+{
+  "target": "aurora-synth-s1",
+  "mock": false,
+  "created_at": "2026-10-05T23:13:58.860Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "security-env-file-committed-3",
+      "title": "security-env-file-committed-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C2",
+      "arm": "toolkit",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "toolkit",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C5",
+      "arm": "toolkit",
+      "source_id": "code-console-log-7",
+      "title": "code-console-log-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": true
+    }
+  ]
+}

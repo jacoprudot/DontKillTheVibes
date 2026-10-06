@@ -1,0 +1,391 @@
+{
+  "metadata": {
+    "repo": "deutsia-radio",
+    "assessed_at": "2026-10-05T20:32:10.955Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 20,
+    "findings_raw": 36,
+    "findings_dropped": 6,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 1,
+    "total_findings": 29,
+    "by_severity": {
+      "critical": 1,
+      "high": 6,
+      "medium": 18,
+      "low": 2,
+      "info": 2
+    },
+    "by_module": {
+      "database": 7,
+      "structure": 11,
+      "cost": 6,
+      "github": 5
+    },
+    "effort_estimate": {
+      "XS": 2,
+      "S": 4,
+      "M": 20,
+      "L": 3
+    }
+  },
+  "findings": [
+    {
+      "id": "database-sequential-pagination-1",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/data/RadioDao.kt",
+        "line": 0
+      },
+      "description": "Browse history pruning uses OFFSET-based pagination: 'SELECT visitedAt FROM browse_history ORDER BY visitedAt DESC LIMIT 1 OFFSET 74' inside deleteOldBrowseHistory. OFFSET forces SQLite to scan and discard the first 74 rows on every prune, and the query is re-run on each history insert.",
+      "remediation": "Replace the OFFSET subquery with a keyset/seek approach, e.g. delete rows whose visitedAt is older than the 75th newest timestamp obtained via a bounded index scan, or maintain a rolling window by deleting WHERE visitedAt < (SELECT MIN(visitedAt) FROM (SELECT visitedAt FROM browse_history ORDER BY visitedAt DESC LIMIT 75)).",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "github-issue-health-3",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": "CONTRIBUTING.md",
+        "line": 9
+      },
+      "description": "No issue templates or pull-request template are referenced anywhere in the provided repository files, so bug reports and PRs arrive without the structured information (device, Android version, steps to reproduce) the project asks for.",
+      "remediation": "Add .github/ISSUE_TEMPLATE/bug_report.md, feature_request.md and a PULL_REQUEST_TEMPLATE.md capturing device, Android version, reproduction steps and test evidence.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/ui/RadioViewModel.kt",
+        "line": 0
+      },
+      "description": "RadioViewModel performs service orchestration directly: it builds Intents with action strings and extras (ACTION_SWITCH_RECORDING_STREAM, ACTION_START_RECORDING, ACTION_STOP_RECORDING) and calls startService, and it also instantiates RadioRepository inline for syncCurrentStationById. The ViewModel is coordinating service commands rather than exposing state.",
+      "remediation": "Introduce a PlaybackCommandDispatcher/use-case layer that the ViewModel calls; keep Intent construction and service invocation out of the ViewModel.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "structure-repository-logic-4",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "app/src/main/java/com/opensource/i2pradio/data/RadioRepository.kt",
+        "line": 0
+      },
+      "description": "RadioRepository contains non-CRUD decision logic: getStationsSorted/getStationsByGenreSorted/getQueueStations implement sort-order and genre-filter branching that maps UI sort semantics onto DAO queries, and setStationOrder loops over ids reassigning display positions. This is query-selection policy living in the repository rather than a dedicated query/spec layer.",
+      "remediation": "Extract the sort/filter mapping into a dedicated query-specification or use-case class (e.g. StationQueryBuilder) so the repository only executes the resulting DAO calls.",
+      "effort": "M",
+      "confidence": 0.65
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "database-irreversible-migration-1",
+          "database-missing-index-fk-1",
+          "structure-high-coupling-1",
+          "database-sequential-pagination-1",
+          "database-missing-app-pool-8",
+          "database-missing-index-where-4",
+          "github-issue-health-3",
+          "code-exact-duplication-significant-2",
+          "structure-high-coupling-2"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "structure-framework-leak-3",
+          "structure-low-cohesion-5",
+          "structure-service-orchestration-3",
+          "structure-service-sql-5",
+          "structure-singleton-violation-5",
+          "structure-config-logic-8"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "structure-repository-logic-4",
+          "cost-gha-no-dependency-cache-5",
+          "database-heavy-migration-5",
+          "cost-gha-infinite-artifacts-6",
+          "cost-gha-no-timeout-9",
+          "cost-no-automated-tests-4",
+          "github-issue-health-1",
+          "database-missing-bloat-monitoring-5",
+          "cost-gha-high-usage-1",
+          "github-commit-history-1",
+          "structure-dto-logic-7",
+          "cost-gha-expensive-runner-4",
+          "github-issue-health-2",
+          "github-log-pattern-1"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {}
+  },
+  "priority_scores": [
+    {
+      "id": "database-irreversible-migration-1",
+      "severity": "critical",
+      "module": "database",
+      "confidence": 0.45,
+      "score": 58.5,
+      "canonical_rule": "database-irreversible-migration-1"
+    },
+    {
+      "id": "database-missing-index-fk-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.7,
+      "score": 45.5,
+      "canonical_rule": "database-missing-index-fk-1"
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 41.25,
+      "canonical_rule": "structure-high-coupling-1"
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 39,
+      "canonical_rule": "database-sequential-pagination-1"
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.4,
+      "score": 26,
+      "canonical_rule": "database-missing-app-pool-8"
+    },
+    {
+      "id": "database-missing-index-where-4",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.75,
+      "score": 19.5,
+      "canonical_rule": "database-missing-index-where-4"
+    },
+    {
+      "id": "github-issue-health-3",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 19.25,
+      "canonical_rule": "github-issue-health-3"
+    },
+    {
+      "id": "code-exact-duplication-significant-2",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.8,
+      "score": 17.6,
+      "canonical_rule": "code-exact-duplication-significant-2"
+    },
+    {
+      "id": "structure-high-coupling-2",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 16.5,
+      "canonical_rule": "structure-high-coupling-2"
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-framework-leak-3"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-service-orchestration-3"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "structure-singleton-violation-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-singleton-violation-5"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 14.3,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "structure-repository-logic-4",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 14.3,
+      "canonical_rule": "structure-repository-logic-4"
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.85,
+      "score": 13.6,
+      "canonical_rule": "cost-gha-no-dependency-cache-5"
+    },
+    {
+      "id": "database-heavy-migration-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 13,
+      "canonical_rule": "database-heavy-migration-5"
+    },
+    {
+      "id": "cost-gha-infinite-artifacts-6",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.8,
+      "score": 12.8,
+      "canonical_rule": "cost-gha-infinite-artifacts-6"
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.8,
+      "score": 12.8,
+      "canonical_rule": "cost-gha-no-timeout-9"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 12,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "github-issue-health-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.85,
+      "score": 11.9,
+      "canonical_rule": "github-issue-health-1"
+    },
+    {
+      "id": "database-missing-bloat-monitoring-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.4,
+      "score": 10.4,
+      "canonical_rule": "database-missing-bloat-monitoring-5"
+    },
+    {
+      "id": "cost-gha-high-usage-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-gha-high-usage-1"
+    },
+    {
+      "id": "github-commit-history-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-commit-history-1"
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 3.3,
+      "canonical_rule": "structure-dto-logic-7"
+    },
+    {
+      "id": "cost-gha-expensive-runner-4",
+      "severity": "low",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 1.6,
+      "canonical_rule": "cost-gha-expensive-runner-4"
+    },
+    {
+      "id": "github-issue-health-2",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 0.42,
+      "canonical_rule": "github-issue-health-2"
+    },
+    {
+      "id": "github-log-pattern-1",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 0.28,
+      "canonical_rule": "github-log-pattern-1"
+    }
+  ]
+}

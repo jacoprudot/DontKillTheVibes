@@ -1,0 +1,148 @@
+{
+  "target": "realworld-control",
+  "mock": false,
+  "created_at": "2026-10-05T03:11:04.380Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "8. **Inefficient Test Coverage**: The test coverage configuration in `jest.config.ts` includes all files under `src/**/_",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "10. **Lack of Environment-Specific Configuration**: While `nx.json` provides configurations for different environments (",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "3. **Inconsistent Naming Conventions**: The file names and directory structure use a mix of kebab-case, camelCase, and P",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "13. **Lack of Error Handling**: While the repository includes some error handling (e.g., in `article.service.ts`), it's ",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "1. **Duplicate `project.json`**: There is a duplicate `project.json` file at the root of the project, which should likel",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "4. **Overly Complex Configuration Files**:",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "toolkit",
+      "source_id": "structure-high-coupling-1",
+      "title": "structure-high-coupling-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "9. **Potential for Circular Dependencies**: The project structure does not explicitly show any circular dependencies, bu",
+      "security_relevant": false
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "7. **Potential Security Issues**:",
+      "security_relevant": true
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "12. **Potential for Unnecessary Logging**: The `global-setup.ts` and `global-teardown.ts` files include logging statemen",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "11. **Inefficient Use of Prisma Migrations**: The repository uses multiple migrations to manage schema changes, which mi",
+      "security_relevant": false
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "5. **Redundant Dependencies**: Some dependencies like `@swc-node/register` and `@swc/core` are included but not used in ",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "15. **Lack of Dependency Management**: While `package-lock.json` is present, it's worth reviewing the dependencies to en",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "The repository appears to be a Node.js application built with Nx, TypeScript, and Prisma for database operations. Here a",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "toolkit",
+      "source_id": "structure-layer-violation-1",
+      "title": "structure-layer-violation-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "6. **Lack of Documentation**: The repository lacks documentation for setting up, running, and testing the application. A",
+      "security_relevant": false
+    },
+    {
+      "label": "C17",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "14. **Potential for Unnecessary Build Steps**: The `package.json` scripts include a `build` script that runs `nx build`,",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "- The use of `bcryptjs` for password hashing is good practice, but ensure that the salt rounds are configured securely.",
+      "security_relevant": true
+    },
+    {
+      "label": "C19",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "These issues can be addressed by refactoring the codebase, simplifying configurations, improving documentation, and ensu",
+      "security_relevant": false
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "2. **Unnecessary Files**: Some files like `README.md`, `project-logo.png`, and `src/assets/images/demo-avatar.png` are n",
+      "security_relevant": false
+    }
+  ]
+}

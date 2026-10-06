@@ -1,0 +1,132 @@
+{
+  "metadata": {
+    "repo": "sudomichael/agentgraphed",
+    "assessed_at": "2026-06-12T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "D",
+    "total_findings": 11,
+    "critical_count": 0,
+    "by_severity": {
+      "medium": 7,
+      "high": 2,
+      "low": 2
+    },
+    "effort_estimate": {
+      "M": 6,
+      "XS": 1,
+      "S": 4
+    }
+  },
+  "findings": [
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/publish.yml",
+        "line": 62
+      },
+      "description": "The verify-platforms matrix job runs `npm install agentgraphed@<version>` on three OSes with no dependency cache step. Each run downloads the full dependency tree (Next.js, better-sqlite3 prebuilds, recharts, etc.) from the registry, adding minutes to every release across macos-latest, windows-latest and ubuntu-latest.",
+      "remediation": "Add actions/setup-node with `cache: 'npm'` (or an actions/cache step keyed on the published version) before the install step in verify-platforms to reuse the npm cache across matrix legs.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "      - name: Install + boot from npm\n        shell: bash\n        run: |\n          set -e\n          mkdir -p verify && cd verify\n          npm init -y > /dev/null\n          npm install \"agentgraphed@${{ steps.ver.outputs.version }}\" --no-audit --no-fund",
+        "metric": "3 matrix legs x full dependency download per release"
+      }
+    },
+    {
+      "id": "cost-gha-always-on-8",
+      "module": "cost",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": ".github/workflows/ci.yml",
+        "line": 5
+      },
+      "description": "The CI workflow triggers on every pull_request without a path or branch filter, so documentation-only, screenshot-only, or CHANGELOG-only PRs still run the full build plus the sandboxed install-and-boot verification. The repository contains large binary screenshot assets under docs/screenshots/, making asset-only PRs plausible.",
+      "remediation": "Add `paths-ignore: ['docs/**', '**.md', 'LICENSE']` to the pull_request trigger, or gate the expensive install-verification step behind a `if:` condition on changed paths.",
+      "confidence": 0.65,
+      "evidence": {
+        "snippet": "on:\n  push:\n    branches: [main]\n  pull_request:",
+        "metric": "no paths-ignore filter on pull_request trigger"
+      }
+    },
+    {
+      "id": "code-promise-chain-missing-catch-5",
+      "module": "code",
+      "severity": "medium",
+      "effort": "S",
+      "location": {
+        "file": "bin/agentgraphed.js",
+        "line": 130
+      },
+      "description": "triggerIngest performs a fetch to the local ingest endpoint and awaits res.json(), but the surrounding try/catch only wraps the fetch and the res.ok check. If the response body is not valid JSON (e.g. an HTML error page from the Next.js server), res.json() rejects and the rejection propagates out of triggerIngest into main(), where it is only caught by the top-level main().catch — producing a stack trace instead of the intended graceful '(ingest failed: ...)' warning.",
+      "remediation": "Move the `return await res.json()` inside the existing try block, or add a `.catch()` on the json() call that logs the parse failure and returns null, matching the function's documented contract of returning null on failure.",
+      "confidence": 0.65,
+      "evidence": {
+        "snippet": "async function triggerIngest(port) {\n  try {\n    const res = await fetch(`http://127.0.0.1:${port}/api/ingest-local`, { method: 'POST' });\n    if (!res.ok) {\n      console.warn(`  (ingest endpoint returned ${res.status})`);\n      return null;\n    }\n    return await res.json();\n  } catch (e) {\n    console.warn(`  (ingest failed: ${e.message})`);\n    return null;\n  }\n}",
+        "metric": "res.json() rejection path not covered by the function's own catch"
+      }
+    },
+    {
+      "id": "code-missing-return-type-8",
+      "module": "code",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": "bin/agentgraphed.js",
+        "line": 96
+      },
+      "description": "findFreePort is declared async but has no JSDoc @returns annotation, and the file mixes JSDoc-style comments elsewhere. Callers cannot tell from the signature whether the function resolves to a number or rejects on exhaustion, which is exactly the ambiguity that produced the unhandled-rejection finding above.",
+      "remediation": "Add a JSDoc block: `/** @param {number} start @returns {Promise<number>} @throws {Error} when no free port is found */` above findFreePort, and apply the same to pingUntilReady and triggerIngest.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "async function findFreePort(start) {",
+        "metric": "no @returns annotation on async helper"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-gha-overpermissive-2",
+        "security-gha-job-no-timeout-7",
+        "cost-gha-no-timeout-9",
+        "code-unhandled-promise-4"
+      ],
+      "60_days": [
+        "security-gha-action-unpinned-5",
+        "security-gha-no-concurrency-prod-10",
+        "cost-gha-no-dependency-cache-5",
+        "code-promise-chain-missing-catch-5"
+      ],
+      "90_days": [
+        "security-gha-no-container-8",
+        "cost-gha-always-on-8",
+        "code-missing-return-type-8"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "security-gha-overpermissive-2",
+        "to": "security-gha-no-container-8",
+        "type": "blocks"
+      },
+      {
+        "from": "security-gha-job-no-timeout-7",
+        "to": "security-gha-no-concurrency-prod-10",
+        "type": "blocks"
+      },
+      {
+        "from": "code-unhandled-promise-4",
+        "to": "code-missing-return-type-8",
+        "type": "blocks"
+      }
+    ]
+  }
+}

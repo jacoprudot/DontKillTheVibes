@@ -1,0 +1,85 @@
+{
+  "target": "mini-redis",
+  "mock": false,
+  "created_at": "2026-10-05T17:50:49.011Z",
+  "judge_model": "qwen3.5:9b",
+  "judge_base_url": "http://localhost:11434/v1",
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\mini-redis",
+  "mock_notice": null,
+  "model_under_test": "deepseek-chat",
+  "commit": "3d93b42bc363220f85af4fc9e1bebd35b588a4a3",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 1,
+    "toolkit": 1,
+    "orchestrated": 0,
+    "naive": 0,
+    "judged": 1,
+    "unverifiable": 1
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 1,
+      "judged": 1,
+      "real": 0,
+      "falseCount": 0,
+      "unverifiable": 1,
+      "judgeGrounded": 1,
+      "mechGrounded": 1,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 4,
+      "actionableN": 1,
+      "security": 0,
+      "securityFn": 0,
+      "claimsWithCitations": 1,
+      "citationsTotal": 1,
+      "weakCitations": 0,
+      "meanActionability": 4,
+      "precision": null,
+      "judgeGroundedRate": 1
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "severity": "medium",
+      "module": "flows",
+      "security_relevant": false,
+      "judge": {
+        "verdict": "unverifiable",
+        "real": false,
+        "unverifiable": true,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "Snippet truncates before showing server::run invocation or error handling logic; cannot verify claim from provided code context.",
+        "votes": {
+          "unverifiable": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": "src/bin/server.rs",
+            "line": 36,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 95,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

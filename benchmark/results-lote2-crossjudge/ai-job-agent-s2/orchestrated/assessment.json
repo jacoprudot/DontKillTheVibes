@@ -1,0 +1,775 @@
+{
+  "metadata": {
+    "repo": "ai-job-agent",
+    "assessed_at": "2026-10-05T20:46:16.365Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 22,
+    "findings_raw": 76,
+    "findings_dropped": 19,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 4,
+    "total_findings": 57,
+    "by_severity": {
+      "critical": 4,
+      "high": 13,
+      "medium": 33,
+      "low": 7
+    },
+    "by_module": {
+      "database": 7,
+      "structure": 7,
+      "flows": 26,
+      "security": 6,
+      "cost": 7,
+      "github": 4
+    },
+    "effort_estimate": {
+      "XS": 5,
+      "S": 12,
+      "M": 39,
+      "L": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "security-secret-in-code-1",
+      "module": "security",
+      "severity": "critical",
+      "location": {
+        "file": "scripts/send-cold-email.js",
+        "line": 19
+      },
+      "description": "The script's own documentation hardcodes a real personal Gmail address (`k.akbarme@gmail.com`) as the example `from`/`reply_to` value, and the same address is used as the default sender in the payload examples. Committing a real personal email address into the repository exposes the maintainer's identity/contact to anyone who clones it and encourages users to copy a live address into their configs.",
+      "remediation": "Replace the hardcoded personal address in the docstring and examples with a neutral placeholder such as `you@example.com`, and require the sender address to come from configuration or an environment variable.",
+      "effort": "XS",
+      "confidence": 0.7
+    },
+    {
+      "id": "database-iteration-overload-5",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "scripts/tracker-status-update.py",
+        "line": 110
+      },
+      "description": "update_local_tracker() performs a nested loop over every CSV row for every update (for row in rows: for update in updates:), i.e. O(rows x updates) comparisons with repeated clean()/lower() normalization on each comparison. With a few hundred applications and a batch of status updates this is quadratic work on every run.",
+      "remediation": "Build a lookup dict keyed by the normalized (company, role, location) tuple once, then resolve each update with a single O(1) dict lookup instead of scanning all rows per update.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 10
+      },
+      "description": "None of the workflow jobs (`smoke`, `lint`, `skill-files`) declare `timeout-minutes`. A hung step (e.g. a stalled `npm install` or a Playwright launch that never returns) can occupy a runner for the default 360 minutes, burning CI minutes and delaying feedback.",
+      "remediation": "Add `timeout-minutes: 10` (or an appropriate bound) to each job in .github/workflows/test.yml so runaway steps are killed promptly.",
+      "effort": "M",
+      "confidence": 0.85
+    },
+    {
+      "id": "code-exact-duplication-significant-2",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/mirror-tracker.mjs",
+        "line": 30
+      },
+      "description": "The RFC 4180-lite CSV parser (`parseCSV`) is duplicated verbatim between scripts/job-dashboard.mjs and scripts/mirror-tracker.mjs, including the identical BOM-stripping logic and quoted-field state machine. The two copies have already drifted (one returns an array of objects, the other returns {header, rows}).",
+      "remediation": "Move the CSV parser into a shared module (e.g. scripts/lib/csv.mjs) exporting a single parse function, and have both job-dashboard.mjs and mirror-tracker.mjs import it so the parsing rules stay in sync.",
+      "effort": "M",
+      "confidence": 0.95
+    },
+    {
+      "id": "structure-config-logic-8",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/google-sheet-sync.py",
+        "line": 33
+      },
+      "description": "Configuration values (SPREADSHEET_ID, SHEET_NAME) are read from environment variables at module import time and default to placeholder sentinels ('YOUR_SHEET_ID'), while the same constants are re-declared independently in scripts/tracker-status-update.py — configuration is scattered across modules rather than centralized.",
+      "remediation": "Centralize sheet configuration (spreadsheet id, sheet name, range) in one shared config module or a single config file loaded by both scripts, and fail fast with a clear error when the placeholder is still set.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-service-sql-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "scripts/google-sheet-sync.py",
+        "line": 97
+      },
+      "description": "`rows_from_csv()` mixes data-access concerns (reading the CSV, calling `fetch_next_row()` which performs an authenticated Sheets API request) with presentation/business logic (cleaning fields, defaulting `source`/`applied_by`, and synthesizing the `=TODAY()-A{sheet_row}` formula and `make_key()` slug). The row-shaping logic is entangled with the network fetch.",
+      "remediation": "Split the function: a pure `format_row(row, sheet_row)` that maps a CSV dict to the sheet row, and a separate orchestration step that fetches the start row and appends, so the formatting logic is testable without network access.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "package.json",
+        "line": 29
+      },
+      "description": "The project declares `\"license\": \"MIT\"` and depends on playwright-core, but there is no automated license inventory or attribution check anywhere in the repo or CI. As dependencies are added, incompatible or attribution-required licenses can slip in unnoticed.",
+      "remediation": "Add a license-checking step (e.g. license-checker or a CI job that generates a third-party notices file) so dependency licenses are tracked and attribution obligations are met.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-no-state-persistence-6",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "scripts/outlook-send.js",
+        "line": 0
+      },
+      "description": "`outlook-send.js` keeps no persistent state about which emails it has composed or sent; the only record is stdout. If the process is interrupted after clicking Send but before logging, there is no durable record to reconcile against the outreach log.",
+      "remediation": "Persist a send record (recipient, subject, message-id, timestamp, status) to a durable store before and after the Send click so interrupted runs can be reconciled.",
+      "effort": "M",
+      "confidence": 0.45
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "security-secret-in-code-1",
+          "database-full-table-scan-3",
+          "flows-fire-and-forget-critical-1",
+          "flows-missing-idempotency-3",
+          "database-iteration-overload-5",
+          "code-exact-duplication-massive-1",
+          "database-missing-app-pool-8",
+          "database-sequential-pagination-1",
+          "security-no-input-validation-14",
+          "flows-missing-dlq-2",
+          "security-gha-overpermissive-2",
+          "cost-no-automated-tests-4",
+          "flows-auth-order-1",
+          "flows-message-breaking-schema-2",
+          "flows-message-not-idempotent-8",
+          "security-gha-action-unpinned-5",
+          "security-gha-job-no-timeout-7",
+          "database-connection-timeout-high-3"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "cost-dev-setup-missing-3",
+          "code-exact-duplication-significant-2",
+          "flows-consumer-group-lag-3",
+          "security-gha-workspace-not-cleaned-6",
+          "structure-low-cohesion-5",
+          "database-missing-index-where-4",
+          "structure-high-coupling-2",
+          "flows-missing-timeout-6",
+          "cost-gha-no-timeout-9",
+          "database-missing-index-hot-path-2",
+          "flows-missing-error-handler-5",
+          "cost-gha-no-dependency-cache-5"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "code-long-parameter-list-8",
+          "structure-config-logic-8",
+          "structure-service-sql-5",
+          "flows-error-leaks-stack-6",
+          "flows-missing-rate-limit-8",
+          "flows-retry-no-backoff-4",
+          "flows-dlq-not-monitored-5",
+          "flows-message-ordering-needed-4",
+          "flows-message-schema-no-version-1",
+          "flows-missing-circuit-breaker-7",
+          "flows-missing-visibility-timeout-9",
+          "flows-retry-no-max-5",
+          "flows-validation-placement-2",
+          "cost-gha-high-usage-1",
+          "cost-documentation-poor-7",
+          "security-weak-rng-10",
+          "cost-no-license-tracking-5",
+          "cost-slow-tests-2",
+          "github-issue-health-1",
+          "github-commit-history-1",
+          "flows-inconsistent-response-4",
+          "flows-missing-request-id-7",
+          "flows-missing-cors-9",
+          "flows-missing-security-headers-10",
+          "flows-no-state-persistence-6",
+          "flows-validation-too-early-3",
+          "flows-message-retention-too-long-7"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "flows-missing-timeout-6": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-idempotency-3": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-error-handler-5": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-error-leaks-stack-6": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-request-id-7": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-rate-limit-8": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-dlq-2": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-visibility-timeout-9": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-message-not-idempotent-8": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-message-ordering-needed-4": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-cors-9": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-security-headers-10": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-fire-and-forget-critical-1": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-inconsistent-response-4": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-message-schema-no-version-1": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-message-breaking-schema-2": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-message-retention-too-long-7": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-dlq-not-monitored-5": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-no-state-persistence-6": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-validation-placement-2": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-validation-too-early-3": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-auth-order-1": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-consumer-group-lag-3": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-missing-circuit-breaker-7": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-retry-no-backoff-4": [
+        "code-exact-duplication-massive-1"
+      ],
+      "flows-retry-no-max-5": [
+        "code-exact-duplication-massive-1"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.7,
+      "score": 105,
+      "canonical_rule": "security-secret-in-code-1"
+    },
+    {
+      "id": "database-full-table-scan-3",
+      "severity": "critical",
+      "module": "database",
+      "confidence": 0.75,
+      "score": 97.5,
+      "canonical_rule": "database-full-table-scan-3"
+    },
+    {
+      "id": "flows-fire-and-forget-critical-1",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 60,
+      "canonical_rule": "flows-fire-and-forget-critical-1"
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 60,
+      "canonical_rule": "flows-missing-idempotency-3"
+    },
+    {
+      "id": "database-iteration-overload-5",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.8,
+      "score": 52,
+      "canonical_rule": "database-iteration-overload-5"
+    },
+    {
+      "id": "code-exact-duplication-massive-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.9,
+      "score": 49.5,
+      "canonical_rule": "code-exact-duplication-massive-1"
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.7,
+      "score": 45.5,
+      "canonical_rule": "database-missing-app-pool-8"
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.7,
+      "score": 45.5,
+      "canonical_rule": "database-sequential-pagination-1"
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 45,
+      "canonical_rule": "security-no-input-validation-14"
+    },
+    {
+      "id": "flows-missing-dlq-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 30,
+      "canonical_rule": "flows-missing-dlq-2"
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.85,
+      "score": 29.75,
+      "canonical_rule": "security-gha-overpermissive-2"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 28,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "flows-auth-order-1",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 27.5,
+      "canonical_rule": "flows-auth-order-1"
+    },
+    {
+      "id": "flows-message-breaking-schema-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 27.5,
+      "canonical_rule": "flows-message-breaking-schema-2"
+    },
+    {
+      "id": "flows-message-not-idempotent-8",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 27.5,
+      "canonical_rule": "flows-message-not-idempotent-8"
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.9,
+      "score": 27,
+      "canonical_rule": "security-gha-action-unpinned-5"
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.85,
+      "score": 25.5,
+      "canonical_rule": "security-gha-job-no-timeout-7"
+    },
+    {
+      "id": "database-connection-timeout-high-3",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.85,
+      "score": 22.1,
+      "canonical_rule": "database-connection-timeout-high-3"
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.55,
+      "score": 22,
+      "canonical_rule": "cost-dev-setup-missing-3"
+    },
+    {
+      "id": "code-exact-duplication-significant-2",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.95,
+      "score": 20.9,
+      "canonical_rule": "code-exact-duplication-significant-2"
+    },
+    {
+      "id": "flows-consumer-group-lag-3",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 20,
+      "canonical_rule": "flows-consumer-group-lag-3"
+    },
+    {
+      "id": "security-gha-workspace-not-cleaned-6",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 18,
+      "canonical_rule": "security-gha-workspace-not-cleaned-6"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 16.5,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "database-missing-index-where-4",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 15.6,
+      "canonical_rule": "database-missing-index-where-4"
+    },
+    {
+      "id": "structure-high-coupling-2",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-high-coupling-2"
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 15,
+      "canonical_rule": "flows-missing-timeout-6"
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-gha-no-timeout-9"
+    },
+    {
+      "id": "database-missing-index-hot-path-2",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.55,
+      "score": 14.3,
+      "canonical_rule": "database-missing-index-hot-path-2"
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "flows-missing-error-handler-5"
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.85,
+      "score": 13.6,
+      "canonical_rule": "cost-gha-no-dependency-cache-5"
+    },
+    {
+      "id": "code-long-parameter-list-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "code-long-parameter-list-8"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 12,
+      "canonical_rule": "flows-error-leaks-stack-6"
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 11,
+      "canonical_rule": "flows-missing-rate-limit-8"
+    },
+    {
+      "id": "flows-retry-no-backoff-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 11,
+      "canonical_rule": "flows-retry-no-backoff-4"
+    },
+    {
+      "id": "flows-dlq-not-monitored-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-dlq-not-monitored-5"
+    },
+    {
+      "id": "flows-message-ordering-needed-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-message-ordering-needed-4"
+    },
+    {
+      "id": "flows-message-schema-no-version-1",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-message-schema-no-version-1"
+    },
+    {
+      "id": "flows-missing-circuit-breaker-7",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-missing-circuit-breaker-7"
+    },
+    {
+      "id": "flows-missing-visibility-timeout-9",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-missing-visibility-timeout-9"
+    },
+    {
+      "id": "flows-retry-no-max-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-retry-no-max-5"
+    },
+    {
+      "id": "flows-validation-placement-2",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-validation-placement-2"
+    },
+    {
+      "id": "cost-gha-high-usage-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.7,
+      "score": 9.8,
+      "canonical_rule": "cost-gha-high-usage-1"
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-documentation-poor-7"
+    },
+    {
+      "id": "security-weak-rng-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.3,
+      "score": 9,
+      "canonical_rule": "security-weak-rng-10"
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-no-license-tracking-5"
+    },
+    {
+      "id": "cost-slow-tests-2",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-slow-tests-2"
+    },
+    {
+      "id": "github-issue-health-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 7.7,
+      "canonical_rule": "github-issue-health-1"
+    },
+    {
+      "id": "github-commit-history-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-commit-history-1"
+    },
+    {
+      "id": "flows-inconsistent-response-4",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-inconsistent-response-4"
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-missing-request-id-7"
+    },
+    {
+      "id": "flows-missing-cors-9",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 2.25,
+      "canonical_rule": "flows-missing-cors-9"
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 2.25,
+      "canonical_rule": "flows-missing-security-headers-10"
+    },
+    {
+      "id": "flows-no-state-persistence-6",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 2.25,
+      "canonical_rule": "flows-no-state-persistence-6"
+    },
+    {
+      "id": "flows-validation-too-early-3",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 2.25,
+      "canonical_rule": "flows-validation-too-early-3"
+    },
+    {
+      "id": "flows-message-retention-too-long-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 2,
+      "canonical_rule": "flows-message-retention-too-long-7"
+    }
+  ]
+}

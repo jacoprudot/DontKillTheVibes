@@ -1,0 +1,64 @@
+{
+  "target": "obs-airplay-s2",
+  "mock": false,
+  "created_at": "2026-10-06T00:46:56.856Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "structure-service-sql-5",
+      "title": "structure-service-sql-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "code-print-statement-5",
+      "title": "code-print-statement-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "performance-serialization-format-2",
+      "title": "performance-serialization-format-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "orchestrated",
+      "source_id": "code-mutex-missing-4",
+      "title": "code-mutex-missing-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-infinite-artifacts-6",
+      "title": "cost-gha-infinite-artifacts-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "orchestrated",
+      "source_id": "performance-no-backpressure-10",
+      "title": "performance-no-backpressure-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "orchestrated",
+      "source_id": "code-unchecked-error-1",
+      "title": "code-unchecked-error-1",
+      "security_relevant": false
+    }
+  ]
+}

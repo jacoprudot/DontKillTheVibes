@@ -1,0 +1,65 @@
+{
+  "metadata": {
+    "repo": "tokio-rs/mini-redis",
+    "assessed_at": "2025-01-01T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "D",
+    "total_findings": 6,
+    "critical_count": 0,
+    "by_severity": {
+      "high": 3,
+      "medium": 3
+    },
+    "effort_estimate": {
+      "S": 2,
+      "M": 4
+    }
+  },
+  "findings": [
+    {
+      "id": "flows-missing-error-handler-5",
+      "module": "flows",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "src/bin/server.rs",
+        "line": 36
+      },
+      "description": "server::run(listener, signal::ctrl_c()).await is invoked and its result is discarded (the function returns ()), so any fatal error raised during the accept loop or graceful-shutdown sequence is not surfaced to the process exit code. Operators running the server cannot distinguish a clean shutdown from an internal failure via the exit status.",
+      "remediation": "Have server::run return a Result and propagate it from main so that fatal server errors produce a non-zero exit code and are logged, rather than being silently swallowed.",
+      "confidence": 0.6
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "code-unhandled-promise-4",
+        "code-generic-catch-2"
+      ],
+      "60_days": [
+        "code-ignores-return-value-6",
+        "flows-missing-timeout-6"
+      ],
+      "90_days": [
+        "code-missing-validation-4",
+        "flows-missing-error-handler-5"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "code-ignores-return-value-6",
+        "to": "code-unhandled-promise-4",
+        "type": "blocks"
+      },
+      {
+        "from": "flows-missing-error-handler-5",
+        "to": "code-unhandled-promise-4",
+        "type": "blocks"
+      }
+    ]
+  }
+}

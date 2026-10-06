@@ -1,0 +1,2 @@
+WARN: findings array is empty — confirm the repository digest contained files to assess
+VALID: 0 findings, 1 warning(s)

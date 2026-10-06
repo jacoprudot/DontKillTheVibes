@@ -1,0 +1,66 @@
+{
+  "metadata": {
+    "repo": "Textualize/rich",
+    "assessed_at": "2025-01-01T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "D",
+    "total_findings": 7,
+    "critical_count": 0,
+    "by_severity": {
+      "medium": 5,
+      "high": 1,
+      "low": 1
+    },
+    "effort_estimate": {
+      "M": 5,
+      "XS": 1,
+      "S": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/pythonpackage.yml",
+        "line": 38
+      },
+      "description": "The CI workflow installs Poetry via a mutable tag reference (`snok/install-poetry@v1.3.4`) rather than a pinned commit SHA. A compromised or retagged upstream action could execute arbitrary code in the build job, which has access to the CODECOV_TOKEN secret.",
+      "remediation": "Pin the action to a full commit SHA (e.g. `snok/install-poetry@<40-char-sha>`) and let Dependabot keep it updated, matching the pattern already used for `peter-evans/create-or-update-comment` in comment.yml.",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "uses: snok/install-poetry@v1.3.4",
+        "metric": "1 of 2 third-party actions in this workflow referenced by tag, not SHA"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-gha-overpermissive-2",
+        "cost-gha-no-dependency-cache-5",
+        "cost-gha-always-on-8"
+      ],
+      "60_days": [
+        "security-gha-action-unpinned-5",
+        "security-gha-fork-pr-4",
+        "security-gha-job-no-timeout-7",
+        "security-gha-no-concurrency-prod-10"
+      ],
+      "90_days": []
+    },
+    "dependencies": [
+      {
+        "from": "security-gha-overpermissive-2",
+        "to": "security-gha-action-unpinned-5",
+        "type": "blocks"
+      }
+    ]
+  }
+}

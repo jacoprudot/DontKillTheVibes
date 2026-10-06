@@ -1,0 +1,78 @@
+{
+  "metadata": {
+    "repo": "screenshot-to-code",
+    "assessed_at": "2023-10-05T14:30:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "C",
+    "total_findings": 2,
+    "critical_count": 0,
+    "by_severity": {
+      "medium": 2
+    },
+    "effort_estimate": {
+      "M": 2
+    }
+  },
+  "findings": [
+    {
+      "id": "code-missing-error-main-10",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "backend/main.py",
+        "line": 0
+      },
+      "description": "No main function found in backend/main.py",
+      "remediation": "Add a main function to entry point of the application",
+      "effort": "M",
+      "confidence": 1,
+      "tags": [
+        "code"
+      ],
+      "relatedFindings": [],
+      "evidence": {
+        "snippet": "",
+        "metric": "",
+        "benchmark": ""
+      }
+    },
+    {
+      "id": "structure-high-coupling-2",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "backend/agent/engine.py",
+        "line": 0
+      },
+      "description": "High efferent coupling in agent/engine.py",
+      "remediation": "Refactor to reduce dependencies and improve cohesion",
+      "effort": "M",
+      "confidence": 1,
+      "tags": [
+        "structure"
+      ],
+      "relatedFindings": [],
+      "evidence": {
+        "snippet": "",
+        "metric": "Efferent coupling: 35",
+        "benchmark": ""
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "code-missing-error-main-10"
+      ],
+      "60_days": [
+        "structure-high-coupling-2"
+      ],
+      "90_days": []
+    },
+    "dependencies": []
+  }
+}

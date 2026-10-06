@@ -1,0 +1,964 @@
+{
+  "metadata": {
+    "repo": "holo-gestures",
+    "assessed_at": "2026-10-05T20:41:24.478Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 19,
+    "findings_raw": 46,
+    "findings_dropped": 6,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 5,
+    "total_findings": 39,
+    "by_severity": {
+      "critical": 5,
+      "high": 6,
+      "medium": 23,
+      "low": 4,
+      "info": 1
+    },
+    "by_module": {
+      "code": 4,
+      "structure": 3,
+      "flows": 8,
+      "security": 5,
+      "cost": 7,
+      "performance": 3,
+      "github": 9
+    },
+    "effort_estimate": {
+      "XS": 7,
+      "S": 6,
+      "M": 25,
+      "L": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "code-bare-except-1",
+      "module": "code",
+      "severity": "critical",
+      "location": {
+        "file": "server.py",
+        "line": 31
+      },
+      "description": "`notes_dir()` wraps config loading in a bare `except Exception: pass`, silently swallowing every failure (malformed JSON, permission errors, unexpected bugs) and falling back to sample-notes with no signal that the user's configured folder was ignored.",
+      "remediation": "Catch only the expected exceptions (json.JSONDecodeError, OSError) and log the failure, e.g. `except (OSError, json.JSONDecodeError) as e: print(f'holo.json unreadable: {e}', file=sys.stderr)` before falling back.",
+      "effort": "XS",
+      "confidence": 0.9
+    },
+    {
+      "id": "security-logs-contain-secrets-12",
+      "module": "security",
+      "severity": "critical",
+      "location": {
+        "file": "server.py",
+        "line": 137
+      },
+      "description": "The /api/diag and /api/state handlers persist the entire client-supplied JSON payload to disk (state/holo-diag.json, state/holo-state.json) without filtering. If the page ever includes tokens, session data, or other sensitive fields in its crash/state reports, they are written to disk in cleartext and retained.",
+      "remediation": "Whitelist the fields that are persisted (e.g. only known diagnostic keys) and strip or redact anything that looks like a credential, token, or secret before writing to state/*.json.",
+      "effort": "XS",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-fire-and-forget-critical-1",
+      "module": "flows",
+      "severity": "critical",
+      "location": {
+        "file": "server.py",
+        "line": 131
+      },
+      "description": "The state write is fire-and-forget: the tmp-file write and os.replace are wrapped in `except OSError: pass`, and the handler returns {\"ok\": True} even when the write failed. The caller (the deck page) has no way to learn that the state transition it reported was never persisted, so a dropped write is silently lost.",
+      "remediation": "Propagate write failures to the caller: return a non-2xx status with an error body when the tmp write or os.replace raises, and log the OSError so the failure is observable rather than swallowed.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "module": "flows",
+      "severity": "critical",
+      "location": {
+        "file": "server.py",
+        "line": 126
+      },
+      "description": "POST /api/state is a state-mutating endpoint with no idempotency key or deduplication: each request overwrites state/holo-state.json and stamps a fresh `data[\"ts\"] = time.time()`. A retried or duplicated delivery (network retry, double gesture event) is applied again as a distinct state transition rather than being recognised as the same command.",
+      "remediation": "Accept an Idempotency-Key header (or a client-supplied event id) on POST /api/state, persist the last processed keys, and return the previous result without re-writing state when a duplicate key arrives.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "module": "security",
+      "severity": "high",
+      "location": {
+        "file": "server.py",
+        "line": 137
+      },
+      "description": "do_POST reads the request body and passes it straight to json.loads with no size limit, no schema validation, and no type checking before writing it to state/holo-state.json and state/holo-diag.json. A client can post an arbitrarily large body (Content-Length is trusted) or arbitrary JSON structure, which is persisted verbatim.",
+      "remediation": "Cap the accepted Content-Length (reject bodies over a small limit), validate that the parsed payload is a JSON object with expected keys/types, and reject or truncate anything that does not match the expected schema before persisting.",
+      "effort": "M",
+      "confidence": 0.65
+    },
+    {
+      "id": "code-missing-validation-4",
+      "module": "code",
+      "severity": "high",
+      "location": {
+        "file": "server.py",
+        "line": 156
+      },
+      "description": "`/api/diag` and `/api/state` read `Content-Length` and pass the raw body straight to `json.loads` with no size cap, content-type check, or schema validation; an arbitrarily large body is read into memory and any JSON shape is accepted and persisted.",
+      "remediation": "Cap the accepted body size (reject Content-Length above e.g. 64 KB with 413), verify the Content-Type is application/json, and validate the parsed object against an expected schema before writing it.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "security-debug-in-prod-1",
+      "module": "security",
+      "severity": "high",
+      "location": {
+        "file": "server.py",
+        "line": 137
+      },
+      "description": "The /api/diag endpoint accepts arbitrary client crash reports and writes them to state/holo-diag.json with no authentication and no gating. This diagnostic surface is always enabled in the shipped server rather than being limited to a debug mode.",
+      "remediation": "Gate the /api/diag endpoint behind an explicit debug flag (e.g. HOLO_DEBUG=1) or remove it from the default build so diagnostic ingestion is not exposed in normal operation.",
+      "effort": "XS",
+      "confidence": 0.5
+    },
+    {
+      "id": "security-gha-secret-leak-3",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "The repository ships a self-hosted MediaPipe/three.js vendor bundle and a server that serves arbitrary files under vendor/ and props/, but there is no CI workflow, no secret scanning, and no dependency/secret maintenance configuration anywhere in the provided files. The README instructs users to re-download MediaPipe and re-apply a local wasm shim, which means third-party binaries are vendored into the repo without any automated provenance or secret-leak check.",
+      "remediation": "Add a GitHub Actions workflow that runs gitleaks/trufflehog on every push and PR, pins the vendored MediaPipe/three.js artifacts to a checksummed release, and documents the exact upstream commit for each vendor file.",
+      "effort": "XS",
+      "confidence": 0.35
+    },
+    {
+      "id": "cost-license-share-alike-3",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "LICENSE",
+        "line": 1
+      },
+      "description": "The project is declared MIT while it redistributes Apache-2.0 licensed MediaPipe code in vendor/. The MIT declaration alone does not cover the vendored Apache-2.0 components, creating a mixed-license distribution where the Apache-2.0 obligations (NOTICE, license retention, patent grant) apply to the bundled files but are not reflected in the repository's licensing documentation.",
+      "remediation": "Document the per-directory licensing explicitly (e.g. a vendor/LICENSE or LICENSE-APACHE-2.0 plus a NOTICE file) so the Apache-2.0 terms governing vendor/ are clearly separated from the MIT-licensed original code.",
+      "effort": "L",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "README.md",
+        "line": 24
+      },
+      "description": "The README describes the entire verification workflow as manually opening ?probe=1 in a browser and eyeballing '26/26'. There is no automated test suite, no CI configuration, and no scripted way to run the probe battery, so regressions depend on a human remembering to run a manual in-browser check.",
+      "remediation": "Add an automated test runner (e.g. a headless-browser script that loads ?probe=1 and asserts the 26/26 result) and wire it into CI so the gesture engine is verified on every change without manual steps.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-missing-headers-10",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 78
+      },
+      "description": "The _send helper emits only Content-Type, Cache-Control (for HTML) and Content-Length. No security headers are set on any response: no X-Content-Type-Options: nosniff, no Content-Security-Policy, no X-Frame-Options/frame-ancestors, and no Referrer-Policy. The page loads third-party-derived JS/wasm and renders user note content, so the absence of CSP and nosniff weakens the browser's defenses.",
+      "remediation": "Add security headers in _send: X-Content-Type-Options: nosniff, a restrictive Content-Security-Policy (default-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'), X-Frame-Options: DENY, and Referrer-Policy: no-referrer.",
+      "effort": "S",
+      "confidence": 0.7
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "README.md",
+        "line": 21
+      },
+      "description": "Onboarding relies on a single clone-and-run command with no documented development setup: no guidance on running the probe battery in CI, no linting/formatting setup, no contribution workflow, and no explanation of the gesture-threshold constants beyond a one-line mention. New contributors must reverse-engineer the workflow from the README prose.",
+      "remediation": "Add a DEVELOPMENT.md (or README section) covering local setup, how to run ?probe=1 and ?sim=1, the meaning of the gesture threshold constants, and the expected contribution/verification workflow.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "performance-io-bound-sync-2",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 70
+      },
+      "description": "The request handler performs blocking synchronous file I/O on every request: load_notes() and load_tree() call os.listdir plus open().read() for each note file (up to 18 notes / 14 files per folder) directly inside the ThreadingHTTPServer handler thread. Each /api/notes or /api/tree request re-reads and re-parses every markdown file from disk synchronously, so latency scales with the number of notes and disk speed, and concurrent requests each repeat the full scan.",
+      "remediation": "Cache the parsed notes/tree in memory with an mtime-based invalidation (or a short TTL), and/or move the directory scan and file reads off the request path into a background refresh so handlers serve pre-built JSON instead of doing synchronous disk I/O per request.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "performance-no-compression-13",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 88
+      },
+      "description": "_send() writes the response body with only Content-Type and Content-Length headers; no Content-Encoding is ever negotiated. The HTML page, JSON note payloads (bodies up to 420/4000 chars each) and the self-hosted vendor JS/WASM assets are all served uncompressed, inflating transfer size and parse time on every load.",
+      "remediation": "Add gzip/deflate response compression (e.g. gzip.compress on text/html, application/json and text/javascript bodies when the client sends Accept-Encoding: gzip) and set the Content-Encoding header accordingly.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "security-directory-listing-8",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 113
+      },
+      "description": "The /vendor/ and /props/ static file handler serves any file under those directories based on the raw request path, with only a normpath/\"..\" check. There is no allowlist of extensions or filenames, so any file placed in vendor/ or props/ (or reachable via the normalized path) is served to any client that can reach the server.",
+      "remediation": "Restrict the static handler to an explicit allowlist of extensions (e.g. .mjs, .js, .wasm, .glb) and reject anything else with 404; also resolve the final path with os.path.realpath and verify it is contained within the intended vendor/props directory before serving.",
+      "effort": "XS",
+      "confidence": 0.6
+    },
+    {
+      "id": "code-catch-and-continue-9",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 178
+      },
+      "description": "The state write is wrapped in `try: ... except OSError: pass` and the handler unconditionally returns `{\"ok\": true}`; a failed disk write (full disk, permissions) is swallowed and the client is told the state was saved when it was not.",
+      "remediation": "On OSError, return a 500 with the error detail (or at minimum log it) so the caller knows the state was not persisted, instead of reporting success.",
+      "effort": "M",
+      "confidence": 0.85
+    },
+    {
+      "id": "structure-config-logic-8",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 31
+      },
+      "description": "Configuration loading and resolution logic (reading holo.json, expanding the folder path, validating the directory, and falling back to sample-notes) is embedded directly in the HTTP server module rather than being isolated in a dedicated configuration component. This couples the request-handling layer to filesystem/config concerns and makes the config source hard to swap or test independently.",
+      "remediation": "Extract config loading into a separate module (e.g. config.py) exposing a load_config() function that returns a resolved settings object; have server.py import and consume it instead of reading holo.json inline.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "performance-no-keep-alive-9",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 88
+      },
+      "description": "_send() sets Content-Length but never sets Connection: keep-alive or the HTTP/1.1 protocol version explicitly, and the handler does not manage persistent connections. The page pulls the HTML plus multiple vendor JS/WASM/GLB assets, so each asset can incur a fresh TCP connection and handshake instead of reusing one connection.",
+      "remediation": "Serve HTTP/1.1 with explicit Connection: keep-alive (and a bounded idle timeout) so the browser can reuse a single TCP connection for the page and all vendor/props assets.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-controller-logic-6",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 96
+      },
+      "description": "The do_GET handler is a single controller method that inlines routing, static-file serving, path-traversal guarding, MIME resolution, directory listing for props, and JSON serialization of notes/tree. Business and I/O logic is embedded directly in the HTTP controller instead of being delegated to dedicated handlers/services, making the routing layer hard to test and extend.",
+      "remediation": "Move each route's logic into dedicated handler functions or a small router/service layer (e.g. serve_page(), serve_static(), notes_service.list()), leaving do_GET to only dispatch based on the parsed path.",
+      "effort": "M",
+      "confidence": 0.65
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 126
+      },
+      "description": "do_POST accepts unlimited requests to /api/diag and /api/state with no rate limiting, throttling or request-size cap beyond the client-supplied Content-Length. A local or cross-origin caller can flood the endpoints, forcing a disk write (state/holo-diag.json, state/holo-state.json) on every request.",
+      "remediation": "Enforce a per-client request rate limit (token bucket keyed on client address) and cap the accepted Content-Length (e.g. reject bodies over 64 KB) before reading and persisting them.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "structure-service-sql-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 37
+      },
+      "description": "The _note() helper mixes data-access concerns (opening and reading note files from disk) with presentation/formatting logic (deriving the title, stripping markdown headers, truncating body and full text). This is data-access logic leaking into what should be a thin service/formatting layer, making the file-reading path and the formatting rules impossible to change or test independently.",
+      "remediation": "Split _note() into a repository function that only reads raw file content and a separate formatter/service function that derives title/body/full from that content, so each concern can evolve and be tested on its own.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 122
+      },
+      "description": "The POST handlers swallow every exception with a bare `except Exception: data = {}` and then return {\"ok\": True} regardless of whether the body was valid JSON or the state write succeeded. The client is told the operation succeeded even when parsing or persistence failed, so failures are invisible and cannot be diagnosed from the response.",
+      "remediation": "Distinguish parse failures from write failures: return HTTP 400 with a generic error message for malformed JSON and HTTP 500 when the state file cannot be written, and log the exception server-side without exposing internals to the client.",
+      "effort": "S",
+      "confidence": 0.65
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 128
+      },
+      "description": "The POST handlers read the request body with `self.rfile.read(n)` where n comes straight from the Content-Length header, with no socket timeout configured on the handler or the ThreadingHTTPServer. A client that announces a large Content-Length and then stalls holds a worker thread indefinitely, and enough such connections exhaust the thread pool.",
+      "remediation": "Set a socket timeout on the server (e.g. H.timeout = 10 and ThreadingHTTPServer.timeout) and cap the accepted Content-Length before calling rfile.read so a slow or stalled client cannot pin a worker thread.",
+      "effort": "M",
+      "confidence": 0.65
+    },
+    {
+      "id": "code-ignores-return-value-6",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 135
+      },
+      "description": "In `do_GET`, `self._send(200, body, \"text/html; charset=utf-8\")` is returned but the earlier `return self._send(500, ...)` path shows the pattern; more importantly the `_send` call for the 404 fallback at the end of the vendor branch is returned while the inner `except OSError: pass` discards the read failure and falls through to a generic 404, masking the real error.",
+      "remediation": "Distinguish a missing file (404) from a read failure (500) by logging the OSError and returning an explicit 500 response instead of silently falling through to the generic 404.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-license-attribution-missing-2",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "LICENSE",
+        "line": 27
+      },
+      "description": "The repo bundles third-party components (Google MediaPipe Tasks Vision, three.js) in vendor/ and redistributes them, but the LICENSE file only lists component names and license names without including the full Apache-2.0 license text or the required copyright/NOTICE attribution for the bundled Apache-2.0 MediaPipe code. Apache-2.0 redistribution requires retaining the license text and NOTICE, and the README even documents that the vendored wasm glue was modified (HOLO SHIM) without a modification notice.",
+      "remediation": "Add the full Apache-2.0 license text and Google's NOTICE/copyright for the vendored MediaPipe files under vendor/, and add a modification notice for the HOLO SHIM changes, so redistribution complies with Apache-2.0 attribution requirements.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 12
+      },
+      "description": "The server exposes several endpoints (/api/notes, /api/tree, /api/props, /api/diag, /api/state, /vendor/, /props/) but only the top-of-file docstring documents a subset of them, and the README documents none of the HTTP API. The /api/diag and /api/state write paths and the /vendor//props/ static-serving behavior are undocumented for consumers.",
+      "remediation": "Document every HTTP endpoint (method, path, request/response shape, and side effects such as writing state/holo-state.json) in the README or a dedicated API doc so the server contract is discoverable.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "LICENSE",
+        "line": 0
+      },
+      "description": "Third-party dependencies are vendored directly into the repository (vendor/ MediaPipe and three.js, props/ Smithsonian models) with no machine-readable license manifest or dependency-tracking file, so there is no automated way to audit which licenses are present or detect when attribution obligations change on update.",
+      "remediation": "Add a dependency/license manifest (e.g. a generated THIRD_PARTY_LICENSES file or SBOM) listing each vendored component, its version, license, and source, and regenerate it when dependencies are updated.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-no-oss-policy-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "README.md",
+        "line": 0
+      },
+      "description": "The project self-hosts and redistributes third-party dependencies (MediaPipe, three.js) and ships Smithsonian CC0 models, but there is no documented open-source policy or dependency-license review process describing how third-party components are vetted, attributed, or updated. The README only mentions licenses in passing.",
+      "remediation": "Add a short OSS/dependency policy section (or CONTRIBUTING/DEPENDENCIES doc) that records each third-party component, its license, its source URL, and the process for reviewing and updating vendored dependencies.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "The HTTP handler sets no CORS headers and performs no Origin validation on state-changing POSTs to /api/state and /api/diag. Because the server listens on 127.0.0.1, any web page the user visits can issue a cross-origin POST to these endpoints (simple request, no preflight) and overwrite state/holo-state.json or state/holo-diag.json.",
+      "remediation": "Reject POSTs whose Origin/Referer is not the local deck, require a custom header (which forces a preflight) or a per-boot CSRF token, and return 403 otherwise.",
+      "effort": "XS",
+      "confidence": 0.5
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "server.py runs a ThreadingHTTPServer with no request timeout, no read timeout, and no maximum request body size; do_POST reads `Content-Length` bytes straight from the socket. A slow or oversized POST to /api/state or /api/diag can hold a worker thread indefinitely. No CI job timeout exists either, since no workflow is present.",
+      "remediation": "Set `timeout` on the handler (e.g. `BaseHTTPRequestHandler.timeout = 10`), reject Content-Length above a small cap, and add `timeout-minutes` to any CI job that is introduced.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "security-no-security-maintenance-7",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "README.md",
+        "line": 0
+      },
+      "description": "The repository has no SECURITY.md, no dependabot/renovate configuration, and no documented vulnerability-reporting process, despite vendoring third-party binaries (MediaPipe wasm glue, three.js) that the README itself says must be manually patched after re-download. There is no mechanism to learn about or ship security updates for those vendored components.",
+      "remediation": "Add a SECURITY.md with a private disclosure channel and enable Dependabot (or Renovate) for the vendored JS/wasm artifacts and any future package manifests.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "github-commit-history-1",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "README.md",
+        "line": 0
+      },
+      "description": "The README documents a workflow of `git pull` on a moving branch with no release tags, no CHANGELOG, and no versioned releases, so users cannot pin to a known-good revision and there is no auditable history of what changed between installs.",
+      "remediation": "Cut tagged releases (semver) for the deck, add a CHANGELOG.md, and instruct users to check out a tag rather than pulling the default branch.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "github-issue-health-1",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "README.md",
+        "line": 0
+      },
+      "description": "The repository provides no issue templates, no contribution guide, and no documented support channel other than an external community link, so bug reports about the vendored MediaPipe shim or the probe battery have no structured intake path.",
+      "remediation": "Add .github/ISSUE_TEMPLATE/bug_report.md and feature_request.md, plus a CONTRIBUTING.md describing how to run `?probe=1` and report the 26/26 result.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "README.md",
+        "line": 21
+      },
+      "description": "The README's install instructions rely on `git clone`/`git pull` of a moving branch and `npx @gltf-transform/cli copy in.glb out.glb`, which fetches and executes an unpinned npm package at run time. There is no lockfile, no pinned version, and no CI workflow pinning actions to commit SHAs, so a compromised upstream release executes on the user's machine.",
+      "remediation": "Pin the gltf-transform CLI to an exact version (e.g. `npx @gltf-transform/cli@4.0.0`) and, if CI is added, pin every GitHub Action to a full commit SHA rather than a mutable tag.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "flows-missing-cors-9",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "server.py",
+        "line": 88
+      },
+      "description": "The HTTP server sends no Access-Control-Allow-Origin or any CORS headers on any response (the _send helper only sets Content-Type, Cache-Control and Content-Length). Any web page the user visits can issue cross-origin requests to http://localhost:4890/api/state, /api/diag, /api/notes and /api/tree; the POST endpoints accept JSON bodies and write to disk, so a malicious page can silently drive the deck's state hook.",
+      "remediation": "Add explicit CORS handling in _send: emit Access-Control-Allow-Origin with a strict allowlist (e.g. http://localhost:4890 only), handle OPTIONS preflight, and reject requests whose Origin header is not the local deck origin.",
+      "effort": "S",
+      "confidence": 0.75
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "server.py",
+        "line": 88
+      },
+      "description": "Responses carry no correlation identifier: _send writes only Content-Type, Cache-Control and Content-Length, and neither do_GET nor do_POST reads or echoes an X-Request-ID header. With ThreadingHTTPServer handling requests concurrently, the quiet log_message override means there is no way to correlate a client-side failure with a server-side event.",
+      "remediation": "Read an incoming X-Request-ID header (or generate a UUID when absent), include it in every response via _send, and log it alongside the request path and status code.",
+      "effort": "S",
+      "confidence": 0.7
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "server.py",
+        "line": 91
+      },
+      "description": "The HTML response for / and /holo.html sets only Content-Type and Cache-Control; no X-Content-Type-Options, Content-Security-Policy, X-Frame-Options or Referrer-Policy headers are emitted. The page loads self-hosted wasm/JS and renders camera-derived content, so the absence of a CSP and nosniff leaves the deck without defence-in-depth against injected or mis-sniffed content.",
+      "remediation": "In _send, add X-Content-Type-Options: nosniff, X-Frame-Options: DENY, Referrer-Policy: no-referrer and a Content-Security-Policy that allows only 'self' plus the inline styles/scripts the deck actually needs.",
+      "effort": "S",
+      "confidence": 0.7
+    },
+    {
+      "id": "security-vcs-insecure-9",
+      "module": "github",
+      "severity": "low",
+      "location": {
+        "file": ".gitignore",
+        "line": 0
+      },
+      "description": ".gitignore excludes state/, server.log, and __pycache__/ but does not exclude local configuration or generated artifacts that may contain user paths or note content. holo.json is committed with an empty folder value, and any local edit pointing at a private notes directory would be tracked by git and pushed to the public repository.",
+      "remediation": "Ignore holo.json (or a holo.local.json override), add a holo.json.example template, and ignore any state/ or log artifacts that could contain note text or filesystem paths.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "github-log-pattern-1",
+      "module": "github",
+      "severity": "info",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "The handler overrides log_message to silence all request logging, and the only startup output is a single print of the port and notes directory. There is no structured logging, no request IDs, and no error logging, so failures in /api/notes, /api/tree, or the state writers are invisible.",
+      "remediation": "Emit structured JSON logs with a request id for each request, log exceptions from the OSError handlers instead of swallowing them, and keep a rotating server.log (already gitignored).",
+      "effort": "XS",
+      "confidence": 0.55
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "code-bare-except-1",
+          "security-logs-contain-secrets-12",
+          "flows-fire-and-forget-critical-1",
+          "flows-missing-idempotency-3",
+          "security-no-input-validation-14",
+          "code-missing-validation-4",
+          "security-debug-in-prod-1",
+          "security-gha-secret-leak-3",
+          "cost-license-share-alike-3",
+          "cost-no-automated-tests-4",
+          "security-missing-headers-10",
+          "cost-dev-setup-missing-3"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "performance-io-bound-sync-2",
+          "performance-no-compression-13",
+          "security-directory-listing-8",
+          "code-catch-and-continue-9",
+          "structure-config-logic-8",
+          "performance-no-keep-alive-9",
+          "structure-controller-logic-6",
+          "flows-missing-rate-limit-8",
+          "structure-service-sql-5"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "flows-error-leaks-stack-6",
+          "flows-missing-timeout-6",
+          "code-ignores-return-value-6",
+          "cost-license-attribution-missing-2",
+          "cost-documentation-poor-7",
+          "cost-no-license-tracking-5",
+          "cost-no-oss-policy-9",
+          "security-cors-wildcard-2",
+          "security-gha-job-no-timeout-7",
+          "security-no-security-maintenance-7",
+          "github-commit-history-1",
+          "github-issue-health-1",
+          "security-gha-action-unpinned-5",
+          "flows-missing-cors-9",
+          "flows-missing-request-id-7",
+          "flows-missing-security-headers-10",
+          "security-vcs-insecure-9",
+          "github-log-pattern-1"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "flows-missing-cors-9": [
+        "structure-config-logic-8"
+      ],
+      "flows-missing-rate-limit-8": [
+        "structure-config-logic-8"
+      ],
+      "flows-missing-request-id-7": [
+        "structure-config-logic-8"
+      ],
+      "flows-missing-security-headers-10": [
+        "structure-config-logic-8"
+      ],
+      "flows-error-leaks-stack-6": [
+        "structure-config-logic-8"
+      ],
+      "flows-missing-idempotency-3": [
+        "structure-config-logic-8"
+      ],
+      "flows-missing-timeout-6": [
+        "structure-config-logic-8"
+      ],
+      "flows-fire-and-forget-critical-1": [
+        "structure-config-logic-8"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "code-bare-except-1",
+      "severity": "critical",
+      "module": "code",
+      "confidence": 0.9,
+      "score": 90,
+      "canonical_rule": "code-bare-except-1"
+    },
+    {
+      "id": "security-logs-contain-secrets-12",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 75,
+      "canonical_rule": "security-logs-contain-secrets-12"
+    },
+    {
+      "id": "flows-fire-and-forget-critical-1",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 60,
+      "canonical_rule": "flows-fire-and-forget-critical-1"
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 60,
+      "canonical_rule": "flows-missing-idempotency-3"
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.65,
+      "score": 48.75,
+      "canonical_rule": "security-no-input-validation-14"
+    },
+    {
+      "id": "code-missing-validation-4",
+      "severity": "high",
+      "module": "code",
+      "confidence": 0.75,
+      "score": 37.5,
+      "canonical_rule": "code-missing-validation-4"
+    },
+    {
+      "id": "security-debug-in-prod-1",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 37.5,
+      "canonical_rule": "security-debug-in-prod-1"
+    },
+    {
+      "id": "security-gha-secret-leak-3",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.35,
+      "score": 24.5,
+      "canonical_rule": "security-gha-secret-leak-3"
+    },
+    {
+      "id": "cost-license-share-alike-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 24,
+      "canonical_rule": "cost-license-share-alike-3"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 24,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.7,
+      "score": 21,
+      "canonical_rule": "security-missing-headers-10"
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 20,
+      "canonical_rule": "cost-dev-setup-missing-3"
+    },
+    {
+      "id": "performance-io-bound-sync-2",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.8,
+      "score": 19.2,
+      "canonical_rule": "performance-io-bound-sync-2"
+    },
+    {
+      "id": "performance-no-compression-13",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.75,
+      "score": 18,
+      "canonical_rule": "performance-no-compression-13"
+    },
+    {
+      "id": "security-directory-listing-8",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 18,
+      "canonical_rule": "security-directory-listing-8"
+    },
+    {
+      "id": "code-catch-and-continue-9",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.85,
+      "score": 17,
+      "canonical_rule": "code-catch-and-continue-9"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "performance-no-keep-alive-9",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.6,
+      "score": 14.4,
+      "canonical_rule": "performance-no-keep-alive-9"
+    },
+    {
+      "id": "structure-controller-logic-6",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 14.3,
+      "canonical_rule": "structure-controller-logic-6"
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "flows-missing-rate-limit-8"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.65,
+      "score": 13,
+      "canonical_rule": "flows-error-leaks-stack-6"
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.65,
+      "score": 13,
+      "canonical_rule": "flows-missing-timeout-6"
+    },
+    {
+      "id": "code-ignores-return-value-6",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.6,
+      "score": 12,
+      "canonical_rule": "code-ignores-return-value-6"
+    },
+    {
+      "id": "cost-license-attribution-missing-2",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 11.2,
+      "canonical_rule": "cost-license-attribution-missing-2"
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-documentation-poor-7"
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-no-license-tracking-5"
+    },
+    {
+      "id": "cost-no-oss-policy-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-no-oss-policy-9"
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "security-cors-wildcard-2"
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "security-gha-job-no-timeout-7"
+    },
+    {
+      "id": "security-no-security-maintenance-7",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.45,
+      "score": 6.3,
+      "canonical_rule": "security-no-security-maintenance-7"
+    },
+    {
+      "id": "github-commit-history-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "github-commit-history-1"
+    },
+    {
+      "id": "github-issue-health-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "github-issue-health-1"
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "security-gha-action-unpinned-5"
+    },
+    {
+      "id": "flows-missing-cors-9",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 3.75,
+      "canonical_rule": "flows-missing-cors-9"
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 3.5,
+      "canonical_rule": "flows-missing-request-id-7"
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 3.5,
+      "canonical_rule": "flows-missing-security-headers-10"
+    },
+    {
+      "id": "security-vcs-insecure-9",
+      "severity": "low",
+      "module": "github",
+      "confidence": 0.45,
+      "score": 1.57,
+      "canonical_rule": "security-vcs-insecure-9"
+    },
+    {
+      "id": "github-log-pattern-1",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 0.39,
+      "canonical_rule": "github-log-pattern-1"
+    }
+  ]
+}

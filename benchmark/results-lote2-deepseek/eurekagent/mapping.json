@@ -1,0 +1,1380 @@
+{
+  "target": "eurekagent",
+  "mock": false,
+  "created_at": "2026-10-05T20:28:03.396Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-hot-path-2",
+      "title": "database-missing-index-hot-path-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "orchestrated",
+      "source_id": "security-weak-crypto-9",
+      "title": "security-weak-crypto-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "security-key-rotation-manual-13",
+      "title": "security-key-rotation-manual-13",
+      "security_relevant": true
+    },
+    {
+      "label": "C4",
+      "arm": "orchestrated",
+      "source_id": "security-cve-critical-1",
+      "title": "security-cve-critical-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C5",
+      "arm": "orchestrated",
+      "source_id": "flows-state-expensive-update-5",
+      "title": "flows-state-expensive-update-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C6",
+      "arm": "orchestrated",
+      "source_id": "database-statement-timeout-missing-9",
+      "title": "database-statement-timeout-missing-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C7",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "orchestrated",
+      "source_id": "cost-no-oss-policy-9",
+      "title": "cost-no-oss-policy-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C9",
+      "arm": "orchestrated",
+      "source_id": "flows-state-inefficient-access-7",
+      "title": "flows-state-inefficient-access-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C10",
+      "arm": "orchestrated",
+      "source_id": "flows-redux-side-effects-2",
+      "title": "flows-redux-side-effects-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "orchestrated",
+      "source_id": "flows-message-retention-too-short-6",
+      "title": "flows-message-retention-too-short-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C12",
+      "arm": "orchestrated",
+      "source_id": "cost-non-commercial-use-6",
+      "title": "cost-non-commercial-use-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "orchestrated",
+      "source_id": "security-logs-contain-secrets-12",
+      "title": "security-logs-contain-secrets-12",
+      "security_relevant": true
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `log_web_search.py` writes to a hardcoded absolute path",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "17. Hooks are the only enforcement mechanism, and they're text-based",
+      "security_relevant": true
+    },
+    {
+      "label": "C16",
+      "arm": "orchestrated",
+      "source_id": "flows-validation-placement-2",
+      "title": "flows-validation-placement-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C17",
+      "arm": "orchestrated",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "orchestrated",
+      "source_id": "security-no-security-maintenance-7",
+      "title": "security-no-security-maintenance-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C19",
+      "arm": "toolkit",
+      "source_id": "code-copy-paste-variant-6",
+      "title": "code-copy-paste-variant-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. `log_web_search.py` — `_handle_web_search` dedup is per-call only",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "orchestrated",
+      "source_id": "cost-license-incompatible-1",
+      "title": "cost-license-incompatible-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "orchestrated",
+      "source_id": "cost-llm-very-high-usage-2",
+      "title": "cost-llm-very-high-usage-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-expensive-runner-4",
+      "title": "cost-gha-expensive-runner-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C24",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. `_contains_cuda_override` is a denylist, not a sandbox",
+      "security_relevant": false
+    },
+    {
+      "label": "C25",
+      "arm": "orchestrated",
+      "source_id": "cost-api-deprecated-endpoint-10",
+      "title": "cost-api-deprecated-endpoint-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C26",
+      "arm": "toolkit",
+      "source_id": "structure-dto-logic-7",
+      "title": "structure-dto-logic-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C27",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-where-4",
+      "title": "database-missing-index-where-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C28",
+      "arm": "toolkit",
+      "source_id": "code-exact-duplication-significant-2",
+      "title": "code-exact-duplication-significant-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C29",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. `log_web_search.py` — `_handle_web_search_prime` double-decode is fragile",
+      "security_relevant": false
+    },
+    {
+      "label": "C30",
+      "arm": "orchestrated",
+      "source_id": "cost-license-share-alike-3",
+      "title": "cost-license-share-alike-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C31",
+      "arm": "orchestrated",
+      "source_id": "structure-service-sql-5",
+      "title": "structure-service-sql-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C32",
+      "arm": "orchestrated",
+      "source_id": "flows-no-time-travel-9",
+      "title": "flows-no-time-travel-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C33",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-high-usage-1",
+      "title": "cost-gha-high-usage-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C34",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-2",
+      "title": "structure-high-coupling-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C35",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C36",
+      "arm": "orchestrated",
+      "source_id": "cost-no-http-compression-9",
+      "title": "cost-no-http-compression-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C37",
+      "arm": "orchestrated",
+      "source_id": "security-unmaintained-dep-4",
+      "title": "security-unmaintained-dep-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C38",
+      "arm": "toolkit",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C39",
+      "arm": "orchestrated",
+      "source_id": "security-transitive-vuln-8",
+      "title": "security-transitive-vuln-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C40",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "27. `implement-approach/SKILL.md` — `_validate_solution_description` is duplicated logic",
+      "security_relevant": false
+    },
+    {
+      "label": "C41",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C42",
+      "arm": "orchestrated",
+      "source_id": "cost-db-growth-3",
+      "title": "cost-db-growth-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C43",
+      "arm": "orchestrated",
+      "source_id": "security-debug-in-prod-1",
+      "title": "security-debug-in-prod-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C44",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-1",
+      "title": "structure-high-coupling-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C45",
+      "arm": "orchestrated",
+      "source_id": "security-cve-medium-3",
+      "title": "security-cve-medium-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C46",
+      "arm": "orchestrated",
+      "source_id": "security-encryption-weak-5",
+      "title": "security-encryption-weak-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C47",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "25. `generate-inputs/SKILL.md` template has a broken code fence",
+      "security_relevant": false
+    },
+    {
+      "label": "C48",
+      "arm": "orchestrated",
+      "source_id": "security-directory-listing-8",
+      "title": "security-directory-listing-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C49",
+      "arm": "orchestrated",
+      "source_id": "flows-state-missing-defaults-10",
+      "title": "flows-state-missing-defaults-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C50",
+      "arm": "orchestrated",
+      "source_id": "security-cve-high-2",
+      "title": "security-cve-high-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C51",
+      "arm": "orchestrated",
+      "source_id": "security-private-key-7",
+      "title": "security-private-key-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C52",
+      "arm": "orchestrated",
+      "source_id": "structure-service-orchestration-3",
+      "title": "structure-service-orchestration-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C53",
+      "arm": "naive",
+      "source_id": "naive-claim-33",
+      "title": "33. `protect_result_files.py` — `_resolve_tool_path` `cwd` parameter is required but callers may not pass it",
+      "security_relevant": false
+    },
+    {
+      "label": "C54",
+      "arm": "orchestrated",
+      "source_id": "flows-message-not-compressed-10",
+      "title": "flows-message-not-compressed-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C55",
+      "arm": "toolkit",
+      "source_id": "security-gha-secret-leak-3",
+      "title": "security-gha-secret-leak-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C56",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "21. `src/eval_grader/` and `src/monitor/` have no visible tests",
+      "security_relevant": false
+    },
+    {
+      "label": "C57",
+      "arm": "orchestrated",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C58",
+      "arm": "toolkit",
+      "source_id": "code-long-function-7",
+      "title": "code-long-function-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C59",
+      "arm": "orchestrated",
+      "source_id": "security-binary-dep-10",
+      "title": "security-binary-dep-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C60",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-response-cache-5",
+      "title": "cost-api-no-response-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C61",
+      "arm": "orchestrated",
+      "source_id": "cost-no-performance-budget-10",
+      "title": "cost-no-performance-budget-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C62",
+      "arm": "orchestrated",
+      "source_id": "cost-no-license-tracking-5",
+      "title": "cost-no-license-tracking-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C63",
+      "arm": "orchestrated",
+      "source_id": "cost-db-backup-4",
+      "title": "cost-db-backup-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C64",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. `protect_result_files.py` — path-based protection is trivially bypassable",
+      "security_relevant": false
+    },
+    {
+      "label": "C65",
+      "arm": "orchestrated",
+      "source_id": "security-gha-pr-target-risk-1",
+      "title": "security-gha-pr-target-risk-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C66",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "26. `generate-inputs/SKILL.md` — \"a evaluator\" typo",
+      "security_relevant": false
+    },
+    {
+      "label": "C67",
+      "arm": "orchestrated",
+      "source_id": "flows-inconsistent-response-4",
+      "title": "flows-inconsistent-response-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C68",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-wasteful-retries-3",
+      "title": "cost-gha-wasteful-retries-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C69",
+      "arm": "orchestrated",
+      "source_id": "cost-db-pool-5",
+      "title": "cost-db-pool-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C70",
+      "arm": "orchestrated",
+      "source_id": "cost-db-no-pooling-10",
+      "title": "cost-db-no-pooling-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C71",
+      "arm": "orchestrated",
+      "source_id": "cost-documentation-poor-7",
+      "title": "cost-documentation-poor-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C72",
+      "arm": "orchestrated",
+      "source_id": "structure-controller-logic-6",
+      "title": "structure-controller-logic-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C73",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. `log_web_search.py` — `_extract_text_from_response` returns `str(tool_response)` as last resort",
+      "security_relevant": false
+    },
+    {
+      "label": "C74",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "29. `prepare-workspace/SKILL.md` — `progress.json` schema is under-specified",
+      "security_relevant": false
+    },
+    {
+      "label": "C75",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. `protect_result_files.py` — `_emit_allow`/`_emit_deny` always `sys.exit(0)`",
+      "security_relevant": false
+    },
+    {
+      "label": "C76",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "22. `src/acp/` has three adapters (`pty_adapter`, `stream_adapter`, `factory`) with no interface documentation",
+      "security_relevant": false
+    },
+    {
+      "label": "C77",
+      "arm": "orchestrated",
+      "source_id": "database-sequential-pagination-1",
+      "title": "database-sequential-pagination-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C78",
+      "arm": "orchestrated",
+      "source_id": "flows-no-schema-registry-8",
+      "title": "flows-no-schema-registry-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C79",
+      "arm": "orchestrated",
+      "source_id": "database-lock-timeout-missing-10",
+      "title": "database-lock-timeout-missing-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C80",
+      "arm": "naive",
+      "source_id": "naive-claim-36",
+      "title": "36. `uv.toml` and `pyproject.toml` both present",
+      "security_relevant": false
+    },
+    {
+      "label": "C81",
+      "arm": "orchestrated",
+      "source_id": "security-gha-auto-deploy-prod-9",
+      "title": "security-gha-auto-deploy-prod-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C82",
+      "arm": "orchestrated",
+      "source_id": "flows-message-retention-too-long-7",
+      "title": "flows-message-retention-too-long-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C83",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. `_is_write_to_protected_result` regexes are order-dependent and incomplete",
+      "security_relevant": false
+    },
+    {
+      "label": "C84",
+      "arm": "orchestrated",
+      "source_id": "security-file-upload-weak-7",
+      "title": "security-file-upload-weak-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C85",
+      "arm": "orchestrated",
+      "source_id": "security-db-conn-string-6",
+      "title": "security-db-conn-string-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C86",
+      "arm": "orchestrated",
+      "source_id": "security-gha-no-container-8",
+      "title": "security-gha-no-container-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C87",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-cors-9",
+      "title": "flows-missing-cors-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C88",
+      "arm": "orchestrated",
+      "source_id": "security-cors-wildcard-2",
+      "title": "security-cors-wildcard-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C89",
+      "arm": "orchestrated",
+      "source_id": "security-session-cookie-not-secure-3",
+      "title": "security-session-cookie-not-secure-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C90",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-dlq-2",
+      "title": "flows-missing-dlq-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C91",
+      "arm": "orchestrated",
+      "source_id": "cost-export-restriction-8",
+      "title": "cost-export-restriction-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C92",
+      "arm": "toolkit",
+      "source_id": "code-empty-catch-1",
+      "title": "code-empty-catch-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C93",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "14. `_INTERNAL_DIR_SHELL_PATTERN` misses common tools",
+      "security_relevant": false
+    },
+    {
+      "label": "C94",
+      "arm": "orchestrated",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "security_relevant": false
+    },
+    {
+      "label": "C95",
+      "arm": "toolkit",
+      "source_id": "structure-controller-logic-6",
+      "title": "structure-controller-logic-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C96",
+      "arm": "orchestrated",
+      "source_id": "flows-error-leaks-stack-6",
+      "title": "flows-error-leaks-stack-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C97",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "13. `_contains_same_round_peer_shell_op` regex is incomplete",
+      "security_relevant": false
+    },
+    {
+      "label": "C98",
+      "arm": "naive",
+      "source_id": "naive-claim-38",
+      "title": "38. `examples/ac1/` — \"ac1\" is an opaque name",
+      "security_relevant": false
+    },
+    {
+      "label": "C99",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-rate-limit-8",
+      "title": "flows-missing-rate-limit-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C100",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "20. `examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/` is a vendored copy of `libkernelbot`",
+      "security_relevant": false
+    },
+    {
+      "label": "C101",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `_is_inside_internal_dir` uses `resolved.parts` but `_resolve_tool_path` may not resolve",
+      "security_relevant": false
+    },
+    {
+      "label": "C102",
+      "arm": "orchestrated",
+      "source_id": "flows-consumer-group-lag-3",
+      "title": "flows-consumer-group-lag-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C103",
+      "arm": "orchestrated",
+      "source_id": "flows-message-breaking-schema-2",
+      "title": "flows-message-breaking-schema-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C104",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-fk-1",
+      "title": "database-missing-index-fk-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C105",
+      "arm": "orchestrated",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C106",
+      "arm": "orchestrated",
+      "source_id": "database-heavy-migration-5",
+      "title": "database-heavy-migration-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C107",
+      "arm": "orchestrated",
+      "source_id": "database-missing-bloat-monitoring-5",
+      "title": "database-missing-bloat-monitoring-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C108",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-infinite-artifacts-6",
+      "title": "cost-gha-infinite-artifacts-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C109",
+      "arm": "naive",
+      "source_id": "naive-claim-31",
+      "title": "31. `log_web_search.py` — `import re` inside functions",
+      "security_relevant": false
+    },
+    {
+      "label": "C110",
+      "arm": "toolkit",
+      "source_id": "code-generic-catch-2",
+      "title": "code-generic-catch-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C111",
+      "arm": "toolkit",
+      "source_id": "security-error-detail-1",
+      "title": "security-error-detail-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C112",
+      "arm": "naive",
+      "source_id": "naive-claim-37",
+      "title": "37. `results/README.md` exists but `results/mle/2026-05-30T15-07-11-GMT_grading_report.json` has a future date",
+      "security_relevant": false
+    },
+    {
+      "label": "C113",
+      "arm": "orchestrated",
+      "source_id": "flows-redux-mutates-state-1",
+      "title": "flows-redux-mutates-state-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C114",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-retry-strategy-8",
+      "title": "cost-api-no-retry-strategy-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C115",
+      "arm": "naive",
+      "source_id": "naive-claim-30",
+      "title": "30. `README.md` and `assets/TROUBLESHOOTING.md` are not shown",
+      "security_relevant": false
+    },
+    {
+      "label": "C116",
+      "arm": "orchestrated",
+      "source_id": "security-exploit-in-wild-5",
+      "title": "security-exploit-in-wild-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C117",
+      "arm": "orchestrated",
+      "source_id": "cost-no-knowledge-sharing-8",
+      "title": "cost-no-knowledge-sharing-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C118",
+      "arm": "orchestrated",
+      "source_id": "cost-license-attribution-missing-2",
+      "title": "cost-license-attribution-missing-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C119",
+      "arm": "orchestrated",
+      "source_id": "security-weak-rng-10",
+      "title": "security-weak-rng-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C120",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-client-rate-limit-4",
+      "title": "cost-api-no-client-rate-limit-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C121",
+      "arm": "orchestrated",
+      "source_id": "security-db-no-tls-11",
+      "title": "security-db-no-tls-11",
+      "security_relevant": true
+    },
+    {
+      "label": "C122",
+      "arm": "orchestrated",
+      "source_id": "flows-message-not-encrypted-9",
+      "title": "flows-message-not-encrypted-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C123",
+      "arm": "orchestrated",
+      "source_id": "security-gha-workspace-not-cleaned-6",
+      "title": "security-gha-workspace-not-cleaned-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C124",
+      "arm": "orchestrated",
+      "source_id": "flows-dlq-on-repeat-failures-10",
+      "title": "flows-dlq-on-repeat-failures-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C125",
+      "arm": "orchestrated",
+      "source_id": "security-gha-no-concurrency-prod-10",
+      "title": "security-gha-no-concurrency-prod-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C126",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-idempotency-3",
+      "title": "flows-missing-idempotency-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C127",
+      "arm": "naive",
+      "source_id": "naive-claim-35",
+      "title": "35. `docker/setup-daemon-proxy.sh` and `docker/build.sh` are not shown",
+      "security_relevant": false
+    },
+    {
+      "label": "C128",
+      "arm": "orchestrated",
+      "source_id": "cost-redis-as-db-6",
+      "title": "cost-redis-as-db-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C129",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "19. `results/` directory contains committed submission CSVs",
+      "security_relevant": false
+    },
+    {
+      "label": "C130",
+      "arm": "orchestrated",
+      "source_id": "cost-trademark-risk-7",
+      "title": "cost-trademark-risk-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C131",
+      "arm": "orchestrated",
+      "source_id": "flows-ngrx-selectors-not-memoized-4",
+      "title": "flows-ngrx-selectors-not-memoized-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C132",
+      "arm": "orchestrated",
+      "source_id": "security-gha-fork-pr-4",
+      "title": "security-gha-fork-pr-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C133",
+      "arm": "orchestrated",
+      "source_id": "structure-dto-logic-7",
+      "title": "structure-dto-logic-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C134",
+      "arm": "orchestrated",
+      "source_id": "database-pg-stat-statements-disabled-1",
+      "title": "database-pg-stat-statements-disabled-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C135",
+      "arm": "orchestrated",
+      "source_id": "security-outdated-server-9",
+      "title": "security-outdated-server-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C136",
+      "arm": "orchestrated",
+      "source_id": "security-oauth-secret-8",
+      "title": "security-oauth-secret-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C137",
+      "arm": "orchestrated",
+      "source_id": "structure-adapter-violation-10",
+      "title": "structure-adapter-violation-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C138",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-visibility-timeout-9",
+      "title": "flows-missing-visibility-timeout-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C139",
+      "arm": "orchestrated",
+      "source_id": "flows-message-ordering-needed-4",
+      "title": "flows-message-ordering-needed-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C140",
+      "arm": "orchestrated",
+      "source_id": "flows-message-schema-no-version-1",
+      "title": "flows-message-schema-no-version-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C141",
+      "arm": "orchestrated",
+      "source_id": "security-rate-limit-weak-6",
+      "title": "security-rate-limit-weak-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C142",
+      "arm": "orchestrated",
+      "source_id": "cost-missing-cdn-7",
+      "title": "cost-missing-cdn-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C143",
+      "arm": "orchestrated",
+      "source_id": "security-license-incompatible-6",
+      "title": "security-license-incompatible-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C144",
+      "arm": "orchestrated",
+      "source_id": "cost-llm-high-usage-1",
+      "title": "cost-llm-high-usage-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C145",
+      "arm": "orchestrated",
+      "source_id": "security-gha-secret-leak-3",
+      "title": "security-gha-secret-leak-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C146",
+      "arm": "orchestrated",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C147",
+      "arm": "orchestrated",
+      "source_id": "security-env-file-committed-3",
+      "title": "security-env-file-committed-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C148",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-matrix-inefficient-10",
+      "title": "cost-gha-matrix-inefficient-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C149",
+      "arm": "naive",
+      "source_id": "naive-claim-34",
+      "title": "34. `protect_result_files.py` — `PROTECTED_RESULT_FILES` is a set of bare filenames",
+      "security_relevant": false
+    },
+    {
+      "label": "C150",
+      "arm": "toolkit",
+      "source_id": "code-print-statement-5",
+      "title": "code-print-statement-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C151",
+      "arm": "orchestrated",
+      "source_id": "flows-no-state-persistence-6",
+      "title": "flows-no-state-persistence-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C152",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "18. Hardcoded `/workspace` paths everywhere",
+      "security_relevant": false
+    },
+    {
+      "label": "C153",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-timeout-9",
+      "title": "cost-gha-no-timeout-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C154",
+      "arm": "orchestrated",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C155",
+      "arm": "orchestrated",
+      "source_id": "structure-low-cohesion-5",
+      "title": "structure-low-cohesion-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C156",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `log_web_search.py` — silent failure on malformed input",
+      "security_relevant": false
+    },
+    {
+      "label": "C157",
+      "arm": "orchestrated",
+      "source_id": "cost-overprovisioned-k8s-1",
+      "title": "cost-overprovisioned-k8s-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C158",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-security-headers-10",
+      "title": "flows-missing-security-headers-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C159",
+      "arm": "orchestrated",
+      "source_id": "security-error-detail-1",
+      "title": "security-error-detail-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C160",
+      "arm": "orchestrated",
+      "source_id": "cost-technical-debt-high-9",
+      "title": "cost-technical-debt-high-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C161",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C162",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-circuit-breaker-7",
+      "title": "flows-missing-circuit-breaker-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C163",
+      "arm": "orchestrated",
+      "source_id": "flows-vuex-denormalized-state-3",
+      "title": "flows-vuex-denormalized-state-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C164",
+      "arm": "orchestrated",
+      "source_id": "database-missing-app-pool-8",
+      "title": "database-missing-app-pool-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C165",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "16. `_contains_settings_json_reference` is substring-based",
+      "security_relevant": false
+    },
+    {
+      "label": "C166",
+      "arm": "toolkit",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "security_relevant": true
+    },
+    {
+      "label": "C167",
+      "arm": "orchestrated",
+      "source_id": "database-connection-timeout-high-3",
+      "title": "database-connection-timeout-high-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C168",
+      "arm": "orchestrated",
+      "source_id": "cost-dev-setup-missing-3",
+      "title": "cost-dev-setup-missing-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C169",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "23. `src/tui/` is a large surface area (app, screens, widgets, theme) with no tests",
+      "security_relevant": false
+    },
+    {
+      "label": "C170",
+      "arm": "orchestrated",
+      "source_id": "flows-validation-too-early-3",
+      "title": "flows-validation-too-early-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C171",
+      "arm": "orchestrated",
+      "source_id": "cost-no-code-review-6",
+      "title": "cost-no-code-review-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C172",
+      "arm": "orchestrated",
+      "source_id": "cost-slow-build-1",
+      "title": "cost-slow-build-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C173",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. `protect_result_files.py` — `_is_same_round_peer_path` only checks `approach_details` in `parts`",
+      "security_relevant": false
+    },
+    {
+      "label": "C174",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "28. `implement-approach/SKILL.md` — `eureka_score` swallows errors",
+      "security_relevant": false
+    },
+    {
+      "label": "C175",
+      "arm": "orchestrated",
+      "source_id": "cost-patent-risk-4",
+      "title": "cost-patent-risk-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C176",
+      "arm": "orchestrated",
+      "source_id": "flows-dlq-not-monitored-5",
+      "title": "flows-dlq-not-monitored-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C177",
+      "arm": "orchestrated",
+      "source_id": "security-session-cookie-not-http-only-4",
+      "title": "security-session-cookie-not-http-only-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C178",
+      "arm": "orchestrated",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C179",
+      "arm": "orchestrated",
+      "source_id": "structure-framework-leak-3",
+      "title": "structure-framework-leak-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C180",
+      "arm": "orchestrated",
+      "source_id": "flows-fire-and-forget-critical-1",
+      "title": "flows-fire-and-forget-critical-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C181",
+      "arm": "orchestrated",
+      "source_id": "security-jwt-weak-3",
+      "title": "security-jwt-weak-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C182",
+      "arm": "orchestrated",
+      "source_id": "security-vcs-insecure-9",
+      "title": "security-vcs-insecure-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C183",
+      "arm": "orchestrated",
+      "source_id": "flows-auth-order-1",
+      "title": "flows-auth-order-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C184",
+      "arm": "orchestrated",
+      "source_id": "security-secret-in-history-2",
+      "title": "security-secret-in-history-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C185",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "24. Skill docs contradict the hooks",
+      "security_relevant": false
+    },
+    {
+      "label": "C186",
+      "arm": "orchestrated",
+      "source_id": "flows-state-excessive-nesting-8",
+      "title": "flows-state-excessive-nesting-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C187",
+      "arm": "toolkit",
+      "source_id": "code-missing-return-type-8",
+      "title": "code-missing-return-type-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C188",
+      "arm": "orchestrated",
+      "source_id": "cost-overprovisioned-k8s-limits-2",
+      "title": "cost-overprovisioned-k8s-limits-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C189",
+      "arm": "orchestrated",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C190",
+      "arm": "orchestrated",
+      "source_id": "database-risky-migration-3",
+      "title": "database-risky-migration-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C191",
+      "arm": "toolkit",
+      "source_id": "code-catch-and-continue-9",
+      "title": "code-catch-and-continue-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C192",
+      "arm": "naive",
+      "source_id": "naive-claim-32",
+      "title": "32. `log_web_search.py` — `_handle_web_search` summary logic is odd",
+      "security_relevant": false
+    },
+    {
+      "label": "C193",
+      "arm": "orchestrated",
+      "source_id": "cost-deprecated-version-10",
+      "title": "cost-deprecated-version-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C194",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-usage-monitoring-9",
+      "title": "cost-api-no-usage-monitoring-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C195",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. `protect_result_files.py` — `_is_same_round_manifest_path` blocks reads too",
+      "security_relevant": false
+    },
+    {
+      "label": "C196",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. `log_web_search.py` — unbounded, unvalidated JSONL append",
+      "security_relevant": false
+    }
+  ]
+}

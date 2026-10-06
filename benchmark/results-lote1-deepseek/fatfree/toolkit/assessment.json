@@ -1,0 +1,197 @@
+{
+  "metadata": {
+    "repo": "bcosca/fatfree",
+    "assessed_at": "2025-01-01T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "D",
+    "total_findings": 8,
+    "critical_count": 0,
+    "by_severity": {
+      "high": 2,
+      "medium": 5,
+      "info": 1
+    },
+    "effort_estimate": {
+      "XS": 2,
+      "S": 1,
+      "M": 5
+    }
+  },
+  "findings": [
+    {
+      "id": "security-debug-in-prod-1",
+      "module": "security",
+      "severity": "high",
+      "effort": "XS",
+      "location": {
+        "file": "config.ini",
+        "line": 3
+      },
+      "description": "DEBUG is set to 3 in config.ini, which enables verbose debug output including full error traces, SQL query logging, and internal state dumps. index.php also hardcodes $f3->set('DEBUG',1) at line 17, overriding the config value. Shipping a production application with debug mode enabled exposes stack traces, file paths, and potentially sensitive runtime data to end users.",
+      "remediation": "Set DEBUG=0 in config.ini for production deployments and remove or guard the hardcoded $f3->set('DEBUG',1) in index.php so it is only active in development environments (e.g., driven by an environment variable).",
+      "confidence": 0.95,
+      "evidence": {
+        "snippet": "[globals]\n\nDEBUG=3\nUI=ui/",
+        "metric": "DEBUG level 3 (maximum verbosity) active in committed configuration"
+      }
+    },
+    {
+      "id": "security-missing-headers-10",
+      "module": "security",
+      "severity": "medium",
+      "effort": "S",
+      "location": {
+        "file": "ui/layout.htm",
+        "line": 4
+      },
+      "description": "The application layout emits no security headers. There is no Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Strict-Transport-Security, or Referrer-Policy. Without these headers the application is exposed to clickjacking, MIME-sniffing attacks, and cross-site scripting escalation. The layout template is the single choke point where all pages are rendered, making it the natural place to inject header middleware.",
+      "remediation": "Add a before-route handler in index.php that calls header() with Content-Security-Policy, X-Frame-Options: DENY, X-Content-Type-Options: nosniff, Strict-Transport-Security, and Referrer-Policy: no-referrer before any output is sent.",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "<head>\n\t\t<meta charset=\"<?php echo $ENCODING; ?>\" />\n\t\t<title>Powered by <?php echo $PACKAGE; ?></title>",
+        "metric": "0 of 5 recommended security headers present in layout"
+      }
+    },
+    {
+      "id": "security-error-detail-1",
+      "module": "security",
+      "severity": "info",
+      "effort": "XS",
+      "location": {
+        "file": "index.php",
+        "line": 17
+      },
+      "description": "index.php unconditionally sets DEBUG to 1, which causes the framework's error handler to render raw exception messages, file paths, and stack traces directly to the HTTP client. Combined with the config.ini DEBUG=3 setting, any unhandled error will leak internal implementation details to the browser.",
+      "remediation": "Wrap the DEBUG assignment in an environment check (e.g., only set DEBUG when an APP_ENV variable equals 'development') and ensure production error responses return a generic message while logging full details server-side.",
+      "confidence": 0.9,
+      "evidence": {
+        "snippet": "$f3->set('DEBUG',1);\nif ((float)PCRE_VERSION<8.0)\n\ttrigger_error('PCRE version is out of date');",
+        "metric": "DEBUG=1 hardcoded, error detail exposed to client"
+      }
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "module": "flows",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "index.php",
+        "line": 20
+      },
+      "description": "The application registers routes and calls $f3->run() without installing any global error or exception handler. Any uncaught exception in a route callback will fall through to the framework's default handler, which (with DEBUG enabled) dumps a full trace to the client and returns an inconsistent response shape. There is no centralized place to log errors, map them to HTTP status codes, or return a uniform error payload.",
+      "remediation": "Register a global error handler via $f3->set('ONERROR', function($f3){ ... }) that logs the exception and renders a generic error page with the appropriate HTTP status code, before $f3->run() is called.",
+      "confidence": 0.8,
+      "evidence": {
+        "snippet": "$f3->config('config.ini');\n\n$f3->route('GET /',\n\tfunction($f3) {",
+        "metric": "No ONERROR handler registered; 2 routes defined without error handling"
+      }
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "module": "flows",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "index.php",
+        "line": 22
+      },
+      "description": "The public GET / and GET /userref routes have no rate limiting. The /userref route reads and converts the entire readme.md file on every request via Markdown::instance()->convert(), which is CPU-intensive. Without rate limiting, an attacker can trivially exhaust server resources by repeatedly requesting this endpoint.",
+      "remediation": "Add rate limiting middleware (e.g., a before-route handler keyed on client IP using the framework's Cache class) to cap requests per minute on public endpoints, and cache the rendered markdown output rather than re-converting it on every request.",
+      "confidence": 0.75,
+      "evidence": {
+        "snippet": "$f3->route('GET /userref',\n\tfunction($f3) {\n\t\t$f3->set('content','userref.htm');",
+        "metric": "0 rate-limited endpoints out of 2 public routes"
+      }
+    },
+    {
+      "id": "cost-no-http-compression-9",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".htaccess",
+        "line": 1
+      },
+      "description": "The .htaccess file configures URL rewriting but contains no mod_deflate or mod_brotli directives. All responses, including the large readme.md rendered as HTML on /userref and the CSS files, are served uncompressed. Enabling compression would reduce bandwidth consumption by 60-80% for text-heavy responses.",
+      "remediation": "Add mod_deflate configuration to .htaccess to compress text/html, text/css, application/javascript, and application/json responses, or configure Brotli at the server level for better ratios.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "# Enable rewrite engine and route requests to framework\nRewriteEngine On",
+        "metric": "No compression directives present in .htaccess"
+      }
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "composer.json",
+        "line": 1
+      },
+      "description": "The project depends on bcosca/fatfree-core via Composer but there is no CI workflow and no dependency caching strategy. Every fresh checkout requires a full composer install, and the absence of a lock file (composer.lock is not present in the repository) means dependency resolution is non-deterministic and repeated on every install.",
+      "remediation": "Commit a composer.lock file to pin dependency versions, and if CI is added, cache the vendor/ directory or Composer cache between runs to avoid re-downloading dependencies.",
+      "confidence": 0.65,
+      "evidence": {
+        "snippet": "\"require\": {\n\t\t\"bcosca/fatfree-core\": \"^3.8\"\n\t}",
+        "metric": "No composer.lock committed; caret range allows non-deterministic resolution"
+      }
+    },
+    {
+      "id": "structure-layer-violation-1",
+      "module": "structure",
+      "severity": "high",
+      "effort": "M",
+      "location": {
+        "file": "index.php",
+        "line": 22
+      },
+      "description": "Route callbacks in index.php directly construct the view layer and echo rendered output inline (echo View::instance()->render('layout.htm')). Business logic, view selection, and response emission are all collapsed into the route closure with no separation between controller, service, and presentation layers. This makes the routes untestable in isolation and couples routing directly to template rendering.",
+      "remediation": "Extract route handlers into dedicated controller classes (e.g., WelcomeController, UserRefController) that set template variables and delegate rendering, keeping index.php limited to route registration and framework bootstrap.",
+      "confidence": 0.8,
+      "evidence": {
+        "snippet": "$f3->route('GET /',\n\tfunction($f3) {\n\t\t$classes=array(",
+        "metric": "2 route closures containing inline view rendering and data assembly"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-debug-in-prod-1",
+        "security-error-detail-1",
+        "security-missing-headers-10"
+      ],
+      "60_days": [
+        "flows-missing-error-handler-5",
+        "flows-missing-rate-limit-8",
+        "structure-layer-violation-1"
+      ],
+      "90_days": [
+        "cost-no-http-compression-9",
+        "cost-gha-no-dependency-cache-5"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "security-debug-in-prod-1",
+        "to": "security-error-detail-1",
+        "type": "blocks"
+      },
+      {
+        "from": "flows-missing-error-handler-5",
+        "to": "security-error-detail-1",
+        "type": "blocks"
+      },
+      {
+        "from": "structure-layer-violation-1",
+        "to": "flows-missing-rate-limit-8",
+        "type": "blocks"
+      }
+    ]
+  }
+}

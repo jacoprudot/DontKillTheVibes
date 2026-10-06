@@ -1,0 +1,36 @@
+{
+  "target": "eurekagent-s1-x1",
+  "mock": false,
+  "created_at": "2026-10-06T01:37:10.102Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "code-missing-return-type-8",
+      "title": "code-missing-return-type-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "toolkit",
+      "source_id": "code-generic-catch-2",
+      "title": "code-generic-catch-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "toolkit",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "security_relevant": true
+    },
+    {
+      "label": "C4",
+      "arm": "toolkit",
+      "source_id": "code-exact-duplication-significant-2",
+      "title": "code-exact-duplication-significant-2",
+      "security_relevant": false
+    }
+  ]
+}

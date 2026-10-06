@@ -1,0 +1,123 @@
+{
+  "target": "rich-a",
+  "mock": true,
+  "created_at": "2026-10-05T19:31:21.232Z",
+  "judge_model": "qwen3.5:9b",
+  "judge_base_url": null,
+  "repo_tree_used_for_grounding": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\rich",
+  "mock_notice": "MOCK RUN — judge answers are stub text, not a real judgement.",
+  "model_under_test": "deepseek-chat",
+  "commit": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+  "judge_runs": 1,
+  "run_agreement": null,
+  "note": "grounded_mechanical = the cited file exists AND the cited line is within the file. Existence only, not semantics. verdict: real | false | unverifiable (excluded from the precision denominator) | omitted.",
+  "totals": {
+    "claims": 2,
+    "toolkit": 2,
+    "orchestrated": 0,
+    "naive": 0,
+    "judged": 2,
+    "unverifiable": 0
+  },
+  "summary_by_arm": {
+    "toolkit": {
+      "claims": 2,
+      "judged": 2,
+      "real": 2,
+      "falseCount": 0,
+      "unverifiable": 0,
+      "judgeGrounded": 2,
+      "mechGrounded": 2,
+      "mechUngrounded": 0,
+      "mismatch": 0,
+      "actionableSum": 8,
+      "actionableN": 2,
+      "security": 2,
+      "securityFn": 0,
+      "claimsWithCitations": 2,
+      "citationsTotal": 2,
+      "weakCitations": 0,
+      "meanActionability": 4,
+      "precision": 1,
+      "judgeGroundedRate": 1
+    }
+  },
+  "claims": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "MOCK judge opinion for C1 — offline stub, not a real judgement.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/pythonpackage.yml",
+            "line": 41,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 54,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    },
+    {
+      "label": "C2",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "security_relevant": true,
+      "judge": {
+        "verdict": "real",
+        "real": true,
+        "unverifiable": false,
+        "grounded": true,
+        "actionable": 4,
+        "reason": "MOCK judge opinion for C2 — offline stub, not a real judgement.",
+        "votes": {
+          "real": 1
+        }
+      },
+      "grounded_mechanical": "grounded",
+      "weak_citation": false,
+      "mechanical": {
+        "citations": [
+          {
+            "file": ".github/workflows/pythonpackage.yml",
+            "line": 38,
+            "origin": "structured",
+            "status": "ok",
+            "fileLines": 54,
+            "reason": null
+          }
+        ],
+        "verified": 1,
+        "unverified": 0,
+        "mismatched": 0,
+        "repo_available": true
+      }
+    }
+  ]
+}

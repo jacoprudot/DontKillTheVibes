@@ -1,0 +1,1455 @@
+{
+  "metadata": {
+    "repo": "jarvis-voice",
+    "assessed_at": "2026-10-05T20:15:58.567Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 21,
+    "findings_raw": 66,
+    "findings_dropped": 4,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 4,
+    "total_findings": 59,
+    "by_severity": {
+      "critical": 4,
+      "high": 9,
+      "medium": 38,
+      "low": 8
+    },
+    "by_module": {
+      "structure": 7,
+      "flows": 26,
+      "security": 8,
+      "cost": 9,
+      "performance": 9
+    },
+    "effort_estimate": {
+      "XS": 5,
+      "S": 9,
+      "M": 44,
+      "L": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "security-secret-in-code-1",
+      "module": "security",
+      "severity": "critical",
+      "location": {
+        "file": "server.py",
+        "line": 22
+      },
+      "description": "API keys (Anthropic and ElevenLabs) are read from config.json and held in module-level globals, and the config file is the sole secret store; the example config ships placeholder keys and the README/SETUP instruct users to paste real keys into config.json. Any accidental commit or log of this file exposes live credentials.",
+      "remediation": "Store API keys in environment variables or a secrets manager (e.g. os.environ['ANTHROPIC_API_KEY']) and never persist them in a JSON file inside the repo; keep config.json strictly gitignored and rotate any key that has ever been committed.",
+      "effort": "XS",
+      "confidence": 0.7
+    },
+    {
+      "id": "flows-fire-and-forget-critical-1",
+      "module": "flows",
+      "severity": "critical",
+      "location": {
+        "file": "scripts/clap-trigger.py",
+        "line": 0
+      },
+      "description": "The double-clap trigger launches the session script with subprocess.Popen and never checks the return code or captures output, so a failed launch is silently lost.",
+      "remediation": "Capture the Popen handle, monitor the process exit code, and log or notify on non-zero exit instead of fire-and-forget.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "security-logs-contain-secrets-12",
+      "module": "security",
+      "severity": "critical",
+      "location": {
+        "file": "server.py",
+        "line": 172
+      },
+      "description": "The TTS error path prints the raw ElevenLabs response body (`resp.text[:200]`) to stdout. Error bodies from the ElevenLabs API can echo request context and, combined with the xi-api-key header usage, risk leaking sensitive request/credential material into logs.",
+      "remediation": "Log only the HTTP status code and a generic error identifier; never print raw upstream response bodies that may contain credential or account details.",
+      "effort": "XS",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "module": "flows",
+      "severity": "critical",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "Incoming WebSocket messages are processed without any idempotency key or deduplication, so a retransmitted or duplicated speech message will trigger repeated LLM calls, TTS synthesis, and browser actions.",
+      "remediation": "Attach a client-generated message id to each WebSocket payload and track processed ids per session to skip duplicates before invoking the LLM and actions.",
+      "effort": "S",
+      "confidence": 0.7
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "module": "security",
+      "severity": "high",
+      "location": {
+        "file": "server.py",
+        "line": 196
+      },
+      "description": "User-supplied text from the WebSocket is passed straight into the LLM and then into action execution. The [ACTION:OPEN] handler passes the model-produced payload directly to browser_tools.open_url without any scheme/host allowlist, so a crafted utterance can drive the browser to arbitrary URLs (including local/internal endpoints).",
+      "remediation": "Validate and allowlist action payloads before execution: restrict OPEN to http/https schemes, reject localhost/private IP ranges, and validate the action type against a fixed enum.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "performance-no-connection-pool-7",
+      "module": "performance",
+      "severity": "high",
+      "location": {
+        "file": "server.py",
+        "line": 34
+      },
+      "description": "A single module-level httpx.AsyncClient is created with a fixed 30s timeout and no explicit connection-pool limits, and it is reused for all ElevenLabs TTS calls. There is no configured max_connections/max_keepalive_connections, no keep-alive tuning, and no per-host pool sizing, so concurrent TTS chunk requests can serialize or exhaust the default pool.",
+      "remediation": "Configure explicit pool limits on the shared client, e.g. httpx.AsyncClient(timeout=30, limits=httpx.Limits(max_connections=20, max_keepalive_connections=10, keepalive_expiry=30)), and ensure the client is closed on shutdown.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "module": "structure",
+      "severity": "high",
+      "location": {
+        "file": "server.py",
+        "line": 44
+      },
+      "description": "server.py directly instantiates and holds global clients (anthropic.AsyncAnthropic, httpx.AsyncClient) and imports browser_tools and screen_capture at module scope, tightly coupling the HTTP/WebSocket layer to concrete external integrations and browser automation. Any change to those modules or clients forces changes in the server module.",
+      "remediation": "Introduce thin service wrappers (e.g. LLMService, TTSService, BrowserService) injected into the request handlers, so server.py depends on abstractions rather than concrete clients and modules.",
+      "effort": "L",
+      "confidence": 0.65
+    },
+    {
+      "id": "flows-message-not-encrypted-9",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "frontend/main.js",
+        "line": 26
+      },
+      "description": "The WebSocket connection uses ws:// instead of wss://, so voice transcripts and audio payloads are transmitted in cleartext.",
+      "remediation": "Use wss:// with TLS termination and derive the scheme from location.protocol (wss when https).",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "flows-missing-dlq-2",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "Failed action executions (SEARCH, OPEN, SCREEN, NEWS) are returned as plain strings with no dead-letter or retry queue, so transient browser failures are silently dropped.",
+      "remediation": "Persist failed actions to a dead-letter store with the payload and error, and expose a replay mechanism for manual or scheduled retry.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "README.md",
+        "line": 5
+      },
+      "description": "The repository ships no test suite, no test runner configuration and no CI workflow; verification is entirely manual ('Start the server, open Chrome, check whether Jarvis speaks'). Every change to the prompt, action parsing or TTS pipeline must be validated by hand, which is a recurring engineering-cost drag and a source of regressions.",
+      "remediation": "Add a minimal pytest suite covering extract_action(), build_system_prompt() and the WebSocket message flow with mocked Anthropic/ElevenLabs clients, and run it in CI on every push.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "flows-consumer-group-lag-3",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "Messages are processed sequentially per WebSocket with no queue depth monitoring, so a slow LLM/TTS call causes unbounded client-side backlog with no visibility into lag.",
+      "remediation": "Track and expose pending message count per session and emit a status frame when the backlog exceeds a threshold.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "flows-message-breaking-schema-2",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "frontend/main.js",
+        "line": 0
+      },
+      "description": "The frontend assumes a fixed message shape ({type, text, audio}) with no tolerant parsing, so any backend schema change breaks the client silently.",
+      "remediation": "Introduce a versioned message contract and defensive parsing that ignores unknown fields and handles missing ones gracefully.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "flows-dlq-on-repeat-failures-10",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "Repeated failures of the same action (e.g. SEARCH) are retried by the user without any automatic dead-lettering after N attempts, wasting API quota.",
+      "remediation": "Count consecutive failures per action type and move the action to a dead-letter store after a configurable threshold.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "performance-io-bound-sync-2",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 48
+      },
+      "description": "get_weather_sync performs a blocking urllib.request.urlopen call with a 5s timeout, and refresh_data() invokes it synchronously from the async process_message path when the user says \"activate\", blocking the event loop for the duration of the network round-trip.",
+      "remediation": "Make the weather fetch async (use the existing httpx.AsyncClient) or run the blocking call via asyncio.to_thread/run_in_executor so the event loop is not blocked during activation.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "performance-no-retry-jitter-8",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 176
+      },
+      "description": "synthesize_speech posts each text chunk to the ElevenLabs API with no retry logic and no backoff/jitter; a transient 429 or 5xx simply drops that chunk (only a print of the error body), producing truncated or missing speech.",
+      "remediation": "Wrap the TTS POST in a retry loop with exponential backoff plus random jitter (e.g. tenacity or a manual loop with 3 attempts and 0.5s*2^n + random jitter) and treat non-200 responses as retryable.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 21
+      },
+      "description": "server.py mixes many unrelated responsibilities in one module: config loading, weather fetching, Obsidian task reading, system-prompt construction, action parsing, ElevenLabs TTS synthesis, action execution, and WebSocket message processing. The module has low cohesion and is a de-facto god module for the backend.",
+      "remediation": "Split server.py into focused modules: config, weather, tasks, prompt building, action parsing/execution, TTS client, and the FastAPI routes/WebSocket handler, each with a single responsibility.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 34
+      },
+      "description": "The shared httpx.AsyncClient is created without any timeout configuration, so outbound calls to the Anthropic and ElevenLabs APIs can hang indefinitely and block the WebSocket request flow.",
+      "remediation": "Instantiate the client with an explicit timeout, e.g. httpx.AsyncClient(timeout=httpx.Timeout(30.0, connect=5.0)), and apply per-request timeouts on the ElevenLabs TTS call.",
+      "effort": "M",
+      "confidence": 0.85
+    },
+    {
+      "id": "performance-no-response-streaming-5",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 196
+      },
+      "description": "synthesize_speech accumulates every chunk's audio into audio_parts and returns b\"\".join(audio_parts), so the full response audio must be generated and buffered before any of it is sent to the client. The WebSocket handler then base64-encodes the whole buffer, adding latency and memory pressure proportional to reply length.",
+      "remediation": "Stream audio to the client as each chunk is synthesized (send incremental WebSocket frames or use a streaming response) instead of buffering the entire concatenated audio before sending.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 36
+      },
+      "description": "The FastAPI app is created with no CORS configuration and the WebSocket endpoint accepts connections from any origin. Any web page the user visits can open a WebSocket to the local server and drive the assistant (browser control, screen capture).",
+      "remediation": "Add CORSMiddleware with an explicit allowlist of trusted origins and validate the Origin header on the /ws WebSocket handshake, rejecting unknown origins.",
+      "effort": "XS",
+      "confidence": 0.55
+    },
+    {
+      "id": "structure-config-logic-8",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 26
+      },
+      "description": "Configuration loading and derived constants (API keys, voice id, user name, city, tasks path) are executed as module-level side effects interleaved with application logic in server.py, so importing the module performs I/O and binds config values globally. This couples configuration concerns to the server module and makes the module hard to test or reuse.",
+      "remediation": "Move config loading into a dedicated config module (e.g. config.py) that exposes a typed settings object, and import that object in server.py instead of reading config.json at import time.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "The WebSocket endpoint has no try/except around message processing; an exception from the LLM call, TTS, or action execution will tear down the connection without sending an error frame to the client.",
+      "remediation": "Wrap the WebSocket receive/process loop in try/except WebSocketDisconnect and a generic handler that sends a structured error message and keeps the session alive.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 209
+      },
+      "description": "process_message() couples core conversation/LLM logic directly to the FastAPI WebSocket type by accepting a WebSocket parameter and calling ws.send_json() inside the business logic, leaking the web framework into the domain layer.",
+      "remediation": "Have process_message() return structured response objects (or yield events) and let the WebSocket route handler perform the ws.send_json() calls, keeping framework concerns at the transport boundary.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "structure-service-sql-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 67
+      },
+      "description": "get_tasks_sync() performs direct file I/O (open/readlines) inside what is effectively the service layer of the FastAPI backend, mixing data-access concerns with orchestration logic. The server module reads the Obsidian tasks file directly instead of delegating to a dedicated repository/data-access component.",
+      "remediation": "Extract the Obsidian task reading into a dedicated data-access module (e.g. tasks_repository.py) exposing a get_open_tasks() function, and have server.py call that abstraction rather than opening files itself.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "browser_tools.py",
+        "line": 0
+      },
+      "description": "search_and_read and visit return the raw exception string (str(e)) to the caller, which is then fed into the LLM context and can surface internal stack/path details to the user.",
+      "remediation": "Log the full exception server-side and return a generic, user-safe error message such as 'Suche fehlgeschlagen' without the raw exception text.",
+      "effort": "S",
+      "confidence": 0.75
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "The WebSocket endpoint accepts and processes an unbounded stream of messages with no rate limiting, allowing a client to exhaust Anthropic and ElevenLabs quotas or overwhelm the browser automation.",
+      "remediation": "Add per-session rate limiting (e.g. token bucket or slowapi) on the WebSocket handler and reject or throttle messages that exceed the configured threshold.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "flows-missing-visibility-timeout-9",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "browser_tools.py",
+        "line": 0
+      },
+      "description": "Playwright pages opened for search, visit, and news are never closed on the success path (search_and_read and fetch_news use 'pass' in finally), leaking browser contexts and pages.",
+      "remediation": "Close pages in a finally block for all browser operations, or reuse a bounded pool of pages with an explicit visibility/lifetime timeout.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "security-missing-headers-10",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 36
+      },
+      "description": "The FastAPI application serves the frontend and WebSocket without any security headers (no CSP, X-Content-Type-Options, X-Frame-Options, or HSTS). The page loads external scripts and handles audio/WebSocket data, leaving it open to framing and content-injection attacks.",
+      "remediation": "Add a middleware that sets Content-Security-Policy, X-Content-Type-Options: nosniff, X-Frame-Options: DENY, and Referrer-Policy on all responses.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-missing-circuit-breaker-7",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "Calls to the ElevenLabs TTS API and Anthropic API have no circuit breaker, so repeated upstream failures keep hammering the providers and delay every response.",
+      "remediation": "Wrap outbound API calls in a circuit breaker (e.g. pybreaker) that opens after a failure threshold and fails fast with a fallback.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "flows-retry-no-backoff-4",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "frontend/main.js",
+        "line": 0
+      },
+      "description": "The WebSocket reconnect uses a fixed 3000 ms delay with no exponential backoff or jitter, causing synchronized reconnect storms when the server restarts.",
+      "remediation": "Implement exponential backoff with jitter for the reconnect timer, e.g. delay = min(30000, base * 2**attempt) + random jitter.",
+      "effort": "XS",
+      "confidence": 0.7
+    },
+    {
+      "id": "flows-retry-no-max-5",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "frontend/main.js",
+        "line": 0
+      },
+      "description": "The reconnect logic retries indefinitely with no maximum attempt count or terminal error state, so a permanently unavailable server results in an endless reconnect loop.",
+      "remediation": "Cap the number of reconnect attempts and surface a persistent error state to the user after the limit is reached.",
+      "effort": "XS",
+      "confidence": 0.7
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "requirements.txt",
+        "line": 1
+      },
+      "description": "Dependencies are declared with floating version ranges (>=) and no lockfile or hash pinning, so builds resolve to whatever latest version exists at install time. A compromised or malicious upstream release would be pulled in silently.",
+      "remediation": "Pin dependencies to exact versions and add a lockfile with hashes (e.g. pip-compile --generate-hashes) so installs are reproducible and tamper-evident.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "performance-no-compression-13",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 196
+      },
+      "description": "Audio returned from ElevenLabs is base64-encoded and sent as a JSON string over the WebSocket, inflating payload size by ~33% with no compression or binary framing, increasing transfer time and memory for every spoken response.",
+      "remediation": "Send audio as binary WebSocket frames (or apply permessage-deflate/compression) instead of base64 inside JSON to cut payload size and encoding overhead.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "performance-no-request-collapsing-4",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 74
+      },
+      "description": "refresh_data() unconditionally re-fetches weather and re-reads tasks every time a message contains \"activate\", with no caching or request collapsing; repeated activations trigger duplicate identical network and disk work.",
+      "remediation": "Cache the weather/task results with a short TTL (e.g. 60s) and collapse concurrent refreshes into a single in-flight fetch so repeated activations do not duplicate the same I/O.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 216
+      },
+      "description": "execute_action() acts as an orchestration dispatcher that directly invokes browser_tools and screen_capture operations and formats their results inline, blending orchestration with presentation formatting of the returned strings.",
+      "remediation": "Move the per-action result formatting into the respective service modules (returning structured results) and keep execute_action() limited to dispatching to injected services.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 33
+      },
+      "description": "The server calls two metered third-party APIs (Anthropic messages.create and ElevenLabs text-to-speech) but records no usage, cost or quota metrics anywhere — only debug prints of status codes and byte sizes. There is no way to detect runaway spend or an exhausted ElevenLabs free-tier character quota before the assistant silently stops speaking.",
+      "remediation": "Add per-call usage logging for Anthropic (response.usage tokens) and ElevenLabs (characters synthesized), aggregate them into a counter/metric, and alert when daily cost or monthly character quota approaches a threshold.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "flows-message-schema-no-version-1",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "WebSocket messages exchanged between frontend and backend carry no schema version field, so protocol changes cannot be rolled out compatibly.",
+      "remediation": "Add a 'version' field to every WebSocket message and have both sides reject or adapt to unknown versions.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "performance-no-keep-alive-9",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 176
+      },
+      "description": "Each TTS request is issued against the ElevenLabs endpoint without any explicit keep-alive/connection-reuse configuration on the request path; combined with the unconfigured shared client this risks repeated TLS/TCP setup per chunk for multi-chunk replies.",
+      "remediation": "Rely on a single long-lived AsyncClient with keepalive_expiry set and HTTP/1.1 keep-alive enabled, and avoid creating per-call clients so connections are reused across chunks and requests.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "performance-no-load-testing-3",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "The project ships no performance/load tests or benchmarks for the voice pipeline (LLM call, TTS synthesis, browser automation); requirements.txt contains only runtime dependencies and there is no test harness exercising latency or concurrency.",
+      "remediation": "Add a lightweight load/latency test (e.g. locust or a pytest-asyncio benchmark) that measures end-to-end response time for the LLM+TTS path and runs in CI to catch regressions.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "performance-no-perf-budgets-10",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "No performance budgets or SLOs are defined anywhere in the repository for the interactive voice loop (e.g. max time-to-first-audio, max LLM latency), so regressions in responsiveness cannot be detected or enforced.",
+      "remediation": "Define explicit budgets such as time-to-first-audio < 1.5s and total response < 4s, document them, and add automated checks that fail when measured latency exceeds the budget.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "security-unmaintained-dep-4",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "requirements.txt",
+        "line": 1
+      },
+      "description": "The dependency set uses open-ended lower bounds with no upper bounds or automated update/vulnerability scanning, so transitive vulnerabilities in fastapi, anthropic, httpx, playwright, or Pillow will not be surfaced or patched systematically.",
+      "remediation": "Enable Dependabot or pip-audit in CI to monitor dependencies for known CVEs and schedule regular dependency upgrades.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-weak-rng-10",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 89
+      },
+      "description": "Conversation sessions are keyed by a session_id supplied by the client with no server-side generation or validation, and no cryptographic randomness is used to establish session identity. A client can impersonate or collide with another session's conversation history.",
+      "remediation": "Generate session identifiers server-side using secrets.token_urlsafe() and bind them to the WebSocket connection rather than trusting client-provided ids.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-llm-high-usage-1",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 33
+      },
+      "description": "Every user utterance triggers a Claude Haiku call with a large system prompt (personality, action instructions, weather and task blocks) rebuilt on each request via build_system_prompt(), and the full 16-message conversation history is resent every turn. There is no prompt caching, no token accounting and no usage monitoring, so LLM spend scales linearly with conversation length and cannot be observed or capped.",
+      "remediation": "Enable Anthropic prompt caching for the static system prompt (cache_control on the system block), trim the resent history, and log token usage per request (input/output tokens and estimated cost) so spend can be monitored and budgeted.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "flows-dlq-not-monitored-5",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "Action failures are only printed to stdout and never routed to a monitored dead-letter channel, so recurring failures go unnoticed.",
+      "remediation": "Route failed actions to a monitored dead-letter queue with alerting on depth or error rate.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "flows-message-ordering-needed-4",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "frontend/main.js",
+        "line": 0
+      },
+      "description": "Audio responses are queued client-side but user messages are sent immediately, so out-of-order LLM replies can be spoken in the wrong sequence.",
+      "remediation": "Attach a monotonically increasing sequence number to each message and reorder or drop stale responses on the client.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 34
+      },
+      "description": "The ElevenLabs TTS call is wrapped in a bare try/except that logs the exception and drops the chunk, and the Anthropic call has no retry or backoff at all. A transient failure silently loses audio or aborts the turn, and there is no bounded retry policy to distinguish retryable from non-retryable errors.",
+      "remediation": "Add a bounded retry with exponential backoff and jitter for the Anthropic and ElevenLabs calls, retrying only on 429/5xx responses, and surface a clear error to the client when retries are exhausted.",
+      "effort": "M",
+      "confidence": 0.65
+    },
+    {
+      "id": "flows-message-retention-too-short-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "Only the last 16 messages are sent to the LLM, which can truncate longer multi-turn context and cause the assistant to forget earlier instructions.",
+      "remediation": "Increase the context window or summarize older turns before truncation to preserve relevant conversation state.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-api-no-client-rate-limit-4",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 36
+      },
+      "description": "The FastAPI app exposes the WebSocket endpoint and the Anthropic/ElevenLabs-backed pipeline with no client-side rate limiting, concurrency cap or per-session throttle. A client that sends messages rapidly (or a reconnecting frontend loop) can drive unbounded paid LLM and TTS calls.",
+      "remediation": "Add per-session and global rate limiting (e.g. slowapi or a token-bucket guard) on the WebSocket message handler and cap concurrent in-flight LLM/TTS requests to protect against runaway API spend.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "synthesize_speech() re-requests ElevenLabs TTS for identical text every time it is spoken, and the weather/task greeting is regenerated and re-synthesized on each 'activate'. No response or audio caching exists, so repeated identical phrases are billed repeatedly against the ElevenLabs character quota.",
+      "remediation": "Cache synthesized audio keyed by (voice_id, model_id, text hash) on disk or in memory and reuse it for repeated phrases such as the activation greeting and fixed status messages.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "CLAUDE.md",
+        "line": 0
+      },
+      "description": "Setup and operational knowledge is spread across CLAUDE.md, SETUP.md and README.md with overlapping and partially divergent instructions (e.g. different Task Scheduler commands, different config field descriptions), and there is no single authoritative runbook for cost-relevant operations such as rotating API keys or monitoring API spend.",
+      "remediation": "Consolidate setup and operations into one authoritative document, remove duplicated/divergent instructions from the other files, and add a short operations section covering API key rotation and usage/cost monitoring.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-no-performance-budget-10",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "The voice pipeline chains an LLM call, a chunked ElevenLabs TTS round-trip and WebSocket delivery with no latency budget, timeout or SLO defined for the end-to-end response. The httpx client uses a flat 30s timeout and TTS chunks are synthesized sequentially, so slow responses are neither measured nor bounded.",
+      "remediation": "Define an end-to-end response latency budget (e.g. p95 < 3s), instrument each pipeline stage with timing, and fail or degrade gracefully when the budget is exceeded.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "requirements.txt",
+        "line": 0
+      },
+      "description": "The project pins Python dependencies in requirements.txt and the documented setup runs 'pip install -r requirements.txt' plus 'playwright install chromium' on every fresh environment, with no dependency or browser-binary caching strategy described. Repeated uncached installs of Playwright Chromium and the full dependency set waste CI/setup time and bandwidth.",
+      "remediation": "Cache the pip wheel directory and the Playwright browser download (e.g. actions/cache on ~/.cache/pip and ~/.cache/ms-playwright) in any CI workflow, and pin exact versions in requirements.txt to make the cache effective.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "No request/correlation id is generated or propagated through the message processing pipeline, making it impossible to correlate a user utterance with its LLM call, TTS request, and action execution in logs.",
+      "remediation": "Generate a UUID per incoming message, include it in all log lines and outbound API calls, and echo it back in the WebSocket response payload.",
+      "effort": "S",
+      "confidence": 0.75
+    },
+    {
+      "id": "flows-no-state-persistence-6",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "Conversation history is held only in the in-memory 'conversations' dict, so all session state is lost on server restart and cannot be resumed.",
+      "remediation": "Persist conversation history to a durable store (SQLite/Redis) keyed by session id and reload it on reconnect.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "structure-adapter-violation-10",
+      "module": "structure",
+      "severity": "low",
+      "location": {
+        "file": "browser_tools.py",
+        "line": 33
+      },
+      "description": "browser_tools.py mixes multiple adapter concerns: Playwright browser lifecycle management (_get_browser), OS-level window manipulation via PowerShell subprocess (_bring_chromium_to_front), HTTP search, and the webbrowser module for opening URLs. These are distinct external-system adapters bundled into one module.",
+      "remediation": "Separate the Playwright browser adapter, the OS window-focus adapter, and the default-browser opener into distinct modules so each adapter wraps a single external system.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "The FastAPI application serves the frontend without any security headers (CSP, X-Content-Type-Options, X-Frame-Options), leaving the voice UI exposed to framing and content-injection risks.",
+      "remediation": "Add middleware that sets Content-Security-Policy, X-Content-Type-Options: nosniff, X-Frame-Options: DENY, and Referrer-Policy on all responses.",
+      "effort": "S",
+      "confidence": 0.65
+    },
+    {
+      "id": "flows-message-retention-too-long-7",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "Conversation history is retained indefinitely in memory with only a 16-message window sent to the LLM, so the full transcript accumulates without any retention policy.",
+      "remediation": "Apply a bounded retention policy (max messages or TTL) to the conversations dict and evict old sessions.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-missing-cors-9",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "The FastAPI app is created without CORSMiddleware, so cross-origin browser clients cannot be explicitly restricted and the WebSocket/HTTP surface has no origin policy.",
+      "remediation": "Add CORSMiddleware with an explicit allow_origins list limited to the local frontend origin instead of relying on default permissive behavior.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-validation-too-early-3",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "Action extraction via regex happens on the raw LLM reply before any sanitization, so malformed or injected action tags are executed without a validation stage.",
+      "remediation": "Validate the extracted action type against an allowlist and sanitize the payload before dispatching to execute_action.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-message-not-compressed-10",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "server.py",
+        "line": 0
+      },
+      "description": "Base64-encoded audio is sent over the WebSocket without compression, significantly inflating bandwidth for every spoken response.",
+      "remediation": "Enable WebSocket permessage-deflate or compress the audio payload before base64 encoding.",
+      "effort": "M",
+      "confidence": 0.55
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "security-secret-in-code-1",
+          "flows-fire-and-forget-critical-1",
+          "security-logs-contain-secrets-12",
+          "flows-missing-idempotency-3",
+          "security-no-input-validation-14",
+          "performance-no-connection-pool-7",
+          "structure-high-coupling-1",
+          "flows-message-not-encrypted-9",
+          "flows-missing-dlq-2",
+          "cost-no-automated-tests-4",
+          "flows-consumer-group-lag-3",
+          "flows-message-breaking-schema-2",
+          "flows-dlq-on-repeat-failures-10",
+          "performance-io-bound-sync-2",
+          "performance-no-retry-jitter-8",
+          "structure-low-cohesion-5",
+          "flows-missing-timeout-6",
+          "performance-no-response-streaming-5"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "security-cors-wildcard-2",
+          "structure-config-logic-8",
+          "flows-missing-error-handler-5",
+          "structure-framework-leak-3",
+          "structure-service-sql-5",
+          "flows-error-leaks-stack-6",
+          "flows-missing-rate-limit-8",
+          "flows-missing-visibility-timeout-9",
+          "security-missing-headers-10",
+          "flows-missing-circuit-breaker-7",
+          "flows-retry-no-backoff-4",
+          "flows-retry-no-max-5",
+          "security-gha-action-unpinned-5"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "performance-no-compression-13",
+          "performance-no-request-collapsing-4",
+          "structure-service-orchestration-3",
+          "cost-api-no-usage-monitoring-9",
+          "flows-message-schema-no-version-1",
+          "performance-no-keep-alive-9",
+          "performance-no-load-testing-3",
+          "performance-no-perf-budgets-10",
+          "security-unmaintained-dep-4",
+          "security-weak-rng-10",
+          "cost-llm-high-usage-1",
+          "flows-dlq-not-monitored-5",
+          "flows-message-ordering-needed-4",
+          "cost-api-no-retry-strategy-8",
+          "flows-message-retention-too-short-6",
+          "cost-api-no-client-rate-limit-4",
+          "cost-api-no-response-cache-5",
+          "cost-documentation-poor-7",
+          "cost-no-performance-budget-10",
+          "cost-gha-no-dependency-cache-5",
+          "flows-missing-request-id-7",
+          "flows-no-state-persistence-6",
+          "structure-adapter-violation-10",
+          "flows-missing-security-headers-10",
+          "flows-message-retention-too-long-7",
+          "flows-missing-cors-9",
+          "flows-validation-too-early-3",
+          "flows-message-not-compressed-10"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "flows-missing-timeout-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-error-handler-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-error-leaks-stack-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-idempotency-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-request-id-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-rate-limit-8": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-cors-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-security-headers-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-dlq-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-retry-no-backoff-4": [
+        "structure-high-coupling-1"
+      ],
+      "flows-retry-no-max-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-fire-and-forget-critical-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-validation-too-early-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-schema-no-version-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-breaking-schema-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-no-state-persistence-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-not-encrypted-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-not-compressed-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-circuit-breaker-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-visibility-timeout-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-consumer-group-lag-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-dlq-not-monitored-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-dlq-on-repeat-failures-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-ordering-needed-4": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-retention-too-long-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-retention-too-short-6": [
+        "structure-high-coupling-1"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.7,
+      "score": 105,
+      "canonical_rule": "security-secret-in-code-1"
+    },
+    {
+      "id": "flows-fire-and-forget-critical-1",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 75,
+      "canonical_rule": "flows-fire-and-forget-critical-1"
+    },
+    {
+      "id": "security-logs-contain-secrets-12",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 75,
+      "canonical_rule": "security-logs-contain-secrets-12"
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 70,
+      "canonical_rule": "flows-missing-idempotency-3"
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 45,
+      "canonical_rule": "security-no-input-validation-14"
+    },
+    {
+      "id": "performance-no-connection-pool-7",
+      "severity": "high",
+      "module": "performance",
+      "confidence": 0.7,
+      "score": 42,
+      "canonical_rule": "performance-no-connection-pool-7"
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 35.75,
+      "canonical_rule": "structure-high-coupling-1"
+    },
+    {
+      "id": "flows-message-not-encrypted-9",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 35,
+      "canonical_rule": "flows-message-not-encrypted-9"
+    },
+    {
+      "id": "flows-missing-dlq-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 30,
+      "canonical_rule": "flows-missing-dlq-2"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 28,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "flows-consumer-group-lag-3",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 27.5,
+      "canonical_rule": "flows-consumer-group-lag-3"
+    },
+    {
+      "id": "flows-message-breaking-schema-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 27.5,
+      "canonical_rule": "flows-message-breaking-schema-2"
+    },
+    {
+      "id": "flows-dlq-on-repeat-failures-10",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 25,
+      "canonical_rule": "flows-dlq-on-repeat-failures-10"
+    },
+    {
+      "id": "performance-io-bound-sync-2",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.8,
+      "score": 19.2,
+      "canonical_rule": "performance-io-bound-sync-2"
+    },
+    {
+      "id": "performance-no-retry-jitter-8",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.75,
+      "score": 18,
+      "canonical_rule": "performance-no-retry-jitter-8"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.8,
+      "score": 17.6,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.85,
+      "score": 17,
+      "canonical_rule": "flows-missing-timeout-6"
+    },
+    {
+      "id": "performance-no-response-streaming-5",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.7,
+      "score": 16.8,
+      "canonical_rule": "performance-no-response-streaming-5"
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.55,
+      "score": 16.5,
+      "canonical_rule": "security-cors-wildcard-2"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 16.5,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.8,
+      "score": 16,
+      "canonical_rule": "flows-missing-error-handler-5"
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-framework-leak-3"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 15,
+      "canonical_rule": "flows-error-leaks-stack-6"
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 15,
+      "canonical_rule": "flows-missing-rate-limit-8"
+    },
+    {
+      "id": "flows-missing-visibility-timeout-9",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 15,
+      "canonical_rule": "flows-missing-visibility-timeout-9"
+    },
+    {
+      "id": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 15,
+      "canonical_rule": "security-missing-headers-10"
+    },
+    {
+      "id": "flows-missing-circuit-breaker-7",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "flows-missing-circuit-breaker-7"
+    },
+    {
+      "id": "flows-retry-no-backoff-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "flows-retry-no-backoff-4"
+    },
+    {
+      "id": "flows-retry-no-max-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "flows-retry-no-max-5"
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.45,
+      "score": 13.5,
+      "canonical_rule": "security-gha-action-unpinned-5"
+    },
+    {
+      "id": "performance-no-compression-13",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.55,
+      "score": 13.2,
+      "canonical_rule": "performance-no-compression-13"
+    },
+    {
+      "id": "performance-no-request-collapsing-4",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.55,
+      "score": 13.2,
+      "canonical_rule": "performance-no-request-collapsing-4"
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.55,
+      "score": 12.1,
+      "canonical_rule": "structure-service-orchestration-3"
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.75,
+      "score": 12,
+      "canonical_rule": "cost-api-no-usage-monitoring-9"
+    },
+    {
+      "id": "flows-message-schema-no-version-1",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 12,
+      "canonical_rule": "flows-message-schema-no-version-1"
+    },
+    {
+      "id": "performance-no-keep-alive-9",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 12,
+      "canonical_rule": "performance-no-keep-alive-9"
+    },
+    {
+      "id": "performance-no-load-testing-3",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 12,
+      "canonical_rule": "performance-no-load-testing-3"
+    },
+    {
+      "id": "performance-no-perf-budgets-10",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 12,
+      "canonical_rule": "performance-no-perf-budgets-10"
+    },
+    {
+      "id": "security-unmaintained-dep-4",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.4,
+      "score": 12,
+      "canonical_rule": "security-unmaintained-dep-4"
+    },
+    {
+      "id": "security-weak-rng-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.4,
+      "score": 12,
+      "canonical_rule": "security-weak-rng-10"
+    },
+    {
+      "id": "cost-llm-high-usage-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 11.2,
+      "canonical_rule": "cost-llm-high-usage-1"
+    },
+    {
+      "id": "flows-dlq-not-monitored-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 11,
+      "canonical_rule": "flows-dlq-not-monitored-5"
+    },
+    {
+      "id": "flows-message-ordering-needed-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 11,
+      "canonical_rule": "flows-message-ordering-needed-4"
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.65,
+      "score": 10.4,
+      "canonical_rule": "cost-api-no-retry-strategy-8"
+    },
+    {
+      "id": "flows-message-retention-too-short-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-message-retention-too-short-6"
+    },
+    {
+      "id": "cost-api-no-client-rate-limit-4",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-api-no-client-rate-limit-4"
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-api-no-response-cache-5"
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-documentation-poor-7"
+    },
+    {
+      "id": "cost-no-performance-budget-10",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-no-performance-budget-10"
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-gha-no-dependency-cache-5"
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.75,
+      "score": 3.75,
+      "canonical_rule": "flows-missing-request-id-7"
+    },
+    {
+      "id": "flows-no-state-persistence-6",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.7,
+      "score": 3.5,
+      "canonical_rule": "flows-no-state-persistence-6"
+    },
+    {
+      "id": "structure-adapter-violation-10",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 3.3,
+      "canonical_rule": "structure-adapter-violation-10"
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.65,
+      "score": 3.25,
+      "canonical_rule": "flows-missing-security-headers-10"
+    },
+    {
+      "id": "flows-message-retention-too-long-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 3,
+      "canonical_rule": "flows-message-retention-too-long-7"
+    },
+    {
+      "id": "flows-missing-cors-9",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 3,
+      "canonical_rule": "flows-missing-cors-9"
+    },
+    {
+      "id": "flows-validation-too-early-3",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 3,
+      "canonical_rule": "flows-validation-too-early-3"
+    },
+    {
+      "id": "flows-message-not-compressed-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 2.75,
+      "canonical_rule": "flows-message-not-compressed-10"
+    }
+  ]
+}

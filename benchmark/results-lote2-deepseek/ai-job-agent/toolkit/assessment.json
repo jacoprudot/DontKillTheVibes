@@ -1,0 +1,269 @@
+{
+  "metadata": {
+    "repo": "ai-job-agent",
+    "assessed_at": "2026-04-26T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "D",
+    "total_findings": 12,
+    "critical_count": 0,
+    "by_severity": {
+      "medium": 9,
+      "high": 1,
+      "low": 2
+    },
+    "effort_estimate": {
+      "M": 9,
+      "XS": 1,
+      "S": 2
+    }
+  },
+  "findings": [
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 14
+      },
+      "description": "GitHub Actions are referenced by mutable tags (actions/checkout@v4, actions/setup-node@v4) rather than pinned to a full commit SHA, leaving the CI supply chain open to tag-mutation attacks.",
+      "remediation": "Pin each action to a full 40-character commit SHA (e.g. actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11) and use Dependabot to keep the pins updated.",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "- uses: actions/checkout@v4\n- uses: actions/setup-node@v4",
+        "metric": "3 unpinned action references across 3 jobs"
+      }
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 9
+      },
+      "description": "None of the three jobs (smoke, lint, skill-files) declare timeout-minutes, so a hung npm install or shellcheck apt-get can occupy a runner for the default 360 minutes.",
+      "remediation": "Add `timeout-minutes: 15` (or an appropriate value) to each job definition in the workflow.",
+      "confidence": 0.9,
+      "evidence": {
+        "snippet": "jobs:\n  smoke:\n    name: smoke test (sandboxed)\n    runs-on: ubuntu-latest\n    steps:",
+        "metric": "0 of 3 jobs declare a timeout"
+      }
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "module": "security",
+      "severity": "high",
+      "effort": "XS",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 1
+      },
+      "description": "The workflow does not declare a top-level `permissions:` block, so every job inherits the repository default token scope (historically read-write for all scopes), violating least privilege for a read-only CI pipeline.",
+      "remediation": "Add a top-level `permissions: contents: read` block (and per-job overrides only where needed) to restrict the GITHUB_TOKEN to the minimum required scope.",
+      "confidence": 0.8,
+      "evidence": {
+        "snippet": "name: smoke + lint\n\non:\n  push:\n    branches: [main]",
+        "metric": "no permissions key present in the workflow"
+      }
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 4
+      },
+      "description": "The workflow triggers on every push to main without a `concurrency:` group, so rapid successive pushes can run overlapping smoke/lint jobs against the same branch and race on shared resources.",
+      "remediation": "Add `concurrency: { group: ${{ github.workflow }}-${{ github.ref }}, cancel-in-progress: true }` at the workflow level to serialize runs per ref.",
+      "confidence": 0.75,
+      "evidence": {
+        "snippet": "on:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]",
+        "metric": "no concurrency group declared"
+      }
+    },
+    {
+      "id": "security-gha-no-container-8",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 11
+      },
+      "description": "Jobs run directly on the ubuntu-latest host runner rather than inside a container, so the smoke test's sandboxed-HOME install and the shellcheck apt-get install share the runner filesystem with any future untrusted step.",
+      "remediation": "Wrap each job in a `container:` directive (e.g. node:20-bookworm) so the job executes in an isolated filesystem and cannot persist state between jobs.",
+      "confidence": 0.6,
+      "evidence": {
+        "snippet": "runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4",
+        "metric": "no container: directive on any of the 3 jobs"
+      }
+    },
+    {
+      "id": "security-gha-workspace-not-cleaned-6",
+      "module": "security",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 24
+      },
+      "description": "The smoke job installs dependencies and runs install.sh against a sandboxed HOME but never cleans the workspace, so any secrets or artifacts written by the smoke test persist on the runner for the remainder of the job.",
+      "remediation": "Add a final `- name: Cleanup` step that removes the sandbox directory and any generated config, or run the smoke test inside a container job so the workspace is discarded automatically.",
+      "confidence": 0.55,
+      "evidence": {
+        "snippet": "- name: Run smoke test\n        run: npm run smoke",
+        "metric": "no cleanup step after smoke test"
+      }
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 20
+      },
+      "description": "The smoke job runs `npm install --no-audit --no-fund` on every workflow execution without an actions/cache step, so node_modules is re-downloaded from the registry on every push and PR.",
+      "remediation": "Add an actions/cache step keyed on `${{ hashFiles('package-lock.json') }}` (or use actions/setup-node's built-in `cache: npm`) to reuse the npm cache between runs.",
+      "confidence": 0.9,
+      "evidence": {
+        "snippet": "- name: Install dependencies\n        run: npm install --no-audit --no-fund",
+        "metric": "no cache step in the smoke job"
+      }
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 9
+      },
+      "description": "Jobs lack a timeout-minutes setting, so a stuck npm install or shellcheck apt-get can burn the full 360-minute default runner allocation and inflate GitHub Actions minutes consumption.",
+      "remediation": "Set `timeout-minutes: 15` on each job to cap wasted runner minutes on hung steps.",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "jobs:\n  smoke:\n    name: smoke test (sandboxed)\n    runs-on: ubuntu-latest",
+        "metric": "no timeout-minutes on any job"
+      }
+    },
+    {
+      "id": "cost-gha-always-on-8",
+      "module": "cost",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 4
+      },
+      "description": "The workflow runs on every push to main and every PR targeting main with no path filter, so documentation-only or config-only changes still trigger the full smoke + lint + skill-files matrix.",
+      "remediation": "Add a `paths:` filter (e.g. `paths: ['scripts/**', 'bin/**', 'skills/**', 'package.json', '.github/workflows/**']`) so doc-only commits skip the CI matrix.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "on:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]",
+        "metric": "no paths filter on either trigger"
+      }
+    },
+    {
+      "id": "cost-gha-expensive-runner-4",
+      "module": "cost",
+      "severity": "low",
+      "effort": "M",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 11
+      },
+      "description": "All three jobs run on ubuntu-latest GitHub-hosted runners even though the workload is a lightweight Node smoke test and a shellcheck pass, which could run on a smaller or self-hosted runner.",
+      "remediation": "Evaluate running the lint and skill-files jobs on a self-hosted runner or a smaller GitHub-hosted runner to reduce per-minute cost for this low-resource workload.",
+      "confidence": 0.5,
+      "evidence": {
+        "snippet": "runs-on: ubuntu-latest",
+        "metric": "3 jobs on ubuntu-latest"
+      }
+    },
+    {
+      "id": "cost-gha-wasteful-retries-3",
+      "module": "cost",
+      "severity": "medium",
+      "effort": "S",
+      "location": {
+        "file": ".github/workflows/test.yml",
+        "line": 44
+      },
+      "description": "The shellcheck step is marked `continue-on-error: true` and swallows failures with `|| true`, so lint regressions never fail the build and the job re-runs on every push without ever converging on a clean state.",
+      "remediation": "Remove `continue-on-error: true` and the trailing `|| true` once the existing shellcheck warnings are triaged, so the lint job actually gates merges and stops re-running against the same failures.",
+      "confidence": 0.75,
+      "evidence": {
+        "snippet": "- name: ShellCheck (warn-only, doesn't fail build)\n        continue-on-error: true\n        run: |\n          sudo apt-get update && sudo apt-get install -y shellcheck\n          shellcheck bin/*.sh skills/install.sh || true",
+        "metric": "lint job cannot fail the build"
+      }
+    },
+    {
+      "id": "code-ignores-return-value-6",
+      "module": "code",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": "bin/job-agent.sh",
+        "line": 47
+      },
+      "description": "The tmux split-window and select-pane calls in the already-inside-tmux branch are invoked without checking their exit status, so a failed split silently leaves the user without a dashboard pane.",
+      "remediation": "Check the return value of `tmux split-window` and `tmux select-pane` and print a diagnostic (or fall back to the two-tab path) when either fails.",
+      "confidence": 0.6,
+      "evidence": {
+        "snippet": "tmux split-window -v -p 40 \"$DASHBOARD_CMD\"\n  tmux select-pane -U\n  exit 0",
+        "metric": "2 unchecked tmux invocations"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "security-gha-overpermissive-2",
+        "security-gha-job-no-timeout-7",
+        "cost-gha-no-timeout-9",
+        "cost-gha-no-dependency-cache-5",
+        "cost-gha-wasteful-retries-3"
+      ],
+      "60_days": [
+        "security-gha-action-unpinned-5",
+        "security-gha-no-concurrency-prod-10",
+        "cost-gha-always-on-8",
+        "code-ignores-return-value-6"
+      ],
+      "90_days": [
+        "security-gha-no-container-8",
+        "security-gha-workspace-not-cleaned-6",
+        "cost-gha-expensive-runner-4"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "security-gha-overpermissive-2",
+        "to": "security-gha-action-unpinned-5",
+        "type": "blocks"
+      },
+      {
+        "from": "security-gha-job-no-timeout-7",
+        "to": "cost-gha-no-timeout-9",
+        "type": "blocks"
+      },
+      {
+        "from": "cost-gha-wasteful-retries-3",
+        "to": "cost-gha-always-on-8",
+        "type": "blocks"
+      }
+    ]
+  }
+}

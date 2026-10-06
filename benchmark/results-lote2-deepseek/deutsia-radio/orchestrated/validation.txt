@@ -1,0 +1,10 @@
+WARN: findings[0] (database-irreversible-migration-1): confidence 0.45 below 0.6 — finding may be speculative
+WARN: findings[4] (database-missing-app-pool-8): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[6] (github-issue-health-3): confidence 0.55 below 0.6 — finding may be speculative
+WARN: findings[17] (database-heavy-migration-5): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[20] (cost-no-automated-tests-4): confidence 0.3 below 0.6 — finding may be speculative
+WARN: findings[22] (database-missing-bloat-monitoring-5): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[24] (github-commit-history-1): confidence 0.5 below 0.6 — finding may be speculative
+WARN: findings[26] (cost-gha-expensive-runner-4): confidence 0.4 below 0.6 — finding may be speculative
+WARN: findings[28] (github-log-pattern-1): confidence 0.4 below 0.6 — finding may be speculative
+VALID: 29 findings, 9 warning(s)

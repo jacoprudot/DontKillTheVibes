@@ -1,0 +1,841 @@
+{
+  "target": "agentgraphed",
+  "mock": false,
+  "created_at": "2026-10-05T20:56:21.613Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. `next.config.mjs` — `serverExternalPackages` is incomplete for the native module chain",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `.github/workflows/ci.yml` — the smoke test can pass without the server ever starting",
+      "security_relevant": true
+    },
+    {
+      "label": "C3",
+      "arm": "orchestrated",
+      "source_id": "database-irreversible-migration-1",
+      "title": "database-irreversible-migration-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "26. `.gitignore` — `*.sqlite` but not `*.db`",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-dlq-2",
+      "title": "flows-missing-dlq-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "orchestrated",
+      "source_id": "cost-documentation-poor-7",
+      "title": "cost-documentation-poor-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "22. `.github/workflows/publish.yml` — `verify-platforms` has `timeout-minutes: 5`",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "orchestrated",
+      "source_id": "security-error-detail-1",
+      "title": "security-error-detail-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C9",
+      "arm": "orchestrated",
+      "source_id": "database-unused-indexes-6",
+      "title": "database-unused-indexes-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-3",
+      "title": "github-log-pattern-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C11",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-2",
+      "title": "github-log-pattern-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C12",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C13",
+      "arm": "orchestrated",
+      "source_id": "security-no-input-validation-14",
+      "title": "security-no-input-validation-14",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "orchestrated",
+      "source_id": "database-statement-timeout-missing-9",
+      "title": "database-statement-timeout-missing-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "toolkit",
+      "source_id": "code-promise-chain-missing-catch-5",
+      "title": "code-promise-chain-missing-catch-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C16",
+      "arm": "orchestrated",
+      "source_id": "flows-retry-no-backoff-4",
+      "title": "flows-retry-no-backoff-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C17",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "21. `.github/workflows/ci.yml` — `npm pack` output glob is fragile",
+      "security_relevant": false
+    },
+    {
+      "label": "C18",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-fk-1",
+      "title": "database-missing-index-fk-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "orchestrated",
+      "source_id": "database-overfetch-relation-1",
+      "title": "database-overfetch-relation-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C20",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-2",
+      "title": "github-issue-health-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "23. `.github/workflows/publish.yml` — `verify-platforms` doesn't fail the overall workflow in a useful way",
+      "security_relevant": false
+    },
+    {
+      "label": "C22",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. `bin/agentgraphed.js` — child process is not killed on parent crash",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "orchestrated",
+      "source_id": "security-logs-contain-secrets-12",
+      "title": "security-logs-contain-secrets-12",
+      "security_relevant": true
+    },
+    {
+      "label": "C24",
+      "arm": "toolkit",
+      "source_id": "security-gha-no-container-8",
+      "title": "security-gha-no-container-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C25",
+      "arm": "orchestrated",
+      "source_id": "flows-message-schema-no-version-1",
+      "title": "flows-message-schema-no-version-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C26",
+      "arm": "orchestrated",
+      "source_id": "database-heavy-migration-5",
+      "title": "database-heavy-migration-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C27",
+      "arm": "orchestrated",
+      "source_id": "database-missing-prefetch-4",
+      "title": "database-missing-prefetch-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C28",
+      "arm": "orchestrated",
+      "source_id": "github-issue-health-1",
+      "title": "github-issue-health-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C29",
+      "arm": "orchestrated",
+      "source_id": "structure-framework-leak-3",
+      "title": "structure-framework-leak-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C30",
+      "arm": "orchestrated",
+      "source_id": "structure-config-logic-8",
+      "title": "structure-config-logic-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C31",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "27. `docs/screenshots/` — duplicate originals",
+      "security_relevant": false
+    },
+    {
+      "label": "C32",
+      "arm": "toolkit",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C33",
+      "arm": "orchestrated",
+      "source_id": "cost-no-automated-tests-4",
+      "title": "cost-no-automated-tests-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C34",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "24. `CHANGELOG.md` — `[Unreleased]` mentions a `better-sqlite3` bump to `^12.10.1`, but `package-lock.json` shows `\"better-sqlite3\": \"^12.10.1\"` already resolved",
+      "security_relevant": false
+    },
+    {
+      "label": "C35",
+      "arm": "orchestrated",
+      "source_id": "security-gha-workspace-not-cleaned-6",
+      "title": "security-gha-workspace-not-cleaned-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C36",
+      "arm": "orchestrated",
+      "source_id": "security-missing-headers-10",
+      "title": "security-missing-headers-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C37",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-where-4",
+      "title": "database-missing-index-where-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C38",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "28. `README.md` not provided",
+      "security_relevant": false
+    },
+    {
+      "label": "C39",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-infinite-artifacts-6",
+      "title": "cost-gha-infinite-artifacts-6",
+      "security_relevant": false
+    },
+    {
+      "label": "C40",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-4",
+      "title": "github-log-pattern-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C41",
+      "arm": "orchestrated",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C42",
+      "arm": "orchestrated",
+      "source_id": "database-effective-cache-misconfigured-4",
+      "title": "database-effective-cache-misconfigured-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C43",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-idempotency-3",
+      "title": "flows-missing-idempotency-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C44",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. `.github/workflows/publish.yml` — `npm install -g npm@latest` is unpinned and non-reproducible",
+      "security_relevant": false
+    },
+    {
+      "label": "C45",
+      "arm": "toolkit",
+      "source_id": "cost-gha-always-on-8",
+      "title": "cost-gha-always-on-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C46",
+      "arm": "toolkit",
+      "source_id": "code-missing-return-type-8",
+      "title": "code-missing-return-type-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C47",
+      "arm": "orchestrated",
+      "source_id": "database-risky-migration-3",
+      "title": "database-risky-migration-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C48",
+      "arm": "orchestrated",
+      "source_id": "github-log-pattern-1",
+      "title": "github-log-pattern-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C49",
+      "arm": "orchestrated",
+      "source_id": "github-commit-history-1",
+      "title": "github-commit-history-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C50",
+      "arm": "orchestrated",
+      "source_id": "database-n-plus-one-risk-1",
+      "title": "database-n-plus-one-risk-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C51",
+      "arm": "orchestrated",
+      "source_id": "security-rate-limit-weak-6",
+      "title": "security-rate-limit-weak-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C52",
+      "arm": "orchestrated",
+      "source_id": "security-secret-in-code-1",
+      "title": "security-secret-in-code-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C53",
+      "arm": "orchestrated",
+      "source_id": "cost-no-performance-budget-10",
+      "title": "cost-no-performance-budget-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C54",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-rate-limit-8",
+      "title": "flows-missing-rate-limit-8",
+      "security_relevant": true
+    },
+    {
+      "label": "C55",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "18. `next-env.d.ts` — references `.next/types/routes.d.ts` which is gitignored",
+      "security_relevant": false
+    },
+    {
+      "label": "C56",
+      "arm": "orchestrated",
+      "source_id": "flows-fire-and-forget-critical-1",
+      "title": "flows-fire-and-forget-critical-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C57",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. `CHANGELOG.md` — `[Unreleased]` contains a `### Changed` entry that is actually a dependency bump, and the `### Fixed` / `### Added` ordering is inconsistent",
+      "security_relevant": false
+    },
+    {
+      "label": "C58",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-cors-9",
+      "title": "flows-missing-cors-9",
+      "security_relevant": true
+    },
+    {
+      "label": "C59",
+      "arm": "orchestrated",
+      "source_id": "database-oversized-pool-1",
+      "title": "database-oversized-pool-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C60",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "16. `CONTRIBUTING.md` — references files that don't exist",
+      "security_relevant": false
+    },
+    {
+      "label": "C61",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-timeout-6",
+      "title": "flows-missing-timeout-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C62",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-retry-strategy-8",
+      "title": "cost-api-no-retry-strategy-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C63",
+      "arm": "orchestrated",
+      "source_id": "cost-slow-build-1",
+      "title": "cost-slow-build-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C64",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "25. `LICENSE` — copyright year 2026",
+      "security_relevant": false
+    },
+    {
+      "label": "C65",
+      "arm": "orchestrated",
+      "source_id": "database-lock-timeout-missing-10",
+      "title": "database-lock-timeout-missing-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C66",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C67",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C68",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-response-cache-5",
+      "title": "cost-api-no-response-cache-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C69",
+      "arm": "orchestrated",
+      "source_id": "security-no-security-maintenance-7",
+      "title": "security-no-security-maintenance-7",
+      "security_relevant": true
+    },
+    {
+      "label": "C70",
+      "arm": "orchestrated",
+      "source_id": "database-connection-timeout-high-3",
+      "title": "database-connection-timeout-high-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C71",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "20. `bin/agentgraphed.js` — `findFreePort` starts at `start` and goes to `start + 100`",
+      "security_relevant": false
+    },
+    {
+      "label": "C72",
+      "arm": "orchestrated",
+      "source_id": "database-undersized-pool-2",
+      "title": "database-undersized-pool-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C73",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `bin/agentgraphed.js` — `pingUntilReady` treats any `<500` as ready",
+      "security_relevant": false
+    },
+    {
+      "label": "C74",
+      "arm": "orchestrated",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C75",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "13. `.github/workflows/publish.yml` — `contents: write` is broader than needed",
+      "security_relevant": true
+    },
+    {
+      "label": "C76",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. `bin/agentgraphed.js` — `findFreePort` has a race condition and a leak",
+      "security_relevant": false
+    },
+    {
+      "label": "C77",
+      "arm": "orchestrated",
+      "source_id": "security-cors-wildcard-2",
+      "title": "security-cors-wildcard-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C78",
+      "arm": "orchestrated",
+      "source_id": "security-unmaintained-dep-4",
+      "title": "security-unmaintained-dep-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C79",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. `.github/workflows/publish.yml` — `verify-platforms` has no `actions/checkout`",
+      "security_relevant": false
+    },
+    {
+      "label": "C80",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. `bin/agentgraphed.js` — `--join` and `--no-open` are parsed but unknown flags are silently ignored",
+      "security_relevant": false
+    },
+    {
+      "label": "C81",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-error-handler-5",
+      "title": "flows-missing-error-handler-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C82",
+      "arm": "orchestrated",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C83",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `.github/workflows/publish.yml` — `verify-platforms` runs *after* publish, so a broken release is already live",
+      "security_relevant": false
+    },
+    {
+      "label": "C84",
+      "arm": "orchestrated",
+      "source_id": "flows-error-leaks-stack-6",
+      "title": "flows-error-leaks-stack-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C85",
+      "arm": "orchestrated",
+      "source_id": "database-missing-bloat-monitoring-5",
+      "title": "database-missing-bloat-monitoring-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C86",
+      "arm": "toolkit",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C87",
+      "arm": "orchestrated",
+      "source_id": "cost-gha-no-timeout-9",
+      "title": "cost-gha-no-timeout-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C88",
+      "arm": "orchestrated",
+      "source_id": "structure-low-cohesion-5",
+      "title": "structure-low-cohesion-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C89",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. `bin/agentgraphed.js` — `open` is a runtime dependency but imported dynamically",
+      "security_relevant": false
+    },
+    {
+      "label": "C90",
+      "arm": "orchestrated",
+      "source_id": "database-max-lifetime-missing-5",
+      "title": "database-max-lifetime-missing-5",
+      "security_relevant": false
+    },
+    {
+      "label": "C91",
+      "arm": "orchestrated",
+      "source_id": "security-env-file-committed-3",
+      "title": "security-env-file-committed-3",
+      "security_relevant": true
+    },
+    {
+      "label": "C92",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. `.github/workflows/ci.yml` — no test step",
+      "security_relevant": false
+    },
+    {
+      "label": "C93",
+      "arm": "orchestrated",
+      "source_id": "structure-repository-logic-4",
+      "title": "structure-repository-logic-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C94",
+      "arm": "orchestrated",
+      "source_id": "structure-service-sql-5",
+      "title": "structure-service-sql-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C95",
+      "arm": "orchestrated",
+      "source_id": "database-full-table-scan-3",
+      "title": "database-full-table-scan-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C96",
+      "arm": "orchestrated",
+      "source_id": "security-weak-rng-10",
+      "title": "security-weak-rng-10",
+      "security_relevant": true
+    },
+    {
+      "label": "C97",
+      "arm": "orchestrated",
+      "source_id": "structure-high-coupling-1",
+      "title": "structure-high-coupling-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C98",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. `bin/agentgraphed.js` — `triggerIngest` swallows all errors and reports success",
+      "security_relevant": false
+    },
+    {
+      "label": "C99",
+      "arm": "orchestrated",
+      "source_id": "database-pg-stat-statements-disabled-1",
+      "title": "database-pg-stat-statements-disabled-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C100",
+      "arm": "orchestrated",
+      "source_id": "flows-missing-request-id-7",
+      "title": "flows-missing-request-id-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C101",
+      "arm": "orchestrated",
+      "source_id": "database-missing-index-hot-path-2",
+      "title": "database-missing-index-hot-path-2",
+      "security_relevant": false
+    },
+    {
+      "label": "C102",
+      "arm": "orchestrated",
+      "source_id": "structure-service-orchestration-3",
+      "title": "structure-service-orchestration-3",
+      "security_relevant": false
+    },
+    {
+      "label": "C103",
+      "arm": "orchestrated",
+      "source_id": "database-missing-app-pool-8",
+      "title": "database-missing-app-pool-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C104",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "[0.5.3] — 2026-06-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C105",
+      "arm": "orchestrated",
+      "source_id": "database-iteration-overload-5",
+      "title": "database-iteration-overload-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C106",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "17. `CONTRIBUTING.md` — `npm run fetch-pricing` is documented but the script is gitignored",
+      "security_relevant": false
+    },
+    {
+      "label": "C107",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "Summary of the most important fixes",
+      "security_relevant": false
+    },
+    {
+      "label": "C108",
+      "arm": "orchestrated",
+      "source_id": "database-idle-timeout-missing-4",
+      "title": "database-idle-timeout-missing-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C109",
+      "arm": "toolkit",
+      "source_id": "code-unhandled-promise-4",
+      "title": "code-unhandled-promise-4",
+      "security_relevant": false
+    },
+    {
+      "label": "C110",
+      "arm": "orchestrated",
+      "source_id": "security-gha-no-concurrency-prod-10",
+      "title": "security-gha-no-concurrency-prod-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C111",
+      "arm": "orchestrated",
+      "source_id": "cost-llm-high-usage-1",
+      "title": "cost-llm-high-usage-1",
+      "security_relevant": true
+    },
+    {
+      "label": "C112",
+      "arm": "orchestrated",
+      "source_id": "security-db-conn-string-6",
+      "title": "security-db-conn-string-6",
+      "security_relevant": true
+    },
+    {
+      "label": "C113",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "19. `bin/agentgraphed.js` — `printHelp` uses `require('../package.json')` inside a function",
+      "security_relevant": false
+    },
+    {
+      "label": "C114",
+      "arm": "orchestrated",
+      "source_id": "structure-dto-logic-7",
+      "title": "structure-dto-logic-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C115",
+      "arm": "orchestrated",
+      "source_id": "database-missing-composite-index-5",
+      "title": "database-missing-composite-index-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C116",
+      "arm": "orchestrated",
+      "source_id": "database-sequential-pagination-1",
+      "title": "database-sequential-pagination-1",
+      "security_relevant": false
+    },
+    {
+      "label": "C117",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-timeout-9",
+      "title": "cost-gha-no-timeout-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C118",
+      "arm": "orchestrated",
+      "source_id": "cost-api-no-usage-monitoring-9",
+      "title": "cost-api-no-usage-monitoring-9",
+      "security_relevant": false
+    },
+    {
+      "label": "C119",
+      "arm": "toolkit",
+      "source_id": "security-gha-no-concurrency-prod-10",
+      "title": "security-gha-no-concurrency-prod-10",
+      "security_relevant": false
+    }
+  ]
+}

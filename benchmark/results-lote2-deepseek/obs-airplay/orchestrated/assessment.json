@@ -1,0 +1,1202 @@
+{
+  "metadata": {
+    "repo": "obs-airplay",
+    "assessed_at": "2026-10-05T20:12:18.242Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 23,
+    "findings_raw": 245,
+    "findings_dropped": 153,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 4,
+    "total_findings": 50,
+    "by_severity": {
+      "critical": 4,
+      "high": 10,
+      "medium": 31,
+      "low": 5
+    },
+    "by_module": {
+      "code": 6,
+      "structure": 5,
+      "flows": 7,
+      "security": 6,
+      "cost": 11,
+      "performance": 9,
+      "github": 6
+    },
+    "effort_estimate": {
+      "XS": 5,
+      "S": 7,
+      "M": 36,
+      "L": 2
+    }
+  },
+  "findings": [
+    {
+      "id": "security-logs-contain-secrets-12",
+      "module": "security",
+      "severity": "critical",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 243
+      },
+      "description": "The audio packet diagnostic logs the first payload byte and packet length of every audio packet (first 5 and then every 500th). AirPlay audio payloads are encrypted media data; logging raw payload bytes to the OBS log can leak stream content into a file that users routinely attach to bug reports.",
+      "remediation": "Remove the raw payload byte from the log line and log only non-sensitive metadata such as packet counter, compression type and length.",
+      "effort": "XS",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "module": "security",
+      "severity": "high",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 164
+      },
+      "description": "parse_hw_addr() walks the caller-supplied string with strlen() and strtol() without validating its format or length, and writes up to 6 bytes into the destination buffer. A malformed or over-long hardware address string (e.g. from user settings) is parsed unchecked, and the loop condition re-evaluates strlen on every iteration.",
+      "remediation": "Validate the input against a strict MAC-address pattern (six hex octets separated by ':'), reject anything else, and bound the copy to the destination buffer size before parsing.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "module": "flows",
+      "severity": "critical",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 0
+      },
+      "description": "Connection lifecycle callbacks (cb_conn_init, cb_conn_destroy, cb_conn_reset) mutate shared counters and decoder state without any idempotency guard beyond the open_connections counter. A duplicated or replayed connection init/reset event can reset the timestamp mapper and audio diagnostics mid-stream, producing timestamp jumps and dropped frames.",
+      "remediation": "Make connection lifecycle handling idempotent by keying state on a per-connection identifier and ignoring duplicate init/reset events for an already-active connection, rather than relying solely on the open_connections counter.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "security-secret-in-code-1",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "CMakeLists.txt",
+        "line": 34
+      },
+      "description": "A developer-specific absolute path 'C:/Users/kitti/scoop/apps/openssl/current' is hardcoded as the OpenSSL fallback, leaking a local username and machine layout into the repository and making the build non-portable.",
+      "remediation": "Remove the personal path fallback and require OPENSSL_DIR/OPENSSL_ROOT_DIR to be set, or use a generic default such as C:/OpenSSL-Win64.",
+      "effort": "XS",
+      "confidence": 0.7
+    },
+    {
+      "id": "performance-cpu-hotspot-1",
+      "module": "performance",
+      "severity": "high",
+      "location": {
+        "file": "src/video-decoder.c",
+        "line": 239
+      },
+      "description": "Every decoded frame is converted from the decoder's native pixel format to RGBA via sws_scale into a freshly allocated av_image_alloc buffer, and the resulting RGBA frame is then handed to obs_source_output_video. RGBA is 4 bytes/pixel versus 1.5 bytes/pixel for NV12, so this conversion both burns CPU on the swscale hot path and triples the memory bandwidth of the per-frame copy on the critical path of every mirrored frame.",
+      "remediation": "Output NV12 (or the decoder's native format) directly to OBS via obs_source_output_video with VIDEO_FORMAT_NV12, eliminating the sws_scale RGBA conversion and the 4-byte-per-pixel copy from the per-frame hot path.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "code-missing-validation-4",
+      "module": "code",
+      "severity": "high",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 165
+      },
+      "description": "parse_hw_addr() parses a user/peer-supplied hardware address string with strtol() without validating that each 3-character group is a valid hex pair; malformed input silently yields 0 bytes and the loop condition calls strlen(str) on every iteration.",
+      "remediation": "Validate each parsed byte with strtol's end pointer (ensure exactly two hex digits were consumed) and reject the address on failure; cache strlen(str) in a local variable.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "module": "structure",
+      "severity": "high",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 20
+      },
+      "description": "airplay-source.c depends directly on UxPlay internal headers (raop.h, dnssd.h, stream.h, logger.h) and on the concrete video_decoder/audio_decoder implementations, with no abstraction layer between the plugin and the third-party library. Any UxPlay API change propagates straight into the OBS source code.",
+      "remediation": "Introduce a thin adapter interface (e.g. airplay_transport.h with function pointers or a vtable) that wraps raop/dnssd calls, so airplay-source.c depends on the adapter rather than on UxPlay headers directly.",
+      "effort": "L",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 13
+      },
+      "description": "The only CI job is `build`; there is no test job, no unit tests, and no smoke test of the produced plugin anywhere in the workflow or the repository scripts (build.sh, build.bat only compile). Every regression in the AirPlay pipeline must be found manually by connecting a real Apple device, which is the most expensive possible defect-detection loop and drives rework cost.",
+      "remediation": "Add a CI test job that at minimum runs a compile-time smoke test and any unit tests for the decoders (video-decoder.c, audio-decoder.c), and gate merges on it so defects are caught in CI rather than through manual device testing.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "code-logs-secrets-10",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 243
+      },
+      "description": "The video_process callback logs raw packet metadata including byte counts and NTP timestamps at INFO level for the first frames; combined with the audio packet logging this can expose stream characteristics in shared OBS logs.",
+      "remediation": "Downgrade per-packet diagnostics to LOG_DEBUG so they are only emitted when verbose logging is explicitly enabled.",
+      "effort": "XS",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "README.md",
+        "line": 0
+      },
+      "description": "The README's 'Building from Source' section requires the developer to manually download and place the OBS 30.0.0 SDK, the FFmpeg 7.1 shared SDK/runtime, and libplist 2.7.0 into specific `deps/` subdirectories, then hand-generate import libraries with `lib /def:` and build libplist and UxPlay by hand before the plugin can be configured. There is no scripted bootstrap, so every new contributor spends significant time reproducing an undocumented, error-prone environment.",
+      "remediation": "Add a single bootstrap script (e.g. `scripts/setup-deps.ps1` or a CMake FetchContent/ExternalProject step) that downloads the pinned OBS SDK, FFmpeg 7.1 and libplist versions, generates the import libraries and builds the dependencies, and document that one command in the README.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 9
+      },
+      "description": "The workflow declares no explicit permissions block, so the GITHUB_TOKEN inherits the repository default, which is often read/write for all scopes. The build job only needs to read the repository contents.",
+      "remediation": "Add a top-level 'permissions: contents: read' block (and grant any additional scope only to the specific job that needs it).",
+      "effort": "XS",
+      "confidence": 0.8
+    },
+    {
+      "id": "code-unchecked-error-1",
+      "module": "code",
+      "severity": "high",
+      "location": {
+        "file": "src/audio-decoder.c",
+        "line": 152
+      },
+      "description": "audio_decoder_set_format() frees the existing codec context and swr context but does not reset dec->swr_in_channels/swr_in_fmt, leaving stale swr input configuration cached after a format change; ensure_swr() may then reuse a mismatched swr context.",
+      "remediation": "Reset all cached swr input fields (swr_in_rate, swr_in_channels, swr_in_fmt) whenever the swr context is freed in audio_decoder_set_format().",
+      "effort": "S",
+      "confidence": 0.55
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 17
+      },
+      "description": "Third-party GitHub Actions are referenced by mutable tags instead of immutable commit SHAs: actions/checkout@v4 and ilammy/msvc-dev-cmd@v1. A compromised or retagged upstream action can execute arbitrary code in the build job, which has access to the repository and any workflow secrets.",
+      "remediation": "Pin every third-party action to a full 40-character commit SHA (e.g. actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11) and use Dependabot or Renovate to keep the pins updated.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 11
+      },
+      "description": "The build job defines no timeout-minutes. A hung dependency download (curl/unzip of OBS SDK, FFmpeg, libplist) or a stalled nmake would occupy a windows-latest runner for the default multi-hour limit, wasting CI capacity and delaying feedback.",
+      "remediation": "Add `timeout-minutes: 30` (or an appropriate bound) to the build job so runaway steps are terminated automatically.",
+      "effort": "M",
+      "confidence": 0.85
+    },
+    {
+      "id": "security-weak-rng-10",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 128
+      },
+      "description": "generate_random_mac() seeds the C PRNG with srand(time(NULL) * getpid()) and derives the device MAC address from rand(). The seed has very low entropy (second-resolution time and PID), so the advertised AirPlay device identity is predictable and can be precomputed or spoofed by an attacker on the same network.",
+      "remediation": "Use a cryptographically secure source for the random octets, e.g. read from BCryptGenRandom/rand_s or OpenSSL RAND_bytes, and avoid seeding a global PRNG with time()/getpid().",
+      "effort": "M",
+      "confidence": 0.85
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 4
+      },
+      "description": "The workflow has no concurrency group, so every push to master and every PR update starts a full parallel build that downloads and compiles five dependencies from source. Concurrent runs on the same ref waste runner minutes and can race on release artifacts.",
+      "remediation": "Add a top-level `concurrency: { group: ${{ github.workflow }}-${{ github.ref }}, cancel-in-progress: true }` block to cancel superseded runs.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "flows-missing-dlq-2",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 0
+      },
+      "description": "Packets that fail decoding (video_decoder_decode / audio_decoder_decode returning false) are dropped immediately with only a log line; there is no dead-letter or quarantine path capturing the failing payload for later inspection or replay, so malformed-stream root causes cannot be diagnosed after the fact.",
+      "remediation": "Add a bounded dead-letter buffer that stores the first N failing packets (with timestamp and codec type) to disk or memory for post-mortem analysis instead of discarding them silently.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "cost-license-share-alike-3",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "LICENSE",
+        "line": 1
+      },
+      "description": "The project is licensed LGPL-2.1 and statically links UxPlay (LGPL-2.1) and libplist into a single plugin DLL, then redistributes that DLL. Static linking of LGPL code imposes share-alike/relinking obligations on the combined binary; the repository contains no notice describing how recipients can relink against a modified UxPlay/libplist, which is a compliance gap with cost implications if the project is ever redistributed commercially.",
+      "remediation": "Document the LGPL static-linking compliance approach (e.g. provide object files or a relinkable form, or ship the LGPL components as separate DLLs) and add the required notices to the distribution, so redistribution does not create a license-compliance liability.",
+      "effort": "L",
+      "confidence": 0.5
+    },
+    {
+      "id": "structure-config-logic-8",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "CMakeLists.txt",
+        "line": 33
+      },
+      "description": "CMakeLists.txt hardcodes a developer-specific absolute path ('C:/Users/kitti/scoop/apps/openssl/current') as the OpenSSL fallback, embedding environment-specific configuration into the build logic instead of resolving it from the environment or a cache variable.",
+      "remediation": "Remove the hardcoded user path and rely on OPENSSL_ROOT_DIR, find_package(OpenSSL) or a documented cache variable so the build is reproducible on other machines.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "src/video-decoder.c",
+        "line": 50
+      },
+      "description": "video-decoder.c writes diagnostics with fprintf(stderr, ...) instead of the plugin's OBS logging abstraction (blog/ap_log used elsewhere), leaking a non-framework logging mechanism into the module and bypassing OBS log routing.",
+      "remediation": "Replace the fprintf(stderr, ...) calls with blog(LOG_ERROR/LOG_INFO, ...) or the ap_error/ap_info macros from src/log.h so all diagnostics flow through OBS logging.",
+      "effort": "M",
+      "confidence": 0.85
+    },
+    {
+      "id": "performance-no-perf-budgets-10",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "README.md",
+        "line": 19
+      },
+      "description": "The project advertises 'Low Latency - Direct H.264 frame pipeline with minimal buffering' but defines no measurable performance budget anywhere: no target end-to-end latency, no maximum decode time per frame, no CPU or memory ceiling for the plugin. Without a stated budget there is no objective criterion for accepting or rejecting a change to the decode path.",
+      "remediation": "Document explicit performance budgets (e.g. end-to-end glass-to-glass latency < 100 ms, per-frame decode < 8 ms at 1080p60, plugin CPU < 15% of one core) and reference them from the README and CI checks.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "performance-no-load-testing-3",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 10
+      },
+      "description": "The CI pipeline only builds the plugin; there is no load, soak, or performance test stage anywhere in the workflow or repository. A real-time AirPlay receiver that must sustain 60fps H.264 decode plus AAC decode with sub-frame latency has no automated verification that it keeps up under sustained mirroring load, so regressions in the decode pipeline (e.g. the per-frame sws_scale conversion in video-decoder.c) would only surface in production.",
+      "remediation": "Add a CI job that runs the decoder pipeline against recorded H.264/AAC-ELD sample streams and asserts sustained throughput (frames decoded per second, decode latency percentiles) against a defined budget before merging.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "performance-no-regression-detection-5",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 10
+      },
+      "description": "The build workflow has no benchmark or performance-regression gate. Because the plugin links a private FFmpeg 7 runtime and a pinned UxPlay v1.73.6, dependency bumps or decoder changes can silently degrade decode throughput with no automated signal; the only CI outcome is compile success.",
+      "remediation": "Add a benchmark step to the workflow that records decode throughput/latency for a fixed sample stream and fails the build when results regress beyond a threshold versus the stored baseline.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "code-ignores-return-value-6",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "src/video-decoder.c",
+        "line": 253
+      },
+      "description": "video_decoder_flush() calls avcodec_send_packet(dec->ctx, NULL) to signal end-of-stream but discards the return value. If the send fails (e.g. EAGAIN because the decoder still has buffered input), the subsequent avcodec_receive_frame() may return no frame and pending frames are silently dropped.",
+      "remediation": "Check the return value of avcodec_send_packet() and handle AVERROR(EAGAIN) by draining with avcodec_receive_frame() in a loop before returning, logging any other error.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 44
+      },
+      "description": "The airplay_source struct aggregates unrelated responsibilities: OBS source handle, UxPlay raop/dnssd handles, two decoders, three mutexes plus readiness flags, configuration values, volatile state counters, timestamp-anchor mapping state and audio diagnostic counters. No single cohesive concept binds these fields, which makes the struct hard to reason about and every callback depends on the whole blob.",
+      "remediation": "Decompose the struct into cohesive sub-structures (e.g. struct airplay_session for raop/dnssd/connection state, struct timestamp_mapper for anchor state, struct audio_stats for diagnostics) and pass only the needed sub-structure to each callback.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 13
+      },
+      "description": "The `build` job defines no `timeout-minutes`. A hung dependency download (curl of the OBS SDK or FFmpeg zip), a stalled `choco install`, or a wedged `nmake` will keep the Windows runner alive until GitHub's default 360-minute limit, billing up to six hours of the most expensive runner tier for a single stuck job.",
+      "remediation": "Add `timeout-minutes: 30` (or a value comfortably above the observed build time) to the `build` job so a hung download or compile is killed quickly instead of consuming the full default budget.",
+      "effort": "M",
+      "confidence": 0.9
+    },
+    {
+      "id": "performance-no-cost-perf-tradeoff-8",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "src/video-decoder.c",
+        "line": 0
+      },
+      "description": "The decoder unconditionally uses the software H.264 decoder with thread_count = 1 and AV_CODEC_FLAG_LOW_DELAY, and performs a full-frame sws_scale color conversion to RGBA on every frame. There is no documented or configurable trade-off between latency and CPU cost (e.g. hardware decode, multi-threaded decode, or a cheaper pixel format path), so users on weaker machines cannot trade latency for throughput.",
+      "remediation": "Expose a decode-mode setting (software single-thread low-latency vs. multi-threaded/hardware decode) and document the latency/CPU trade-off so users can choose the appropriate point on the curve.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "performance-serialization-format-2",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "src/video-decoder.c",
+        "line": 239
+      },
+      "description": "The frame handoff to OBS uses an uncompressed RGBA intermediate buffer rather than a format OBS can consume without conversion. This is an inefficient serialization format for the video path: the decoder already produces a planar YUV frame, and converting it to packed RGBA only to have OBS convert it again wastes CPU and memory bandwidth per frame.",
+      "remediation": "Pass the decoded frame to OBS in a format OBS natively accepts (NV12/I420) so no intermediate packed-RGBA conversion is required on the frame path.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 13
+      },
+      "description": "The workflow has no `actions/cache` step and no caching of the expensive, deterministic dependency downloads and builds (OpenSSL via Chocolatey, UxPlay clone, OBS SDK zip, FFmpeg 7 zip, libplist source + nmake build). Every push and PR re-downloads hundreds of MB and recompiles libplist from scratch, burning runner minutes and bandwidth on every run.",
+      "remediation": "Add an `actions/cache` step keyed on the pinned dependency versions (UxPlay v1.73.6, OBS 30.0.0, FFmpeg n7.1, libplist 2.7.0) to cache `deps/` and the built `plist.lib`, and cache the Chocolatey OpenSSL install so repeated runs skip the download and rebuild.",
+      "effort": "M",
+      "confidence": 0.85
+    },
+    {
+      "id": "performance-no-backpressure-10",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 0
+      },
+      "description": "The video and audio callbacks decode and immediately push frames to OBS while holding the per-stream mutex, with no backpressure or queue-depth control. If OBS cannot consume frames as fast as the sender produces them, the callback blocks on the mutex and the network receive path is throttled implicitly rather than by an explicit bounded queue, so there is no mechanism to shed or coalesce frames under overload.",
+      "remediation": "Introduce a bounded frame queue between the network callback and the OBS output path, dropping or coalescing the oldest frames when the queue is full so overload degrades gracefully instead of blocking the receive thread.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "structure-service-sql-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 7
+      },
+      "description": "airplay-source.c mixes the OBS source lifecycle/registration layer with protocol-level concerns: it directly drives UxPlay's raop/dnssd components, owns decoder instances, manages mutexes and timestamp mapping, and performs packet validation. This is a god-file that combines transport orchestration, decoding coordination and OBS output, so any change to the AirPlay protocol or to OBS output semantics forces edits in the same translation unit.",
+      "remediation": "Split the file: keep only the OBS source registration and settings in airplay-source.c, and extract the UxPlay callback handling, timestamp mapping and packet validation into a dedicated session/transport module (e.g. airplay-session.c) that exposes a narrow interface to the OBS layer.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-slow-build-1",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 13
+      },
+      "description": "The CI build compiles five dependencies from source on every run: OpenSSL via Chocolatey, UxPlay cloned and built, the full OBS Studio 30.0.0 source archive downloaded and unzipped, FFmpeg 7.1 downloaded and extracted, and libplist 2.7.0 configured and built with nmake. None of these are cached or prebuilt, so each run pays the full download-and-compile cost, making the feedback loop slow and expensive.",
+      "remediation": "Prebuild the pinned dependencies once and publish them as a versioned release artifact or container image, then have the workflow download the prebuilt bundle instead of cloning, unzipping and compiling UxPlay, OBS SDK, FFmpeg and libplist on every run.",
+      "effort": "M",
+      "confidence": 0.8
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 0
+      },
+      "description": "The AirPlay receiver opens long-lived TCP/UDP connections (mirror 7100, RTSP 7000, timing 7011, control 6001, data 6000) and drives UxPlay callbacks, but no connection/read/idle timeout is configured anywhere in the source. A stalled or half-open client connection can block the receive path indefinitely, leaving the OBS source stuck with no video output and no recovery.",
+      "remediation": "Configure explicit socket/connection timeouts on the raop/dnssd setup (e.g. set SO_RCVTIMEO/SO_SNDTIMEO or the UxPlay connection timeout option) and add a watchdog that tears down and re-registers the source if no packet arrives within a bounded interval.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "performance-no-adaptive-timeout-6",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 0
+      },
+      "description": "The source has no adaptive timeout or stall detection on the incoming AirPlay stream. If the sender stops delivering video packets, the plugin simply stops producing frames with no watchdog to detect the stall, reset the timestamp mapper, or signal OBS; the timestamp re-anchor only triggers when a new packet arrives with a large drift.",
+      "remediation": "Add a watchdog timer that detects absence of video/audio packets beyond a configurable threshold and resets the decoder and timestamp anchor so recovery is bounded rather than dependent on the next packet.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "performance-no-request-collapsing-4",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 0
+      },
+      "description": "The timestamp mapping path takes the timestamp_mutex on every video and audio packet (map_timestamp is called from both cb_video_process and cb_audio_process). Under high packet rates this serializes the two decode paths on a single lock for a pure arithmetic operation, adding contention on the frame critical path.",
+      "remediation": "Make the timestamp anchor state lock-free (atomic load/store of the anchor pair) or compute the mapping without a mutex, since the operation is a simple offset calculation that does not need mutual exclusion.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 0
+      },
+      "description": "The UxPlay callback surface (cb_conn_reset, cb_video_reset, cb_video_process, cb_audio_process) handles failures only by logging and returning; there is no central error handler that surfaces decode/connection failures to the user or triggers recovery. Persistent decode failures silently degrade to a black source with only rate-limited log lines.",
+      "remediation": "Add a unified error-handling path that tracks consecutive decode/connection failures and, after a threshold, tears down and re-initializes the AirPlay session while surfacing a user-visible error via obs_source_output_video(NULL) plus a logged actionable message.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "README.md",
+        "line": 4
+      },
+      "description": "The project statically links UxPlay (LGPL-2.1), libplist, FFmpeg (LGPL build), and OpenSSL, and ships their binaries, but there is no license inventory, no third-party notice file, and no automated license-compliance check in CI. The README credits the projects informally but does not track the obligations (LGPL relinking/source-availability, FFmpeg LGPL attribution) that come with redistributing these components.",
+      "remediation": "Add a THIRD-PARTY-NOTICES file listing each bundled dependency with its license and version, and add a CI license-scan step (e.g. a license-checker or SBOM generation) so license obligations are tracked automatically as dependencies change.",
+      "effort": "M",
+      "confidence": 0.65
+    },
+    {
+      "id": "code-missing-error-main-10",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "src/plugin-main.c",
+        "line": 11
+      },
+      "description": "obs_module_load() calls airplay_source_register() and unconditionally returns true, so if source registration fails the module still reports successful load and OBS will show a plugin with no working source.",
+      "remediation": "Have airplay_source_register() return a success/failure status and propagate it from obs_module_load(), logging an error and returning false when registration fails.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "code-mutex-missing-4",
+      "module": "code",
+      "severity": "medium",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 96
+      },
+      "description": "map_timestamp() reads and writes the shared timestamp anchor fields (timestamp_anchor_set, remote_timestamp_anchor, local_timestamp_anchor) under timestamp_mutex, but reset_timestamp_mapper() and the anchor fields are also touched from connection callbacks; the anchor state is only guarded when timestamp_mutex_ready is true, and the ready flag itself is read without synchronization, so a callback racing with teardown can observe a partially initialized mutex.",
+      "remediation": "Initialize the mutexes before any callback can run and guard the *_mutex_ready flags with an atomic or initialize them once at source creation so map_timestamp/reset_timestamp_mapper never race with initialization.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/audio-decoder.c",
+        "line": 86
+      },
+      "description": "log_av_error() writes the raw FFmpeg error string and numeric code to the OBS log for every decode failure. Combined with the packet-level logging in cb_audio_process (which prints packet contents/first byte and NTP timestamps), internal decoder state and stream details are exposed in logs that users commonly attach to public bug reports.",
+      "remediation": "Keep decoder error logging at a coarse level (error class only) and avoid logging packet payload bytes or full FFmpeg error strings; gate verbose diagnostics behind an explicit debug flag.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-missing-circuit-breaker-7",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 0
+      },
+      "description": "When the video or audio decoder repeatedly fails, the callbacks keep invoking the decoder on every incoming packet with no circuit breaker; a persistently failing decoder causes unbounded repeated work and log churn for the lifetime of the connection.",
+      "remediation": "Track consecutive decode failures per stream and open a circuit breaker after a threshold, skipping decode attempts for a cool-down period and re-initializing the decoder before resuming.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "README.md",
+        "line": 18
+      },
+      "description": "The README documents installation and a high-level build outline but omits the operational detail needed to maintain the project cheaply: there is no description of the fixed AirPlay ports used by the plugin (7000/7100/6000/6001/7011 appear only in the installer scripts), no explanation of the FFmpeg 7 vs 8 ABI constraint beyond a troubleshooting bullet, and no architecture or troubleshooting guide for the decoder pipeline. This forces maintainers to reverse-engineer intent from source, raising maintenance cost.",
+      "remediation": "Expand the README with a short architecture section covering the UxPlay/FFmpeg pipeline, the fixed TCP/UDP ports and why they are fixed, and the FFmpeg 7 ABI pinning rationale, so future maintainers do not have to rediscover these constraints from the code.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-license-attribution-missing-2",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "README.md",
+        "line": 34
+      },
+      "description": "The distributed installer (installer.iss) bundles FFmpeg 7 DLLs, OpenSSL libcrypto, and the UxPlay-derived plugin, but the installer ships only the project README and no license texts or attribution for the bundled third-party binaries. Redistributing FFmpeg and OpenSSL without their license notices is an attribution gap.",
+      "remediation": "Include the FFmpeg, OpenSSL and UxPlay license texts (and any required attribution) in the installer payload and reference them from the README, so the redistributed binaries carry their required notices.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "code-var-usage-3",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 141
+      },
+      "description": "generate_random_mac reseeds the global rand() state on every call via srand(), which is not thread-safe and perturbs any other code in the process relying on rand().",
+      "remediation": "Use a dedicated thread-safe RNG (e.g. OpenSSL RAND_bytes) instead of reseeding the global rand() state.",
+      "effort": "XS",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-gha-infinite-artifacts-6",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 13
+      },
+      "description": "The workflow builds a plugin DLL plus four FFmpeg runtime DLLs and an OpenSSL DLL, but no `actions/upload-artifact` step with a retention policy is present in the job. If artifacts are added without `retention-days`, or if the build output is uploaded on every push/PR run, storage accumulates indefinitely and incurs ongoing artifact storage cost.",
+      "remediation": "When uploading build artifacts, set an explicit short `retention-days` (e.g. 7) and upload only on tagged releases or master pushes rather than on every pull request, to avoid unbounded artifact storage growth.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "code-print-statement-5",
+      "module": "code",
+      "severity": "low",
+      "location": {
+        "file": "src/video-decoder.c",
+        "line": 50
+      },
+      "description": "The video decoder writes diagnostics directly to stderr with fprintf() instead of using the OBS logging API (blog/ap_log) used everywhere else in the plugin. These messages bypass OBS's log subsystem, are not captured in OBS logs, and are not routed through the plugin's log level filtering.",
+      "remediation": "Replace the fprintf(stderr, ...) calls in video_decoder_create() with blog(LOG_INFO/LOG_ERROR, ...) or the ap_info/ap_error macros from src/log.h so diagnostics appear in the OBS log.",
+      "effort": "S",
+      "confidence": 0.95
+    },
+    {
+      "id": "cost-gha-expensive-runner-4",
+      "module": "cost",
+      "severity": "low",
+      "location": {
+        "file": ".github/workflows/build.yml",
+        "line": 13
+      },
+      "description": "The build job runs on `windows-latest`, GitHub's most expensive hosted runner tier (Windows runners bill at roughly 2x the Linux rate). The job only compiles C code with MSVC and downloads dependencies; nothing here requires the Windows runner premium beyond the MSVC toolchain, and the workflow runs on every push and pull request to master, multiplying the cost.",
+      "remediation": "Reduce Windows runner minutes: restrict the workflow trigger to pushes on master plus a path filter, or move the dependency-download/compile steps to a cheaper Linux runner and keep only the MSVC link step on windows-latest. Consider a self-hosted Windows runner if build volume grows.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 0
+      },
+      "description": "Log lines emitted across the connection and decode callbacks (connection init/destroy/reset, video_process, audio pkt) carry no correlation identifier, so interleaved events from multiple concurrent AirPlay connections cannot be attributed to a specific session when diagnosing failures.",
+      "remediation": "Introduce a per-connection request/session id assigned in cb_conn_init and include it in every blog() call for that connection so log lines can be correlated.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "code-missing-docstring-10",
+      "module": "github",
+      "severity": "low",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 139
+      },
+      "description": "generate_random_mac and the surrounding MAC helper functions have no documentation of their contract (buffer length expectations, locally-administered bit semantics), making the len parameter's required minimum unclear.",
+      "remediation": "Add a short comment documenting the required buffer size and the meaning of the generated address.",
+      "effort": "S",
+      "confidence": 0.4
+    },
+    {
+      "id": "code-missing-return-type-8",
+      "module": "github",
+      "severity": "low",
+      "location": {
+        "file": "src/airplay-source.c",
+        "line": 139
+      },
+      "description": "Helper functions such as generate_random_mac and parse_hw_addr are declared static void with no documented or enforced error signalling, so callers cannot tell whether a valid MAC was produced.",
+      "remediation": "Return a bool from these helpers indicating success and have callers fall back to a safe default on failure.",
+      "effort": "S",
+      "confidence": 0.4
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "security-logs-contain-secrets-12",
+          "security-no-input-validation-14",
+          "flows-missing-idempotency-3",
+          "security-secret-in-code-1",
+          "performance-cpu-hotspot-1",
+          "code-missing-validation-4",
+          "structure-high-coupling-1",
+          "cost-no-automated-tests-4",
+          "code-logs-secrets-10",
+          "cost-dev-setup-missing-3",
+          "security-gha-overpermissive-2",
+          "code-unchecked-error-1",
+          "security-gha-action-unpinned-5",
+          "security-gha-job-no-timeout-7",
+          "security-weak-rng-10"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "security-gha-no-concurrency-prod-10",
+          "flows-missing-dlq-2",
+          "cost-license-share-alike-3",
+          "structure-config-logic-8",
+          "structure-framework-leak-3",
+          "performance-no-perf-budgets-10",
+          "performance-no-load-testing-3",
+          "performance-no-regression-detection-5",
+          "code-ignores-return-value-6",
+          "structure-low-cohesion-5",
+          "cost-gha-no-timeout-9"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "performance-no-cost-perf-tradeoff-8",
+          "performance-serialization-format-2",
+          "cost-gha-no-dependency-cache-5",
+          "performance-no-backpressure-10",
+          "structure-service-sql-5",
+          "cost-slow-build-1",
+          "flows-missing-timeout-6",
+          "performance-no-adaptive-timeout-6",
+          "performance-no-request-collapsing-4",
+          "flows-missing-error-handler-5",
+          "cost-no-license-tracking-5",
+          "code-missing-error-main-10",
+          "code-mutex-missing-4",
+          "flows-error-leaks-stack-6",
+          "flows-missing-circuit-breaker-7",
+          "cost-documentation-poor-7",
+          "cost-license-attribution-missing-2",
+          "code-var-usage-3",
+          "cost-gha-infinite-artifacts-6",
+          "code-print-statement-5",
+          "cost-gha-expensive-runner-4",
+          "flows-missing-request-id-7",
+          "code-missing-docstring-10",
+          "code-missing-return-type-8"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "flows-missing-timeout-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-idempotency-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-error-handler-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-error-leaks-stack-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-request-id-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-dlq-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-circuit-breaker-7": [
+        "structure-high-coupling-1"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "security-logs-contain-secrets-12",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 90,
+      "canonical_rule": "security-logs-contain-secrets-12"
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.7,
+      "score": 52.5,
+      "canonical_rule": "security-no-input-validation-14"
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 50,
+      "canonical_rule": "flows-missing-idempotency-3"
+    },
+    {
+      "id": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.7,
+      "score": 49,
+      "canonical_rule": "security-secret-in-code-1"
+    },
+    {
+      "id": "performance-cpu-hotspot-1",
+      "severity": "high",
+      "module": "performance",
+      "confidence": 0.7,
+      "score": 42,
+      "canonical_rule": "performance-cpu-hotspot-1"
+    },
+    {
+      "id": "code-missing-validation-4",
+      "severity": "high",
+      "module": "code",
+      "confidence": 0.7,
+      "score": 35,
+      "canonical_rule": "code-missing-validation-4"
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 33,
+      "canonical_rule": "structure-high-coupling-1"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.75,
+      "score": 30,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "code-logs-secrets-10",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 28,
+      "canonical_rule": "code-logs-secrets-10"
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 28,
+      "canonical_rule": "cost-dev-setup-missing-3"
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.8,
+      "score": 28,
+      "canonical_rule": "security-gha-overpermissive-2"
+    },
+    {
+      "id": "code-unchecked-error-1",
+      "severity": "high",
+      "module": "code",
+      "confidence": 0.55,
+      "score": 27.5,
+      "canonical_rule": "code-unchecked-error-1"
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.9,
+      "score": 27,
+      "canonical_rule": "security-gha-action-unpinned-5"
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.85,
+      "score": 25.5,
+      "canonical_rule": "security-gha-job-no-timeout-7"
+    },
+    {
+      "id": "security-weak-rng-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.85,
+      "score": 25.5,
+      "canonical_rule": "security-weak-rng-10"
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.8,
+      "score": 24,
+      "canonical_rule": "security-gha-no-concurrency-prod-10"
+    },
+    {
+      "id": "flows-missing-dlq-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 22.5,
+      "canonical_rule": "flows-missing-dlq-2"
+    },
+    {
+      "id": "cost-license-share-alike-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 20,
+      "canonical_rule": "cost-license-share-alike-3"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.9,
+      "score": 19.8,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.85,
+      "score": 18.7,
+      "canonical_rule": "structure-framework-leak-3"
+    },
+    {
+      "id": "performance-no-perf-budgets-10",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.75,
+      "score": 18,
+      "canonical_rule": "performance-no-perf-budgets-10"
+    },
+    {
+      "id": "performance-no-load-testing-3",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.7,
+      "score": 16.8,
+      "canonical_rule": "performance-no-load-testing-3"
+    },
+    {
+      "id": "performance-no-regression-detection-5",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.7,
+      "score": 16.8,
+      "canonical_rule": "performance-no-regression-detection-5"
+    },
+    {
+      "id": "code-ignores-return-value-6",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.8,
+      "score": 16,
+      "canonical_rule": "code-ignores-return-value-6"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.9,
+      "score": 14.4,
+      "canonical_rule": "cost-gha-no-timeout-9"
+    },
+    {
+      "id": "performance-no-cost-perf-tradeoff-8",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.6,
+      "score": 14.4,
+      "canonical_rule": "performance-no-cost-perf-tradeoff-8"
+    },
+    {
+      "id": "performance-serialization-format-2",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.6,
+      "score": 14.4,
+      "canonical_rule": "performance-serialization-format-2"
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.85,
+      "score": 13.6,
+      "canonical_rule": "cost-gha-no-dependency-cache-5"
+    },
+    {
+      "id": "performance-no-backpressure-10",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.55,
+      "score": 13.2,
+      "canonical_rule": "performance-no-backpressure-10"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "cost-slow-build-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.8,
+      "score": 12.8,
+      "canonical_rule": "cost-slow-build-1"
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 12,
+      "canonical_rule": "flows-missing-timeout-6"
+    },
+    {
+      "id": "performance-no-adaptive-timeout-6",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 12,
+      "canonical_rule": "performance-no-adaptive-timeout-6"
+    },
+    {
+      "id": "performance-no-request-collapsing-4",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 12,
+      "canonical_rule": "performance-no-request-collapsing-4"
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 11,
+      "canonical_rule": "flows-missing-error-handler-5"
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.65,
+      "score": 10.4,
+      "canonical_rule": "cost-no-license-tracking-5"
+    },
+    {
+      "id": "code-missing-error-main-10",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "code-missing-error-main-10"
+    },
+    {
+      "id": "code-mutex-missing-4",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "code-mutex-missing-4"
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-error-leaks-stack-6"
+    },
+    {
+      "id": "flows-missing-circuit-breaker-7",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-missing-circuit-breaker-7"
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-documentation-poor-7"
+    },
+    {
+      "id": "cost-license-attribution-missing-2",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.55,
+      "score": 8.8,
+      "canonical_rule": "cost-license-attribution-missing-2"
+    },
+    {
+      "id": "code-var-usage-3",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 8.4,
+      "canonical_rule": "code-var-usage-3"
+    },
+    {
+      "id": "cost-gha-infinite-artifacts-6",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-gha-infinite-artifacts-6"
+    },
+    {
+      "id": "code-print-statement-5",
+      "severity": "low",
+      "module": "code",
+      "confidence": 0.95,
+      "score": 4.75,
+      "canonical_rule": "code-print-statement-5"
+    },
+    {
+      "id": "cost-gha-expensive-runner-4",
+      "severity": "low",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 2.8,
+      "canonical_rule": "cost-gha-expensive-runner-4"
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-missing-request-id-7"
+    },
+    {
+      "id": "code-missing-docstring-10",
+      "severity": "low",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 1.4,
+      "canonical_rule": "code-missing-docstring-10"
+    },
+    {
+      "id": "code-missing-return-type-8",
+      "severity": "low",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 1.4,
+      "canonical_rule": "code-missing-return-type-8"
+    }
+  ]
+}

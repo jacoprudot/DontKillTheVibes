@@ -1,0 +1,127 @@
+{
+  "target": "llamacoder",
+  "mock": false,
+  "created_at": "2026-10-04T23:48:56.119Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "5. **Inconsistent Naming Conventions**:",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "9. **Inefficient Data Handling**:",
+      "security_relevant": false
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "13. **Inefficient Use of State**:",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "Here are some problems and suggestions for improvement found in the `llamacoder` repository:",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "These are some of the issues found in the repository. Addressing these will help improve the maintainability, security, ",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "14. **Potential Race Conditions**:",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "6. **Hardcoded API Keys and Secrets**:",
+      "security_relevant": true
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "7. **Unnecessary Imports**:",
+      "security_relevant": false
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "10. **Lack of Documentation**:",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "12. **Potential Memory Leaks**:",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "8. **Potential Security Issues**:",
+      "security_relevant": true
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "4. **Magic Strings and Numbers**:",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "15. **Inconsistent Error Handling**:",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "2. **Unnecessary Files**:",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "3. **Large File Size**:",
+      "security_relevant": false
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "11. **Inconsistent Code Formatting**:",
+      "security_relevant": false
+    },
+    {
+      "label": "C17",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "1. **Duplicate Files**:",
+      "security_relevant": true
+    }
+  ]
+}

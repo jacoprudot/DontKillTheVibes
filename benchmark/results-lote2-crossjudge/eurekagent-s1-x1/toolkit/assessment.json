@@ -1,0 +1,132 @@
+{
+  "metadata": {
+    "repo": "eurekagent",
+    "assessed_at": "2026-06-01T00:00:00Z",
+    "toolkit_version": "0.1.0-beta",
+    "llm_used": "claude-sonnet-4-5",
+    "ruleset_version": "368-6e180554"
+  },
+  "summary": {
+    "overall_health": "F",
+    "total_findings": 14,
+    "critical_count": 2,
+    "by_severity": {
+      "high": 2,
+      "medium": 6,
+      "critical": 2,
+      "low": 3,
+      "info": 1
+    },
+    "effort_estimate": {
+      "S": 4,
+      "M": 7,
+      "XS": 3
+    }
+  },
+  "findings": [
+    {
+      "id": "code-generic-catch-2",
+      "module": "code",
+      "severity": "high",
+      "effort": "S",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 262
+      },
+      "description": "The hook's top-level exception handler catches the generic Exception and only writes a debug entry plus a stderr print, so any failure in the search-logging path is silently swallowed and the caller (Claude Code) never learns that web-search history was not recorded.",
+      "remediation": "Catch the specific exceptions you can handle (json.JSONDecodeError, OSError, KeyError) and re-raise or exit non-zero for anything else so the hook failure surfaces instead of being hidden behind a debug line.",
+      "confidence": 0.85,
+      "evidence": {
+        "snippet": "try:\n    handler(tool_input, tool_response)\nexcept Exception as e:\n    _debug({\"error\": str(e), \"tool_name\": tool_name, \"timestamp\": _now()})\n    print(f\"[log_web_search] ERROR: {e}\", file=sys.stderr)",
+        "metric": "1 broad except Exception block wrapping the entire dispatch"
+      }
+    },
+    {
+      "id": "code-exact-duplication-significant-2",
+      "module": "code",
+      "severity": "medium",
+      "effort": "M",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 100
+      },
+      "description": "The same 'append a fallback entry with empty url/title and a truncated summary' block is repeated three times (unparsable JSON, no text captured, and the WebSearch no-URL case), duplicating the entry schema in several places.",
+      "remediation": "Introduce a single `_append_fallback(tool, query, summary)` helper and call it from all three sites so the JSONL schema is defined once.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "_append({\"tool\": \"web-search-prime\", \"query\": query,\n          \"url\": \"\", \"title\": \"\", \"summary\": text[:500],\n          \"timestamp\": _now()})",
+        "metric": "3 near-identical _append fallback blocks"
+      }
+    },
+    {
+      "id": "code-missing-return-type-8",
+      "module": "code",
+      "severity": "low",
+      "effort": "S",
+      "location": {
+        "file": ".claude/hooks/log_web_search.py",
+        "line": 88
+      },
+      "description": "Several handler functions in the hook (`_handle_web_search_prime`, `_handle_web_search`, `_handle_playwright_navigate`, `_handle_playwright_snapshot`) lack return type annotations even though the module otherwise uses `from __future__ import annotations` and annotates parameters.",
+      "remediation": "Add `-> None` return annotations to all handler functions for consistency with the rest of the module.",
+      "confidence": 0.8,
+      "evidence": {
+        "snippet": "def _handle_web_search_prime(tool_input: dict, tool_response: dict | str | None) -> None:\n    query = tool_input.get(\"search_query\", \"\")",
+        "metric": "4 handlers without return annotations"
+      }
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "module": "security",
+      "severity": "high",
+      "effort": "M",
+      "location": {
+        "file": ".claude/hooks/protect_result_files.py",
+        "line": 88
+      },
+      "description": "`_resolve_tool_path` builds a path from the raw tool argument and resolves it without any containment check against the workspace root, so a tool call with an absolute path or `../` traversal is evaluated against whatever it resolves to — the protection logic trusts the caller-supplied path.",
+      "remediation": "Resolve the path and verify it is inside the expected workspace root (e.g. `/workspace`) before applying any allow/deny decision; reject paths that escape the root outright.",
+      "confidence": 0.7,
+      "evidence": {
+        "snippet": "expanded = Path(raw_path).expanduser()\nif not expanded.is_absolute():\n    expanded = Path(cwd) / expanded\ntry:\n    return expanded.resolve(strict=False)",
+        "metric": "no root-containment check before resolve()"
+      }
+    }
+  ],
+  "work_plan": {
+    "phases": {
+      "30_days": [
+        "code-empty-catch-1",
+        "code-generic-catch-2",
+        "code-print-statement-5",
+        "code-missing-return-type-8",
+        "security-error-detail-1"
+      ],
+      "60_days": [
+        "security-no-input-validation-14",
+        "security-gha-secret-leak-3",
+        "structure-config-logic-8",
+        "structure-dto-logic-7",
+        "code-exact-duplication-significant-2",
+        "code-copy-paste-variant-6"
+      ],
+      "90_days": [
+        "structure-controller-logic-6",
+        "code-long-function-7",
+        "code-catch-and-continue-9"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": "structure-controller-logic-6",
+        "to": "code-long-function-7",
+        "type": "blocks"
+      },
+      {
+        "from": "code-exact-duplication-significant-2",
+        "to": "code-copy-paste-variant-6",
+        "type": "blocks"
+      }
+    ]
+  }
+}

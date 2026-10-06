@@ -1,0 +1,316 @@
+{
+  "target": "rich",
+  "mock": false,
+  "created_at": "2026-10-05T16:15:24.893Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "security-gha-no-concurrency-prod-10",
+      "title": "security-gha-no-concurrency-prod-10",
+      "security_relevant": false
+    },
+    {
+      "label": "C2",
+      "arm": "naive",
+      "source_id": "naive-claim-4",
+      "title": "4. `newissue.yml` pipes untrusted issue titles into a shell command",
+      "security_relevant": true
+    },
+    {
+      "label": "C3",
+      "arm": "naive",
+      "source_id": "naive-claim-20",
+      "title": "20. `.pre-commit-config.yaml` uses `black-pre-commit-mirror` at `23.11.0`",
+      "security_relevant": false
+    },
+    {
+      "label": "C4",
+      "arm": "naive",
+      "source_id": "naive-claim-13",
+      "title": "13. `benchmarks/benchmarks.py` `TextHotCacheSuite` doesn't measure what it claims",
+      "security_relevant": false
+    },
+    {
+      "label": "C5",
+      "arm": "naive",
+      "source_id": "naive-claim-8",
+      "title": "8. `asv.conf.json` pins `setuptools: [\"59.2.0\"]` and Python 3.10 only",
+      "security_relevant": false
+    },
+    {
+      "label": "C6",
+      "arm": "naive",
+      "source_id": "naive-claim-19",
+      "title": "19. `.pre-commit-config.yaml` pins `isort` to `language_version: \"3.11\"`",
+      "security_relevant": false
+    },
+    {
+      "label": "C7",
+      "arm": "naive",
+      "source_id": "naive-claim-30",
+      "title": "30. `rich/_unicode_data/` contains 20+ generated files",
+      "security_relevant": false
+    },
+    {
+      "label": "C8",
+      "arm": "naive",
+      "source_id": "naive-claim-25",
+      "title": "25. `readmechanged.yml` triggers on `push` to `master` only",
+      "security_relevant": false
+    },
+    {
+      "label": "C9",
+      "arm": "naive",
+      "source_id": "naive-claim-34",
+      "title": "34. `README.md` is translated into ~20 languages but there's no CI check that translations stay in sync",
+      "security_relevant": false
+    },
+    {
+      "label": "C10",
+      "arm": "naive",
+      "source_id": "naive-claim-29",
+      "title": "29. `docs/requirements.txt` is not shown but is referenced by `.readthedocs.yml`",
+      "security_relevant": false
+    },
+    {
+      "label": "C11",
+      "arm": "naive",
+      "source_id": "naive-claim-37",
+      "title": "Summary of the most impactful fixes",
+      "security_relevant": false
+    },
+    {
+      "label": "C12",
+      "arm": "naive",
+      "source_id": "naive-claim-12",
+      "title": "12. `benchmarks/benchmarks.py` `time_align_center_unicode_heavy` uses the wrong width",
+      "security_relevant": false
+    },
+    {
+      "label": "C13",
+      "arm": "naive",
+      "source_id": "naive-claim-31",
+      "title": "31. `tests/pytest.ini` exists alongside `pyproject.toml`",
+      "security_relevant": false
+    },
+    {
+      "label": "C14",
+      "arm": "naive",
+      "source_id": "naive-claim-11",
+      "title": "11. `benchmarks/benchmarks.py` `time_divide_unicode_heavy` uses the wrong text",
+      "security_relevant": false
+    },
+    {
+      "label": "C15",
+      "arm": "naive",
+      "source_id": "naive-claim-14",
+      "title": "14. `.coveragerc` omits `rich/jupyter.py` from coverage",
+      "security_relevant": false
+    },
+    {
+      "label": "C16",
+      "arm": "naive",
+      "source_id": "naive-claim-17",
+      "title": "17. `benchmarks/results/darrenburns-2022-mbp/` contains ~200 committed JSON result files",
+      "security_relevant": false
+    },
+    {
+      "label": "C17",
+      "arm": "toolkit",
+      "source_id": "security-gha-action-unpinned-5",
+      "title": "security-gha-action-unpinned-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C18",
+      "arm": "naive",
+      "source_id": "naive-claim-2",
+      "title": "2. CI matrix excludes Python 3.13 on Windows for no documented reason",
+      "security_relevant": false
+    },
+    {
+      "label": "C19",
+      "arm": "naive",
+      "source_id": "naive-claim-16",
+      "title": "16. `assets/logo.ai` is a 1.2 MB PDF masquerading as an `.ai` file",
+      "security_relevant": false
+    },
+    {
+      "label": "C20",
+      "arm": "naive",
+      "source_id": "naive-claim-6",
+      "title": "6. `codespell` workflow has a malformed multi-line `run`",
+      "security_relevant": false
+    },
+    {
+      "label": "C21",
+      "arm": "toolkit",
+      "source_id": "cost-gha-no-dependency-cache-5",
+      "title": "cost-gha-no-dependency-cache-5",
+      "security_relevant": true
+    },
+    {
+      "label": "C22",
+      "arm": "naive",
+      "source_id": "naive-claim-9",
+      "title": "9. `asv.conf.json` `build_command` installs Poetry but then uses `setup.py build`",
+      "security_relevant": false
+    },
+    {
+      "label": "C23",
+      "arm": "naive",
+      "source_id": "naive-claim-22",
+      "title": "22. `AI_POLICY.md` says \"The Pull Request must link to a issue\" — grammar",
+      "security_relevant": false
+    },
+    {
+      "label": "C24",
+      "arm": "toolkit",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "security_relevant": true
+    },
+    {
+      "label": "C25",
+      "arm": "naive",
+      "source_id": "naive-claim-10",
+      "title": "10. `benchmarks/benchmarks.py` has a misnamed benchmark",
+      "security_relevant": false
+    },
+    {
+      "label": "C26",
+      "arm": "naive",
+      "source_id": "naive-claim-33",
+      "title": "33. `benchmarks/snippets.py` is excluded from codespell but not from pre-commit",
+      "security_relevant": false
+    },
+    {
+      "label": "C27",
+      "arm": "toolkit",
+      "source_id": "cost-gha-always-on-8",
+      "title": "cost-gha-always-on-8",
+      "security_relevant": false
+    },
+    {
+      "label": "C28",
+      "arm": "toolkit",
+      "source_id": "security-gha-fork-pr-4",
+      "title": "security-gha-fork-pr-4",
+      "security_relevant": true
+    },
+    {
+      "label": "C29",
+      "arm": "naive",
+      "source_id": "naive-claim-1",
+      "title": "1. CI workflow is broken: `$VENV` is never set",
+      "security_relevant": false
+    },
+    {
+      "label": "C30",
+      "arm": "naive",
+      "source_id": "naive-claim-28",
+      "title": "28. `.github/workflows/comment.yml` uses a pinned SHA for `peter-evans/create-or-update-comment`",
+      "security_relevant": false
+    },
+    {
+      "label": "C31",
+      "arm": "naive",
+      "source_id": "naive-claim-35",
+      "title": "35. `.github/workflows/pythonpackage.yml` only runs on `pull_request`",
+      "security_relevant": false
+    },
+    {
+      "label": "C32",
+      "arm": "naive",
+      "source_id": "naive-claim-32",
+      "title": "32. `setup.py` still exists in a Poetry-managed project",
+      "security_relevant": false
+    },
+    {
+      "label": "C33",
+      "arm": "naive",
+      "source_id": "naive-claim-23",
+      "title": "23. `bug_report.md` template has a typo",
+      "security_relevant": false
+    },
+    {
+      "label": "C34",
+      "arm": "naive",
+      "source_id": "naive-claim-24",
+      "title": "24. `bug_report.md` suggests `pip freeze | grep rich`",
+      "security_relevant": false
+    },
+    {
+      "label": "C35",
+      "arm": "naive",
+      "source_id": "naive-claim-21",
+      "title": "21. `AI_POLICY.md` and PR template disagree on AI PR requirements",
+      "security_relevant": false
+    },
+    {
+      "label": "C36",
+      "arm": "naive",
+      "source_id": "naive-claim-18",
+      "title": "18. `.pre-commit-config.yaml` excludes `benchmarks/` entirely",
+      "security_relevant": false
+    },
+    {
+      "label": "C37",
+      "arm": "naive",
+      "source_id": "naive-claim-26",
+      "title": "26. `asvhashfile` lists tags out of order",
+      "security_relevant": false
+    },
+    {
+      "label": "C38",
+      "arm": "naive",
+      "source_id": "naive-claim-15",
+      "title": "15. `pyproject.toml` / `setup.py` duplication",
+      "security_relevant": false
+    },
+    {
+      "label": "C39",
+      "arm": "toolkit",
+      "source_id": "security-gha-job-no-timeout-7",
+      "title": "security-gha-job-no-timeout-7",
+      "security_relevant": false
+    },
+    {
+      "label": "C40",
+      "arm": "naive",
+      "source_id": "naive-claim-3",
+      "title": "3. `readmechanged.yml` uses a hardcoded discussion ID and a personal token",
+      "security_relevant": true
+    },
+    {
+      "label": "C41",
+      "arm": "naive",
+      "source_id": "naive-claim-5",
+      "title": "5. `comment.yml` and `newissue.yml` both use `name: issues`",
+      "security_relevant": false
+    },
+    {
+      "label": "C42",
+      "arm": "naive",
+      "source_id": "naive-claim-36",
+      "title": "36. `tox.ini` exists but CI uses Poetry directly",
+      "security_relevant": false
+    },
+    {
+      "label": "C43",
+      "arm": "naive",
+      "source_id": "naive-claim-7",
+      "title": "7. `codespell` skips `./tests` and `./tools`",
+      "security_relevant": false
+    },
+    {
+      "label": "C44",
+      "arm": "naive",
+      "source_id": "naive-claim-27",
+      "title": "27. `benchmarks/README.md` references `main` branch of `rich-benchmarks`",
+      "security_relevant": false
+    }
+  ]
+}

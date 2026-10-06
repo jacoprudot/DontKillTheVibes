@@ -1,0 +1,915 @@
+{
+  "metadata": {
+    "repo": "crypto-claude-desk",
+    "assessed_at": "2026-10-05T21:00:29.330Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 22,
+    "findings_raw": 92,
+    "findings_dropped": 14,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 6,
+    "total_findings": 76,
+    "by_severity": {
+      "critical": 6,
+      "high": 15,
+      "medium": 42,
+      "low": 6,
+      "info": 7
+    },
+    "by_module": {
+      "database": 12,
+      "code": 9,
+      "structure": 9,
+      "security": 3,
+      "cost": 13,
+      "performance": 6,
+      "github": 24
+    },
+    "effort_estimate": {
+      "XS": 15,
+      "S": 12,
+      "M": 45,
+      "L": 4
+    }
+  },
+  "findings": [
+    {
+      "id": "code-missing-validation-4",
+      "module": "code",
+      "severity": "high",
+      "location": {
+        "file": "dashboard/src/app/api/ohlcv/route.ts",
+        "line": 11
+      },
+      "description": "The `symbol` query parameter is taken straight from the URL and passed to `getOhlcv`/`toBinanceSymbol` without any validation against an allowed symbol pattern, unlike the MCP servers which route symbols through `validate_symbol`. Arbitrary user-controlled strings are interpolated into the upstream Binance URL.",
+      "remediation": "Validate `symbol` with a strict allow-list regex (e.g. `/^[A-Za-z0-9]{1,15}$/`) before use and return HTTP 400 on mismatch, mirroring `validators.validate_symbol`.",
+      "effort": "M",
+      "confidence": 0.75
+    },
+    {
+      "id": "database-heavy-migration-5",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 182
+      },
+      "description": "_ensure_schema executes the full CREATE TABLE/CREATE INDEX script plus ALTER TABLE and DROP TABLE migrations synchronously on every connection initialization (_init_db is called at the start of each core function), adding repeated DDL work to every tool invocation.",
+      "remediation": "Run schema setup once per process (cache an initialized flag or check PRAGMA user_version) instead of re-executing the whole script on every _init_db() call.",
+      "effort": "L",
+      "confidence": 0.65
+    },
+    {
+      "id": "performance-no-compression-13",
+      "module": "performance",
+      "severity": "medium",
+      "location": {
+        "file": "dashboard/next.config.ts",
+        "line": 3
+      },
+      "description": "next.config.ts defines only serverExternalPackages and enables no compression configuration. The dashboard serves large JSON payloads (OHLCV candle arrays, market-intelligence snapshots) and Next.js response compression is not explicitly enabled/configured, so responses may be sent uncompressed.",
+      "remediation": "Enable response compression (Next.js `compress: true` is default but verify it is not disabled, and/or add gzip/brotli at the reverse proxy) so large JSON API payloads are compressed on the wire.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-llm-high-usage-1",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "skills/analyze/SKILL.md",
+        "line": 1
+      },
+      "description": "The /analyze workflow spawns 5 subagents per invocation, including two opus-tier agents (portfolio-manager and learning-agent) plus three sonnet/haiku agents, each with multi-turn MCP tool access. Every analysis run therefore consumes a large, unbounded amount of LLM tokens with no per-run budget, no caching of agent outputs, and no cap on how often the workflow is triggered.",
+      "remediation": "Add a token/run budget guard to the /analyze workflow: cache Phase 1 report files and reuse them within a time window instead of re-spawning agents, downgrade non-decision agents where possible, and document a maximum number of full analyses per day.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-gha-workspace-not-cleaned-6",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "bin/autopilot.sh",
+        "line": 0
+      },
+      "description": "Each autopilot run appends full model output to data/logs/YYYY-MM-DD.log and leaves behind generated report files under data/reports/ with no rotation or cleanup. Over time this accumulates unbounded on-disk artifacts (including any sensitive portfolio data the agents emit) that are never pruned.",
+      "remediation": "Add log rotation (logrotate or a size-based truncation in the script) and a retention policy that prunes data/reports and data/logs older than N days.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "github-issue-health-1",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "CONTRIBUTING.md",
+        "line": 0
+      },
+      "description": "CONTRIBUTING.md defines bug and feature issue templates only as prose instructions ('Open a GitHub issue with the following information') rather than as structured issue templates. There are no .github/ISSUE_TEMPLATE files, so reports arrive unstructured and are hard to triage.",
+      "remediation": "Add .github/ISSUE_TEMPLATE/bug_report.yml and feature_request.yml with the fields described in CONTRIBUTING.md so issues are consistently structured and auto-labeled.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "github-log-pattern-9",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "mcp-servers/crypto_learning_db.py",
+        "line": 0
+      },
+      "description": "The DB path discovery walks up to six parent directories from PWD looking for an existing data/db/learning.db and silently falls back to the plugin-local path. The chosen DB location is never logged, so when trades appear to vanish users cannot tell which database file the server actually opened.",
+      "remediation": "Log the resolved DB_PATH (and which discovery branch was taken) once at server startup so the active database is always identifiable.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "github-log-pattern-1",
+      "module": "github",
+      "severity": "info",
+      "location": {
+        "file": "bin/autopilot.sh",
+        "line": 0
+      },
+      "description": "Autopilot logging uses ad-hoc `echo \"[$TIMESTAMP] ...\" >> \"$LOG_FILE\"` lines with a hand-rolled timestamp format and no log level, request id, or structured fields. This makes the logs hard to parse or correlate across the multiple workflows that write to the same daily file.",
+      "remediation": "Emit structured, leveled log lines (e.g. JSON with timestamp, workflow, level, message) or use a small logging helper, and include a run id so concurrent workflow entries can be correlated.",
+      "effort": "XS",
+      "confidence": 0.5
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "database-irreversible-migration-1",
+          "database-full-table-scan-3",
+          "code-bare-except-1",
+          "security-no-input-validation-14",
+          "database-risky-migration-3",
+          "database-missing-app-pool-8",
+          "performance-no-connection-pool-7",
+          "security-secret-in-code-1",
+          "structure-high-coupling-1",
+          "code-missing-validation-4",
+          "structure-layer-violation-1",
+          "security-gha-pr-target-risk-1",
+          "security-gha-secret-leak-3",
+          "database-missing-index-fk-1",
+          "database-sequential-pagination-1",
+          "cost-llm-very-high-usage-2",
+          "security-cors-wildcard-2",
+          "security-gha-auto-deploy-prod-9",
+          "security-gha-overpermissive-2",
+          "security-missing-headers-10",
+          "cost-no-automated-tests-4",
+          "database-missing-index-where-4",
+          "database-connection-timeout-high-3"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "code-exact-duplication-significant-2",
+          "github-log-pattern-6",
+          "database-heavy-migration-5",
+          "structure-config-logic-8",
+          "cost-dev-setup-missing-3",
+          "performance-no-keep-alive-9",
+          "structure-repository-logic-4",
+          "structure-service-sql-5",
+          "performance-no-retry-jitter-8",
+          "database-statement-timeout-missing-9",
+          "structure-framework-leak-3",
+          "code-copy-paste-variant-6",
+          "code-missing-error-main-10",
+          "performance-no-adaptive-timeout-6",
+          "database-missing-bloat-monitoring-5",
+          "structure-low-cohesion-5"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "code-ignores-return-value-6",
+          "performance-no-request-collapsing-4",
+          "security-gha-action-unpinned-5",
+          "performance-no-compression-13",
+          "cost-api-no-response-cache-5",
+          "cost-llm-high-usage-1",
+          "security-gha-job-no-timeout-7",
+          "cost-no-performance-budget-10",
+          "security-gha-no-concurrency-prod-10",
+          "cost-api-no-client-rate-limit-4",
+          "cost-api-no-usage-monitoring-9",
+          "github-log-pattern-5",
+          "security-gha-workspace-not-cleaned-6",
+          "cost-api-no-retry-strategy-8",
+          "cost-no-http-compression-9",
+          "github-issue-health-1",
+          "github-log-pattern-2",
+          "github-log-pattern-4",
+          "github-log-pattern-9",
+          "security-gha-fork-pr-4",
+          "cost-documentation-poor-7",
+          "cost-no-license-tracking-5",
+          "cost-slow-tests-2",
+          "github-commit-history-1",
+          "code-missing-return-type-8",
+          "database-max-lifetime-missing-5",
+          "structure-adapter-violation-10",
+          "structure-dto-logic-7",
+          "code-missing-docstring-10",
+          "code-print-statement-5",
+          "github-log-pattern-8",
+          "github-log-pattern-1",
+          "github-log-pattern-10",
+          "github-issue-health-2",
+          "github-log-pattern-3",
+          "github-log-pattern-7",
+          "github-commit-history-2"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "code-exact-duplication-significant-2": [
+        "database-irreversible-migration-1"
+      ],
+      "code-bare-except-1": [
+        "database-irreversible-migration-1"
+      ],
+      "code-copy-paste-variant-6": [
+        "database-irreversible-migration-1"
+      ],
+      "code-missing-return-type-8": [
+        "database-irreversible-migration-1"
+      ],
+      "code-ignores-return-value-6": [
+        "database-irreversible-migration-1"
+      ],
+      "code-missing-validation-4": [
+        "database-irreversible-migration-1"
+      ],
+      "code-print-statement-5": [
+        "database-irreversible-migration-1"
+      ],
+      "code-missing-error-main-10": [
+        "database-irreversible-migration-1"
+      ],
+      "code-missing-docstring-10": [
+        "database-irreversible-migration-1"
+      ],
+      "performance-no-connection-pool-7": [
+        "database-irreversible-migration-1"
+      ],
+      "performance-no-keep-alive-9": [
+        "database-irreversible-migration-1"
+      ],
+      "performance-no-retry-jitter-8": [
+        "database-irreversible-migration-1"
+      ],
+      "performance-no-adaptive-timeout-6": [
+        "database-irreversible-migration-1"
+      ],
+      "performance-no-request-collapsing-4": [
+        "database-irreversible-migration-1"
+      ],
+      "performance-no-compression-13": [
+        "database-irreversible-migration-1"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "database-irreversible-migration-1",
+      "severity": "critical",
+      "module": "database",
+      "confidence": 0.75,
+      "score": 97.5,
+      "canonical_rule": "database-irreversible-migration-1"
+    },
+    {
+      "id": "database-full-table-scan-3",
+      "severity": "critical",
+      "module": "database",
+      "confidence": 0.7,
+      "score": 91,
+      "canonical_rule": "database-full-table-scan-3"
+    },
+    {
+      "id": "code-bare-except-1",
+      "severity": "critical",
+      "module": "code",
+      "confidence": 0.85,
+      "score": 85,
+      "canonical_rule": "code-bare-except-1"
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.8,
+      "score": 60,
+      "canonical_rule": "security-no-input-validation-14"
+    },
+    {
+      "id": "database-risky-migration-3",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.8,
+      "score": 52,
+      "canonical_rule": "database-risky-migration-3"
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.7,
+      "score": 45.5,
+      "canonical_rule": "database-missing-app-pool-8"
+    },
+    {
+      "id": "performance-no-connection-pool-7",
+      "severity": "high",
+      "module": "performance",
+      "confidence": 0.7,
+      "score": 42,
+      "canonical_rule": "performance-no-connection-pool-7"
+    },
+    {
+      "id": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 42,
+      "canonical_rule": "security-secret-in-code-1"
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 38.5,
+      "canonical_rule": "structure-high-coupling-1"
+    },
+    {
+      "id": "code-missing-validation-4",
+      "severity": "high",
+      "module": "code",
+      "confidence": 0.75,
+      "score": 37.5,
+      "canonical_rule": "code-missing-validation-4"
+    },
+    {
+      "id": "structure-layer-violation-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 35.75,
+      "canonical_rule": "structure-layer-violation-1"
+    },
+    {
+      "id": "security-gha-pr-target-risk-1",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 35,
+      "canonical_rule": "security-gha-pr-target-risk-1"
+    },
+    {
+      "id": "security-gha-secret-leak-3",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 35,
+      "canonical_rule": "security-gha-secret-leak-3"
+    },
+    {
+      "id": "database-missing-index-fk-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 32.5,
+      "canonical_rule": "database-missing-index-fk-1"
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 32.5,
+      "canonical_rule": "database-sequential-pagination-1"
+    },
+    {
+      "id": "cost-llm-very-high-usage-2",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.7,
+      "score": 28,
+      "canonical_rule": "cost-llm-very-high-usage-2"
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.75,
+      "score": 22.5,
+      "canonical_rule": "security-cors-wildcard-2"
+    },
+    {
+      "id": "security-gha-auto-deploy-prod-9",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 21,
+      "canonical_rule": "security-gha-auto-deploy-prod-9"
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 21,
+      "canonical_rule": "security-gha-overpermissive-2"
+    },
+    {
+      "id": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.7,
+      "score": 21,
+      "canonical_rule": "security-missing-headers-10"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 20,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "database-missing-index-where-4",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.75,
+      "score": 19.5,
+      "canonical_rule": "database-missing-index-where-4"
+    },
+    {
+      "id": "database-connection-timeout-high-3",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.7,
+      "score": 18.2,
+      "canonical_rule": "database-connection-timeout-high-3"
+    },
+    {
+      "id": "code-exact-duplication-significant-2",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.9,
+      "score": 18,
+      "canonical_rule": "code-exact-duplication-significant-2"
+    },
+    {
+      "id": "github-log-pattern-6",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 17.5,
+      "canonical_rule": "github-log-pattern-6"
+    },
+    {
+      "id": "database-heavy-migration-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.65,
+      "score": 16.9,
+      "canonical_rule": "database-heavy-migration-5"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.75,
+      "score": 16.5,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 16,
+      "canonical_rule": "cost-dev-setup-missing-3"
+    },
+    {
+      "id": "performance-no-keep-alive-9",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.65,
+      "score": 15.6,
+      "canonical_rule": "performance-no-keep-alive-9"
+    },
+    {
+      "id": "structure-repository-logic-4",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-repository-logic-4"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "performance-no-retry-jitter-8",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.6,
+      "score": 14.4,
+      "canonical_rule": "performance-no-retry-jitter-8"
+    },
+    {
+      "id": "database-statement-timeout-missing-9",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.55,
+      "score": 14.3,
+      "canonical_rule": "database-statement-timeout-missing-9"
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 14.3,
+      "canonical_rule": "structure-framework-leak-3"
+    },
+    {
+      "id": "code-copy-paste-variant-6",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "code-copy-paste-variant-6"
+    },
+    {
+      "id": "code-missing-error-main-10",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.7,
+      "score": 14,
+      "canonical_rule": "code-missing-error-main-10"
+    },
+    {
+      "id": "performance-no-adaptive-timeout-6",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.55,
+      "score": 13.2,
+      "canonical_rule": "performance-no-adaptive-timeout-6"
+    },
+    {
+      "id": "database-missing-bloat-monitoring-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 13,
+      "canonical_rule": "database-missing-bloat-monitoring-5"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.55,
+      "score": 12.1,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "code-ignores-return-value-6",
+      "severity": "medium",
+      "module": "code",
+      "confidence": 0.6,
+      "score": 12,
+      "canonical_rule": "code-ignores-return-value-6"
+    },
+    {
+      "id": "performance-no-request-collapsing-4",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.5,
+      "score": 12,
+      "canonical_rule": "performance-no-request-collapsing-4"
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.7,
+      "score": 9.8,
+      "canonical_rule": "security-gha-action-unpinned-5"
+    },
+    {
+      "id": "performance-no-compression-13",
+      "severity": "medium",
+      "module": "performance",
+      "confidence": 0.4,
+      "score": 9.6,
+      "canonical_rule": "performance-no-compression-13"
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-api-no-response-cache-5"
+    },
+    {
+      "id": "cost-llm-high-usage-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-llm-high-usage-1"
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.65,
+      "score": 9.1,
+      "canonical_rule": "security-gha-job-no-timeout-7"
+    },
+    {
+      "id": "cost-no-performance-budget-10",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.55,
+      "score": 8.8,
+      "canonical_rule": "cost-no-performance-budget-10"
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 8.4,
+      "canonical_rule": "security-gha-no-concurrency-prod-10"
+    },
+    {
+      "id": "cost-api-no-client-rate-limit-4",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-api-no-client-rate-limit-4"
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-api-no-usage-monitoring-9"
+    },
+    {
+      "id": "github-log-pattern-5",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 7.7,
+      "canonical_rule": "github-log-pattern-5"
+    },
+    {
+      "id": "security-gha-workspace-not-cleaned-6",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 7.7,
+      "canonical_rule": "security-gha-workspace-not-cleaned-6"
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.45,
+      "score": 7.2,
+      "canonical_rule": "cost-api-no-retry-strategy-8"
+    },
+    {
+      "id": "cost-no-http-compression-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.45,
+      "score": 7.2,
+      "canonical_rule": "cost-no-http-compression-9"
+    },
+    {
+      "id": "github-issue-health-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-issue-health-1"
+    },
+    {
+      "id": "github-log-pattern-2",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-log-pattern-2"
+    },
+    {
+      "id": "github-log-pattern-4",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-log-pattern-4"
+    },
+    {
+      "id": "github-log-pattern-9",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "github-log-pattern-9"
+    },
+    {
+      "id": "security-gha-fork-pr-4",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "security-gha-fork-pr-4"
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-documentation-poor-7"
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-no-license-tracking-5"
+    },
+    {
+      "id": "cost-slow-tests-2",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-slow-tests-2"
+    },
+    {
+      "id": "github-commit-history-1",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.45,
+      "score": 6.3,
+      "canonical_rule": "github-commit-history-1"
+    },
+    {
+      "id": "code-missing-return-type-8",
+      "severity": "low",
+      "module": "code",
+      "confidence": 0.8,
+      "score": 4,
+      "canonical_rule": "code-missing-return-type-8"
+    },
+    {
+      "id": "database-max-lifetime-missing-5",
+      "severity": "low",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 3.9,
+      "canonical_rule": "database-max-lifetime-missing-5"
+    },
+    {
+      "id": "structure-adapter-violation-10",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 3.3,
+      "canonical_rule": "structure-adapter-violation-10"
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 3.3,
+      "canonical_rule": "structure-dto-logic-7"
+    },
+    {
+      "id": "code-missing-docstring-10",
+      "severity": "low",
+      "module": "code",
+      "confidence": 0.6,
+      "score": 3,
+      "canonical_rule": "code-missing-docstring-10"
+    },
+    {
+      "id": "code-print-statement-5",
+      "severity": "low",
+      "module": "code",
+      "confidence": 0.55,
+      "score": 2.75,
+      "canonical_rule": "code-print-statement-5"
+    },
+    {
+      "id": "github-log-pattern-8",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.55,
+      "score": 0.39,
+      "canonical_rule": "github-log-pattern-8"
+    },
+    {
+      "id": "github-log-pattern-1",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 0.35,
+      "canonical_rule": "github-log-pattern-1"
+    },
+    {
+      "id": "github-log-pattern-10",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 0.35,
+      "canonical_rule": "github-log-pattern-10"
+    },
+    {
+      "id": "github-issue-health-2",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.45,
+      "score": 0.32,
+      "canonical_rule": "github-issue-health-2"
+    },
+    {
+      "id": "github-log-pattern-3",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.45,
+      "score": 0.32,
+      "canonical_rule": "github-log-pattern-3"
+    },
+    {
+      "id": "github-log-pattern-7",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.45,
+      "score": 0.32,
+      "canonical_rule": "github-log-pattern-7"
+    },
+    {
+      "id": "github-commit-history-2",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 0.28,
+      "canonical_rule": "github-commit-history-2"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "target": "rich-c3",
+  "mock": false,
+  "created_at": "2026-10-05T20:04:26.975Z",
+  "note": "Blind mapping: the judge saw only C1..Cn, never these arms. Do not paste this file into the judge prompt.",
+  "labels": [
+    {
+      "label": "C1",
+      "arm": "toolkit",
+      "source_id": "security-gha-overpermissive-2",
+      "title": "security-gha-overpermissive-2",
+      "security_relevant": true
+    }
+  ]
+}

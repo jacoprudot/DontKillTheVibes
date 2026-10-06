@@ -1,0 +1,3360 @@
+{
+  "metadata": {
+    "repo": "eurekagent",
+    "assessed_at": "2026-10-05T20:23:43.340Z",
+    "toolkit_version": "0.1.0-beta",
+    "ruleset_version": "368-6e180554",
+    "llm_used": "deepseek-chat",
+    "run_mode": "real",
+    "orchestrator": "scripts/dktv-orchestrate.mjs (per-module, 2 rounds, deterministic synthesis)",
+    "modules_run": [
+      "database",
+      "code",
+      "structure",
+      "flows",
+      "security",
+      "cost",
+      "performance",
+      "github"
+    ],
+    "llm_calls": 22,
+    "findings_raw": 209,
+    "findings_dropped": 65,
+    "sensitive_files_withheld": 0,
+    "files_withheld_sensitive": [],
+    "notes": "Synthesis performed deterministically in scripts/dktv-orchestrate.mjs (severity x module weight x confidence). metadata stamped by the runner, never by the LLM."
+  },
+  "summary": {
+    "overall_health": "F",
+    "critical_count": 13,
+    "total_findings": 144,
+    "by_severity": {
+      "critical": 13,
+      "high": 31,
+      "medium": 83,
+      "low": 16,
+      "info": 1
+    },
+    "by_module": {
+      "database": 12,
+      "structure": 10,
+      "flows": 37,
+      "security": 9,
+      "cost": 41,
+      "github": 35
+    },
+    "effort_estimate": {
+      "XS": 20,
+      "S": 28,
+      "M": 89,
+      "L": 7
+    }
+  },
+  "findings": [
+    {
+      "id": "security-gha-secret-leak-3",
+      "module": "security",
+      "severity": "critical",
+      "location": {
+        "file": "docker/build.sh",
+        "line": 0
+      },
+      "description": "build.sh forwards http_proxy/https_proxy/HTTP_PROXY/HTTPS_PROXY values as --build-arg, which embeds proxy credentials into the image build history where they remain readable via `docker history`.",
+      "remediation": "Use BuildKit secret mounts (--mount=type=secret) or a build-time proxy config file instead of --build-arg for proxy credentials, and avoid baking them into image layers.",
+      "effort": "XS",
+      "confidence": 0.5
+    },
+    {
+      "id": "security-logs-contain-secrets-12",
+      "module": "security",
+      "severity": "critical",
+      "location": {
+        "file": "src/docker/container.py",
+        "line": 0
+      },
+      "description": "_resolve_env_vars builds the docker run argument list containing API keys and proxy credentials, and _format_docker_start_error / log.info paths can surface the full command line (including secrets) in logs and exception messages.",
+      "remediation": "Redact values of any env var whose name matches KEY/TOKEN/SECRET/PASSWORD before logging the docker command, and never include the raw argv in raised RuntimeError messages.",
+      "effort": "XS",
+      "confidence": 0.4
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/leaderboard_db.py",
+        "line": 27
+      },
+      "description": "LeaderboardDB holds a single psycopg2 connection and cursor per instance (`self.connection`/`self.cursor`) and reuses it for every query. There is no connection pool, so concurrent submissions serialize on one connection and a dropped connection is never replaced; `connect()` is only called from `__enter__` when `self.connection is None`.",
+      "remediation": "Replace the single shared connection with a connection pool (e.g. psycopg2.pool.ThreadedConnectionPool or psycopg_pool.ConnectionPool) sized to the expected concurrency, and acquire/release a connection per unit of work instead of caching one cursor on the instance.",
+      "effort": "M",
+      "confidence": 0.85
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "module": "flows",
+      "severity": "critical",
+      "location": {
+        "file": "src/eval_grader/client.py",
+        "line": 55
+      },
+      "description": "submit_for_grading builds a payload of {submission_path, approach_id, gpu_lock_token, metadata} with no idempotency key or request id. If the agent retries a submission (or the request is duplicated by a proxy), the grader has no way to deduplicate and will grade and record the same candidate multiple times, corrupting score history and wasting GPU budget.",
+      "remediation": "Generate a stable idempotency key (e.g. hash of approach_id + submission content or a UUID persisted per submission) and send it in the payload/header; have the grader server deduplicate on that key and return the previously computed result for repeats.",
+      "effort": "S",
+      "confidence": 0.55
+    },
+    {
+      "id": "flows-fire-and-forget-critical-1",
+      "module": "flows",
+      "severity": "critical",
+      "location": {
+        "file": "src/runtime.py",
+        "line": 0
+      },
+      "description": "push_run_end_event and push_stage_event write pipeline state and enqueue TUI events but the monitor snapshot generation and event delivery are best-effort: failures are swallowed with log.debug and the run-end notification is never retried or persisted as a durable record. If the TUI queue is absent or the snapshot fails, the terminal outcome of a run is lost with no fallback.",
+      "remediation": "Persist the run-end event to a durable file (e.g. run_end.json) before/independently of the in-memory queue push, and have the monitor read that file so the terminal status survives a missing queue or a failed snapshot.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "module": "security",
+      "severity": "high",
+      "location": {
+        "file": "src/eval_grader/server.py",
+        "line": 38
+      },
+      "description": "GradeRequest accepts an arbitrary `submission_path` string from the agent and the server resolves it against its workspace root without validating that the resolved path stays inside the workspace, allowing path traversal to read/grade arbitrary host files.",
+      "remediation": "Resolve submission_path with Path.resolve() and reject any path that is not relative to the configured workspace root (use Path.is_relative_to) before passing it to the grader.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-secret-in-code-1",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "README.md",
+        "line": 0
+      },
+      "description": "The README instructs users to store a live API credential (ANTHROPIC_AUTH_TOKEN) in plaintext in ~/.claude/settings.json and shows a placeholder key value in the documented configuration block, encouraging secrets to be committed/pasted into config files that are easy to leak.",
+      "remediation": "Document loading the token from an environment variable or a secret manager instead of pasting it into settings.json, and add a warning that settings.json must never be committed to version control.",
+      "effort": "XS",
+      "confidence": 0.6
+    },
+    {
+      "id": "database-missing-index-fk-1",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/leaderboard_db.py",
+        "line": 100
+      },
+      "description": "The delete path filters child tables by foreign key columns (`leaderboard.runs.submission_id`, `leaderboard.submission.leaderboard_id`, `leaderboard.templates.leaderboard_id`) with no evidence of supporting indexes on those FK columns. Without them, deleting a leaderboard or its submissions performs sequential scans over the runs/submission/templates tables.",
+      "remediation": "Add indexes on the foreign key columns used by these deletes: `CREATE INDEX ON leaderboard.runs (submission_id);`, `CREATE INDEX ON leaderboard.submission (leaderboard_id);`, and `CREATE INDEX ON leaderboard.templates (leaderboard_id);`.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "module": "structure",
+      "severity": "high",
+      "location": {
+        "file": "src/pipeline.py",
+        "line": 22
+      },
+      "description": "`pipeline.py` imports from at least fifteen sibling modules (artifacts, config, graph, gpu_policy, history, ranking, workspace_setup, monitor.server, runtime, session_map, stage_results, run_status, resume_preflight, run_config, token_tracker, docker.container) and reaches into private helpers of several of them, making it a hub that must change whenever any of those modules change.",
+      "remediation": "Reduce fan-out by grouping the run-scaffolding responsibilities into a dedicated `run_setup` module and depending on narrow interfaces (e.g. a `RunContext` object) rather than importing many concrete modules into the pipeline orchestrator.",
+      "effort": "L",
+      "confidence": 0.65
+    },
+    {
+      "id": "security-secret-in-history-2",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "README.md",
+        "line": 0
+      },
+      "description": "The README documents running `claude mcp add ... --header \"Authorization: Bearer YOUR_KEY_HERE\"`, which writes the API key into shell history and the MCP configuration file, persisting the secret on disk.",
+      "remediation": "Document passing the MCP token via an environment variable and warn users to clear shell history after running commands containing secrets.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "database-risky-migration-3",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/leaderboard_db.py",
+        "line": 100
+      },
+      "description": "`delete_leaderboard` performs a cascade of destructive DELETEs across `leaderboard.runs`, `leaderboard.submission`, `leaderboard.templates` and `leaderboard.leaderboard` in a single transaction with no batching, no dry-run, and no confirmation of affected row counts. On a large leaderboard this is a long, lock-holding, irreversible operation.",
+      "remediation": "Batch the deletes (e.g. delete runs/submissions in chunks with a LIMIT loop), log the affected row counts before committing, and require an explicit confirmation flag for the destructive path so a large leaderboard cannot be wiped in one unbounded transaction.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "security-cve-critical-1",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "docker/Dockerfile",
+        "line": 1
+      },
+      "description": "The base image node:22-bookworm is referenced by a floating tag with no digest pin, so a compromised or vulnerable base image can be pulled silently at build time.",
+      "remediation": "Pin the base image to a specific digest and rebuild deliberately when the base is updated.",
+      "effort": "S",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-oauth-secret-8",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "src/docker/container.py",
+        "line": 0
+      },
+      "description": "The container manager copies the host ~/.claude.json (which contains OAuth/session credentials) into the run workspace, so credentials are duplicated into a directory that may be shared or archived with the run.",
+      "remediation": "Avoid copying the full host config; generate a minimal per-run config containing only the required non-secret settings.",
+      "effort": "XS",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-private-key-7",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "src/docker/container.py",
+        "line": 0
+      },
+      "description": "The container manager copies the host ~/.gitconfig into the agent home, which can contain credential helpers or tokens, exposing host git credentials to the sandboxed agent.",
+      "remediation": "Do not copy the host .gitconfig into the container; generate a minimal gitconfig without credential helpers or tokens.",
+      "effort": "XS",
+      "confidence": 0.4
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "module": "database",
+      "severity": "high",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/leaderboard_db.py",
+        "line": 190
+      },
+      "description": "The database access layer exposes only `fetchone()`-style single-row reads and full result-set reads (e.g. `validate_identity` uses `self.cursor.fetchone()`), with no keyset/offset pagination for the leaderboard ranking queries. Large leaderboards must be materialized in full rather than paged.",
+      "remediation": "Add keyset pagination to the leaderboard listing queries (e.g. `WHERE (score, submission_id) < (%s, %s) ORDER BY score DESC, submission_id LIMIT %s`) and expose a page-size parameter instead of returning the entire result set.",
+      "effort": "S",
+      "confidence": 0.4
+    },
+    {
+      "id": "flows-missing-dlq-2",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "src/nodes/implement_node.py",
+        "line": 0
+      },
+      "description": "Implement sessions that fail, time out, or abort are only recorded via session-map status and best_result files; there is no dead-letter queue or durable failure record capturing the failed session's prompt, error, and transcript for later inspection or replay. Failed approaches are silently dropped from the round, so recurring failures cannot be triaged or retried systematically.",
+      "remediation": "On any implement session failure, write a structured failure record (approach_id, session_id, exit code, error, transcript path, timestamp) to a dedicated failures/DLQ directory under the run, and add a controller step that surfaces and can replay those entries.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-llm-very-high-usage-2",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "src/pipeline.py",
+        "line": 0
+      },
+      "description": "The pipeline launches long-running Claude agent sessions per stage (propose_time_limit_per_session='20 minutes', implement_time_limit_per_session='120 minutes') across up to max_loops=5 loops and max_num_approaches=5 approaches, with cost_limit defaulting to None. This is a very high LLM usage pattern with no enforced spend ceiling, and pricing resolution failure only downgrades display to N/A rather than stopping the run.",
+      "remediation": "Enforce a default per-run cost ceiling (non-None cost_limit) that halts the pipeline when exceeded, and require an explicit override flag to run without a cost limit.",
+      "effort": "L",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-auth-order-1",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "src/eval_grader/server.py",
+        "line": 0
+      },
+      "description": "The grader server authenticates requests via a bearer token header, but the GPU authorization check (resolving GPU ids from lock files by approach_id and gpu_lock_token) happens inside the grading path after the request is accepted. Authorization for GPU access is therefore evaluated after the request has already entered the grading flow, rather than as a gate before any work begins.",
+      "remediation": "Perform GPU authorization as an explicit pre-check at the start of the /grade handler (before loading the grader or spawning the evaluator subprocess) and reject unauthorized requests immediately with a clear error.",
+      "effort": "S",
+      "confidence": 0.45
+    },
+    {
+      "id": "flows-consumer-group-lag-3",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "src/monitor/server.py",
+        "line": 0
+      },
+      "description": "The SSE event stream drains the bridge queue in batches of at most 20 events per poll tick and otherwise emits a heartbeat. If the TUI produces events faster than the poll interval drains them, the queue grows unbounded and the browser falls progressively further behind the live run with no lag metric or backpressure.",
+      "remediation": "Track and expose the bridge queue depth as a lag metric, drain the queue fully (or in larger batches) per tick, and apply backpressure/drop-oldest policy when the queue exceeds a threshold so the monitor cannot fall arbitrarily behind.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "flows-message-breaking-schema-2",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "src/eval_grader/server.py",
+        "line": 0
+      },
+      "description": "The grader's GradeRequest model is the contract for agent submissions, but there is no compatibility/versioning strategy: adding a required field or changing a field type would break every in-flight agent session that was started with the previous client. Because agent sessions run for long durations, a grader redeploy can invalidate submissions mid-run.",
+      "remediation": "Make new GradeRequest fields optional with server-side defaults, version the request schema, and keep the grader backward-compatible with older clients for at least the maximum session duration.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "flows-message-not-encrypted-9",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "src/eval_grader/client.py",
+        "line": 57
+      },
+      "description": "Submissions are POSTed to the grader over plain HTTP (the URL is built from EUREKA_SECURE_SUBMIT_URL with no TLS enforcement) and carry the bearer token in an Authorization header. On a shared or non-loopback network the submission payload and the grading token travel in cleartext and can be intercepted.",
+      "remediation": "Require an https:// scheme for the submit URL (reject plain http unless the host is loopback), and document that the grader must be reached over TLS or a private loopback interface.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "security-encryption-weak-5",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "src/eval_grader/server.py",
+        "line": 0
+      },
+      "description": "The grader server uses hashlib for integrity checks but there is no evidence of strong hashing or encryption for sensitive data at rest, and the algorithm choice is not shown to be collision-resistant.",
+      "remediation": "Use SHA-256 or stronger for integrity checks and document the algorithm choice.",
+      "effort": "XS",
+      "confidence": 0.3
+    },
+    {
+      "id": "security-env-file-committed-3",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": ".gitignore",
+        "line": 0
+      },
+      "description": "The .gitignore excludes .claude/settings.local.json but does not exclude .claude/settings.json, which the README instructs users to populate with ANTHROPIC_AUTH_TOKEN, so a user following the docs can accidentally commit a live credential.",
+      "remediation": "Add .claude/settings.json (and any file that may contain tokens) to .gitignore, or document using settings.local.json for secrets.",
+      "effort": "XS",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-exploit-in-wild-5",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "docker/Dockerfile",
+        "line": 1
+      },
+      "description": "The build pulls the mutable node:22-bookworm tag and installs unpinned npm packages, so an actively exploited vulnerability in a newly published version would be pulled without review.",
+      "remediation": "Pin all image and package versions and add automated vulnerability scanning to the build pipeline.",
+      "effort": "S",
+      "confidence": 0.3
+    },
+    {
+      "id": "security-gha-auto-deploy-prod-9",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": "docker/Dockerfile",
+        "line": 45
+      },
+      "description": "The image installs the Claude Code CLI globally via `npm install -g @anthropic-ai/claude-code` with no version pin, so every rebuild silently pulls whatever the latest published package is, including potentially compromised or breaking releases.",
+      "remediation": "Pin the CLI to an explicit version (e.g. `npm install -g @anthropic-ai/claude-code@<version>`) and bump it deliberately through review.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": "docker/build.sh",
+        "line": 12
+      },
+      "description": "The build script runs `docker build --network host`, giving the build container unrestricted access to the host network namespace, which is unnecessary for installing packages and broadens the attack surface of the build.",
+      "remediation": "Remove `--network host` from the docker build invocation and rely on the default bridge network with the proxy build-args already passed for outbound access.",
+      "effort": "XS",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-gha-pr-target-risk-1",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "docker/build.sh",
+        "line": 12
+      },
+      "description": "The build script forwards arbitrary host proxy environment variables into the build context and executes the build with host networking, so any untrusted change to the build inputs runs with host-level network reachability.",
+      "remediation": "Restrict the build to a sandboxed network and validate/allowlist the proxy variables that may be forwarded into the build.",
+      "effort": "S",
+      "confidence": 0.3
+    },
+    {
+      "id": "security-jwt-weak-3",
+      "module": "github",
+      "severity": "critical",
+      "location": {
+        "file": "src/eval_grader/client.py",
+        "line": 0
+      },
+      "description": "The grader client builds the Authorization header as a plain bearer token with no expiry or signature, so a leaked token grants indefinite grading access with no revocation path.",
+      "remediation": "Issue short-lived signed tokens for grader access and validate expiry server-side.",
+      "effort": "XS",
+      "confidence": 0.3
+    },
+    {
+      "id": "database-connection-timeout-high-3",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/leaderboard_db.py",
+        "line": 31
+      },
+      "description": "`psycopg2.connect(self.url, sslmode=self.ssl_mode)` is called with no `connect_timeout`, so a network partition or an overloaded PostgreSQL server can block the bot's event loop indefinitely during startup and on every reconnect.",
+      "remediation": "Pass an explicit `connect_timeout` (e.g. 10 seconds) to `psycopg2.connect`, and surface the failure through the existing KernelBotError path so callers can retry instead of hanging.",
+      "effort": "XS",
+      "confidence": 0.8
+    },
+    {
+      "id": "cost-db-no-pooling-10",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/backend.py",
+        "line": 0
+      },
+      "description": "LeaderboardDB is instantiated once but every database interaction is wrapped in 'with self.db as db:' blocks that connect and disconnect, and submit_full performs multiple such blocks per submission (create_submission, mark_submission_done, create_submission_run per run). Without a connection pool this multiplies connection setup cost across concurrent submissions.",
+      "remediation": "Introduce a connection pool (or a persistent connection with reconnect logic) in LeaderboardDB and reuse it across all submission operations instead of connecting per block.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 0
+      },
+      "description": "pytest and pytest-asyncio are declared only as optional dev dependencies and no test configuration, test paths, or CI test invocation is defined in the provided files; there is no evidence of an automated test suite guarding the cost/token-tracking logic.",
+      "remediation": "Add a tests/ suite covering pricing resolution and token cost math, configure pytest in pyproject.toml, and run it in CI on every change.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-dlq-on-repeat-failures-10",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "src/nodes/routing.py",
+        "line": 0
+      },
+      "description": "route_after_implement ends the run when implement_status is 'all_failed', but there is no escalation path for repeated partial failures across rounds: a run where every round loses most approaches continues looping until max_loops with no dead-letter escalation or early abort.",
+      "remediation": "Track consecutive rounds with high approach-failure rates and, after a threshold, route to an end state with a distinct 'repeated_failures' reason (and record the failed sessions in a DLQ) instead of continuing to burn budget.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "flows-redux-mutates-state-1",
+      "module": "flows",
+      "severity": "high",
+      "location": {
+        "file": "src/runtime.py",
+        "line": 0
+      },
+      "description": "Runtime globals such as _active_sessions are mutated in place (register_active_session assigns into the shared dict, unregister pops from it) and the same dict is read by other components. This shared mutable state is the flows analogue of mutating state directly: concurrent nodes/sessions can observe or clobber each other's entries with no synchronization.",
+      "remediation": "Encapsulate the active-session registry behind a small class with explicit, synchronized mutation methods (and per-context keys), avoiding direct in-place mutation of a shared module-level dict.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "database-statement-timeout-missing-9",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/leaderboard_db.py",
+        "line": 32
+      },
+      "description": "After connecting, no `statement_timeout` (or `idle_in_transaction_session_timeout`) is set on the session. Long-running queries such as the leaderboard ranking/submission lookups can hold locks and block other submissions without any server-side bound.",
+      "remediation": "Execute `SET statement_timeout = '30s'` (and `SET idle_in_transaction_session_timeout = '60s'`) on each new connection, or set them via the connection options/DSN, so runaway queries are aborted instead of stalling the bot.",
+      "effort": "XS",
+      "confidence": 0.75
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "docker/Dockerfile",
+        "line": 0
+      },
+      "description": "The Dockerfile installs @anthropic-ai/claude-code via `npm install -g` with no version pin, so every image build pulls an arbitrary latest release that could introduce a compromised or breaking dependency.",
+      "remediation": "Pin the package to an exact version (npm install -g @anthropic-ai/claude-code@<version>) and update it deliberately through a reviewed change.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 0
+      },
+      "description": "The project declares dependencies and a dev extra but provides no documented one-command development setup (no lockfile, no task runner, no make/just target); contributors must manually reconstruct the environment, increasing onboarding time and duplicated effort.",
+      "remediation": "Add a documented one-command dev setup (e.g. a Makefile/justfile target plus a committed lockfile) that installs the dev extra and runs the test suite.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-license-incompatible-1",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 0
+      },
+      "description": "The project declares no license and pulls in a broad dependency set (langgraph, textual, fastapi, uvicorn, pandas, jinja2, sse-starlette) without any license compatibility check, so an incompatible dependency license could be introduced unnoticed.",
+      "remediation": "Declare the project license and add a CI license-compatibility gate that fails when a dependency's license is not on the approved list.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-no-code-review-6",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 0
+      },
+      "description": "The repository provides no code-review configuration or required-reviewer policy (no CODEOWNERS, no branch-protection or PR template evidence in the provided files), so changes to cost-critical modules such as pricing.py and token_tracker.py can land without review.",
+      "remediation": "Add a CODEOWNERS file covering cost-critical modules and enable required reviews on the main branch so pricing/token changes are always reviewed.",
+      "effort": "L",
+      "confidence": 0.4
+    },
+    {
+      "id": "database-lock-timeout-missing-10",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/leaderboard_db.py",
+        "line": 100
+      },
+      "description": "The multi-statement delete in `delete_leaderboard` (runs, submission, templates, leaderboard) runs inside a transaction with no `lock_timeout` set on the session. If another transaction holds a conflicting lock, this delete waits indefinitely and blocks the bot.",
+      "remediation": "Set `SET lock_timeout = '5s'` on the session (or per transaction) before the delete sequence, and handle the resulting lock-timeout error by retrying with backoff or reporting a user-facing 'leaderboard busy' error.",
+      "effort": "XS",
+      "confidence": 0.6
+    },
+    {
+      "id": "database-missing-index-where-4",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/leaderboard_db.py",
+        "line": 190
+      },
+      "description": "`validate_identity` builds a WHERE clause on `cli_id`/`web_auth_id` (`WHERE {where_clause}`) and is executed on every submission/validation request, but no index on `leaderboard.user_info(cli_id)` or `leaderboard.user_info(web_auth_id)` is evidenced, forcing a sequential scan of the user table on the hot path.",
+      "remediation": "Create indexes on the identity lookup columns, e.g. `CREATE INDEX ON leaderboard.user_info (cli_id) WHERE cli_valid;` and `CREATE INDEX ON leaderboard.user_info (web_auth_id);`, so identity validation is an index lookup rather than a full table scan.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-config-logic-8",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "src/__main__.py",
+        "line": 36
+      },
+      "description": "The CLI entrypoint module mixes argument parsing, configuration resolution, Docker container setup, and pipeline invocation in a single `main()` function, so configuration/business logic is entangled with the presentation/CLI layer. This makes the entrypoint hard to test and forces any change to run-configuration rules to be made inside the CLI module.",
+      "remediation": "Extract the configuration resolution and run orchestration into a dedicated service module (e.g. `run_launcher.py`) that `main()` only calls after parsing args, keeping `__main__.py` limited to argparse wiring and error reporting.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "src/runtime.py",
+        "line": 34
+      },
+      "description": "`runtime.py` is a grab-bag of unrelated global state and helpers: config holder, event queue, docker container, token tracker, pipeline-state file writer, active-session registry, user-message queue, and TUI event pushers (`push_stage_event`, `push_resume_history`, `push_run_end_event`). These concerns change for different reasons yet live in one module.",
+      "remediation": "Split `runtime.py` into focused modules (e.g. `runtime/state.py` for the globals, `runtime/events.py` for the TUI event pushers, `runtime/sessions.py` for the active-session registry) so each module has a single responsibility.",
+      "effort": "M",
+      "confidence": 0.7
+    },
+    {
+      "id": "security-missing-headers-10",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "src/monitor/server.py",
+        "line": 0
+      },
+      "description": "The monitor server returns HTML and JSON responses without security headers (Content-Security-Policy, X-Content-Type-Options, X-Frame-Options), leaving the local dashboard open to clickjacking and MIME-sniffing attacks.",
+      "remediation": "Add a middleware that sets Content-Security-Policy, X-Content-Type-Options: nosniff, X-Frame-Options: DENY and Referrer-Policy on every response.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "security-no-security-maintenance-7",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 0
+      },
+      "description": "Dependencies (langgraph, fastapi, uvicorn, jinja2, pandas, sse-starlette) are declared with open-ended lower bounds and no lockfile is committed (uv.lock is gitignored), so there is no reproducible dependency set and no automated vulnerability scanning.",
+      "remediation": "Commit a lockfile, pin dependencies to tested versions, and add a CI job running pip-audit / Dependabot to surface CVEs in transitive dependencies.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "security-outdated-server-9",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "docker/Dockerfile",
+        "line": 0
+      },
+      "description": "The image is built FROM node:22-bookworm without a digest pin and installs unpinned apt packages, so builds are not reproducible and can silently pick up vulnerable base-layer or package versions.",
+      "remediation": "Pin the base image by digest (FROM node:22-bookworm@sha256:...) and pin apt package versions, then rebuild on a scheduled cadence to pick up security updates.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "database-missing-index-hot-path-2",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/leaderboard_db.py",
+        "line": 100
+      },
+      "description": "Leaderboard deletion and submission cleanup repeatedly resolve a leaderboard by name (`WHERE leaderboard.leaderboard.name = %s`) and join submissions on `leaderboard_id`. These name-based lookups run on the submission/delete hot path with no evidenced index on `leaderboard.leaderboard(name)`.",
+      "remediation": "Add a unique index on `leaderboard.leaderboard (name)` (and an index on `leaderboard.submission (leaderboard_id)`) so name resolution and the dependent deletes use index scans instead of full table scans.",
+      "effort": "S",
+      "confidence": 0.55
+    },
+    {
+      "id": "security-cve-high-2",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": "docker/Dockerfile",
+        "line": 3
+      },
+      "description": "The image installs system packages via apt-get without pinning versions, so known-vulnerable package versions can be pulled depending on when the build runs.",
+      "remediation": "Pin apt package versions and run a vulnerability scan on the built image.",
+      "effort": "S",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-db-conn-string-6",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": "src/eval_grader/server.py",
+        "line": 0
+      },
+      "description": "The grader server loads the private evaluator module and executes it in a subprocess with the submission path and context passed via environment variables, but there is no validation that the submission path stays within the workspace root, allowing path traversal to read arbitrary files.",
+      "remediation": "Resolve the submission path against the workspace root and reject any path that escapes it before invoking the evaluator.",
+      "effort": "XS",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-db-no-tls-11",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": "src/eval_grader/client.py",
+        "line": 0
+      },
+      "description": "The grader client posts the submission and bearer token over plain HTTP to the configured submit URL with no TLS enforcement, so credentials and submissions can be intercepted.",
+      "remediation": "Require HTTPS for the grader submit URL and reject non-TLS endpoints.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-file-upload-weak-7",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": "src/eval_grader/server.py",
+        "line": 0
+      },
+      "description": "The grader accepts a submission_path from the agent and reads the referenced file without validating its type, size, or location, so an agent can point the grader at arbitrary files on the host.",
+      "remediation": "Validate that the submission path is inside the workspace, is a regular file, and has an allowed extension and size before reading it.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "structure-controller-logic-6",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "src/nodes/implement_node.py",
+        "line": 13
+      },
+      "description": "`implement_node` performs controller-level orchestration (manifest resolution, artifact validation, git repo initialization via `subprocess.run([\"git\", \"init\"])`, session-map bookkeeping, budget computation, and session request construction) directly in the node, mixing graph-node control flow with filesystem and process side effects.",
+      "remediation": "Move the workspace scaffolding and git initialization into a dedicated `workspace_scaffold` service and keep the node limited to deciding the next stage and delegating to that service.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-high-coupling-2",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "src/tui/app.py",
+        "line": 0
+      },
+      "description": "`EurekAgentApp` reaches directly into pipeline internals (`_reconstruct_state`, `resume_pipeline`, `run_pipeline`), runtime globals, token-tracker internals, and monitor widgets, coupling the TUI to the engine's private functions and global state.",
+      "remediation": "Introduce an application-service layer (e.g. `RunController`) that the TUI calls, exposing start/resume/status operations and hiding pipeline internals and runtime globals from the UI.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-service-sql-5",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "src/eval_grader/server.py",
+        "line": 0
+      },
+      "description": "The grader service module combines HTTP request handling (FastAPI routes/models), GPU lock file parsing, subprocess orchestration, and result-file persistence in one file, so the service layer directly implements low-level storage/process concerns instead of delegating to dedicated repositories/helpers.",
+      "remediation": "Split the GPU lock reading (`_resolve_gpu_ids_from_locks`, `_load_gpu_lock_records`) and the evaluator subprocess execution into separate modules (e.g. `gpu_locks.py`, `evaluator_runner.py`) and have the FastAPI handlers depend on those abstractions.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "src/monitor/server.py",
+        "line": 0
+      },
+      "description": "Framework-specific types (FastAPI `Request`, `FileResponse`, `HTMLResponse`, `EventSourceResponse`) and Jinja2 template wiring are constructed inline throughout the module, including inside `create_app`, so the web framework is not isolated behind an adapter and leaks into every handler and helper.",
+      "remediation": "Introduce a thin presentation adapter that owns FastAPI/Jinja2 specifics and exposes plain functions returning data, so the monitor's data-loading logic does not import or reference framework types directly.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "module": "structure",
+      "severity": "medium",
+      "location": {
+        "file": "src/session/manager.py",
+        "line": 0
+      },
+      "description": "`SessionManager` orchestrates multiple concerns at once: spawning sessions, draining events, enforcing timeouts and cost limits, injecting warning prompts, running silence diagnostics, and reporting non-zero exits — a service that both coordinates and implements low-level monitoring policy.",
+      "remediation": "Separate the timeout/cost-limit enforcement and warning injection into dedicated policy objects (e.g. `DeadlineEnforcer`, `CostLimitEnforcer`) that the manager composes, so the manager only coordinates session lifecycle.",
+      "effort": "M",
+      "confidence": 0.55
+    },
+    {
+      "id": "cost-export-restriction-8",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "src/pricing.py",
+        "line": 0
+      },
+      "description": "The pricing cache is written to a fixed local path (.cache/openrouter_pricing.json) with no export/import mechanism, so pricing data cannot be shared or exported across machines or runs, forcing repeated origin fetches.",
+      "remediation": "Add an export/import path for the pricing cache (e.g. a configurable cache directory or a committed snapshot) so resolved pricing can be reused across environments.",
+      "effort": "L",
+      "confidence": 0.3
+    },
+    {
+      "id": "cost-license-share-alike-3",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 0
+      },
+      "description": "No policy or check exists for copyleft/share-alike dependencies; with no declared project license and no dependency license scan, a share-alike dependency could impose obligations on the distributed package without being noticed.",
+      "remediation": "Add a dependency license scan that flags share-alike/copyleft licenses and requires explicit review before such a dependency is merged.",
+      "effort": "L",
+      "confidence": 0.3
+    },
+    {
+      "id": "cost-non-commercial-use-6",
+      "module": "cost",
+      "severity": "high",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 0
+      },
+      "description": "No license is declared for the project, so the terms under which it may be used commercially are undefined, and no check exists for non-commercial-only dependencies that would restrict commercial use.",
+      "remediation": "Declare an explicit project license and add a dependency check that rejects non-commercial-only licenses when commercial use is intended.",
+      "effort": "L",
+      "confidence": 0.3
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/eval_grader/client.py",
+        "line": 57
+      },
+      "description": "The agent-facing grader client performs an HTTP POST to the secure grader with a default timeout of 600 seconds and no retry/backoff or circuit-breaking around the call. A hung or slow grader blocks the agent session for up to 10 minutes per submission, and any transient network failure raises SecureEvalError immediately with no retry, so a single flaky request loses the candidate's scored result.",
+      "remediation": "Wrap the grader POST in a bounded retry with exponential backoff and jitter (e.g. 3 attempts, 1s/2s/4s), keep a short per-attempt timeout, and surface a distinct error after exhausting retries so the agent can re-submit rather than silently losing the result.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "src/monitor/server.py",
+        "line": 0
+      },
+      "description": "The monitor FastAPI app exposes /api/* endpoints and an SSE stream without any CORS restriction or authentication, so any web page the user visits can read run data and transcripts from the local monitor port.",
+      "remediation": "Add CORSMiddleware with an explicit allowlist of trusted origins (or disable cross-origin access entirely) and bind the monitor to 127.0.0.1 only.",
+      "effort": "XS",
+      "confidence": 0.4
+    },
+    {
+      "id": "database-heavy-migration-5",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/leaderboard_db.py",
+        "line": 100
+      },
+      "description": "The forced-delete path issues unbounded `DELETE FROM leaderboard.runs WHERE submission_id IN (SELECT ...)` and `DELETE FROM leaderboard.submission USING leaderboard.leaderboard ...` statements. On a populated leaderboard these are heavy write operations that can hold locks for a long time and generate large WAL volume.",
+      "remediation": "Chunk the deletes into bounded batches (e.g. `DELETE ... WHERE ctid IN (SELECT ctid FROM ... LIMIT 10000)` in a loop with commits between batches) to keep transactions short and avoid long lock holds and WAL spikes.",
+      "effort": "L",
+      "confidence": 0.45
+    },
+    {
+      "id": "security-debug-in-prod-1",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": "src/monitor/server.py",
+        "line": 0
+      },
+      "description": "The monitor server runs uvicorn without disabling debug/auto-reload and exposes internal run data, so verbose error output may leak filesystem paths and internal state.",
+      "remediation": "Run uvicorn with debug and reload disabled and return generic error responses to clients.",
+      "effort": "XS",
+      "confidence": 0.3
+    },
+    {
+      "id": "security-weak-crypto-9",
+      "module": "github",
+      "severity": "high",
+      "location": {
+        "file": "src/eval_grader/server.py",
+        "line": 0
+      },
+      "description": "The grader server imports hashlib but the token comparison and any integrity checks do not use constant-time comparison, allowing timing side channels on the bearer token.",
+      "remediation": "Use hmac.compare_digest for all token comparisons instead of plain equality checks.",
+      "effort": "M",
+      "confidence": 0.3
+    },
+    {
+      "id": "database-missing-bloat-monitoring-5",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/leaderboard_db.py",
+        "line": 100
+      },
+      "description": "The code performs repeated bulk DELETEs (runs, submissions, templates) with no accompanying bloat monitoring or autovacuum tuning evidence. High-churn delete workloads on these tables will accumulate dead tuples and degrade scan performance over time.",
+      "remediation": "Add bloat monitoring for the leaderboard tables (e.g. a scheduled query over `pg_stat_user_tables`/`pgstattuple`) and tune per-table autovacuum settings (`autovacuum_vacuum_scale_factor`, `autovacuum_vacuum_threshold`) for the high-churn runs/submission tables.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/eval_grader/client.py",
+        "line": 75
+      },
+      "description": "On an HTTP error the client reads the full grader response body and embeds it verbatim in the SecureEvalError message, which is then printed to stderr by main(). The grader's error detail can include internal paths, evaluator internals, or stack traces that are exposed to the agent session.",
+      "remediation": "Log the raw grader detail only to the controller-side log and return a sanitized, user-facing message (status code plus a generic reason) to the agent, so internal evaluator details are not leaked into the agent's transcript.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-message-schema-no-version-1",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/eval_grader/client.py",
+        "line": 55
+      },
+      "description": "The submission payload exchanged between the agent client and the grader server has no schema version field, and GradeRequest on the server side likewise has none. Any change to the payload shape (new fields, renamed keys) will silently break compatibility between an older agent client and a newer grader, or vice versa.",
+      "remediation": "Add a schema_version field to the submission payload and to GradeRequest, and have the server validate/reject unsupported versions with a clear error so client and grader can evolve independently.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/nodes/routing.py",
+        "line": 0
+      },
+      "description": "Routing functions only inspect status strings (prepare_status, propose_status, implement_status) and cost limits; there is no centralized error handler or error-state transition. A node that raises an unexpected exception propagates out of the graph with no error handler node to record the failure, emit a run-ended event, or clean up the container/grader, leaving the run in an indeterminate state.",
+      "remediation": "Add a graph-level error handler (or wrap node execution) that catches exceptions, records the failing stage and traceback to the run directory, emits a run_ended event with an error status, and triggers container/grader cleanup before re-raising or ending the graph.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/eval_grader/server.py",
+        "line": 0
+      },
+      "description": "The grader FastAPI app exposes /grade (and compare) endpoints authenticated only by a bearer token, with no rate limiting or per-approach submission throttling. A misbehaving or looping agent can hammer the grader, spawning unbounded evaluator subprocesses and consuming GPU/CPU resources.",
+      "remediation": "Add per-approach and global rate limiting (e.g. token bucket keyed by approach_id) on the grading endpoints, and reject requests exceeding the limit with HTTP 429 so a runaway agent cannot exhaust evaluator resources.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-missing-visibility-timeout-9",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/session/manager.py",
+        "line": 0
+      },
+      "description": "SessionManager monitors sessions via the adapter stream and a deadline killer, but there is no visibility timeout for a session that starts and then produces no events at all: the silence diagnostic runs once (_DIAG_COOLDOWN) and the session is only stopped at the overall deadline. A session that hangs immediately consumes its full budget before being killed.",
+      "remediation": "Add a first-event visibility timeout: if a session produces no events within a configurable window (e.g. 60s), stop it and mark the session failed so the approach can be retried or reported instead of silently consuming the whole budget.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-state-inefficient-access-7",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/nodes/implement_node.py",
+        "line": 0
+      },
+      "description": "implement_node repeatedly re-reads and re-parses the manifest and session maps (read_manifest, load_session_map called per approach in a loop, resolve_loop_manifest) instead of loading once and indexing in memory. For K approaches this multiplies filesystem reads and JSON parsing on every node entry.",
+      "remediation": "Load the manifest and all session maps once at the start of the node into local dicts keyed by approach_id, and reuse those in-memory structures throughout the node instead of re-reading per approach.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-validation-placement-2",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/eval_grader/client.py",
+        "line": 60
+      },
+      "description": "The agent-facing client performs only minimal validation (URL normalization) before POSTing a submission; it does not validate that the submission file is well-formed JSON or that approach_id matches the submission path. Validation is deferred entirely to the grader server, so malformed submissions travel over the network and consume a grading slot before being rejected.",
+      "remediation": "Validate the submission locally before sending (parse JSON, check required fields, verify approach_id consistency) and fail fast with a clear message, reserving server-side validation for authoritative checks.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-llm-high-usage-1",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "src/pricing.py",
+        "line": 0
+      },
+      "description": "The pipeline drives Claude agent sessions across multiple loops and approaches (max_loops=5, max_num_approaches=5 by default) with no default cost limit: Config.cost_limit defaults to None and can be disabled entirely via --no-cost-limit. Token pricing is only resolved opportunistically from OpenRouter, and when it fails the run continues with cost display showing N/A, so LLM spend is unbounded and unmonitored.",
+      "remediation": "Set a non-None default cost_limit (e.g. a conservative per-run budget) and require an explicit opt-in flag to disable it, so runaway multi-loop LLM usage is capped by default.",
+      "effort": "M",
+      "confidence": 0.6
+    },
+    {
+      "id": "database-pg-stat-statements-disabled-1",
+      "module": "database",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/leaderboard_db.py",
+        "line": 31
+      },
+      "description": "The connection is established with only `sslmode` configured; there is no evidence that `pg_stat_statements` is enabled or that query statistics are collected, so slow queries on the leaderboard hot path cannot be identified from the database side.",
+      "remediation": "Enable the `pg_stat_statements` extension (`shared_preload_libraries = 'pg_stat_statements'`) and add a periodic job that reports the top queries by total time so regressions in the leaderboard queries are visible.",
+      "effort": "XS",
+      "confidence": 0.35
+    },
+    {
+      "id": "flows-dlq-not-monitored-5",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/nodes/implement_node.py",
+        "line": 0
+      },
+      "description": "Failed or aborted implement sessions are recorded only in session maps and best_result files; nothing monitors or alerts on these failures. There is no aggregation of failed approaches per round, so a round where most approaches failed looks the same as a healthy round until a human inspects the artifacts.",
+      "remediation": "Add a controller-side check after each implement round that counts failed/aborted sessions and surfaces them (log warning, pipeline state field, and monitor banner) so repeated failures are visible without manual artifact inspection.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "flows-missing-circuit-breaker-7",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/session/manager.py",
+        "line": 0
+      },
+      "description": "SessionManager enforces timeouts and cost limits but has no circuit breaker around repeated adapter/session failures. If the adapter start or stream repeatedly fails (e.g. container down, CLI missing), each approach session is attempted independently with no shared failure counter, so the pipeline keeps launching doomed sessions until the budget is exhausted.",
+      "remediation": "Track consecutive session start/stream failures in SessionManager and open a circuit breaker after a threshold (e.g. 3 consecutive failures), aborting the stage with a clear reason instead of continuing to spawn failing sessions.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "flows-ngrx-selectors-not-memoized-4",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/monitor/data.py",
+        "line": 0
+      },
+      "description": "build_score_chart recomputes best/worst/improved/delta for every loop and approach on each call, and load_run_overview rebuilds the full overview on every poll. These derived views are not memoized, so the monitor recomputes identical chart data repeatedly while the underlying files are unchanged.",
+      "remediation": "Memoize derived views (score chart, overview) keyed by the input file mtimes/version, invalidating only when the underlying run data changes, so repeated polls reuse computed results.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "flows-no-schema-registry-8",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/eval_grader/server.py",
+        "line": 0
+      },
+      "description": "The submission and grading-result schemas are defined ad hoc in the client payload dict and the server's Pydantic models, with no central schema registry or shared contract module. The agent-facing client and the grader server can drift independently, and there is no single source of truth to validate messages against.",
+      "remediation": "Extract the submission/result schemas into a shared module (or a versioned JSON schema) imported by both the client and the server, and validate messages against it at both ends.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "flows-state-expensive-update-5",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/runtime.py",
+        "line": 0
+      },
+      "description": "write_pipeline_state reads the entire existing JSON file, merges kwargs, and rewrites the whole file on every call (stage change, token update, run end). Frequent token-update calls therefore cause repeated full-file read/parse/write cycles, which is an expensive update pattern for a hot path.",
+      "remediation": "Batch or throttle pipeline-state writes (e.g. coalesce token updates on an interval) and/or keep the state in memory, flushing to disk only on meaningful transitions, to avoid full-file rewrites on every update.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "flows-state-missing-defaults-10",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/state.py",
+        "line": 0
+      },
+      "description": "LoopState is a total=False TypedDict with no defaults, and nodes read fields with mixed access patterns (state['workspace_dir'] vs state.get('loop_index', 0)). Missing keys therefore surface as KeyError in some nodes and silently default in others, making state initialization errors inconsistent.",
+      "remediation": "Provide a factory that builds a fully-populated initial LoopState with explicit defaults for every field, and have nodes read from that guaranteed shape rather than mixing direct indexing and .get() with ad-hoc defaults.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "security-weak-rng-10",
+      "module": "security",
+      "severity": "medium",
+      "location": {
+        "file": "src/eval_grader/gpu_helpers.py",
+        "line": 0
+      },
+      "description": "gpu_helpers imports the `secrets` module for token generation but the lock records store gpu_lock_token as a plain string compared with `!=`; if the token is generated with a non-cryptographic source elsewhere it weakens the GPU authorization check. Evidence here is limited to the import and comparison.",
+      "remediation": "Generate gpu_lock_token exclusively with secrets.token_urlsafe(32) and compare tokens with hmac.compare_digest to avoid timing side channels.",
+      "effort": "M",
+      "confidence": 0.3
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "src/pricing.py",
+        "line": 21
+      },
+      "description": "The pricing fetch uses urllib urlopen/Request against https://openrouter.ai/api/v1/models with no retry strategy or backoff: a transient network failure or 5xx simply yields None and the run proceeds without pricing, silently degrading cost tracking for the whole session.",
+      "remediation": "Wrap the OpenRouter request in a bounded retry with exponential backoff and jitter, and fall back to the last cached pricing file when retries are exhausted.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "src/pricing.py",
+        "line": 36
+      },
+      "description": "Model pricing is fetched from the OpenRouter models endpoint and cached locally, but there is no monitoring or alerting on API usage/spend: fetch_model_pricing only logs a warning when a model is missing and returns None, and has_billable_pricing merely reports whether prices are known. No usage counters, budget alerts, or spend dashboards are wired to the external pricing/LLM API calls.",
+      "remediation": "Add usage monitoring for the external API calls: track request counts and cumulative spend per run, emit warnings/alerts when a configurable threshold is crossed, and surface the totals in the run summary.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-db-growth-3",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/backend.py",
+        "line": 0
+      },
+      "description": "Every submission writes a submission row plus one submission_run row per run key (including full compilation, result, and system payloads) with no retention, archiving, or pruning policy, so the database grows unbounded with evaluation artifacts.",
+      "remediation": "Add a retention/archival policy for submission and submission_run records (e.g. archive or prune detailed run payloads after N days) and monitor table growth.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-gha-high-usage-1",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/backend.py",
+        "line": 0
+      },
+      "description": "submit_full fans out one leaderboard run per requested GPU and, for LEADERBOARD mode, doubles the fan-out with a second private/secret run per GPU via asyncio.gather. Every submission therefore consumes multiple GPU runner jobs (public + secret) with no per-user or per-submission quota, driving high CI/GPU usage.",
+      "remediation": "Add per-user/per-submission quotas and concurrency caps for GPU runs, and make the secret-run fan-out opt-in or limited to a single GPU instead of every requested GPU.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-gha-wasteful-retries-3",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/runners/modal_runner.py",
+        "line": 0
+      },
+      "description": "The Modal runner deliberately requeues (retries) the whole GPU evaluation whenever a banned GPU form factor is detected, incrementing a requeue counter and raising the [MODAL_REQUEUE] sentinel. Each requeue re-runs the full remote job on a GPU, so repeated banned-GPU hits multiply GPU spend for the same submission.",
+      "remediation": "Constrain the banned-GPU avoidance to a single pre-flight check or cap requeues tightly, and prefer selecting an allowed GPU up front instead of retrying the entire evaluation.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-slow-build-1",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "docker/Dockerfile",
+        "line": 0
+      },
+      "description": "The Dockerfile installs a large apt package set (Chromium/GTK/X11 runtime libraries) and then runs pip3 install uv in a separate layer, with no build cache mount or dependency-layer caching; every rebuild re-downloads the full apt and pip payloads, making image builds slow and costly.",
+      "remediation": "Use BuildKit cache mounts (--mount=type=cache) for apt and pip, pin package versions, and combine related RUN layers so rebuilds reuse cached downloads.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-technical-debt-high-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "src/token_tracker.py",
+        "line": 0
+      },
+      "description": "SessionUsage.update implements intricate replace-vs-sum semantics for streaming deltas, cumulative cache_read tracking, and per-message billable bookkeeping with several parallel dicts (_seen_message_ids, _last_per_message, _billable_by_message, _billable_no_id). This complexity is a significant maintenance liability in the cost-critical path where a subtle bug silently mis-bills usage.",
+      "remediation": "Refactor the usage accounting into a small, well-tested state machine (or a dedicated accumulator class) with unit tests covering streaming deltas, duplicate message ids, and cumulative cache_read behavior.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-message-ordering-needed-4",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/monitor/server.py",
+        "line": 0
+      },
+      "description": "The SSE endpoint drains the bridge queue and yields events in queue order, but events are also written to pipeline state and files independently; there is no sequence number or ordering guarantee across the SSE stream, the pipeline state file, and the snapshot. A client merging these sources can observe out-of-order stage/score updates.",
+      "remediation": "Attach a monotonically increasing sequence number to each pushed event and to pipeline-state writes, and have the monitor order/deduplicate by that sequence so consumers see a consistent event order.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "flows-message-retention-too-short-6",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/monitor/data.py",
+        "line": 0
+      },
+      "description": "The scan cache uses a 2-second TTL (_SCAN_TTL = 2.0), so expensive stage-result scans are recomputed frequently during active polling. This is a retention/refresh tuning issue: the cache is too short-lived to absorb the polling load it was added for, causing repeated filesystem scans.",
+      "remediation": "Increase the scan cache TTL (or invalidate it on file mtime change instead of a fixed short TTL) so repeated monitor polls reuse scan results rather than rescanning the workspace every couple of seconds.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "flows-redux-side-effects-2",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/runtime.py",
+        "line": 0
+      },
+      "description": "push_stage_event, push_run_end_event, and push_resume_history perform side effects (writing pipeline state, generating monitor snapshots, enqueuing events) from within what are nominally state/notification helpers, and they are called from node logic. Side effects are thus entangled with state transitions rather than isolated, making the flow hard to test and reason about.",
+      "remediation": "Separate pure state transitions from side effects: have nodes update state and return, then run a dedicated effect dispatcher that performs the file writes, snapshot generation, and event enqueues.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "flows-vuex-denormalized-state-3",
+      "module": "flows",
+      "severity": "medium",
+      "location": {
+        "file": "src/monitor/data.py",
+        "line": 0
+      },
+      "description": "The monitor's run dict duplicates the same information across summary, metadata, loops, and per-approach entries (scores, statuses, timestamps appear in multiple places), and the execution log re-derives events from the same artifacts. This denormalized shape means the same fact can disagree between views and must be recomputed from files each time.",
+      "remediation": "Normalize the monitor data model (single source per entity, referenced by id) and derive the summary/timeline views from that normalized structure rather than duplicating fields across summary, loops, and approach entries.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-gha-no-container-8",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "docker/Dockerfile",
+        "line": 1
+      },
+      "description": "The image runs as the default root user with no USER directive, so the agent container executes all commands with full root privileges inside the container.",
+      "remediation": "Create a non-root user in the Dockerfile and add a `USER` directive so the agent process does not run as root.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "cost-api-no-client-rate-limit-4",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "src/pricing.py",
+        "line": 0
+      },
+      "description": "The client that calls the OpenRouter models API has no client-side rate limiting or concurrency guard; each fetch_model_pricing call can trigger a network request without any throttle, risking 429 responses and wasted retries against the external service.",
+      "remediation": "Add a client-side rate limiter (token bucket or semaphore) around the OpenRouter request and honor Retry-After headers on 429 responses.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "src/pricing.py",
+        "line": 0
+      },
+      "description": "The OpenRouter pricing endpoint is queried through _load_models_data with only a 24h on-disk cache (_CACHE_TTL_SECONDS = 24 * 60 * 60); there is no in-process response cache or conditional request (ETag/If-Modified-Since), so repeated resolutions within a process can re-fetch the full models payload.",
+      "remediation": "Add an in-memory response cache keyed by URL with a short TTL, and send conditional requests (ETag/If-Modified-Since) so unchanged pricing data is not re-downloaded.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-db-pool-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/backend.py",
+        "line": 0
+      },
+      "description": "The database access pattern has no visible pool sizing or lifecycle management: the connection is created in __init__ and used through context managers with no max pool size, idle timeout, or reuse configuration, so pool behavior is undefined under load.",
+      "remediation": "Configure an explicit connection pool with bounded size, idle timeout, and max lifetime, and document the sizing rationale for expected submission concurrency.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-deprecated-version-10",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "docker/Dockerfile",
+        "line": 0
+      },
+      "description": "The Docker image pins the base to node:22-bookworm and installs unpinned apt packages and a floating pip3 install uv, with no version pinning or update cadence; running on an aging base image increases the cost of eventual forced upgrades and security patching.",
+      "remediation": "Pin the base image by digest and pin tool versions (uv, apt packages), then schedule a regular base-image refresh so upgrades are incremental rather than forced.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "src/pricing.py",
+        "line": 0
+      },
+      "description": "Cost configuration is documented only through the missing_pricing_message string and scattered docstrings; there is no consolidated documentation of pricing resolution, tier semantics, currency handling, or how to supply --token-price-tiers, making cost behavior hard to understand and maintain.",
+      "remediation": "Add a dedicated cost/pricing documentation page covering scalar vs tiered pricing, cache price fallbacks, currency, and troubleshooting when pricing cannot be resolved.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-gha-infinite-artifacts-6",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/launchers/github.py",
+        "line": 0
+      },
+      "description": "The GitHub launcher downloads the run-result artifact (and profile-data when present) for every workflow run, and the workflow artifacts are not shown to have a retention policy; unbounded artifact accumulation across many submissions increases storage cost.",
+      "remediation": "Set an explicit artifact retention-days on the dispatched workflows and prune downloaded artifacts after parsing so storage does not grow without bound.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-gha-matrix-inefficient-10",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/backend.py",
+        "line": 0
+      },
+      "description": "GPU selection is expanded into a full cross-product of requested GPUs (and again for the secret run), so a submission requesting several GPUs launches a large matrix of expensive GPU jobs even when a single representative GPU would suffice for feedback.",
+      "remediation": "Limit the default GPU matrix to one representative GPU per submission and require an explicit opt-in for multi-GPU evaluation matrices.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/consts.py",
+        "line": 0
+      },
+      "description": "The NVIDIA/AMD requirement sets (torch, triton, numpy, ninja, setuptools) are installed on every dispatched GPU workflow run with no dependency caching configured, so each run re-downloads and reinstalls large GPU wheels, wasting runner minutes.",
+      "remediation": "Enable dependency caching (e.g. actions/cache for pip/uv wheels keyed on the requirements hash) in the dispatched workflows so repeated runs reuse installed packages.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/launchers/github.py",
+        "line": 0
+      },
+      "description": "The GitHub workflow dispatch path relies on a computed timeout (get_timeout(config) + TIMEOUT_BUFFER_MINUTES) but the dispatched workflow itself is not shown to declare a job-level timeout-minutes; a hung GPU job can occupy an expensive runner until the platform default, wasting runner minutes.",
+      "remediation": "Set an explicit timeout-minutes on every dispatched workflow job (and on the wait_for_completion poll) so stuck GPU runs are cancelled promptly instead of burning runner minutes.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-license-attribution-missing-2",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 0
+      },
+      "description": "There is no NOTICE/attribution file or automated attribution generation for third-party dependencies, so required license attributions for bundled or distributed dependencies are not produced.",
+      "remediation": "Generate and ship a third-party attribution/NOTICE file as part of the build, and verify it in CI whenever dependencies change.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-no-http-compression-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "src/pricing.py",
+        "line": 0
+      },
+      "description": "The OpenRouter pricing request is built with urllib Request and no Accept-Encoding header, so the (large) models JSON payload is transferred uncompressed, increasing bandwidth and latency on every cache miss.",
+      "remediation": "Send Accept-Encoding: gzip and decompress the response, or use a client (httpx/requests) that negotiates compression automatically.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-no-knowledge-sharing-8",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "src/pricing.py",
+        "line": 0
+      },
+      "description": "Pricing knowledge is embedded in code constants (_PREFIX provider list, _OPENROUTER_MODELS_URL, cache TTL) with no shared knowledge base or runbook describing how pricing is resolved, when it fails, or how to add a new provider prefix.",
+      "remediation": "Create a short runbook/knowledge-base entry documenting the pricing resolution flow, provider prefix list, and the procedure for adding new providers or updating the endpoint.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 0
+      },
+      "description": "pyproject.toml declares no license field and no license metadata, and the repository shows no license-tracking tooling; third-party dependency licenses (langgraph, textual, fastapi, pandas, etc.) are not inventoried or checked.",
+      "remediation": "Declare the project license in pyproject.toml and add automated license inventory/scanning (e.g. pip-licenses or a CI license check) for all dependencies.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-no-oss-policy-9",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 0
+      },
+      "description": "There is no OSS usage policy in the repository: dependencies are added directly to pyproject.toml with no documented approval process, allowed-license list, or review gate for new third-party packages.",
+      "remediation": "Document an OSS dependency policy (allowed licenses, approval workflow, review requirements) and enforce it in CI when pyproject.toml dependencies change.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-no-performance-budget-10",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "src/time_budget.py",
+        "line": 0
+      },
+      "description": "The system tracks wall-clock time budgets per stage (write_time_budget/write_stage_clock) but defines no performance or cost budget for the pipeline itself: there is no target for tokens per run, cost per loop, or throughput, so regressions in resource consumption go undetected.",
+      "remediation": "Define explicit performance/cost budgets (e.g. max tokens and max USD per loop) and fail or warn the run when a stage exceeds its budget.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-overprovisioned-k8s-1",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/launchers/modal.py",
+        "line": 0
+      },
+      "description": "The Modal launcher selects a GPU function by name (run_{func_type}_script_{gpu_type}) and runs the whole evaluation remotely with no resource sizing or utilization check; GPU classes such as H100/H200/B200 are requested by type without verifying the workload needs that tier, risking overprovisioned GPU spend.",
+      "remediation": "Right-size the Modal GPU selection to the workload (e.g. default to smaller GPUs and escalate only when required) and record utilization to detect overprovisioning.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-overprovisioned-k8s-limits-2",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/launchers/modal.py",
+        "line": 0
+      },
+      "description": "The Modal remote call is invoked with no explicit resource limits or timeout in the launcher (the timeout lives in the runner), so a runaway remote evaluation can hold an expensive GPU allocation until the platform default limit.",
+      "remediation": "Pass explicit resource limits and a timeout to the Modal remote call so runaway evaluations are terminated and GPU allocations are released promptly.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-redis-as-db-6",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/backend.py",
+        "line": 0
+      },
+      "description": "The backend opens a database connection (LeaderboardDB with ssl_mode) and connects/disconnects around each operation via the context manager, with no pooling; repeated connect/disconnect cycles per submission add connection overhead and cost.",
+      "remediation": "Use a pooled database connection (or a long-lived connection with health checks) instead of connecting and disconnecting for every submission operation.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-binary-dep-10",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "docker/Dockerfile",
+        "line": 3
+      },
+      "description": "The Dockerfile installs a large set of system libraries and the Claude Code CLI from unpinned apt and npm sources, so binary dependencies can change or be compromised between builds.",
+      "remediation": "Pin apt package versions and the npm CLI version, and verify checksums where possible.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-cve-medium-3",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "docker/Dockerfile",
+        "line": 45
+      },
+      "description": "The Claude Code CLI is installed globally from npm without a version pin, so a vulnerable or malicious release can be pulled into the image.",
+      "remediation": "Pin the CLI version and verify the package integrity before installing.",
+      "effort": "S",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "docker/build.sh",
+        "line": 12
+      },
+      "description": "The docker build is invoked without any timeout or retry bound, so a hung network fetch during the build can block indefinitely with no upper limit on execution time.",
+      "remediation": "Wrap the docker build in a bounded timeout (e.g. `timeout 1800 docker build ...`) and fail fast with a clear error when the limit is exceeded.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-gha-workspace-not-cleaned-6",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "docker/Dockerfile",
+        "line": 3
+      },
+      "description": "The Dockerfile installs system packages and the Claude CLI but never removes build caches or temporary artifacts, and the apt lists are the only cleanup performed; the resulting image retains unnecessary build residue that increases its attack surface.",
+      "remediation": "Add a cleanup step that removes npm cache and any temporary files (e.g. `npm cache clean --force && rm -rf /root/.npm`) after installing the CLI.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-key-rotation-manual-13",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "README.md",
+        "line": 0
+      },
+      "description": "The README instructs users to paste long-lived API keys into settings.json and MCP commands with no rotation guidance, so credentials remain valid indefinitely if leaked.",
+      "remediation": "Document key rotation procedures and recommend short-lived or scoped credentials for the agent.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-db-backup-4",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/backend.py",
+        "line": 0
+      },
+      "description": "The backend connects to the leaderboard database with ssl_mode configured but the provided code shows no backup, snapshot, or restore strategy for the submission/leaderboard data it accumulates.",
+      "remediation": "Define and automate a database backup/restore strategy (scheduled snapshots with tested restores) for the leaderboard database.",
+      "effort": "M",
+      "confidence": 0.3
+    },
+    {
+      "id": "cost-patent-risk-4",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 0
+      },
+      "description": "The dependency set is adopted with no patent-risk review or documented patent grant analysis, and the project declares no license of its own, leaving patent exposure from third-party packages unassessed.",
+      "remediation": "Include a patent-grant/patent-risk review step in the dependency approval policy and record the outcome for each new dependency.",
+      "effort": "M",
+      "confidence": 0.3
+    },
+    {
+      "id": "cost-trademark-risk-7",
+      "module": "cost",
+      "severity": "medium",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 0
+      },
+      "description": "The distribution name 'eureka-loop' and the 'eureka-agent' Docker image name are used without any documented trademark clearance or naming policy, creating potential trademark conflicts for the published package and image.",
+      "remediation": "Perform a trademark search for the project and image names and document a naming policy before publishing packages or images.",
+      "effort": "M",
+      "confidence": 0.3
+    },
+    {
+      "id": "security-directory-listing-8",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "src/monitor/server.py",
+        "line": 0
+      },
+      "description": "The monitor server serves static assets and templates from filesystem paths derived from the request and run directory without validating the resolved path, so crafted requests could read files outside the intended template/asset directories.",
+      "remediation": "Resolve and validate all served file paths against the allowed template and asset directories before returning them.",
+      "effort": "XS",
+      "confidence": 0.3
+    },
+    {
+      "id": "security-gha-fork-pr-4",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "docker/build.sh",
+        "line": 12
+      },
+      "description": "The build script is designed to be run directly from a cloned repository with no verification of the source, so a fork or PR branch can supply a modified Dockerfile that is built and executed with host network access.",
+      "remediation": "Require review of Dockerfile changes and build from a trusted ref, or run the build in an isolated CI job with no host network access.",
+      "effort": "M",
+      "confidence": 0.3
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "docker/build.sh",
+        "line": 12
+      },
+      "description": "The build script tags a fixed image name (eureka-agent:node22-bookworm) with no locking or concurrency guard, so two concurrent builds can race and overwrite each other's image tag.",
+      "remediation": "Add a lockfile or unique build tag per invocation and promote the image atomically after a successful build.",
+      "effort": "M",
+      "confidence": 0.3
+    },
+    {
+      "id": "security-license-incompatible-6",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "README.md",
+        "line": 0
+      },
+      "description": "The project is licensed AGPL-3.0 but the README documents installing and depending on third-party tools (Claude Code, Playwright MCP, web-search-prime) without any license compatibility review or attribution.",
+      "remediation": "Document the licenses of all third-party dependencies and verify compatibility with AGPL-3.0 before distribution.",
+      "effort": "M",
+      "confidence": 0.3
+    },
+    {
+      "id": "security-rate-limit-weak-6",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "src/eval_grader/server.py",
+        "line": 0
+      },
+      "description": "The grader server accepts grading requests authenticated only by a bearer token with no rate limiting, so a compromised agent can flood the evaluator with submissions and exhaust host resources.",
+      "remediation": "Add per-token rate limiting and a maximum concurrent grading limit to the grader server.",
+      "effort": "M",
+      "confidence": 0.3
+    },
+    {
+      "id": "security-session-cookie-not-http-only-4",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "src/monitor/server.py",
+        "line": 0
+      },
+      "description": "The monitor server has no session or authentication mechanism at all, so there are no cookies to protect and any local client can access the full run data.",
+      "remediation": "Add authentication to the monitor and set HttpOnly, Secure, SameSite cookies for any session state.",
+      "effort": "XS",
+      "confidence": 0.3
+    },
+    {
+      "id": "security-session-cookie-not-secure-3",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "src/monitor/server.py",
+        "line": 0
+      },
+      "description": "The monitor server serves over plain HTTP with no TLS and no session protection, so any credentials or data transmitted are exposed on the local network.",
+      "remediation": "Serve the monitor over TLS or bind strictly to localhost and document that it must not be exposed.",
+      "effort": "XS",
+      "confidence": 0.3
+    },
+    {
+      "id": "security-transitive-vuln-8",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 0
+      },
+      "description": "The dependency set includes langgraph, textual, and sse-starlette with only minimum versions, so transitive vulnerabilities in their dependency trees are not tracked or bounded.",
+      "remediation": "Generate and commit a lockfile and run dependency vulnerability scanning on every build.",
+      "effort": "S",
+      "confidence": 0.3
+    },
+    {
+      "id": "security-unmaintained-dep-4",
+      "module": "github",
+      "severity": "medium",
+      "location": {
+        "file": "pyproject.toml",
+        "line": 0
+      },
+      "description": "The project depends on pandas>=3.0.3 and other packages with no upper bounds or vulnerability scanning, so unmaintained or vulnerable transitive dependencies can enter the environment unnoticed.",
+      "remediation": "Add automated dependency vulnerability scanning (e.g. pip-audit) to CI and pin transitive dependencies via a lockfile.",
+      "effort": "M",
+      "confidence": 0.3
+    },
+    {
+      "id": "structure-adapter-violation-10",
+      "module": "structure",
+      "severity": "low",
+      "location": {
+        "file": "src/acp/factory.py",
+        "line": 18
+      },
+      "description": "`make_adapter` returns either `DockerPtyAdapter` or `DockerStreamAdapter` based on `config.adapter_mode`, but the returned objects are used elsewhere through duck-typed calls (`interrupt_and_send` fetched via `getattr` in `SessionManager._warn_at_threshold`), so the adapter abstraction is not enforced by a common interface and callers must probe for capabilities.",
+      "remediation": "Define an explicit adapter protocol/base class declaring `start`, `stream`, `stop`, `is_alive`, `collect_result`, `send`, and `interrupt_and_send`, and have both adapters implement it so callers can rely on the interface instead of `getattr` probing.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "module": "structure",
+      "severity": "low",
+      "location": {
+        "file": "src/run_config.py",
+        "line": 0
+      },
+      "description": "`ResumeConfigReport` and `ResolvedRunConfig` are declared as plain data holders, but `build_resume_config` mutates the frozen `Config` via `object.__setattr__(config, \"_resume_config_report\", ...)`, attaching runtime state to a DTO and blurring the data/behavior boundary.",
+      "remediation": "Return the report alongside the config in `ResolvedRunConfig` (already present) and stop injecting `_resume_config_report` into the frozen `Config`; consumers should read the report from the returned object instead.",
+      "effort": "S",
+      "confidence": 0.6
+    },
+    {
+      "id": "flows-inconsistent-response-4",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/monitor/server.py",
+        "line": 0
+      },
+      "description": "Monitor endpoints return inconsistent shapes on failure: /api/run-data returns an empty object with null chart fields on FileNotFoundError, /api/approach-detail returns {'error': ..., 'approach': None}, and /api/execution-log returns an empty timeline. Clients must special-case each endpoint's error shape, and none of them set an HTTP error status.",
+      "remediation": "Standardize error responses across monitor endpoints (consistent error envelope and appropriate HTTP status codes such as 404 for missing runs/approaches) so clients can handle failures uniformly.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-message-retention-too-long-7",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/monitor/data.py",
+        "line": 0
+      },
+      "description": "The monitor keeps an unbounded in-memory file cache (_file_cache keyed by resolved path) and a scan cache, with no eviction or size limit. Over a long-running monitor session polling many run files, this cache grows without bound and retains parsed content for every file ever read.",
+      "remediation": "Bound the file cache (LRU with a max entry count or total size) and evict entries for files that no longer exist, so long-lived monitor processes do not accumulate unbounded memory.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/eval_grader/client.py",
+        "line": 60
+      },
+      "description": "The submission payload carries no correlation/request id, and the grader server's GradeRequest model likewise has no request-id field. When a submission fails or produces an unexpected score, there is no identifier to correlate the agent-side call with the server-side grading record or its logs.",
+      "remediation": "Add a request_id (UUID) to the submission payload and to GradeRequest, propagate it through the grader logs and result files, and include it in error messages so a failed submission can be traced end-to-end.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/monitor/server.py",
+        "line": 0
+      },
+      "description": "The monitor FastAPI app serves HTML, images, and JSON/SSE endpoints without any security headers (no Content-Security-Policy, X-Content-Type-Options, X-Frame-Options, or Referrer-Policy). The dashboard renders run data and transcripts in the browser, so the absence of CSP/frame protections leaves it open to content-injection and clickjacking.",
+      "remediation": "Add a middleware that sets Content-Security-Policy, X-Content-Type-Options: nosniff, X-Frame-Options: DENY, and Referrer-Policy on all monitor responses.",
+      "effort": "S",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-no-state-persistence-6",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/runtime.py",
+        "line": 0
+      },
+      "description": "Runtime state (config, event queue, token tracker, active sessions, docker container) is held in module-level globals with no persistence. If the process restarts mid-run, the in-memory active-session registry and event queue are lost, and only the on-disk session maps and pipeline state file partially reconstruct the run.",
+      "remediation": "Persist critical runtime state (active session keys, current stage, token totals) to the run directory on each transition and reload it on startup so a restarted controller can resume without losing session tracking.",
+      "effort": "M",
+      "confidence": 0.45
+    },
+    {
+      "id": "cost-gha-expensive-runner-4",
+      "module": "cost",
+      "severity": "low",
+      "location": {
+        "file": "examples/kernel_engineering_trimul_strict/hidden_eval_dir/_ttt_lib/libkernelbot/launchers/github.py",
+        "line": 0
+      },
+      "description": "The GitHub launcher dispatches evaluation workflows onto GPU runners (NVIDIA and AMD MI300/MI250/MI300x8) for every submission, including test and benchmark modes, with a timeout derived from get_timeout plus TIMEOUT_BUFFER_MINUTES. Running every submission on expensive GPU runners rather than gating cheap test runs to cheaper runners inflates CI cost.",
+      "remediation": "Route test/benchmark modes to cheaper CPU or small-GPU runners and reserve the expensive GPU runners for leaderboard/private runs, or require an explicit opt-in for GPU runner usage.",
+      "effort": "M",
+      "confidence": 0.5
+    },
+    {
+      "id": "flows-message-not-compressed-10",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/eval_grader/client.py",
+        "line": 60
+      },
+      "description": "Submission payloads are sent as uncompressed JSON with no Content-Encoding, and the grader response is read uncompressed. For large candidate submissions (model weights, big JSON) this inflates transfer size and latency on every grading call.",
+      "remediation": "Enable gzip/deflate compression for submission bodies and responses (e.g. Accept-Encoding/Content-Encoding headers) so large candidate payloads transfer efficiently.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "flows-missing-cors-9",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/monitor/server.py",
+        "line": 0
+      },
+      "description": "The monitor server defines no CORS policy at all. While the default (no CORS middleware) blocks cross-origin reads, the SSE and JSON endpoints are served on a local port with no explicit origin restriction or documentation, so any future addition of CORSMiddleware or a permissive default would expose run data and transcripts to arbitrary web origins.",
+      "remediation": "Explicitly configure CORSMiddleware with an allowlist of trusted origins (or document that the monitor is localhost-only and bind it to 127.0.0.1), so run data and transcripts cannot be read cross-origin.",
+      "effort": "S",
+      "confidence": 0.4
+    },
+    {
+      "id": "flows-no-time-travel-9",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/runtime.py",
+        "line": 0
+      },
+      "description": "Pipeline state is written by mutating a JSON file in place (read existing, update keys, rewrite), with no event log or history of prior states. There is no way to replay or inspect the sequence of state transitions that led to the current pipeline state, which hampers debugging of stuck or misrouted runs.",
+      "remediation": "Append each pipeline-state transition to an append-only JSONL history (with timestamp and stage) in addition to the current-state file, so the run's state evolution can be replayed and inspected.",
+      "effort": "S",
+      "confidence": 0.4
+    },
+    {
+      "id": "flows-state-excessive-nesting-8",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/state.py",
+        "line": 0
+      },
+      "description": "LoopState flattens many unrelated concerns (run metadata, loop control, stage results, artifact paths, cost tracking, history) into a single flat TypedDict with no grouping. This makes the state hard to reason about and encourages nodes to read/write loosely related keys, increasing the chance of accidental cross-concern coupling.",
+      "remediation": "Group related state fields into nested TypedDicts (e.g. run, loop, stages, cost) so each node's read/write surface is explicit and cross-concern coupling is visible.",
+      "effort": "S",
+      "confidence": 0.4
+    },
+    {
+      "id": "flows-validation-too-early-3",
+      "module": "flows",
+      "severity": "low",
+      "location": {
+        "file": "src/nodes/propose_node.py",
+        "line": 0
+      },
+      "description": "validate_approach_details/validate_propose_artifacts are invoked as soon as the propose session returns, before the manifest snapshot and scaffolding are finalized. Validating before the outputs are fully settled can reject a round that would have passed once the manifest was snapshotted, forcing an unnecessary abort.",
+      "remediation": "Move artifact validation to after the manifest snapshot and scaffolding steps (as _finalize_propose_outputs partially does) so validation runs against the final, settled outputs rather than an intermediate state.",
+      "effort": "S",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-api-deprecated-endpoint-10",
+      "module": "cost",
+      "severity": "low",
+      "location": {
+        "file": "src/pricing.py",
+        "line": 0
+      },
+      "description": "The pricing integration hardcodes the OpenRouter models endpoint (https://openrouter.ai/api/v1/models) with no version negotiation or deprecation handling; if the endpoint or its pricing schema changes, cost tracking silently degrades to N/A.",
+      "remediation": "Centralize the endpoint in configuration, validate the response schema, and add a fallback/alert when the endpoint returns an unexpected shape so deprecations are detected early.",
+      "effort": "S",
+      "confidence": 0.4
+    },
+    {
+      "id": "security-vcs-insecure-9",
+      "module": "github",
+      "severity": "low",
+      "location": {
+        "file": "src/docker/container.py",
+        "line": 0
+      },
+      "description": "The container is started with the host network by default (docker_network default 'host'), so the agent container shares the host network namespace and can reach host-local services.",
+      "remediation": "Default to a bridge network and only use host networking when explicitly required, documenting the risk.",
+      "effort": "M",
+      "confidence": 0.4
+    },
+    {
+      "id": "cost-missing-cdn-7",
+      "module": "cost",
+      "severity": "low",
+      "location": {
+        "file": "src/pricing.py",
+        "line": 0
+      },
+      "description": "Pricing data is fetched directly from the origin OpenRouter API on every cache miss with no CDN or edge caching in front of it, so repeated cold starts across machines each hit the origin and pay full latency/bandwidth.",
+      "remediation": "Serve or mirror the pricing payload through a CDN/edge cache (or a shared internal cache) with a short TTL so cold starts do not all hit the origin.",
+      "effort": "S",
+      "confidence": 0.3
+    },
+    {
+      "id": "security-error-detail-1",
+      "module": "github",
+      "severity": "info",
+      "location": {
+        "file": "src/eval_grader/client.py",
+        "line": 0
+      },
+      "description": "The grader client includes the full HTTP error body in the raised SecureEvalError message, which can leak internal grader details and stack traces to the agent.",
+      "remediation": "Return a generic error message to the agent and log the detailed error server-side only.",
+      "effort": "XS",
+      "confidence": 0.4
+    }
+  ],
+  "work_plan": {
+    "phases": [
+      {
+        "name": "30 Days (Quick Wins)",
+        "findings": [
+          "security-gha-secret-leak-3",
+          "security-logs-contain-secrets-12",
+          "database-missing-app-pool-8",
+          "flows-missing-idempotency-3",
+          "flows-fire-and-forget-critical-1",
+          "security-no-input-validation-14",
+          "security-secret-in-code-1",
+          "database-missing-index-fk-1",
+          "structure-high-coupling-1",
+          "security-secret-in-history-2",
+          "database-risky-migration-3",
+          "security-cve-critical-1",
+          "security-oauth-secret-8",
+          "security-private-key-7",
+          "database-sequential-pagination-1",
+          "flows-missing-dlq-2",
+          "cost-llm-very-high-usage-2",
+          "flows-auth-order-1",
+          "flows-consumer-group-lag-3",
+          "flows-message-breaking-schema-2",
+          "flows-message-not-encrypted-9",
+          "security-encryption-weak-5",
+          "security-env-file-committed-3",
+          "security-exploit-in-wild-5",
+          "security-gha-auto-deploy-prod-9",
+          "security-gha-overpermissive-2",
+          "security-gha-pr-target-risk-1",
+          "security-jwt-weak-3",
+          "database-connection-timeout-high-3",
+          "cost-db-no-pooling-10",
+          "cost-no-automated-tests-4",
+          "flows-dlq-on-repeat-failures-10",
+          "flows-redux-mutates-state-1",
+          "database-statement-timeout-missing-9",
+          "security-gha-action-unpinned-5",
+          "cost-dev-setup-missing-3",
+          "cost-license-incompatible-1",
+          "cost-no-code-review-6",
+          "database-lock-timeout-missing-10",
+          "database-missing-index-where-4",
+          "structure-config-logic-8",
+          "structure-low-cohesion-5",
+          "security-missing-headers-10",
+          "security-no-security-maintenance-7"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "60 Days (Core Fixes)",
+        "findings": [
+          "security-outdated-server-9",
+          "database-missing-index-hot-path-2",
+          "security-cve-high-2",
+          "security-db-conn-string-6",
+          "security-db-no-tls-11",
+          "security-file-upload-weak-7",
+          "structure-controller-logic-6",
+          "structure-high-coupling-2",
+          "structure-service-sql-5",
+          "structure-framework-leak-3",
+          "structure-service-orchestration-3",
+          "cost-export-restriction-8",
+          "cost-license-share-alike-3",
+          "cost-non-commercial-use-6",
+          "flows-missing-timeout-6",
+          "security-cors-wildcard-2",
+          "database-heavy-migration-5",
+          "security-debug-in-prod-1",
+          "security-weak-crypto-9",
+          "database-missing-bloat-monitoring-5",
+          "flows-error-leaks-stack-6",
+          "flows-message-schema-no-version-1",
+          "flows-missing-error-handler-5",
+          "flows-missing-rate-limit-8",
+          "flows-missing-visibility-timeout-9",
+          "flows-state-inefficient-access-7",
+          "flows-validation-placement-2",
+          "cost-llm-high-usage-1",
+          "database-pg-stat-statements-disabled-1",
+          "flows-dlq-not-monitored-5"
+        ],
+        "total_effort": "XL"
+      },
+      {
+        "name": "90 Days (Strategic)",
+        "findings": [
+          "flows-missing-circuit-breaker-7",
+          "flows-ngrx-selectors-not-memoized-4",
+          "flows-no-schema-registry-8",
+          "flows-state-expensive-update-5",
+          "flows-state-missing-defaults-10",
+          "security-weak-rng-10",
+          "cost-api-no-retry-strategy-8",
+          "cost-api-no-usage-monitoring-9",
+          "cost-db-growth-3",
+          "cost-gha-high-usage-1",
+          "cost-gha-wasteful-retries-3",
+          "cost-slow-build-1",
+          "cost-technical-debt-high-9",
+          "flows-message-ordering-needed-4",
+          "flows-message-retention-too-short-6",
+          "flows-redux-side-effects-2",
+          "flows-vuex-denormalized-state-3",
+          "security-gha-no-container-8",
+          "cost-api-no-client-rate-limit-4",
+          "cost-api-no-response-cache-5",
+          "cost-db-pool-5",
+          "cost-deprecated-version-10",
+          "cost-documentation-poor-7",
+          "cost-gha-infinite-artifacts-6",
+          "cost-gha-matrix-inefficient-10",
+          "cost-gha-no-dependency-cache-5",
+          "cost-gha-no-timeout-9",
+          "cost-license-attribution-missing-2",
+          "cost-no-http-compression-9",
+          "cost-no-knowledge-sharing-8",
+          "cost-no-license-tracking-5",
+          "cost-no-oss-policy-9",
+          "cost-no-performance-budget-10",
+          "cost-overprovisioned-k8s-1",
+          "cost-overprovisioned-k8s-limits-2",
+          "cost-redis-as-db-6",
+          "security-binary-dep-10",
+          "security-cve-medium-3",
+          "security-gha-job-no-timeout-7",
+          "security-gha-workspace-not-cleaned-6",
+          "security-key-rotation-manual-13",
+          "cost-db-backup-4",
+          "cost-patent-risk-4",
+          "cost-trademark-risk-7",
+          "security-directory-listing-8",
+          "security-gha-fork-pr-4",
+          "security-gha-no-concurrency-prod-10",
+          "security-license-incompatible-6",
+          "security-rate-limit-weak-6",
+          "security-session-cookie-not-http-only-4",
+          "security-session-cookie-not-secure-3",
+          "security-transitive-vuln-8",
+          "security-unmaintained-dep-4",
+          "structure-adapter-violation-10",
+          "structure-dto-logic-7",
+          "flows-inconsistent-response-4",
+          "flows-message-retention-too-long-7",
+          "flows-missing-request-id-7",
+          "flows-missing-security-headers-10",
+          "flows-no-state-persistence-6",
+          "cost-gha-expensive-runner-4",
+          "flows-message-not-compressed-10",
+          "flows-missing-cors-9",
+          "flows-no-time-travel-9",
+          "flows-state-excessive-nesting-8",
+          "flows-validation-too-early-3",
+          "cost-api-deprecated-endpoint-10",
+          "security-vcs-insecure-9",
+          "cost-missing-cdn-7",
+          "security-error-detail-1"
+        ],
+        "total_effort": "XL"
+      }
+    ],
+    "dependencies": {
+      "flows-missing-timeout-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-idempotency-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-error-leaks-stack-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-request-id-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-dlq-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-fire-and-forget-critical-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-error-handler-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-circuit-breaker-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-rate-limit-8": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-security-headers-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-cors-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-not-encrypted-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-schema-no-version-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-breaking-schema-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-no-schema-registry-8": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-not-compressed-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-retention-too-long-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-retention-too-short-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-consumer-group-lag-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-dlq-not-monitored-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-dlq-on-repeat-failures-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-missing-visibility-timeout-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-message-ordering-needed-4": [
+        "structure-high-coupling-1"
+      ],
+      "flows-inconsistent-response-4": [
+        "structure-high-coupling-1"
+      ],
+      "flows-validation-placement-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-validation-too-early-3": [
+        "structure-high-coupling-1"
+      ],
+      "flows-auth-order-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-no-state-persistence-6": [
+        "structure-high-coupling-1"
+      ],
+      "flows-no-time-travel-9": [
+        "structure-high-coupling-1"
+      ],
+      "flows-state-missing-defaults-10": [
+        "structure-high-coupling-1"
+      ],
+      "flows-state-excessive-nesting-8": [
+        "structure-high-coupling-1"
+      ],
+      "flows-state-inefficient-access-7": [
+        "structure-high-coupling-1"
+      ],
+      "flows-state-expensive-update-5": [
+        "structure-high-coupling-1"
+      ],
+      "flows-redux-mutates-state-1": [
+        "structure-high-coupling-1"
+      ],
+      "flows-redux-side-effects-2": [
+        "structure-high-coupling-1"
+      ],
+      "flows-ngrx-selectors-not-memoized-4": [
+        "structure-high-coupling-1"
+      ],
+      "flows-vuex-denormalized-state-3": [
+        "structure-high-coupling-1"
+      ]
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "security-gha-secret-leak-3",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 75,
+      "canonical_rule": "security-gha-secret-leak-3"
+    },
+    {
+      "id": "security-logs-contain-secrets-12",
+      "severity": "critical",
+      "module": "security",
+      "confidence": 0.4,
+      "score": 60,
+      "canonical_rule": "security-logs-contain-secrets-12"
+    },
+    {
+      "id": "database-missing-app-pool-8",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.85,
+      "score": 55.25,
+      "canonical_rule": "database-missing-app-pool-8"
+    },
+    {
+      "id": "flows-missing-idempotency-3",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.55,
+      "score": 55,
+      "canonical_rule": "flows-missing-idempotency-3"
+    },
+    {
+      "id": "flows-fire-and-forget-critical-1",
+      "severity": "critical",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 45,
+      "canonical_rule": "flows-fire-and-forget-critical-1"
+    },
+    {
+      "id": "security-no-input-validation-14",
+      "severity": "high",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 45,
+      "canonical_rule": "security-no-input-validation-14"
+    },
+    {
+      "id": "security-secret-in-code-1",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 42,
+      "canonical_rule": "security-secret-in-code-1"
+    },
+    {
+      "id": "database-missing-index-fk-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 39,
+      "canonical_rule": "database-missing-index-fk-1"
+    },
+    {
+      "id": "structure-high-coupling-1",
+      "severity": "high",
+      "module": "structure",
+      "confidence": 0.65,
+      "score": 35.75,
+      "canonical_rule": "structure-high-coupling-1"
+    },
+    {
+      "id": "security-secret-in-history-2",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 35,
+      "canonical_rule": "security-secret-in-history-2"
+    },
+    {
+      "id": "database-risky-migration-3",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.5,
+      "score": 32.5,
+      "canonical_rule": "database-risky-migration-3"
+    },
+    {
+      "id": "security-cve-critical-1",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 28,
+      "canonical_rule": "security-cve-critical-1"
+    },
+    {
+      "id": "security-oauth-secret-8",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 28,
+      "canonical_rule": "security-oauth-secret-8"
+    },
+    {
+      "id": "security-private-key-7",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 28,
+      "canonical_rule": "security-private-key-7"
+    },
+    {
+      "id": "database-sequential-pagination-1",
+      "severity": "high",
+      "module": "database",
+      "confidence": 0.4,
+      "score": 26,
+      "canonical_rule": "database-sequential-pagination-1"
+    },
+    {
+      "id": "flows-missing-dlq-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 25,
+      "canonical_rule": "flows-missing-dlq-2"
+    },
+    {
+      "id": "cost-llm-very-high-usage-2",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 24,
+      "canonical_rule": "cost-llm-very-high-usage-2"
+    },
+    {
+      "id": "flows-auth-order-1",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 22.5,
+      "canonical_rule": "flows-auth-order-1"
+    },
+    {
+      "id": "flows-consumer-group-lag-3",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 22.5,
+      "canonical_rule": "flows-consumer-group-lag-3"
+    },
+    {
+      "id": "flows-message-breaking-schema-2",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 22.5,
+      "canonical_rule": "flows-message-breaking-schema-2"
+    },
+    {
+      "id": "flows-message-not-encrypted-9",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 22.5,
+      "canonical_rule": "flows-message-not-encrypted-9"
+    },
+    {
+      "id": "security-encryption-weak-5",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 21,
+      "canonical_rule": "security-encryption-weak-5"
+    },
+    {
+      "id": "security-env-file-committed-3",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 21,
+      "canonical_rule": "security-env-file-committed-3"
+    },
+    {
+      "id": "security-exploit-in-wild-5",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 21,
+      "canonical_rule": "security-exploit-in-wild-5"
+    },
+    {
+      "id": "security-gha-auto-deploy-prod-9",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 21,
+      "canonical_rule": "security-gha-auto-deploy-prod-9"
+    },
+    {
+      "id": "security-gha-overpermissive-2",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.6,
+      "score": 21,
+      "canonical_rule": "security-gha-overpermissive-2"
+    },
+    {
+      "id": "security-gha-pr-target-risk-1",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 21,
+      "canonical_rule": "security-gha-pr-target-risk-1"
+    },
+    {
+      "id": "security-jwt-weak-3",
+      "severity": "critical",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 21,
+      "canonical_rule": "security-jwt-weak-3"
+    },
+    {
+      "id": "database-connection-timeout-high-3",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.8,
+      "score": 20.8,
+      "canonical_rule": "database-connection-timeout-high-3"
+    },
+    {
+      "id": "cost-db-no-pooling-10",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 20,
+      "canonical_rule": "cost-db-no-pooling-10"
+    },
+    {
+      "id": "cost-no-automated-tests-4",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 20,
+      "canonical_rule": "cost-no-automated-tests-4"
+    },
+    {
+      "id": "flows-dlq-on-repeat-failures-10",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 20,
+      "canonical_rule": "flows-dlq-on-repeat-failures-10"
+    },
+    {
+      "id": "flows-redux-mutates-state-1",
+      "severity": "high",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 20,
+      "canonical_rule": "flows-redux-mutates-state-1"
+    },
+    {
+      "id": "database-statement-timeout-missing-9",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.75,
+      "score": 19.5,
+      "canonical_rule": "database-statement-timeout-missing-9"
+    },
+    {
+      "id": "security-gha-action-unpinned-5",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.6,
+      "score": 18,
+      "canonical_rule": "security-gha-action-unpinned-5"
+    },
+    {
+      "id": "cost-dev-setup-missing-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 16,
+      "canonical_rule": "cost-dev-setup-missing-3"
+    },
+    {
+      "id": "cost-license-incompatible-1",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 16,
+      "canonical_rule": "cost-license-incompatible-1"
+    },
+    {
+      "id": "cost-no-code-review-6",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 16,
+      "canonical_rule": "cost-no-code-review-6"
+    },
+    {
+      "id": "database-lock-timeout-missing-10",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 15.6,
+      "canonical_rule": "database-lock-timeout-missing-10"
+    },
+    {
+      "id": "database-missing-index-where-4",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.6,
+      "score": 15.6,
+      "canonical_rule": "database-missing-index-where-4"
+    },
+    {
+      "id": "structure-config-logic-8",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-config-logic-8"
+    },
+    {
+      "id": "structure-low-cohesion-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.7,
+      "score": 15.4,
+      "canonical_rule": "structure-low-cohesion-5"
+    },
+    {
+      "id": "security-missing-headers-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 15,
+      "canonical_rule": "security-missing-headers-10"
+    },
+    {
+      "id": "security-no-security-maintenance-7",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 15,
+      "canonical_rule": "security-no-security-maintenance-7"
+    },
+    {
+      "id": "security-outdated-server-9",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.5,
+      "score": 15,
+      "canonical_rule": "security-outdated-server-9"
+    },
+    {
+      "id": "database-missing-index-hot-path-2",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.55,
+      "score": 14.3,
+      "canonical_rule": "database-missing-index-hot-path-2"
+    },
+    {
+      "id": "security-cve-high-2",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 14,
+      "canonical_rule": "security-cve-high-2"
+    },
+    {
+      "id": "security-db-conn-string-6",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 14,
+      "canonical_rule": "security-db-conn-string-6"
+    },
+    {
+      "id": "security-db-no-tls-11",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 14,
+      "canonical_rule": "security-db-no-tls-11"
+    },
+    {
+      "id": "security-file-upload-weak-7",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 14,
+      "canonical_rule": "security-file-upload-weak-7"
+    },
+    {
+      "id": "structure-controller-logic-6",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-controller-logic-6"
+    },
+    {
+      "id": "structure-high-coupling-2",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-high-coupling-2"
+    },
+    {
+      "id": "structure-service-sql-5",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 13.2,
+      "canonical_rule": "structure-service-sql-5"
+    },
+    {
+      "id": "structure-framework-leak-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.55,
+      "score": 12.1,
+      "canonical_rule": "structure-framework-leak-3"
+    },
+    {
+      "id": "structure-service-orchestration-3",
+      "severity": "medium",
+      "module": "structure",
+      "confidence": 0.55,
+      "score": 12.1,
+      "canonical_rule": "structure-service-orchestration-3"
+    },
+    {
+      "id": "cost-export-restriction-8",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 12,
+      "canonical_rule": "cost-export-restriction-8"
+    },
+    {
+      "id": "cost-license-share-alike-3",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 12,
+      "canonical_rule": "cost-license-share-alike-3"
+    },
+    {
+      "id": "cost-non-commercial-use-6",
+      "severity": "high",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 12,
+      "canonical_rule": "cost-non-commercial-use-6"
+    },
+    {
+      "id": "flows-missing-timeout-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.6,
+      "score": 12,
+      "canonical_rule": "flows-missing-timeout-6"
+    },
+    {
+      "id": "security-cors-wildcard-2",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.4,
+      "score": 12,
+      "canonical_rule": "security-cors-wildcard-2"
+    },
+    {
+      "id": "database-heavy-migration-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.45,
+      "score": 11.7,
+      "canonical_rule": "database-heavy-migration-5"
+    },
+    {
+      "id": "security-debug-in-prod-1",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 10.5,
+      "canonical_rule": "security-debug-in-prod-1"
+    },
+    {
+      "id": "security-weak-crypto-9",
+      "severity": "high",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 10.5,
+      "canonical_rule": "security-weak-crypto-9"
+    },
+    {
+      "id": "database-missing-bloat-monitoring-5",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.4,
+      "score": 10.4,
+      "canonical_rule": "database-missing-bloat-monitoring-5"
+    },
+    {
+      "id": "flows-error-leaks-stack-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-error-leaks-stack-6"
+    },
+    {
+      "id": "flows-message-schema-no-version-1",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-message-schema-no-version-1"
+    },
+    {
+      "id": "flows-missing-error-handler-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-missing-error-handler-5"
+    },
+    {
+      "id": "flows-missing-rate-limit-8",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-missing-rate-limit-8"
+    },
+    {
+      "id": "flows-missing-visibility-timeout-9",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-missing-visibility-timeout-9"
+    },
+    {
+      "id": "flows-state-inefficient-access-7",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-state-inefficient-access-7"
+    },
+    {
+      "id": "flows-validation-placement-2",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 10,
+      "canonical_rule": "flows-validation-placement-2"
+    },
+    {
+      "id": "cost-llm-high-usage-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.6,
+      "score": 9.6,
+      "canonical_rule": "cost-llm-high-usage-1"
+    },
+    {
+      "id": "database-pg-stat-statements-disabled-1",
+      "severity": "medium",
+      "module": "database",
+      "confidence": 0.35,
+      "score": 9.1,
+      "canonical_rule": "database-pg-stat-statements-disabled-1"
+    },
+    {
+      "id": "flows-dlq-not-monitored-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 9,
+      "canonical_rule": "flows-dlq-not-monitored-5"
+    },
+    {
+      "id": "flows-missing-circuit-breaker-7",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 9,
+      "canonical_rule": "flows-missing-circuit-breaker-7"
+    },
+    {
+      "id": "flows-ngrx-selectors-not-memoized-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 9,
+      "canonical_rule": "flows-ngrx-selectors-not-memoized-4"
+    },
+    {
+      "id": "flows-no-schema-registry-8",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 9,
+      "canonical_rule": "flows-no-schema-registry-8"
+    },
+    {
+      "id": "flows-state-expensive-update-5",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 9,
+      "canonical_rule": "flows-state-expensive-update-5"
+    },
+    {
+      "id": "flows-state-missing-defaults-10",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 9,
+      "canonical_rule": "flows-state-missing-defaults-10"
+    },
+    {
+      "id": "security-weak-rng-10",
+      "severity": "medium",
+      "module": "security",
+      "confidence": 0.3,
+      "score": 9,
+      "canonical_rule": "security-weak-rng-10"
+    },
+    {
+      "id": "cost-api-no-retry-strategy-8",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-api-no-retry-strategy-8"
+    },
+    {
+      "id": "cost-api-no-usage-monitoring-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-api-no-usage-monitoring-9"
+    },
+    {
+      "id": "cost-db-growth-3",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-db-growth-3"
+    },
+    {
+      "id": "cost-gha-high-usage-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-gha-high-usage-1"
+    },
+    {
+      "id": "cost-gha-wasteful-retries-3",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-gha-wasteful-retries-3"
+    },
+    {
+      "id": "cost-slow-build-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-slow-build-1"
+    },
+    {
+      "id": "cost-technical-debt-high-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 8,
+      "canonical_rule": "cost-technical-debt-high-9"
+    },
+    {
+      "id": "flows-message-ordering-needed-4",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 8,
+      "canonical_rule": "flows-message-ordering-needed-4"
+    },
+    {
+      "id": "flows-message-retention-too-short-6",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 8,
+      "canonical_rule": "flows-message-retention-too-short-6"
+    },
+    {
+      "id": "flows-redux-side-effects-2",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 8,
+      "canonical_rule": "flows-redux-side-effects-2"
+    },
+    {
+      "id": "flows-vuex-denormalized-state-3",
+      "severity": "medium",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 8,
+      "canonical_rule": "flows-vuex-denormalized-state-3"
+    },
+    {
+      "id": "security-gha-no-container-8",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.5,
+      "score": 7,
+      "canonical_rule": "security-gha-no-container-8"
+    },
+    {
+      "id": "cost-api-no-client-rate-limit-4",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-api-no-client-rate-limit-4"
+    },
+    {
+      "id": "cost-api-no-response-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-api-no-response-cache-5"
+    },
+    {
+      "id": "cost-db-pool-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-db-pool-5"
+    },
+    {
+      "id": "cost-deprecated-version-10",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-deprecated-version-10"
+    },
+    {
+      "id": "cost-documentation-poor-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-documentation-poor-7"
+    },
+    {
+      "id": "cost-gha-infinite-artifacts-6",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-gha-infinite-artifacts-6"
+    },
+    {
+      "id": "cost-gha-matrix-inefficient-10",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-gha-matrix-inefficient-10"
+    },
+    {
+      "id": "cost-gha-no-dependency-cache-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-gha-no-dependency-cache-5"
+    },
+    {
+      "id": "cost-gha-no-timeout-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-gha-no-timeout-9"
+    },
+    {
+      "id": "cost-license-attribution-missing-2",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-license-attribution-missing-2"
+    },
+    {
+      "id": "cost-no-http-compression-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-no-http-compression-9"
+    },
+    {
+      "id": "cost-no-knowledge-sharing-8",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-no-knowledge-sharing-8"
+    },
+    {
+      "id": "cost-no-license-tracking-5",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-no-license-tracking-5"
+    },
+    {
+      "id": "cost-no-oss-policy-9",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-no-oss-policy-9"
+    },
+    {
+      "id": "cost-no-performance-budget-10",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-no-performance-budget-10"
+    },
+    {
+      "id": "cost-overprovisioned-k8s-1",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-overprovisioned-k8s-1"
+    },
+    {
+      "id": "cost-overprovisioned-k8s-limits-2",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-overprovisioned-k8s-limits-2"
+    },
+    {
+      "id": "cost-redis-as-db-6",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 6.4,
+      "canonical_rule": "cost-redis-as-db-6"
+    },
+    {
+      "id": "security-binary-dep-10",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "security-binary-dep-10"
+    },
+    {
+      "id": "security-cve-medium-3",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "security-cve-medium-3"
+    },
+    {
+      "id": "security-gha-job-no-timeout-7",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "security-gha-job-no-timeout-7"
+    },
+    {
+      "id": "security-gha-workspace-not-cleaned-6",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "security-gha-workspace-not-cleaned-6"
+    },
+    {
+      "id": "security-key-rotation-manual-13",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 5.6,
+      "canonical_rule": "security-key-rotation-manual-13"
+    },
+    {
+      "id": "cost-db-backup-4",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 4.8,
+      "canonical_rule": "cost-db-backup-4"
+    },
+    {
+      "id": "cost-patent-risk-4",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 4.8,
+      "canonical_rule": "cost-patent-risk-4"
+    },
+    {
+      "id": "cost-trademark-risk-7",
+      "severity": "medium",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 4.8,
+      "canonical_rule": "cost-trademark-risk-7"
+    },
+    {
+      "id": "security-directory-listing-8",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-directory-listing-8"
+    },
+    {
+      "id": "security-gha-fork-pr-4",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-gha-fork-pr-4"
+    },
+    {
+      "id": "security-gha-no-concurrency-prod-10",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-gha-no-concurrency-prod-10"
+    },
+    {
+      "id": "security-license-incompatible-6",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-license-incompatible-6"
+    },
+    {
+      "id": "security-rate-limit-weak-6",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-rate-limit-weak-6"
+    },
+    {
+      "id": "security-session-cookie-not-http-only-4",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-session-cookie-not-http-only-4"
+    },
+    {
+      "id": "security-session-cookie-not-secure-3",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-session-cookie-not-secure-3"
+    },
+    {
+      "id": "security-transitive-vuln-8",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-transitive-vuln-8"
+    },
+    {
+      "id": "security-unmaintained-dep-4",
+      "severity": "medium",
+      "module": "github",
+      "confidence": 0.3,
+      "score": 4.2,
+      "canonical_rule": "security-unmaintained-dep-4"
+    },
+    {
+      "id": "structure-adapter-violation-10",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 3.3,
+      "canonical_rule": "structure-adapter-violation-10"
+    },
+    {
+      "id": "structure-dto-logic-7",
+      "severity": "low",
+      "module": "structure",
+      "confidence": 0.6,
+      "score": 3.3,
+      "canonical_rule": "structure-dto-logic-7"
+    },
+    {
+      "id": "flows-inconsistent-response-4",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-inconsistent-response-4"
+    },
+    {
+      "id": "flows-message-retention-too-long-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-message-retention-too-long-7"
+    },
+    {
+      "id": "flows-missing-request-id-7",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-missing-request-id-7"
+    },
+    {
+      "id": "flows-missing-security-headers-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.5,
+      "score": 2.5,
+      "canonical_rule": "flows-missing-security-headers-10"
+    },
+    {
+      "id": "flows-no-state-persistence-6",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.45,
+      "score": 2.25,
+      "canonical_rule": "flows-no-state-persistence-6"
+    },
+    {
+      "id": "cost-gha-expensive-runner-4",
+      "severity": "low",
+      "module": "cost",
+      "confidence": 0.5,
+      "score": 2,
+      "canonical_rule": "cost-gha-expensive-runner-4"
+    },
+    {
+      "id": "flows-message-not-compressed-10",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 2,
+      "canonical_rule": "flows-message-not-compressed-10"
+    },
+    {
+      "id": "flows-missing-cors-9",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 2,
+      "canonical_rule": "flows-missing-cors-9"
+    },
+    {
+      "id": "flows-no-time-travel-9",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 2,
+      "canonical_rule": "flows-no-time-travel-9"
+    },
+    {
+      "id": "flows-state-excessive-nesting-8",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 2,
+      "canonical_rule": "flows-state-excessive-nesting-8"
+    },
+    {
+      "id": "flows-validation-too-early-3",
+      "severity": "low",
+      "module": "flows",
+      "confidence": 0.4,
+      "score": 2,
+      "canonical_rule": "flows-validation-too-early-3"
+    },
+    {
+      "id": "cost-api-deprecated-endpoint-10",
+      "severity": "low",
+      "module": "cost",
+      "confidence": 0.4,
+      "score": 1.6,
+      "canonical_rule": "cost-api-deprecated-endpoint-10"
+    },
+    {
+      "id": "security-vcs-insecure-9",
+      "severity": "low",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 1.4,
+      "canonical_rule": "security-vcs-insecure-9"
+    },
+    {
+      "id": "cost-missing-cdn-7",
+      "severity": "low",
+      "module": "cost",
+      "confidence": 0.3,
+      "score": 1.2,
+      "canonical_rule": "cost-missing-cdn-7"
+    },
+    {
+      "id": "security-error-detail-1",
+      "severity": "info",
+      "module": "github",
+      "confidence": 0.4,
+      "score": 0.28,
+      "canonical_rule": "security-error-detail-1"
+    }
+  ]
+}
