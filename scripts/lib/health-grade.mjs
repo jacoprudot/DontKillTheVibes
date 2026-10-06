@@ -13,6 +13,13 @@
  * severities map to five letters). `critical_count` is reported separately in
  * `summary`, never encoded into the letter.
  *
+ * THE LETTER SATURATES, SO THE LETTER IS NOT TOUCHED. The formula is deliberately
+ * volume-immune (F = any critical), and in our measured data 8/10 vibe-coded repos
+ * score F — a fair grade that shows a reader nothing about the SIZE of the problem.
+ * `display` adds that size as a PRESENTATION-ONLY suffix (`F·3` = grade F, three
+ * criticals); the letter, `criticalCount` and the formula are unchanged, and the
+ * document's `summary.overall_health` stays the letter alone (schema: A–F).
+ *
  * Single source of truth: Path A computes it with scripts/dktv-grade.mjs,
  * Path B (dktv-assess.mjs) and Path C (dktv-orchestrate.mjs) stamp it. All
  * three run THIS function, so the same repository can never receive two
@@ -23,7 +30,7 @@ const LETTER = ['A', 'B', 'C', 'D', 'F']; // index = rank-1; E unused (reserved)
 
 /**
  * @param {Array<{severity?: string}>} findings
- * @returns {{ letter: string, criticalCount: number, worstSeverity: string|null }}
+ * @returns {{ letter: string, display: string, criticalCount: number, worstSeverity: string|null }}
  */
 export function gradeFromFindings(findings) {
   let worst = 0;
@@ -34,8 +41,12 @@ export function gradeFromFindings(findings) {
     if (rank > worst) worst = rank;
     if (f.severity === 'critical') criticalCount++;
   }
+  const letter = worst === 0 ? 'A' : LETTER[worst - 1];
   return {
-    letter: worst === 0 ? 'A' : LETTER[worst - 1],
+    letter,
+    // Presentation only: never written into summary.overall_health (the validator's
+    // enum is A–F), only printed by the CLIs and the markdown report.
+    display: criticalCount > 0 ? `${letter}·${criticalCount}` : letter,
     criticalCount,
     worstSeverity: worst === 0 ? null : Object.keys(RANK).find((k) => RANK[k] === worst),
   };

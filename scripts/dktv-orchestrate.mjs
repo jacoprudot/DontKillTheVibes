@@ -1003,6 +1003,12 @@ function synthesize({ findings, target, model, toolkitVersion, moduleWeights, me
     if (!f.relatedFindings.length) delete f.relatedFindings;
   }
 
+  // The letter is stamped into the document (schema enum A–F), and its presentation form
+  // (F·3) rides along in `stats` for the CLI: the letter saturates — 8/10 vibe-coded repos
+  // in our data score F — so the count of criticals is the only thing that distinguishes
+  // "one critical" from "twenty" for a reader.
+  const grade = gradeFromFindings(merged);
+
   return {
     document: {
       // metadata is stamped by the RUNNER from real values. The LLM never writes it:
@@ -1028,8 +1034,8 @@ function synthesize({ findings, target, model, toolkitVersion, moduleWeights, me
         ...(meta.notes ? { notes: meta.notes } : {}),
       },
       summary: {
-        overall_health: gradeFromFindings(merged).letter,
-        critical_count: gradeFromFindings(merged).criticalCount,
+        overall_health: grade.letter,
+        critical_count: grade.criticalCount,
         total_findings: merged.length,
         by_severity: tally(merged, 'severity', SEVERITIES),
         by_module: tally(merged, 'module', MODULE_DEFS.map((m) => m.module)),
@@ -1047,7 +1053,7 @@ function synthesize({ findings, target, model, toolkitVersion, moduleWeights, me
         canonical_rule: registryEntry(x.f.id),
       })),
     },
-    stats: { merged: merged.length, dropped: droppedCount, scores: scored.map((x) => x.score) },
+    stats: { merged: merged.length, dropped: droppedCount, scores: scored.map((x) => x.score), health_display: grade.display },
   };
 }
 
@@ -1442,6 +1448,10 @@ const assessmentPath = join(opts.out, 'assessment.json');
 const reportPath = join(opts.out, 'assessment-report.md');
 writeFileSync(assessmentPath, JSON.stringify(document, null, 2), 'utf8');
 console.log(`\nWrote ${assessmentPath} (${document.findings.length} findings from ${findingsRaw} raw, ${stats.dropped} duplicate id(s) merged, ${drops.length} dropped)`);
+// Presentation only: the document stores the bare letter (the validator accepts A–F only),
+// the `·n` suffix is what tells a reader how many criticals produced that F. See
+// scripts/lib/health-grade.mjs.
+console.log(`overall_health: ${stats.health_display} (document stores the letter alone: "${document.summary.overall_health}")`);
 if (drops.length) {
   console.log(`Dropped findings (not in the module audit; kept in modules/*.json):`);
   for (const d of drops.slice(0, 12)) console.log(`  - [${d.module}] ${d.id}: ${d.reason}`);

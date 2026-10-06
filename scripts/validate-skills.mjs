@@ -35,6 +35,15 @@ const REQUIRED_KEYS = [
   'mcpDependencies',
 ];
 
+/**
+ * The AUTHORING gate for a rule id: module-category-number, segments alnum, starting with a
+ * letter. Deliberately stricter than the ASSESSMENT contract pattern
+ * (^[a-z0-9-]+-\d+$ in templates/finding-schema.json, mirrored in the runner's prompt), but
+ * compatible with it: every id this regex accepts satisfies the contract, so the two can
+ * never disagree on a real id. The contract was widened to let digit-bearing names through
+ * ("cost-overprovisioned-k8s-1" — the '8' in k8s — was rejected by the old ^[a-z-]+-\d+$);
+ * this regex already accepted it, which is why the registry needed no migration.
+ */
 const FINDING_ID_RE = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*-\d+$/;
 
 function parseFrontmatter(content, file) {
@@ -71,7 +80,10 @@ for (const file of readdirSync(skillsDir).filter((f) => f.endsWith('.skill.md'))
 
   for (const m of content.matchAll(/→\s*FINDING:\s*([A-Za-z0-9-]+)/g)) {
     if (!FINDING_ID_RE.test(m[1])) {
-      fail(rel, `finding id "${m[1]}" does not match ^[a-z-]+-\\d+$`);
+      // Print the regex that actually ran, never a hand-copied pattern string: the
+      // previous message advertised ^[a-z-]+-\d+$ while enforcing a laxer one (it was
+      // the same stale string the assessment contract carried).
+      fail(rel, `finding id "${m[1]}" does not match ${FINDING_ID_RE}`);
     }
   }
 }

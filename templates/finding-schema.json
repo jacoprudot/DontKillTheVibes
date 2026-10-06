@@ -6,8 +6,8 @@
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^[a-z-]+-\\d+$",
-      "description": "Unique finding ID: module-category-number (e.g., database-missing-index-fk-1)"
+      "pattern": "^[a-z0-9-]+-\\d+$",
+      "description": "Unique finding ID: module-category-number (e.g., database-missing-index-fk-1, cost-overprovisioned-k8s-1)"
     },
     "module": {
       "type": "string",

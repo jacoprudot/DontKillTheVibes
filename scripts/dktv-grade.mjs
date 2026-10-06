@@ -40,12 +40,15 @@ const current = doc.summary?.overall_health;
 const detail = `worst=${grade.worstSeverity ?? 'none'} criticals=${grade.criticalCount} findings=${Array.isArray(doc.findings) ? doc.findings.length : 'n/a'}`;
 
 if (current === grade.letter) {
-  console.log(`OK: overall_health "${grade.letter}" matches the formula (${detail})`);
+  // `display` (F·3) is presentation only — the document keeps the bare letter, so the
+  // agreement check above stays exact. The modifier is what a reader needs to tell
+  // "F, one critical" from "F, twenty": in our data 8/10 vibe-coded repos score F.
+  console.log(`OK: overall_health "${grade.letter}" matches the formula (display "${grade.display}", ${detail})`);
   process.exit(0);
 }
 
 if (!fix) {
-  console.log(`MISMATCH: document says "${current ?? '(missing)'}" but the formula computes "${grade.letter}" (${detail})`);
+  console.log(`MISMATCH: document says "${current ?? '(missing)'}" but the formula computes "${grade.letter}" (display "${grade.display}", ${detail})`);
   console.log(`re-run with --fix to stamp the computed letter`);
   process.exit(1);
 }
@@ -54,5 +57,5 @@ doc.summary = doc.summary && typeof doc.summary === 'object' ? doc.summary : {};
 doc.summary.overall_health = grade.letter;
 doc.summary.critical_count = grade.criticalCount;
 writeFileSync(file, JSON.stringify(doc, null, 2) + '\n', 'utf8');
-console.log(`FIXED: stamped overall_health "${grade.letter}", critical_count ${grade.criticalCount} (${detail})`);
+console.log(`FIXED: stamped overall_health "${grade.letter}", critical_count ${grade.criticalCount} (display "${grade.display}", ${detail})`);
 process.exit(0);

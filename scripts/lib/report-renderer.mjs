@@ -22,10 +22,12 @@
  * This renderer never invents a finding, a score, a line number, a date, a model name or
  * a count, and it never computes or "improves" a severity. Everything it prints is read
  * out of `doc` (or out of `options`, which overrides `doc.metadata` when provided). When a
- * field is absent the line is omitted or an explicit '—' is printed. The one derivation it
- * performs is `Blocks`, which is the inverse of the document's own `Depends On` edges — the
- * same inversion the reference report shows (it lists `code-any-type-6` as blocked by
- * `code-missing-validation-4`, which only exists as that edge in the JSON).
+ * field is absent the line is omitted or an explicit '—' is printed. It performs exactly
+ * two derivations, both from the document's own values: `Blocks`, the inverse of the
+ * document's `Depends On` edges (the same inversion the reference report shows — it lists
+ * `code-any-type-6` as blocked by `code-missing-validation-4`, which only exists as that
+ * edge in the JSON), and the `·n` modifier on Overall Health, built from the document's
+ * `critical_count` because the bare letter saturates (8/10 vibe-coded repos score F).
  *
  * ORDERING
  * --------
@@ -110,6 +112,7 @@ const LABELS = {
       dependsOn: 'Depends On',
       blocks: 'Blocks',
       none: 'None',
+      citationCheck: 'Verificación de la cita',
     },
     plan: '30/60/90 Day Plan',
     planTotalEffort: 'Esfuerzo total',
@@ -154,6 +157,7 @@ const LABELS = {
       dependsOn: 'Depends On',
       blocks: 'Blocks',
       none: 'None',
+      citationCheck: 'Citation check',
     },
     plan: '30/60/90 Day Plan',
     planTotalEffort: 'Total Effort',
@@ -469,11 +473,43 @@ function renderProvenance(L, { repo, date, model, toolkit, commit }) {
   return lines;
 }
 
+/**
+ * The Overall Health value: the document's own letter, plus the informative `·n`
+ * modifier when the document also carries a positive critical count.
+ *
+ * The letter alone saturates (F = any critical): 8/10 vibe-coded repos in our data score
+ * F, so the letter cannot show the difference between one critical and twenty. `·n` is
+ * DERIVED, never invented — it comes from `summary.critical_count` (or, failing that, the
+ * document's own `by_severity.critical`), and a document that carries neither renders
+ * byte-identically to the pre-modifier renderer. `summary.overall_health` itself is never
+ * rewritten here: the JSON keeps the bare letter (the contract's enum is A–F).
+ */
+function healthDisplay(summary) {
+  const letter = str(summary.overall_health);
+  if (!letter) return null;
+  const ownCount = num(summary.critical_count);
+  const bySeverity = isObj(summary.by_severity) ? num(summary.by_severity.critical) : null;
+  const critical = ownCount !== null ? ownCount : bySeverity;
+  return critical !== null && critical > 0 ? `${letter}·${critical}` : letter;
+}
+
+/**
+ * One line for a finding the runner's citation gate could not verify (`citation_check`,
+ * written by scripts/dktv-assess.mjs when the cited line is past the end of the real file
+ * and one repair pass did not fix it). Everything printed is read out of the document.
+ */
+function citationCheckText(cc) {
+  const status = str(cc.status) || ABSENT;
+  const cited = num(cc.cited_line);
+  const total = num(cc.file_lines);
+  return cited !== null && total !== null ? `${status} (line ${cited} > ${total} lines)` : status;
+}
+
 function renderExecutiveSummary(L, summary, ordered, scores) {
   const bySeverity = isObj(summary.by_severity) ? summary.by_severity : null;
   const critical = bySeverity && num(bySeverity.critical) !== null ? bySeverity.critical : null;
   const lines = [`## ${L.summary.heading}`];
-  lines.push(`- **${L.summary.health}**: ${str(summary.overall_health) || ABSENT}`);
+  lines.push(`- **${L.summary.health}**: ${healthDisplay(summary) || ABSENT}`);
   lines.push(`- **${L.summary.critical}**: ${critical === null ? ABSENT : critical}`);
   if (num(summary.total_findings) !== null) lines.push(`- **${L.summary.total}**: ${summary.total_findings}`);
   const sev = mapLine(bySeverity, SEVERITY_ORDER);
@@ -526,6 +562,13 @@ function renderFinding(L, finding, index, depMaps, score) {
 
   if (str(finding.description)) lines.push(`**${L.finding.description}**: ${sanitizeProse(finding.description)}`);
   if (str(finding.remediation)) lines.push(`**${L.finding.remediation}**: ${sanitizeProse(finding.remediation)}`);
+
+  // Runner-written marker (scripts/dktv-assess.mjs): the cited line is past the end of the
+  // real file and ONE repair pass did not fix it. Printed only when the document carries
+  // it, so a document without the field renders byte-identically to before.
+  if (isObj(finding.citation_check)) {
+    lines.push(`**${L.finding.citationCheck}**: ${oneLine(citationCheckText(finding.citation_check))}`);
+  }
 
   const ev = isObj(finding.evidence) ? finding.evidence : null;
   if (ev) {

@@ -9,7 +9,19 @@
  * Before validation, severity/effort are STAMPED from the shared canonical
  * registry (scripts/lib/canonical-registry.mjs) — they are properties of the
  * rule, never an LLM judgement — and the run reports how many findings were
- * corrected.
+ * corrected. metadata.llm_used is stamped from --model for the same reason: the
+ * model used to invent it ("gpt-4", "claude-sonnet-4-5" seen in runs using other
+ * models).
+ *
+ * Two further defects are fixed in the same flow:
+ *   - the digest carries a REAL line-number gutter (`   42 | content`, see
+ *     withLineNumbers): the prompt demanded "real line numbers from snippets" from
+ *     a snippet that had none, and lines-in-range measured 100% on mature OSS vs
+ *     ~60% on vibe-coded repos (775 findings).
+ *   - a citation gate reads each cited file through the shared deny-list reader and
+ *     MARKS (never rejects) findings whose line is past the end of the file, then
+ *     spends at most ONE repair call per attempt re-asking for those lines (see
+ *     markOutOfRangeLines / repairMarkedLines).
  *
  * Usage:
  *   node scripts/dktv-assess.mjs --target /path/to/repo [options]
@@ -47,6 +59,10 @@ import { dirname, resolve, join, relative, basename } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { loadRules, stampRuleFields, rulesetFingerprint } from './lib/canonical-registry.mjs';
 import { gradeFromFindings } from './lib/health-grade.mjs';
+// The citation gate below reads the TARGET repo's real files. It must go through
+// openRepo(), never a raw readFileSync: openRepo enforces the sensitive-file deny-list,
+// so a finding citing ".env" gets no line count (and no report) instead of being read.
+import { openRepo } from './lib/repo-files.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -110,6 +126,37 @@ function parseArgs(argv) {
 const SKIP_DIRS = new Set(['.git', 'node_modules', 'dist', 'build', 'out', '.next', '.turbo', '.nuxt', 'coverage', '.dontkillthevibes', '.cache', 'target', 'vendor', '__pycache__']);
 const SKIP_EXT = new Set(['.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.webp', '.woff', '.woff2', '.ttf', '.eot', '.pdf', '.zip', '.gz', '.tgz', '.tar', '.rar', '.7z', '.mp4', '.mp3', '.mov', '.wasm', '.exe', '.dll', '.so', '.dylib', '.jar', '.class', '.pyc', '.db', '.sqlite', '.bin', '.lock', '.ico']);
 const PER_FILE_CAP = 10_000; // chars of content per file
+
+/* ---------- citation gate + one repair pass (see markOutOfRangeLines) ----------
+   Measured: only ~60% of cited lines fall inside the file on vibe-coded repos (100% on
+   mature OSS; 775 findings measured) — the model was estimating positions because the
+   digest carried no numbers. Repair is deliberately bounded, with the same budget the
+   orchestrator's citation repair uses (scripts/dktv-orchestrate.mjs): at most ONE call
+   per attempt, at most REPAIR_MAX_FINDINGS findings per call (worst line first: a
+   critical citing a line that does not exist is the one that must not survive). */
+const REPAIR_MAX_FINDINGS = 5;
+const REPAIR_WINDOW_RADIUS = 40;  // +/- lines around the cited line
+const REPAIR_WINDOW_CAP = 6_000;  // chars of window per finding
+const REPAIR_PROMPT_CAP = 40_000; // chars for the whole repair prompt
+
+/**
+ * Annotate every line with its REAL 1-based number in the file: `   42 | content`.
+ *
+ * WHY: the digest used to carry raw content, so the prompt's "cite real line numbers
+ * from the snippets" was unfollowable — the model had no numbers to cite and estimated
+ * them instead. Lines-in-range was 100% on mature OSS and ~60% on vibe-coded repos (775
+ * findings measured). The gutter is the same shape the orchestrator's own repair window
+ * prints (numberedWindow in scripts/dktv-orchestrate.mjs), so a model that has read one
+ * format can read the other.
+ *
+ * The width grows with the file's line count, so the number is never truncated; line
+ * endings are normalized to LF so a CRLF file cannot smuggle a stray \r into the gutter.
+ */
+function withLineNumbers(content) {
+  const lines = String(content).split(/\r?\n/);
+  const width = String(lines.length).length;
+  return lines.map((line, i) => `${String(i + 1).padStart(width)} | ${line}`).join('\n');
+}
 
 // Filenames that must never leave the machine: the digest is sent to an
 // external LLM endpoint, so these are excluded from content AND tree.
@@ -177,14 +224,20 @@ function buildDigest(target, budget) {
     let size;
     try { size = statSync(f.full).size; } catch { continue; }
     if (spent >= budget) { skippedContent.push(f.rel); continue; }
-    let content;
-    try { content = readFileSync(f.full, 'utf8'); } catch { skippedContent.push(f.rel); continue; }
-    if (content.length > PER_FILE_CAP) {
-      content = content.slice(0, PER_FILE_CAP) + `\n... [truncated, file is ${size} bytes]`;
+    let raw;
+    try { raw = readFileSync(f.full, 'utf8'); } catch { skippedContent.push(f.rel); continue; }
+    if (raw.length > PER_FILE_CAP) {
+      raw = raw.slice(0, PER_FILE_CAP) + `\n... [truncated, file is ${size} bytes]`;
     }
+    // Gutter AFTER the per-file cap and BEFORE the budget check: the numbers cost chars
+    // too (~8 per line), and they are paid for out of the same budget. The cap is applied
+    // to the RAW text, so the retained line numbers stay exactly the file's own.
+    let content = withLineNumbers(raw);
     if (spent + content.length > budget) {
       const room = budget - spent;
       if (room < 500) { skippedContent.push(f.rel); continue; }
+      // Hard slice, like before: a cut mid-line still keeps that line's real number in
+      // its gutter, and the marker below says plainly that the tail is missing.
       content = content.slice(0, room) + '\n... [truncated by context budget]';
     }
     spent += content.length;
@@ -229,24 +282,41 @@ ${canonicalRuleIds().join('\n')}
 Respond with ONLY a JSON object — no prose, no markdown fences, no comments:
 
 {
-  "metadata": { "repo": "<repo name>", "assessed_at": "<ISO 8601>", "toolkit_version": "0.1.0-beta", "llm_used": "<model id>" },
-  "summary": { "overall_health": "<stamped by the runner: worst severity present — write your best guess>", "total_findings": <n>, "critical_count": <n> },
+  "metadata": { "repo": "<repo name>", "assessed_at": "<ISO 8601>", "toolkit_version": "0.1.0-beta", "llm_used": "<STAMPED BY THE RUNNER from --model — do not write a model name here, it is overwritten>" },
+  "summary": { "overall_health": "<STAMPED BY THE RUNNER: worst severity present — write your best guess>", "total_findings": <n>, "critical_count": <n> },
   "findings": [ <finding objects> ],
   "work_plan": { "phases": { "30_days": ["<finding-id>", ...], "60_days": [...], "90_days": [...] }, "dependencies": [{ "from": "<id>", "to": "<id>", "type": "blocks" }] }
 }
+
+# How to read the file contents below (LINE NUMBERS ARE GIVEN TO YOU)
+
+Every file is printed with a line-number gutter. On each line, the text BEFORE the first
+" | " is that line's REAL, 1-based number in the file:
+
+   41 | export async function getArticles(req, res) {
+   42 |   const count = await prisma.article.count();
+   43 |   const articles = await prisma.article.findMany({ ... });
+
+Cite those numbers verbatim. Do NOT count lines yourself, do NOT estimate, and do NOT
+cite a number you cannot see in a gutter: a citation that does not match the number shown
+is worse than no citation. A trailing "... [truncated ...]" line is a runner marker, not
+file content.
 
 Rules for each finding:
 - id: MUST be copied verbatim from the canonical registry above. Inventing an id — even a plausible-looking one such as code-any-type-1 or code-env-var-check-1 — is a contract violation and the whole assessment is rejected. Ids must be unique across all findings.
 - If a real problem has no matching rule in the registry, do NOT invent a rule: omit the finding, or attach it to the closest existing rule and name that rule in the description.
 - Required fields: id, module, severity, location, description, remediation, effort, confidence.
-- id shape only (NOT sufficient on its own — the registry rule above is binding): ^[a-z-]+-\\d+$ (module-category-number, unique across all findings).
+- id shape only (NOT sufficient on its own — the registry rule above is binding): ^[a-z0-9-]+-\\d+$ (module-category-number, unique across all findings; digits are allowed inside the name, e.g. cost-overprovisioned-k8s-1).
 - module ∈ database|code|structure|flows|security|cost|performance|github
 - severity ∈ critical|high|medium|low|info; effort ∈ XS|S|M|L|XL
 - confidence: number 0.0-1.0 (use < 0.6 only for genuinely uncertain findings)
 - location: { "file": "<repo-relative path>", "line": <n> } — line 0 only for file-level findings
 - location.line MUST be the line of the code that evidences the finding (the handler, the query, the config value, the call); never the file header, license block, or import section. If the snippet at the cited line shows imports, you cited the wrong line — move it to the line that actually demonstrates the problem.
+- location.line MUST be inside the file. The runner counts the real file's lines and
+  MARKS (does not reject) any finding whose line is past the end — the mark stays in the
+  saved assessment, so an invented position is visible in the report forever.
 - remediation must be specific and actionable (min ~20 chars)
-- Every finding MUST be grounded in file content present in the digest below. Do not invent file paths or line numbers you did not see. Cite real line numbers from the snippets.
+- Every finding MUST be grounded in file content present in the digest below. Do not invent file paths or line numbers you did not see. Cite the real line numbers from the gutter shown next to each line.
 - Apply the priority algorithm from the Synthesis Agent definition (severity weight x module weight x confidence) and the dependency mapping rules.
 
 The human-readable report language is: ${language}. (JSON string values in description/remediation use that language; keys stay English.)`;
@@ -267,7 +337,7 @@ function buildUserPrompt(target, digest) {
 ## File tree (${digest.tree.length} files)
 ${tree}
 
-## File contents (${digest.included.length} files, ${digest.chars} chars)${truncatedNote}${sensitiveNote}
+## File contents (${digest.included.length} files, ${digest.chars} chars — every line is prefixed with its REAL line number: \`   42 | …\`)${truncatedNote}${sensitiveNote}
 
 ${files}
 
@@ -344,6 +414,174 @@ function extractJson(text) {
   throw new Error('no JSON object found in response');
 }
 
+/* ---------- citation gate: MARK, never reject ---------- */
+/** The target repo, walked once per run through the deny-list reader (never raw fs). */
+let repoReader = null;
+function targetRepo(target) {
+  if (!repoReader) repoReader = openRepo(target);
+  return repoReader;
+}
+
+/**
+ * Mark every finding whose location.line is past the end of the file it cites.
+ *
+ * WHY MARK AND NOT REJECT: rejecting teaches the model to cite *some* real file — any real
+ * file — which is the failure the gate cannot detect (a plausible file with a plausible
+ * but wrong line). A marker is honest and stays in the document: the report shows it, the
+ * line is not silently "fixed" by the runner, and nothing is invented. `line 0` (or an
+ * absent line) is file-level: there is no line to verify, so it is skipped.
+ *
+ * The file is read through scripts/lib/repo-files.mjs (openRepo) and therefore through the
+ * sensitive-file deny-list: a finding citing ".env" gets NO line count here (and no
+ * report about its contents) because that file never enters the repo view at all. A file
+ * we cannot read (absent, withheld, binary) is left unmarked — the gate only ever states
+ * what it actually counted.
+ *
+ * Cost: local reads only, no LLM call. Measured need: ~60% of cited lines are in range on
+ * vibe-coded repos vs 100% on mature OSS (775 findings).
+ *
+ * @returns {Array<{finding: object, total: number}>} the marked findings
+ */
+function markOutOfRangeLines(candidate, repo) {
+  const marked = [];
+  if (!candidate || typeof candidate !== 'object' || !Array.isArray(candidate.findings)) return marked;
+  for (const f of candidate.findings) {
+    if (!f || typeof f !== 'object' || !f.location || typeof f.location !== 'object') continue;
+    const { file, line } = f.location;
+    if (typeof file !== 'string' || !Number.isInteger(line) || line < 1) continue; // file-level or malformed
+    const raw = repo.readFile(file);
+    if (raw === null) continue; // not in the repo view (absent/withheld/binary): nothing to count
+    const total = raw.split(/\r?\n/).length;
+    if (line > total) {
+      f.citation_check = { status: 'out-of-range', cited_line: line, file_lines: total };
+      marked.push({ finding: f, total });
+    }
+  }
+  return marked;
+}
+
+/** Numbered +/-REPAIR_WINDOW_RADIUS window around `line`, trimmed to REPAIR_WINDOW_CAP. */
+function numberedWindow(lines, line) {
+  const total = lines.length;
+  const anchor = Math.min(Math.max(line || 1, 1), total);
+  const start = Math.max(1, anchor - REPAIR_WINDOW_RADIUS);
+  const end = Math.min(total, anchor + REPAIR_WINDOW_RADIUS);
+  const width = String(total).length;
+  const rows = [];
+  for (let n = start; n <= end; n++) rows.push({ n, s: `${String(n).padStart(width)} | ${lines[n - 1]}` });
+  const size = () => rows.reduce((acc, r) => acc + r.s.length + 1, 0);
+  while (rows.length > 1 && size() > REPAIR_WINDOW_CAP) {
+    // drop whichever end sits farther from the cited line, so the window stays centred on it
+    if (Math.abs(rows[rows.length - 1].n - anchor) >= Math.abs(rows[0].n - anchor)) rows.pop();
+    else rows.shift();
+  }
+  return rows.map((r) => r.s).join('\n').slice(0, REPAIR_WINDOW_CAP);
+}
+
+/**
+ * ONE repair pass for the marked findings: re-send them with the SAME line-number gutter
+ * the digest now carries (withLineNumbers) and ask for the number that actually evidences
+ * each one. At most ONE call per candidate — whatever is still out of range afterwards
+ * keeps its `citation_check` marker: honest, not invented.
+ *
+ * The response is constrained to {"fixes":[{"id","line"}]} and ONLY `location.line` is
+ * written back, so this second LLM turn cannot rewrite severity, effort, the summary or
+ * the work plan. (The caller re-stamps anyway — see the loop — so the invariant
+ * stamp -> gate -> repair -> RE-STAMP -> validate holds even if this code ever loosens.)
+ *
+ * Budget: REPAIR_MAX_FINDINGS findings, worst citation first (line furthest past the end),
+ * so a critical citing a line that does not exist is the one that gets repaired.
+ */
+async function repairMarkedLines(opts, marked, repo) {
+  const result = { applied: [], failed: [], calls: 0, promptChars: 0, usage: null, error: null, skipped: [] };
+  // Worst citation first: the line furthest past the end is the most clearly invented, and
+  // a critical citing a line that does not exist is the one that must not survive the cap.
+  const ordered = marked
+    .slice()
+    .sort((a, b) => (b.finding.location.line - b.total) - (a.finding.location.line - a.total)
+      || String(a.finding.id).localeCompare(String(b.finding.id)));
+  const targets = ordered
+    .slice(0, REPAIR_MAX_FINDINGS)
+    .map(({ finding, total }) => ({
+      finding,
+      total,
+      window: numberedWindow((repo.readFile(finding.location.file) || '').split(/\r?\n/), finding.location.line),
+    }));
+  result.skipped = ordered.slice(REPAIR_MAX_FINDINGS).map((m) => m.finding.id);
+
+  const system = `You repair citations in a DontKillTheVibes code assessment. You run headless: no tools, no repository access beyond the numbered windows below.
+
+Each finding cites a line that does NOT exist in its file (the number is past the end). Each finding is followed by a numbered window of that file: the numbers are REAL line numbers, in the same "   42 | code" gutter the digest used.
+
+Your job, per finding:
+- Choose the line number inside that finding's window whose CONTENT best evidences the finding.
+- Never return a number that is not shown in the window, and never return 0 unless the window contains no line that evidences the finding.
+- The findings' prose may be in any language; your reply is numbers only.
+
+Reply with ONLY a JSON object: {"fixes":[{"id":"<finding id>","line":<n>}]} — exactly one entry per finding shown, no prose, no fences.`;
+
+  const blocks = [];
+  let size = system.length;
+  for (const t of targets) {
+    const block = `## ${t.finding.id}
+file: ${t.finding.location.file}
+cited line: ${t.finding.location.line} (the file has ${t.total} lines)
+description: ${t.finding.description}
+\`\`\`
+${t.window}
+\`\`\`
+
+`;
+    if (size + block.length > REPAIR_PROMPT_CAP) { result.skipped.push(t.finding.id); continue; }
+    size += block.length;
+    blocks.push(block);
+  }
+  if (!blocks.length) return result;
+  const user = `# Findings whose cited line does not exist (${blocks.length})\n\n${blocks.join('')}Reply with ONLY {"fixes":[{"id":"<finding id>","line":<n>}]}.`;
+
+  let fixList = [];
+  result.calls = 1; // one call is *attempted* even if it fails
+  result.promptChars = size + user.length;
+  try {
+    const { content, usage } = await callChat(opts, [
+      { role: 'system', content: system },
+      { role: 'user', content: user },
+    ], true);
+    result.usage = usage;
+    const parsed = extractJson(content);
+    // Accept {"fixes":[...]} or a bare array; anything else yields no fixes.
+    fixList = Array.isArray(parsed) ? parsed : Array.isArray(parsed?.fixes) ? parsed.fixes : [];
+  } catch (e) {
+    result.error = e.message;
+    console.warn(`  citation repair failed (${e.message}) — the marked lines stay marked`);
+    return result;
+  }
+
+  const fixById = new Map();
+  for (const fx of fixList) {
+    if (!fx || typeof fx !== 'object') continue;
+    const id = typeof fx.id === 'string' ? fx.id.trim() : '';
+    const line = Number.isInteger(fx.line) ? fx.line
+      : typeof fx.line === 'string' && /^\d+$/.test(fx.line.trim()) ? Number(fx.line.trim()) : null;
+    if (!id || line === null || fixById.has(id)) continue;
+    fixById.set(id, line);
+  }
+  for (const t of targets) {
+    const f = t.finding;
+    const n = fixById.get(f.id);
+    if (n === undefined) { result.failed.push({ id: f.id, line: null, reason: 'no fix returned for this id' }); continue; }
+    if (n < 1 || n > t.total) {
+      result.failed.push({ id: f.id, line: n, reason: `line ${n} is not inside 1..${t.total}` });
+      continue;
+    }
+    const from = f.location.line;
+    f.location.line = n; // ONLY the line: this pass can never touch severity/effort/summary
+    delete f.citation_check; // in range now: no marker to show
+    result.applied.push({ id: f.id, from, to: n });
+  }
+  return result;
+}
+
 /* ---------- main ---------- */
 const opts = parseArgs(process.argv.slice(2));
 if (!existsSync(opts.target)) { console.error(`--target not found: ${opts.target}`); hardExit(2); }
@@ -387,6 +625,60 @@ const messages = [
 mkdirSync(opts.out, { recursive: true });
 let lastUsage = null;
 let lastCorrected = 0; // findings whose severity/effort the registry stamped this attempt
+let lastGrade = null;  // grade of the document that was saved (letter + presentation display)
+
+/**
+ * Stamp everything the runner already knows, in place, and return the number of findings
+ * whose severity/effort had to be corrected.
+ *
+ * severity/effort are PROPERTIES OF THE RULE, not an LLM judgement — the same defect class
+ * as metadata.llm_used, which the model invented ("gpt-4", "claude-sonnet-4-5" seen in
+ * runs using other models) until the runner stamped it. A measured B2 run on the control
+ * had 14/21 findings (67%) carrying a contradicting severity; an invented severity
+ * silently rewrites the whole work plan (prioritization is severityWeight x
+ * moduleWeight x confidence). stampRuleFields never invents: it corrects only when the
+ * cited rule exists and declares the field, and never mutates its input.
+ *
+ * Called BEFORE the citation gate and AGAIN after the repair pass (M2): the repair is a
+ * second LLM turn, so anything it rewrote would otherwise be left unstamped — invented
+ * severity, stale tallies, a grade that contradicts them. Re-stamping is idempotent.
+ */
+function stampDocument(candidate) {
+  if (!candidate || typeof candidate !== 'object' || !Array.isArray(candidate.findings)) return 0;
+  let corrected = 0;
+  candidate.findings = candidate.findings.map((f) => {
+    const stamped = stampRuleFields(f, canonicalRules);
+    if (stamped !== f && (stamped.severity !== f?.severity || stamped.effort !== f?.effort)) {
+      corrected++;
+    }
+    return stamped;
+  });
+  // The validator tallies summary.by_severity / effort_estimate against the findings, so
+  // the stamped values make the model's own counts stale — rebuild them from the stamped
+  // findings or the gate would burn retries on our fix.
+  if (candidate.summary && typeof candidate.summary === 'object') {
+    const bySeverity = {};
+    const byEffort = {};
+    for (const f of candidate.findings) {
+      if (f && typeof f.severity === 'string') bySeverity[f.severity] = (bySeverity[f.severity] || 0) + 1;
+      if (f && typeof f.effort === 'string') byEffort[f.effort] = (byEffort[f.effort] || 0) + 1;
+    }
+    candidate.summary.by_severity = bySeverity;
+    candidate.summary.effort_estimate = byEffort;
+    // overall_health is stamped from the SHARED formula (worst severity present,
+    // volume-immune — scripts/lib/health-grade.mjs), never the model's judgement: the
+    // same defect class as severity/effort. Averaging severities would reward repos that
+    // pad the report with trivia. The DOCUMENT keeps the bare letter (the validator's
+    // enum is A–F); `display` (F·3) is what the CLI prints, because the letter alone
+    // saturates — 8/10 vibe-coded repos in our data score F.
+    const grade = gradeFromFindings(candidate.findings);
+    candidate.summary.overall_health = grade.letter;
+    candidate.summary.critical_count = grade.criticalCount;
+    lastGrade = grade;
+  }
+  return corrected;
+}
+
 for (let attempt = 1; attempt <= opts.maxRetries + 1; attempt++) {
   console.log(`Attempt ${attempt}/${opts.maxRetries + 1}: calling ${opts.model} ...`);
   const { content, usage, finishReason } = await callChat(opts, messages, true);
@@ -403,45 +695,9 @@ for (let attempt = 1; attempt <= opts.maxRetries + 1; attempt++) {
     messages.push({ role: 'assistant', content }, { role: 'user', content: `Your response was not parseable JSON: ${e.message}.${hint} Return ONLY the JSON object.` });
     continue;
   }
-  // Stamp the rule's declared severity/effort BEFORE validation and BEFORE saving.
-  // severity/effort are PROPERTIES OF THE RULE, not an LLM judgement — the same
-  // defect class as metadata.llm_used, which the model invented until the runner
-  // stamped it. A measured B2 run on the control had 14/21 findings (67%) carrying
-  // a contradicting severity; an invented severity silently rewrites the whole
-  // work plan (prioritization is severityWeight x moduleWeight x confidence).
-  // stampRuleFields never invents: it corrects only when the cited rule exists
-  // and declares the field, and never mutates the input.
-  lastCorrected = 0;
-  if (candidate && typeof candidate === 'object' && Array.isArray(candidate.findings)) {
-    candidate.findings = candidate.findings.map((f) => {
-      const stamped = stampRuleFields(f, canonicalRules);
-      if (stamped !== f
-        && (stamped.severity !== f?.severity || stamped.effort !== f?.effort)) {
-        lastCorrected++;
-      }
-      return stamped;
-    });
-    // The validator tallies summary.by_severity / effort_estimate against the
-    // findings, so the stamped values make the model's own counts stale — rebuild
-    // them from the stamped findings or the gate would burn retries on our fix.
-    if (candidate.summary && typeof candidate.summary === 'object') {
-      const bySeverity = {};
-      const byEffort = {};
-      for (const f of candidate.findings) {
-        if (f && typeof f.severity === 'string') bySeverity[f.severity] = (bySeverity[f.severity] || 0) + 1;
-        if (f && typeof f.effort === 'string') byEffort[f.effort] = (byEffort[f.effort] || 0) + 1;
-      }
-      candidate.summary.by_severity = bySeverity;
-      candidate.summary.effort_estimate = byEffort;
-      // overall_health is stamped from the SHARED formula (worst severity present,
-      // volume-immune — scripts/lib/health-grade.mjs), never the model's judgement:
-      // the same defect class as severity/effort. Averaging severities would reward
-      // repos that pad the report with trivia.
-      const grade = gradeFromFindings(candidate.findings);
-      candidate.summary.overall_health = grade.letter;
-      candidate.summary.critical_count = grade.criticalCount;
-    }
-  }
+
+  // 1. STAMP (rules decide severity/effort/summary/metadata).
+  lastCorrected = stampDocument(candidate);
   // Pin the rule contract to the document: the fingerprint changes on ANY rule
   // add/remove/reclass/severity change, so a saved report can always be tied to
   // the exact registry that produced (and stamped) it. Stamped only when the
@@ -450,7 +706,29 @@ for (let attempt = 1; attempt <= opts.maxRetries + 1; attempt++) {
   if (candidate && typeof candidate === 'object'
     && candidate.metadata && typeof candidate.metadata === 'object') {
     candidate.metadata.ruleset_version = rulesetFingerprint(canonicalRules);
+    // Which model actually produced this document. Same defect class as severity/effort:
+    // the model invented this field ("gpt-4", "claude-sonnet-4-5" seen in runs using
+    // other models), and the report credits a run to a model that never ran. The real
+    // value is known here, so it is stamped, never asked for. Guarded on metadata
+    // existing at all — fabricating one is the validator's job to reject, not ours.
+    candidate.metadata.llm_used = opts.model;
   }
+
+  // 2. GATE: mark (never reject) findings whose cited line is past the end of the real
+  // file, then 3. REPAIR those marks with ONE extra call. Both run against the target
+  // repo through the deny-list reader (see markOutOfRangeLines).
+  const marked = markOutOfRangeLines(candidate, targetRepo(opts.target));
+  if (marked.length) {
+    console.log(`Citation gate: ${marked.length} finding(s) cite a line past the end of the file — MARKED (not rejected); one repair pass for the worst ${Math.min(marked.length, REPAIR_MAX_FINDINGS)}`);
+    const repair = await repairMarkedLines(opts, marked, targetRepo(opts.target));
+    console.log(`  citation repair: ${repair.applied.length} re-cited, ${repair.failed.length} still marked${repair.skipped.length ? `, ${repair.skipped.length} over the ${REPAIR_MAX_FINDINGS}/call cap` : ''}${repair.error ? ` (call failed: ${repair.error})` : ''}`);
+    // 4. RE-STAMP: the repair exchanged a second LLM turn with the document. It is
+    // constrained to location.line (repairMarkedLines writes nothing else) AND the whole
+    // document is re-stamped here, so severity/effort/summary/grade can never be left
+    // describing a document the model no longer produced.
+    lastCorrected += stampDocument(candidate);
+  }
+
   const candidatePath = join(opts.out, 'assessment.candidate.json');
   writeFileSync(candidatePath, JSON.stringify(candidate, null, 2));
 
@@ -483,6 +761,9 @@ for (let attempt = 1; attempt <= opts.maxRetries + 1; attempt++) {
     // had to correct in the document that passed the gate. Target: 0 with the
     // enriched prompt; anything persistently > 0 means the model ignores the registry.
     console.log(`Rule fields stamped: ${lastCorrected} finding(s) had severity/effort corrected to the rule's declared values (ruleset ${rulesetFingerprint(canonicalRules)})`);
+    // Presentation only: the document stores the bare letter, `display` (F·3) is what a
+    // reader needs — the letter saturates (8/10 vibe-coded repos score F in our data).
+    if (lastGrade) console.log(`Overall health: ${lastGrade.display} (document stores the letter alone: "${lastGrade.letter}"; display is not part of the contract)`);
     if (lastUsage) console.log(`Tokens: ${lastUsage.prompt_tokens ?? '?'} in / ${lastUsage.completion_tokens ?? '?'} out`);
     // Human-readable report, rendered deterministically (no LLM). The JSON above is
     // the contract; the markdown is a convenience artifact. Wired against the shared
