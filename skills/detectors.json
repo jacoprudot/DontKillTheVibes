@@ -1,0 +1,1671 @@
+{
+  "$comment": "Detector sidecar for the canonical rule registry (PLAN.md, Fase 1). One entry per canonical rule id; type is mandatory: 'detector' (a deterministic tool proves the violation — tool/query/confidence required), 'juicio' (a model decides applicability AND violation with a closed question), 'fuera' (not detectable and not judgeable — declared, never deleted). Day 1: the security module (45 rules), the 'scary' starter set. The full-368 census lands in this same file. Validate with: node scripts/validate-detectors.mjs",
+  "code-any-type-6": {
+    "type": "juicio"
+  },
+  "code-bare-except-1": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match `except:` with no exception type in .py",
+    "confidence": 0.95
+  },
+  "code-bare-except-with-others-2": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match try block containing both typed except clauses and a bare `except:`",
+    "confidence": 0.9
+  },
+  "code-blocking-in-goroutine-3": {
+    "type": "juicio"
+  },
+  "code-boilerplate-repetition-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "flag identical >=5-line blocks present in > 80% of files of a directory",
+    "confidence": 0.7
+  },
+  "code-boolean-parameter-plague-11": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "count boolean-typed parameters per function signature; flag > 3",
+    "confidence": 0.9
+  },
+  "code-callback-hell-10": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match >= 3 levels of nested callback function arguments",
+    "confidence": 0.8
+  },
+  "code-catch-and-continue-9": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "catch block containing `continue` nested inside a loop",
+    "confidence": 0.75
+  },
+  "code-channel-not-closed-5": {
+    "type": "juicio"
+  },
+  "code-console-log-7": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match console.log/debug/info calls, excluding test/spec files",
+    "confidence": 0.85
+  },
+  "code-copy-paste-variant-6": {
+    "type": "juicio"
+  },
+  "code-deep-inheritance-9": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "build class hierarchy per module; flag inheritance chains > 5 levels",
+    "confidence": 0.9
+  },
+  "code-empty-catch-1": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "catch clause with empty body: `catch (...) {}` / `except: pass`",
+    "confidence": 0.95
+  },
+  "code-error-assigned-unused-2": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "in .go, match `err` assigned via := and never referenced afterwards (go vet staticcheck-style)",
+    "confidence": 0.9
+  },
+  "code-exact-duplication-massive-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "hash normalized line blocks; flag exact blocks >= 30 lines repeated in different files",
+    "confidence": 0.9
+  },
+  "code-exact-duplication-minor-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "hash normalized line blocks; flag exact blocks >= 10 lines repeated in different files",
+    "confidence": 0.85
+  },
+  "code-exact-duplication-significant-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "hash normalized line blocks; flag exact blocks >= 20 lines repeated in different files",
+    "confidence": 0.9
+  },
+  "code-extreme-complexity-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "compute cyclomatic complexity per function (branches+loops+cases+&&/||); flag > 20",
+    "confidence": 0.95
+  },
+  "code-extreme-length-6": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "count lines per function/method body; flag > 150",
+    "confidence": 0.9
+  },
+  "code-extreme-nesting-4": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match control-flow blocks nested > 5 levels deep (if/for/while/try inside each other)",
+    "confidence": 0.9
+  },
+  "code-generic-catch-2": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "catch of Exception/BaseException (or catch-all) whose body contains no throw/rethrow/raise",
+    "confidence": 0.85
+  },
+  "code-god-object-6": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "per class: count methods (>30) or class body lines (>2000); flag either",
+    "confidence": 0.9
+  },
+  "code-god-package-9": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "count .go files per package directory; flag > 50",
+    "confidence": 0.95
+  },
+  "code-high-complexity-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "compute cyclomatic complexity per function; flag > 15",
+    "confidence": 0.95
+  },
+  "code-high-nesting-5": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match control-flow blocks nested > 4 levels deep",
+    "confidence": 0.9
+  },
+  "code-ignores-return-value-6": {
+    "type": "juicio"
+  },
+  "code-interface-bloat-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "count methods declared per Go interface; flag > 10",
+    "confidence": 0.95
+  },
+  "code-logs-secrets-10": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match logging calls whose arguments reference identifiers/keys matching password|token|secret|apikey|credential",
+    "confidence": 0.7
+  },
+  "code-long-function-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "count lines per function/method body; flag > 100",
+    "confidence": 0.9
+  },
+  "code-long-parameter-list-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "count parameters per function signature; flag > 5",
+    "confidence": 0.9
+  },
+  "code-loose-equality-1": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match binary `==`/`!=` operators excluding `===`/`!==` in .js/.ts",
+    "confidence": 0.85
+  },
+  "code-loose-inequality-2": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match binary `!=` operator excluding `!==` in .js/.ts",
+    "confidence": 0.85
+  },
+  "code-many-params-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "count parameters per function signature; flag > 5",
+    "confidence": 0.95
+  },
+  "code-map-lookup-unchecked-7": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "in .go, match single-value map index assignment without the `, ok` two-value form",
+    "confidence": 0.85
+  },
+  "code-medium-length-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "count lines per function/method body; flag > 50",
+    "confidence": 0.9
+  },
+  "code-missing-docstring-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "in .py, list public functions/classes (no leading _) lacking a docstring",
+    "confidence": 0.8
+  },
+  "code-missing-error-main-10": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "in .go, match calls in func main() to functions returning error not wrapped in if err != nil",
+    "confidence": 0.8
+  },
+  "code-missing-return-type-8": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "in .ts files, match exported/public function declarations without return type annotation",
+    "confidence": 0.7
+  },
+  "code-missing-validation-4": {
+    "type": "juicio"
+  },
+  "code-moderate-complexity-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "compute cyclomatic complexity per function; flag > 10",
+    "confidence": 0.95
+  },
+  "code-multiple-return-points-12": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "count return statements per function body; flag > 6",
+    "confidence": 0.9
+  },
+  "code-mutable-default-3": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match function defaults that are list/dict/set literals or calls ([]/{}/set()) in .py",
+    "confidence": 0.95
+  },
+  "code-mutex-missing-4": {
+    "type": "juicio"
+  },
+  "code-nested-ternary-9": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match ternary whose else/alternative branch is another ternary expression",
+    "confidence": 0.9
+  },
+  "code-null-instead-of-exception-3": {
+    "type": "juicio"
+  },
+  "code-print-statement-5": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match `print(...)` calls in .py outside if __name__ == '__main__' blocks",
+    "confidence": 0.8
+  },
+  "code-print-statement-8": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match System.out.println/System.err.println calls in production source",
+    "confidence": 0.9
+  },
+  "code-promise-chain-missing-catch-5": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match promise chains with >=1 .then() and no .catch()/.finally() termination",
+    "confidence": 0.8
+  },
+  "code-slice-append-in-loop-6": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "in .go, match `x = append(x, ...)` inside a for loop without prior make with capacity",
+    "confidence": 0.85
+  },
+  "code-sql-injection-risk-4": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match string concatenation or f-strings/interpolation inside SQL query assignments/executes",
+    "confidence": 0.75
+  },
+  "code-structural-duplication-high-4": {
+    "type": "juicio"
+  },
+  "code-structural-duplication-medium-5": {
+    "type": "juicio"
+  },
+  "code-system-exit-misuse-5": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match System.exit(...)/os.exit(...)/sys.exit(...) calls outside main/entrypoint files",
+    "confidence": 0.85
+  },
+  "code-too-many-attributes-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "count instance attributes assigned in __init__ per class; flag > 20",
+    "confidence": 0.85
+  },
+  "code-too-many-params-9": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "count parameters per function signature; flag > 7",
+    "confidence": 0.95
+  },
+  "code-unchecked-error-1": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "in .go, match call statements to functions returning error whose result is discarded (errcheck-style)",
+    "confidence": 0.85
+  },
+  "code-unhandled-promise-4": {
+    "type": "juicio"
+  },
+  "code-var-usage-3": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "match `var <id> = ...` declarations in .js/.ts",
+    "confidence": 0.95
+  },
+  "code-warning-suppression-7": {
+    "type": "juicio"
+  },
+  "cost-api-deprecated-endpoint-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "URLs hardcodeadas de endpoints de API versionados como obsoletos (p.ej. api.twitter.com/1.1/, graph.facebook.com/v11 o anterior)",
+    "confidence": 0.7
+  },
+  "cost-api-in-loop-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Bucles for/forEach/while que contienen llamadas a clientes HTTP/SDK externos (fetch/axios/stripe/sendGrid...)",
+    "confidence": 0.6
+  },
+  "cost-api-no-client-rate-limit-4": {
+    "type": "juicio"
+  },
+  "cost-api-no-idempotency-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Llamadas a APIs de pago (stripe.charges.../payment_intents) sin parámetro o header idempotency-key",
+    "confidence": 0.6
+  },
+  "cost-api-no-response-cache-5": {
+    "type": "juicio"
+  },
+  "cost-api-no-retry-strategy-8": {
+    "type": "juicio"
+  },
+  "cost-api-no-usage-monitoring-9": {
+    "type": "juicio"
+  },
+  "cost-api-wrong-tier-6": {
+    "type": "juicio"
+  },
+  "cost-db-backup-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Scripts/config de backup (cron, pg_dump, scripts/*.sh) con backup full diario y sin flag de backup incremental",
+    "confidence": 0.65
+  },
+  "cost-db-growth-3": {
+    "type": "fuera"
+  },
+  "cost-db-no-pooling-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Código de conexión a base de datos (new Client/createConnection) sin pool ni librería/config de pooling (pg.Pool, HikariCP, max connections)",
+    "confidence": 0.6
+  },
+  "cost-db-pool-5": {
+    "type": "fuera"
+  },
+  "cost-deprecated-version-10": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "query": "osv-scanner/npm-audit sobre lockfiles: dependencias en versiones deprecated o sin soporte (EOL)",
+    "confidence": 0.85
+  },
+  "cost-dev-setup-missing-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Ausencia de artefactos de setup local enumerables (docker-compose.yml, Makefile dev target, scripts/dev*, 'dev' en package.json scripts)",
+    "confidence": 0.75
+  },
+  "cost-documentation-poor-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Ausencia de docs enumerables (README.md sin secciones, docs/ vacío o sin commits en >6 meses según git-log)",
+    "confidence": 0.65
+  },
+  "cost-export-restriction-8": {
+    "type": "fuera"
+  },
+  "cost-flaky-tests-5": {
+    "type": "fuera"
+  },
+  "cost-gha-always-on-8": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "En .github/workflows/*.yml, triggers on.push/on.pull_request sin filtro branches (corre en todas las ramas)",
+    "confidence": 0.85
+  },
+  "cost-gha-concurrent-limit-7": {
+    "type": "juicio"
+  },
+  "cost-gha-expensive-runner-4": {
+    "type": "juicio"
+  },
+  "cost-gha-high-usage-1": {
+    "type": "fuera"
+  },
+  "cost-gha-infinite-artifacts-6": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "En .github/workflows/*.yml, actions/upload-artifact sin retention-days (o retention-days ausente a nivel workflow)",
+    "confidence": 0.75
+  },
+  "cost-gha-matrix-inefficient-10": {
+    "type": "juicio"
+  },
+  "cost-gha-no-dependency-cache-5": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "En .github/workflows/*.yml con steps de install (npm/pip/etc.), ausencia de actions/cache o clave cache: en actions/setup-*",
+    "confidence": 0.8
+  },
+  "cost-gha-no-timeout-9": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "En .github/workflows/*.yml, jobs sin timeout-minutes (ni a nivel job ni workflow)",
+    "confidence": 0.9
+  },
+  "cost-gha-public-usage-2": {
+    "type": "fuera"
+  },
+  "cost-gha-wasteful-retries-3": {
+    "type": "fuera"
+  },
+  "cost-license-attribution-missing-2": {
+    "type": "detector",
+    "tool": "license-scan",
+    "query": "license-scan de deps con licencias que exigen atribución (MIT/BSD/Apache) + grep de NOTICES/attribution en docs/ y README",
+    "confidence": 0.7
+  },
+  "cost-license-incompatible-1": {
+    "type": "detector",
+    "tool": "license-scan",
+    "query": "license-scan sobre package.json/manifestos: dependencia con licencia copyleft (GPL/AGPL/SSPL) en software comercial",
+    "confidence": 0.9
+  },
+  "cost-license-share-alike-3": {
+    "type": "detector",
+    "tool": "license-scan",
+    "query": "license-scan: dependencia GPL/AGPL/SSPL presente en manifestos del proyecto",
+    "confidence": 0.7
+  },
+  "cost-llm-high-usage-1": {
+    "type": "fuera"
+  },
+  "cost-llm-very-high-usage-2": {
+    "type": "fuera"
+  },
+  "cost-missing-cdn-7": {
+    "type": "juicio"
+  },
+  "cost-no-automated-tests-4": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "En .github/workflows/*.yml, workflows de CI sin step que ejecute tests (npm test, pytest, mvn test, go test)",
+    "confidence": 0.8
+  },
+  "cost-no-code-review-6": {
+    "type": "fuera"
+  },
+  "cost-no-http-compression-9": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En nginx.conf/httpd/server config del repo, ausencia de 'gzip on' o 'brotli on' en bloques que sirven respuestas",
+    "confidence": 0.7
+  },
+  "cost-no-knowledge-sharing-8": {
+    "type": "fuera"
+  },
+  "cost-no-license-tracking-5": {
+    "type": "detector",
+    "tool": "license-scan",
+    "query": "Ausencia en el repo de config/herramienta de compliance de licencias (fossa.yml, .snyk license config, license-check script en CI)",
+    "confidence": 0.7
+  },
+  "cost-no-oss-policy-9": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Ausencia de artefacto de política OSS enumerable (OSS-POLICY.md, docs/open-source-policy, sección LICENSE-POLICY)",
+    "confidence": 0.65
+  },
+  "cost-no-performance-budget-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Ausencia de configuración de performance budget enumerable (budgets en lighthouserc, .perf budget config, bundlesize en package.json)",
+    "confidence": 0.65
+  },
+  "cost-non-commercial-use-6": {
+    "type": "detector",
+    "tool": "license-scan",
+    "query": "license-scan: dependencias con licencias non-commercial (CC-BY-NC, Commons Clause, Elastic License, BUSL) en deps de producción",
+    "confidence": 0.75
+  },
+  "cost-overprovisioned-k8s-1": {
+    "type": "fuera"
+  },
+  "cost-overprovisioned-k8s-limits-2": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "En manifiestos k8s/helm, resources.limits.cpu/mem > 2x resources.requests.cpu/mem consistentemente",
+    "confidence": 0.65
+  },
+  "cost-patent-risk-4": {
+    "type": "fuera"
+  },
+  "cost-redis-as-db-6": {
+    "type": "juicio"
+  },
+  "cost-slow-build-1": {
+    "type": "fuera"
+  },
+  "cost-slow-tests-2": {
+    "type": "fuera"
+  },
+  "cost-technical-debt-high-9": {
+    "type": "fuera"
+  },
+  "cost-trademark-risk-7": {
+    "type": "juicio"
+  },
+  "cost-unoptimized-images-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Imágenes servidas (assets/, public/) >500KB en formatos no optimizados (JPG/PNG) sin pipeline de optimización en build config",
+    "confidence": 0.6
+  },
+  "database-connection-timeout-high-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Buscar claves connectionTimeout/connection-timeout/timeout en configs de DB con valor > 30000 (ms)",
+    "confidence": 0.85
+  },
+  "database-effective-cache-misconfigured-4": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "postgresql.conf: 'effective_cache_size' presente con valor claramente bajo (<25% de la RAM visible en Dockerfile/infra)",
+    "confidence": 0.6
+  },
+  "database-full-table-scan-3": {
+    "type": "fuera"
+  },
+  "database-heavy-migration-5": {
+    "type": "fuera"
+  },
+  "database-idle-timeout-missing-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En configs de pool conocidos (HikariCP, pg, Prisma datasource) comprobar ausencia de idleTimeout/idle_timeout",
+    "confidence": 0.78
+  },
+  "database-index-bloat-7": {
+    "type": "fuera"
+  },
+  "database-irreversible-migration-1": {
+    "type": "juicio"
+  },
+  "database-irreversible-migration-2": {
+    "type": "juicio"
+  },
+  "database-iteration-overload-5": {
+    "type": "juicio"
+  },
+  "database-lazy-loading-danger-3": {
+    "type": "fuera"
+  },
+  "database-lock-timeout-missing-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En configs de DB/ORM comprobar ausencia de lock_timeout",
+    "confidence": 0.8
+  },
+  "database-maintenance-work-mem-too-low-3": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "postgresql.conf: 'maintenance_work_mem' con valor < 256MB (regex 'maintenance_work_mem\\s*=\\s*([0-9]+)MB' comparado)",
+    "confidence": 0.7
+  },
+  "database-max-lifetime-missing-5": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En configs de pool conocidos comprobar ausencia de maxLifetime/max_lifetime/connectionLifetime",
+    "confidence": 0.78
+  },
+  "database-missing-app-pool-8": {
+    "type": "juicio"
+  },
+  "database-missing-bloat-monitoring-5": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Grep en repo de artefactos de monitoreo de bloat: 'bloat' en scripts SQL, cron, CI o migraciones; flag si ausente",
+    "confidence": 0.6
+  },
+  "database-missing-composite-index-5": {
+    "type": "fuera"
+  },
+  "database-missing-index-fk-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Parsear schema (*.sql, schema.prisma, models.py) y comprobar que cada columna FK/relation tenga un índice (@@index / CREATE INDEX) que la cubra",
+    "confidence": 0.9
+  },
+  "database-missing-index-hot-path-2": {
+    "type": "fuera"
+  },
+  "database-missing-index-where-4": {
+    "type": "fuera"
+  },
+  "database-missing-prefetch-4": {
+    "type": "juicio"
+  },
+  "database-n-plus-one-confirmed-2": {
+    "type": "fuera"
+  },
+  "database-n-plus-one-risk-1": {
+    "type": "juicio"
+  },
+  "database-not-null-violation-4": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "En **/migrations/**: patrón 'ALTER TABLE ... ADD COLUMN ... NOT NULL' sin 'DEFAULT' en la misma sentencia",
+    "confidence": 0.88
+  },
+  "database-overfetch-relation-1": {
+    "type": "juicio"
+  },
+  "database-oversized-pool-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Extraer pool size de config (maximum-pool-size, connection_limit, pool_size) y cores de Dockerfile/infra; flag si size > cores*4",
+    "confidence": 0.65
+  },
+  "database-pg-stat-statements-disabled-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En postgresql.conf / supabase config: flag si 'pg_stat_statements' no aparece en shared_preload_libraries",
+    "confidence": 0.65
+  },
+  "database-risky-migration-3": {
+    "type": "juicio"
+  },
+  "database-sequential-pagination-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Buscar 'await <model>.count()' seguido (≤5 líneas) de 'await <model>.findMany()' en el mismo handler sin Promise.all",
+    "confidence": 0.8
+  },
+  "database-statement-timeout-missing-9": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En configs de DB/ORM (postgresql.conf, prisma, knex, pool settings) comprobar ausencia de statement_timeout",
+    "confidence": 0.8
+  },
+  "database-undersized-pool-2": {
+    "type": "juicio"
+  },
+  "database-unused-indexes-6": {
+    "type": "fuera"
+  },
+  "database-work-mem-too-low-2": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "postgresql.conf: 'work_mem' con valor < 64MB (regex 'work_mem\\s*=\\s*([0-9]+)MB' comparado)",
+    "confidence": 0.7
+  },
+  "flows-auth-order-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En el archivo que registra app.use(...), verificar que ningún middleware cuyo nombre contiene validate/validation aparezca antes de uno que contiene auth/authenticate/jwt.",
+    "confidence": 0.7
+  },
+  "flows-consumer-group-lag-3": {
+    "type": "fuera"
+  },
+  "flows-dlq-not-monitored-5": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "En configs de infra (CloudFormation/Terraform), buscar alarmas/métricas que referencien la DLQ; ausencia de cualquier recurso de alerta sobre la DLQ = violación.",
+    "confidence": 0.55
+  },
+  "flows-dlq-on-repeat-failures-10": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "Verificar redrive policy / maxReceiveCount / deadLetterTargetArn en la definición de la cola; ausencia de política de dead-letter tras fallos repetidos = violación.",
+    "confidence": 0.65
+  },
+  "flows-error-leaks-stack-6": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "semgrep -e 'res.$METHOD(...).$SEND({..., stack: $ERR.stack, ...})' o cualquier $ERR.stack en el payload de respuesta de error.",
+    "confidence": 0.75
+  },
+  "flows-fire-and-forget-critical-1": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "semgrep: llamadas a métodos que matchean /payment|charge|transaction|order/i cuyo resultado no se asigna ni se usa await/return (promesa flotante).",
+    "confidence": 0.6
+  },
+  "flows-inconsistent-response-4": {
+    "type": "juicio"
+  },
+  "flows-message-breaking-schema-2": {
+    "type": "detector",
+    "tool": "git-log",
+    "query": "git diff entre versiones sucesivas del archivo de esquema del evento: reportar campos requeridos eliminados o cambiados de tipo.",
+    "confidence": 0.6
+  },
+  "flows-message-not-compressed-10": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "En configs de broker/productor (Kafka compression.codec, SNS/SQS attributes), verificar compresión habilitada; ausencia = violación.",
+    "confidence": 0.65
+  },
+  "flows-message-not-encrypted-9": {
+    "type": "juicio"
+  },
+  "flows-message-not-idempotent-8": {
+    "type": "juicio"
+  },
+  "flows-message-ordering-needed-4": {
+    "type": "juicio"
+  },
+  "flows-message-retention-too-long-7": {
+    "type": "juicio"
+  },
+  "flows-message-retention-too-short-6": {
+    "type": "juicio"
+  },
+  "flows-message-schema-no-version-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En interfaces/types/JSON-schema de eventos (producer/consumer), verificar campo version o $id versionado; ausencia = violación.",
+    "confidence": 0.6
+  },
+  "flows-missing-circuit-breaker-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Si package.json contiene clientes HTTP pero ninguna dependencia/uso de circuit breaker (opossum, circuit-breaker-js, cockatiel) = violación.",
+    "confidence": 0.6
+  },
+  "flows-missing-cors-9": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Buscar uso de cors() en middleware o dependencia 'cors' en package.json; ausencia de ambos = violación.",
+    "confidence": 0.7
+  },
+  "flows-missing-dlq-2": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "En definiciones de colas (SQS deadLetterTargetArn, RabbitMQ dead-letter-exchange, Kafka), verificar que exista configuración de DLQ; ausencia = violación.",
+    "confidence": 0.65
+  },
+  "flows-missing-error-handler-5": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Buscar en bootstrap del servidor (express app) un middleware de 4 argumentos (err,req,res,next) o import de errorHandler; ausencia total = violación.",
+    "confidence": 0.6
+  },
+  "flows-missing-idempotency-3": {
+    "type": "juicio"
+  },
+  "flows-missing-rate-limit-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Buscar registro de middleware rateLimit/rate-limit (express-rate-limit, koa-ratelimit, etc.) en app.use o en rutas; ausencia total = violación.",
+    "confidence": 0.65
+  },
+  "flows-missing-request-id-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Buscar 'x-request-id' o dependencias express-request-id|uuid usadas como middleware en el bootstrap; ausencia = violación.",
+    "confidence": 0.6
+  },
+  "flows-missing-security-headers-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Buscar helmet o middleware que fije headers de seguridad (HSTS, CSP, X-Frame-Options) en el bootstrap; ausencia = violación.",
+    "confidence": 0.7
+  },
+  "flows-missing-timeout-6": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "semgrep: llamadas axios/fetch/http.request/https.get sin opción timeout o signal AbortSignal.timeout.",
+    "confidence": 0.65
+  },
+  "flows-missing-visibility-timeout-9": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "En definiciones SQS (CloudFormation/Terraform) verificar que la cola tenga la propiedad VisibilityTimeout configurada; ausencia = violación.",
+    "confidence": 0.7
+  },
+  "flows-n8n-code-node-format-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En nodos Code/Function de workflows n8n, evaluar functionCode: si el return final no produce [{json: {...}}] = violación.",
+    "confidence": 0.8
+  },
+  "flows-n8n-hardcoded-secrets-7": {
+    "type": "detector",
+    "tool": "gitleaks",
+    "query": "gitleaks detect --source workflows/ sobre los JSON: patrones generic-api-key/assigned tokens en parameters y functionCode.",
+    "confidence": 0.9
+  },
+  "flows-n8n-no-changelog-9": {
+    "type": "juicio"
+  },
+  "flows-n8n-no-error-handling-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En workflow JSON n8n: ningún nodo de tipo errorTrigger ni settings.onError definido en ningún nodo = violación.",
+    "confidence": 0.85
+  },
+  "flows-n8n-no-logging-8": {
+    "type": "juicio"
+  },
+  "flows-n8n-no-retry-5": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En nodos de acción n8n (httpRequest), verificar settings.retryOnFail === true; ausencia/false = violación.",
+    "confidence": 0.8
+  },
+  "flows-n8n-no-timeout-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En nodos httpRequest de workflows n8n, verificar parameters.options.timeout; ausencia = violación.",
+    "confidence": 0.8
+  },
+  "flows-n8n-no-validation-6": {
+    "type": "juicio"
+  },
+  "flows-n8n-schedule-format-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En nodos ScheduleTrigger, verificar que triggerIntervals/minutes/hours sean arrays; formato string ('every 5 minutes') = violación.",
+    "confidence": 0.85
+  },
+  "flows-n8n-too-many-nodes-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Contar nodes[].length en cada workflow JSON n8n; longitud > umbral (p.ej. 30) = violación.",
+    "confidence": 0.8
+  },
+  "flows-ngrx-selectors-not-memoized-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Buscar definiciones de selectores (createSelector ausente) que computan derivaciones sobre el store sin memoización; selector exportado sin envoltura createSelector = violación.",
+    "confidence": 0.7
+  },
+  "flows-no-schema-registry-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Si hay productores/consumidores de eventos pero no hay cliente/config de schema registry (confluent, glue, apicurio) en deps ni en código = violación.",
+    "confidence": 0.65
+  },
+  "flows-no-state-persistence-6": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Si existe store redux/vuex pero no hay redux-persist/vuex-persistedstate ni lógica de hydration en el bootstrap; ausencia = violación.",
+    "confidence": 0.65
+  },
+  "flows-no-time-travel-9": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En configuración del store (createStore/configureStore/StoreModule.forRoot), verificar devTools/StoreDevtools habilitado; ausencia = violación.",
+    "confidence": 0.75
+  },
+  "flows-redux-mutates-state-1": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "semgrep: dentro de funciones reducer, mutaciones directas (state.$X.push/splice/sort, state.$X.$Y =) en vez de retornar nuevo objeto.",
+    "confidence": 0.8
+  },
+  "flows-redux-side-effects-2": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "semgrep: llamadas fetch/axios/Date.now()/Math.random()/localStorage dentro de funciones reducer.",
+    "confidence": 0.75
+  },
+  "flows-retry-no-backoff-4": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "semgrep: bucle/función de reintento sin setTimeout/sleep/delay entre intentos (retry inmediato en catch).",
+    "confidence": 0.7
+  },
+  "flows-retry-no-max-5": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "semgrep: bucle de reintento sin límite (while(true)/for sin maxAttempts, attempts sin comparación de tope antes de reintentar).",
+    "confidence": 0.65
+  },
+  "flows-state-excessive-nesting-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Medir profundidad de propiedades en el initial state del store; profundidad > 3 niveles (state.a.b.c.d) = violación.",
+    "confidence": 0.7
+  },
+  "flows-state-expensive-update-5": {
+    "type": "juicio"
+  },
+  "flows-state-inefficient-access-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Buscar useSelector/mapState con función identidad (state => state) o que retorna el store completo sin selección de campo.",
+    "confidence": 0.6
+  },
+  "flows-state-missing-defaults-10": {
+    "type": "juicio"
+  },
+  "flows-validation-placement-2": {
+    "type": "juicio"
+  },
+  "flows-validation-too-early-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Verificar orden de app.use(): express.json()/bodyParser debe aparecer antes que cualquier middleware de validación (nombre con validate/schema).",
+    "confidence": 0.65
+  },
+  "flows-vuex-denormalized-state-3": {
+    "type": "juicio"
+  },
+  "github-commit-history-1": {
+    "type": "detector",
+    "tool": "git-log",
+    "query": "git log --since='26 weeks ago' --format=%H | wc -l, dividir por 26; viola si commits/semana < 2",
+    "confidence": 0.9
+  },
+  "github-commit-history-10": {
+    "type": "detector",
+    "tool": "git-log",
+    "query": "git log --format=%ad --date=format-local:'%H' | awk '$1<6' | conteo / total > umbral (p.ej. 0.2)",
+    "confidence": 0.85
+  },
+  "github-commit-history-2": {
+    "type": "detector",
+    "tool": "git-log",
+    "query": "git log --since='26 weeks ago' --format=%H | wc -l, dividir por 26; viola si commits/semana > 20",
+    "confidence": 0.9
+  },
+  "github-commit-history-3": {
+    "type": "detector",
+    "tool": "git-log",
+    "query": "git log --format=%s | grep -ciE '^(refactor|refact)(\\(.+\\))?!?:' (o keyword refactor) / total commits > 0.30",
+    "confidence": 0.65
+  },
+  "github-commit-history-4": {
+    "type": "detector",
+    "tool": "git-log",
+    "query": "git log --format=%s | grep -ciE '^(feat|feature|add)(\\(.+\\))?!?:|^[a-z]+: add ' / total commits > 0.50",
+    "confidence": 0.65
+  },
+  "github-commit-history-5": {
+    "type": "detector",
+    "tool": "git-log",
+    "query": "git log --format=%s | grep -ciE '^(fix|bug|bugfix|hotfix)(\\(.+\\))?!?:' / total commits > 0.40",
+    "confidence": 0.65
+  },
+  "github-commit-history-6": {
+    "type": "detector",
+    "tool": "git-log",
+    "query": "git rev-list --count HEAD --merges / git rev-list --count HEAD > 0.50",
+    "confidence": 0.95
+  },
+  "github-commit-history-7": {
+    "type": "detector",
+    "tool": "git-log",
+    "query": "contar commits no-merge con asunto matching /\\(#[0-9]+\\)\\s*$/ (squash squash-PR); viola si /(merges + squash) > 0.70",
+    "confidence": 0.6
+  },
+  "github-commit-history-8": {
+    "type": "detector",
+    "tool": "git-log",
+    "query": "fracción de git log --format=%s que casa ^(feat|fix|chore|docs|style|refactor|perf|test|build|ci|revert)(\\(.+\\))?!?: ; emite si ≥ 0.8",
+    "confidence": 0.9
+  },
+  "github-commit-history-9": {
+    "type": "detector",
+    "tool": "git-log",
+    "query": "promedio de (added+deleted) por commit vía git log --numstat --format='COMMIT'; viola si media > 500 líneas",
+    "confidence": 0.9
+  },
+  "github-issue-health-1": {
+    "type": "fuera"
+  },
+  "github-issue-health-10": {
+    "type": "fuera"
+  },
+  "github-issue-health-11": {
+    "type": "fuera"
+  },
+  "github-issue-health-12": {
+    "type": "fuera"
+  },
+  "github-issue-health-2": {
+    "type": "fuera"
+  },
+  "github-issue-health-3": {
+    "type": "fuera"
+  },
+  "github-issue-health-4": {
+    "type": "fuera"
+  },
+  "github-issue-health-5": {
+    "type": "fuera"
+  },
+  "github-issue-health-6": {
+    "type": "fuera"
+  },
+  "github-issue-health-7": {
+    "type": "fuera"
+  },
+  "github-issue-health-8": {
+    "type": "fuera"
+  },
+  "github-issue-health-9": {
+    "type": "fuera"
+  },
+  "github-log-pattern-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "glob **/*.log en el repo O dep/config de logging (winston|pino|log4j|logback|logging.yaml); emite si existe alguno",
+    "confidence": 0.85
+  },
+  "github-log-pattern-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "primera línea no vacía de cada *.log parsea como JSON, o config de logging declara formatter JSON; emite si cumple",
+    "confidence": 0.7
+  },
+  "github-log-pattern-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "normalizar líneas de error de *.log (reemplazar hex/fechas/números) y contar firmas; viola si una firma cubre >5% de las líneas de error",
+    "confidence": 0.65
+  },
+  "github-log-pattern-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "regex de access log (\\b(GET|POST|PUT|DELETE)\\b .* HTTP/1\\.[01]\" [0-9]{3}) sobre *.log; emite si hay coincidencias",
+    "confidence": 0.65
+  },
+  "github-log-pattern-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "grep -iE '(401|403|auth(entication|orization) (failed|error)|invalid (token|credentials))' sobre *.log del repo",
+    "confidence": 0.7
+  },
+  "github-log-pattern-5": {
+    "type": "juicio"
+  },
+  "github-log-pattern-6": {
+    "type": "juicio"
+  },
+  "github-log-pattern-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "buscar config de rotación/retención (logrotate|maxFiles|maxSize|retention|rotation) en archivos de logging del repo; emite si existe",
+    "confidence": 0.75
+  },
+  "github-log-pattern-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "buscar shippers/agregadores (filebeat|fluentd|promtail|logstash|cloudwatch|loki|elk) en package.json/deps y configs",
+    "confidence": 0.7
+  },
+  "github-log-pattern-9": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "ausencia de **/*.log y de deps/config de logging en el repo (negación de github-log-pattern-1)",
+    "confidence": 0.8
+  },
+  "performance-cache-eviction-high-20": {
+    "type": "fuera"
+  },
+  "performance-cache-miss-rate-19": {
+    "type": "fuera"
+  },
+  "performance-cap-exceeded-in-6mo-1": {
+    "type": "fuera"
+  },
+  "performance-cpu-hotspot-1": {
+    "type": "fuera"
+  },
+  "performance-cpu-kernel-heavy-2": {
+    "type": "fuera"
+  },
+  "performance-db-bottleneck-7": {
+    "type": "fuera"
+  },
+  "performance-db-index-overuse-6": {
+    "type": "fuera"
+  },
+  "performance-db-no-pooling-1": {
+    "type": "juicio"
+  },
+  "performance-db-pool-oversized-7": {
+    "type": "fuera"
+  },
+  "performance-dns-lookup-14": {
+    "type": "fuera"
+  },
+  "performance-encryption-12": {
+    "type": "fuera"
+  },
+  "performance-external-api-8": {
+    "type": "fuera"
+  },
+  "performance-gc-major-pause-5": {
+    "type": "fuera"
+  },
+  "performance-gc-pressure-4": {
+    "type": "fuera"
+  },
+  "performance-http-no-pooling-2": {
+    "type": "juicio"
+  },
+  "performance-image-processing-11": {
+    "type": "fuera"
+  },
+  "performance-io-bound-sync-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Grep por readFileSync|writeFileSync|fs\\.sync|execSync en codigo de servidor; presencia de I/O sincronica en paths de request es la violacion",
+    "confidence": 0.75
+  },
+  "performance-lock-contention-6": {
+    "type": "fuera"
+  },
+  "performance-log-retention-too-long-8": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "Inspeccionar configs de logging/observabilidad (loki, elasticsearch, cloudwatch, logrotate) por politica de retencion; si no hay retention/rotation configurada, viola",
+    "confidence": 0.6
+  },
+  "performance-log-retention-too-short-9": {
+    "type": "juicio"
+  },
+  "performance-long-critical-path-1": {
+    "type": "juicio"
+  },
+  "performance-memory-leak-3": {
+    "type": "fuera"
+  },
+  "performance-no-adaptive-concurrency-9": {
+    "type": "juicio"
+  },
+  "performance-no-adaptive-timeout-6": {
+    "type": "juicio"
+  },
+  "performance-no-backpressure-10": {
+    "type": "juicio"
+  },
+  "performance-no-bulkhead-5": {
+    "type": "juicio"
+  },
+  "performance-no-chaos-engineering-4": {
+    "type": "juicio"
+  },
+  "performance-no-checkpointing-7": {
+    "type": "juicio"
+  },
+  "performance-no-circuit-breaker-4": {
+    "type": "juicio"
+  },
+  "performance-no-compression-13": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "Buscar directivas de compresion (gzip/brotli/deflate on) en configs de servidor (nginx.conf, server.yaml, *.properties); si ningun config del repo habilita compresion para responses, viola",
+    "confidence": 0.6
+  },
+  "performance-no-connection-pool-7": {
+    "type": "juicio"
+  },
+  "performance-no-cost-perf-tradeoff-8": {
+    "type": "juicio"
+  },
+  "performance-no-data-archiving-10": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "Buscar lifecycle/transition policies (S3 lifecycle, ILM, archival tier) en IaC/configs de almacenamiento; ausencia total indica sin estrategia de archivo",
+    "confidence": 0.6
+  },
+  "performance-no-error-budget-7": {
+    "type": "juicio"
+  },
+  "performance-no-graceful-degradation-7": {
+    "type": "juicio"
+  },
+  "performance-no-internal-compression-3": {
+    "type": "juicio"
+  },
+  "performance-no-keep-alive-9": {
+    "type": "juicio"
+  },
+  "performance-no-lb-round-robin-8": {
+    "type": "juicio"
+  },
+  "performance-no-load-testing-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Buscar artefactos de load testing en el repo: scripts k6/locust/artillery/wrk, jobs de CI con benchmark/load; ausencia total indica sin estrategia",
+    "confidence": 0.7
+  },
+  "performance-no-partitioning-8": {
+    "type": "juicio"
+  },
+  "performance-no-perf-budgets-10": {
+    "type": "fuera"
+  },
+  "performance-no-pipelining-5": {
+    "type": "juicio"
+  },
+  "performance-no-priority-queuing-10": {
+    "type": "juicio"
+  },
+  "performance-no-regression-detection-5": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Buscar en .github/workflows y scripts pasos de benchmark/regression (comparacion contra baseline, benchmark CI); ausencia indica sin deteccion de regresiones",
+    "confidence": 0.65
+  },
+  "performance-no-request-collapsing-4": {
+    "type": "juicio"
+  },
+  "performance-no-request-id-3": {
+    "type": "juicio"
+  },
+  "performance-no-resource-isolation-9": {
+    "type": "juicio"
+  },
+  "performance-no-response-streaming-5": {
+    "type": "juicio"
+  },
+  "performance-no-retry-jitter-8": {
+    "type": "juicio"
+  },
+  "performance-no-self-rate-limit-6": {
+    "type": "juicio"
+  },
+  "performance-no-slo-6": {
+    "type": "juicio"
+  },
+  "performance-no-tcp-nodelay-10": {
+    "type": "juicio"
+  },
+  "performance-no-tech-debt-alloc-9": {
+    "type": "fuera"
+  },
+  "performance-no-udp-11": {
+    "type": "juicio"
+  },
+  "performance-no-windowing-6": {
+    "type": "juicio"
+  },
+  "performance-queue-wait-17": {
+    "type": "fuera"
+  },
+  "performance-reserved-instance-5": {
+    "type": "fuera"
+  },
+  "performance-resource-exhausted-in-3mo-2": {
+    "type": "fuera"
+  },
+  "performance-serialization-9": {
+    "type": "fuera"
+  },
+  "performance-serialization-format-2": {
+    "type": "juicio"
+  },
+  "performance-serialization-format-4": {
+    "type": "juicio"
+  },
+  "performance-spot-eligible-4": {
+    "type": "fuera"
+  },
+  "performance-ssl-handshake-16": {
+    "type": "fuera"
+  },
+  "performance-suboptimal-batch-1": {
+    "type": "juicio"
+  },
+  "performance-tcp-handshake-15": {
+    "type": "fuera"
+  },
+  "performance-template-rendering-10": {
+    "type": "fuera"
+  },
+  "performance-transport-protocol-3": {
+    "type": "juicio"
+  },
+  "performance-underutilized-compute-1": {
+    "type": "fuera"
+  },
+  "performance-underutilized-memory-2": {
+    "type": "fuera"
+  },
+  "performance-underutilized-storage-3": {
+    "type": "fuera"
+  },
+  "performance-worker-idle-18": {
+    "type": "fuera"
+  },
+  "security-binary-dep-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "package.json scripts containing curl|wget|bash|sh in preinstall/install/postinstall, or deps shipping prebuilt binaries",
+    "confidence": 0.8
+  },
+  "security-cors-wildcard-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Access-Control-Allow-Origin set to * or reflected origin in server config / middleware (cors({origin: '*'}), wildcard string, no allowlist)",
+    "confidence": 0.9
+  },
+  "security-cve-critical-1": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "query": "osv-scanner --json --lockfile=<lockfiles>; filter vulns with severity CRITICAL",
+    "confidence": 0.95
+  },
+  "security-cve-high-2": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "query": "osv-scanner --json --lockfile=<lockfiles>; filter vulns with severity HIGH",
+    "confidence": 0.95
+  },
+  "security-cve-medium-3": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "query": "osv-scanner --json --lockfile=<lockfiles>; filter vulns with severity MODERATE",
+    "confidence": 0.95
+  },
+  "security-db-conn-string-6": {
+    "type": "detector",
+    "tool": "gitleaks",
+    "query": "regex (postgres|postgresql|mysql|mariadb|mongodb(\\+srv)?|redis|amqp)://[^\\s'\"]+:[^\\s'\"]+@ on all tracked files",
+    "confidence": 0.9
+  },
+  "security-db-no-tls-11": {
+    "type": "juicio"
+  },
+  "security-debug-in-prod-1": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "debug flags enabled statically (DEBUG=1/True, app.debug=true, NEXT_PUBLIC debug vars) with no production guard",
+    "confidence": 0.8
+  },
+  "security-directory-listing-8": {
+    "type": "juicio"
+  },
+  "security-encryption-weak-5": {
+    "type": "juicio"
+  },
+  "security-env-file-committed-3": {
+    "type": "detector",
+    "tool": "gitleaks",
+    "query": "git ls-files | grep -E '^\\.env' plus gitleaks filename rule for .env* (committed env files)",
+    "confidence": 0.98
+  },
+  "security-error-detail-1": {
+    "type": "juicio"
+  },
+  "security-exploit-in-wild-5": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "query": "OSV records carrying a CISA KEV reference among the resolved vulnerabilities",
+    "confidence": 0.9
+  },
+  "security-file-upload-weak-7": {
+    "type": "juicio"
+  },
+  "security-gha-action-unpinned-5": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "workflow yaml: uses: org/action@main|master or floating tag instead of a full-length commit sha",
+    "confidence": 0.95
+  },
+  "security-gha-auto-deploy-prod-9": {
+    "type": "juicio"
+  },
+  "security-gha-fork-pr-4": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "workflow yaml: pull_request_target triggered by forks with secrets reachable (no author-association gate)",
+    "confidence": 0.85
+  },
+  "security-gha-job-no-timeout-7": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "workflow yaml: job without timeout-minutes (hangs forever on stuck steps)",
+    "confidence": 0.9
+  },
+  "security-gha-no-concurrency-prod-10": {
+    "type": "juicio"
+  },
+  "security-gha-no-container-8": {
+    "type": "juicio"
+  },
+  "security-gha-overpermissive-2": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "workflow yaml: permissions: write-all at top level or write scopes not scoped to a single job",
+    "confidence": 0.95
+  },
+  "security-gha-pr-target-risk-1": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": ".github/workflows/*.y*ml: pull_request_target event combined with checkout of the PR head sha or secrets usage",
+    "confidence": 0.9
+  },
+  "security-gha-secret-leak-3": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "query": "workflow yaml: run block echoing github.event.* / secrets.* context into logs",
+    "confidence": 0.9
+  },
+  "security-gha-workspace-not-cleaned-6": {
+    "type": "juicio"
+  },
+  "security-jwt-weak-3": {
+    "type": "juicio"
+  },
+  "security-key-rotation-manual-13": {
+    "type": "juicio"
+  },
+  "security-license-incompatible-6": {
+    "type": "detector",
+    "tool": "license-scan",
+    "query": "resolved dependency licenses; flag any SPDX id outside the allowlist (MIT, BSD-2/3, Apache-2.0, ISC, CC0, Unlicense)",
+    "confidence": 0.85
+  },
+  "security-logs-contain-secrets-12": {
+    "type": "juicio"
+  },
+  "security-missing-headers-10": {
+    "type": "juicio"
+  },
+  "security-no-input-validation-14": {
+    "type": "juicio"
+  },
+  "security-no-security-maintenance-7": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "query": "registry/runtime metadata: dependency or runtime officially EOL or with no security-fix channel (e.g. Node < 18, python 2.x deps)",
+    "confidence": 0.7
+  },
+  "security-oauth-secret-8": {
+    "type": "detector",
+    "tool": "gitleaks",
+    "query": "known OAuth client-secret assignments (client_secret=, OAUTH_SECRET, ...) plus entropy",
+    "confidence": 0.9
+  },
+  "security-outdated-server-9": {
+    "type": "juicio"
+  },
+  "security-password-weak-5": {
+    "type": "juicio"
+  },
+  "security-private-key-7": {
+    "type": "detector",
+    "tool": "gitleaks",
+    "query": "-----BEGIN (RSA |EC |OPENSSH |PGP )?PRIVATE KEY----- on all tracked files",
+    "confidence": 0.99
+  },
+  "security-rate-limit-weak-6": {
+    "type": "juicio"
+  },
+  "security-secret-in-code-1": {
+    "type": "detector",
+    "tool": "gitleaks",
+    "query": "gitleaks detect --source . --no-banner (default ruleset: known API-key patterns + entropy)",
+    "confidence": 0.95
+  },
+  "security-secret-in-history-2": {
+    "type": "detector",
+    "tool": "gitleaks",
+    "query": "gitleaks git --log-opts '--all --full-history' (full history scan, not just HEAD)",
+    "confidence": 0.95
+  },
+  "security-session-cookie-not-http-only-4": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "Set-Cookie / cookie() / res.cookie(...) without the HttpOnly attribute in server code",
+    "confidence": 0.85
+  },
+  "security-session-cookie-not-secure-3": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "Set-Cookie / cookie() / res.cookie(...) without the Secure attribute in server code",
+    "confidence": 0.85
+  },
+  "security-transitive-vuln-8": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "query": "lockfile scan (resolves the dependency graph incl. transitive packages) — osv-scanner default behaviour",
+    "confidence": 0.95
+  },
+  "security-unmaintained-dep-4": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "query": "registry metadata: latest release older than 18 months or source repository archived (ecosystem API, e.g. npm view time modified / repos API)",
+    "confidence": 0.8
+  },
+  "security-vcs-insecure-9": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "dependency URLs resolved via git+http:// (no TLS) in package.json / requirements.txt / go.mod",
+    "confidence": 0.95
+  },
+  "security-weak-crypto-9": {
+    "type": "juicio"
+  },
+  "security-weak-rng-10": {
+    "type": "juicio"
+  },
+  "structure-adapter-violation-10": {
+    "type": "juicio"
+  },
+  "structure-class-dependency-cycle-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Construir grafo de imports entre clases y detectar dependencias circulares directas (A importa B y B importa A)",
+    "confidence": 0.85
+  },
+  "structure-config-logic-8": {
+    "type": "juicio"
+  },
+  "structure-controller-logic-6": {
+    "type": "juicio"
+  },
+  "structure-decorator-violation-9": {
+    "type": "juicio"
+  },
+  "structure-dependency-cycle-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Construir grafo dirigido de imports entre módulos y detectar ciclos (SCC de tamaño > 1)",
+    "confidence": 0.9
+  },
+  "structure-dto-logic-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En clases *DTO/*Dto, reportar métodos que no sean getters/setters/constructores (lógica en DTO)",
+    "confidence": 0.6
+  },
+  "structure-extremely-unstable-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Construir grafo de imports por módulo, computar instability = Ce/(Ca+Ce); reportar módulos con I > 0.9",
+    "confidence": 0.8
+  },
+  "structure-factory-violation-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En clases *Factory, reportar constructores públicos (o new XFactory fuera de la propia clase)",
+    "confidence": 0.7
+  },
+  "structure-framework-cycle-5": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Construir grafo de imports y detectar ciclos donde intervienen clases con anotaciones/decoradores de framework (@Component, @Injectable, etc.)",
+    "confidence": 0.65
+  },
+  "structure-framework-leak-3": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "En archivos de dominio/entities/models, buscar imports de tipos de framework (javax.servlet.*, @angular/core, flask, etc.)",
+    "confidence": 0.7
+  },
+  "structure-high-coupling-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Parsear imports/require por módulo, contar afferent y efferent coupling; reportar módulos con ambos > 30",
+    "confidence": 0.85
+  },
+  "structure-high-coupling-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Parsear imports/require por módulo, contar afferent y efferent coupling; reportar módulos con ambos > 20",
+    "confidence": 0.85
+  },
+  "structure-highly-unstable-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Construir grafo de imports por módulo, computar instability = Ce/(Ca+Ce); reportar módulos con I > 0.8",
+    "confidence": 0.8
+  },
+  "structure-inverted-dependency-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En archivos bajo **/services/** o *Service.*, buscar imports de símbolos definidos en **/controllers/** o *Controller.*",
+    "confidence": 0.75
+  },
+  "structure-layer-violation-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En archivos bajo **/controllers/** o *Controller.*, buscar imports de símbolos definidos en **/repositories/** o *Repository.*",
+    "confidence": 0.75
+  },
+  "structure-low-cohesion-5": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Computar LCOM por clase (pares de métodos que no comparten campos); reportar clases con LCOM > 0.8",
+    "confidence": 0.7
+  },
+  "structure-medium-cohesion-6": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Computar LCOM por clase (pares de métodos que no comparten campos); reportar clases con LCOM > 0.6",
+    "confidence": 0.7
+  },
+  "structure-observer-violation-6": {
+    "type": "juicio"
+  },
+  "structure-package-dependency-cycle-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "Construir grafo de imports agregado por paquete/directorio y detectar ciclos (SCC)",
+    "confidence": 0.9
+  },
+  "structure-repository-logic-4": {
+    "type": "juicio"
+  },
+  "structure-repository-no-crud-2": {
+    "type": "juicio"
+  },
+  "structure-repository-violation-1": {
+    "type": "juicio"
+  },
+  "structure-service-orchestration-3": {
+    "type": "juicio"
+  },
+  "structure-service-sql-5": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "En archivos *Service.*, buscar literales SQL (SELECT/INSERT/UPDATE/DELETE/JOIN) o llamadas query()/raw() con string SQL",
+    "confidence": 0.85
+  },
+  "structure-singleton-violation-5": {
+    "type": "detector",
+    "tool": "semgrep",
+    "query": "Buscar clases con método estático getInstance() cuyo constructor es público (permitiendo múltiples instancias)",
+    "confidence": 0.65
+  },
+  "structure-strategy-hardcoded-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En clases *Service/*Strategy, buscar switch o cadena if/else que instancie clases *Strategy según un valor",
+    "confidence": 0.6
+  },
+  "structure-template-method-8": {
+    "type": "juicio"
+  },
+  "structure-transitive-cycle-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "query": "En el grafo de imports, detectar ciclos de longitud > 2 vía SCC o DFS con detección de back-edges",
+    "confidence": 0.85
+  }
+}

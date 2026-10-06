@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "detectors.schema.json",
+  "title": "DKTV detector sidecar",
+  "description": "One entry per canonical rule id (skills/*.skill.md registry). Declares HOW each rule is proven: by a deterministic detector, by model judgment (closed question), or not at all (declared, never deleted). Enforced by scripts/validate-detectors.mjs — that script is the source of truth; this file documents the shape.",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "required": ["type"],
+    "properties": {
+      "type": {
+        "type": "string",
+        "enum": ["detector", "juicio", "fuera"],
+        "description": "detector = a deterministic tool proves the violation; juicio = a model decides applicability AND violation; fuera = not detectable and not judgeable — declared, never deleted."
+      },
+      "tool": {
+        "type": "string",
+        "enum": ["gitleaks", "semgrep", "osv-scanner", "npm-audit", "node-matcher", "yaml-check", "git-log", "license-scan"],
+        "description": "Only meaningful when type=detector."
+      },
+      "query": { "type": "string", "description": "Concrete pattern / scan / check. Only meaningful when type=detector." },
+      "confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "Expected precision of the detector on this rule (pre-registration; to be validated by the Fase 2 human-adjudicated sample with IC before any number is published)." }
+    },
+    "if": { "properties": { "type": { "const": "detector" } } },
+    "then": { "required": ["tool", "query", "confidence"] },
+    "else": { "not": { "anyOf": [{ "required": ["tool"] }, { "required": ["query"] }, { "required": ["confidence"] }] } }
+  }
+}
