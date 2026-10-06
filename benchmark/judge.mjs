@@ -468,6 +468,21 @@ const MAX_TRANSPORT_RETRIES = 5;
 async function callJudge({ baseUrl, apiKey, model }, messages, transportAttempt = 1) {
   // See run.mjs: reasoning models need a bigger budget than the OpenAI default.
   const body = { model, messages, temperature: 0, max_tokens: Number(process.env.MAX_TOKENS || 16384), response_format: { type: 'json_object' } };
+  // Thinking-hybrid endpoints (e.g. local Qwen3.x via Ollama) reason before answering
+  // and can blow past undici's ~300s no-bytes body timeout with stream:false — the
+  // call then dies as "fetch failed" after minutes of real work. LLM_JUDGE_NO_THINKING=1
+  // asks the endpoint to skip the thinking phase (Ollama chat_template_kwargs).
+  // Unset by default: remote endpoints (NIM/OpenAI) are unaffected.
+  if (process.env.LLM_JUDGE_NO_THINKING === '1') {
+    body.chat_template_kwargs = { enable_thinking: false };
+  }
+  // Slow local endpoints (a 27B Q4 on a CPU-bound laptop takes minutes before the
+  // first byte) hit undici's default 300s HEADERS timeout with stream:false and
+  // die as "fetch failed" (UND_ERR_HEADERS_TIMEOUT, reproduced 2026-10-05).
+  // LLM_JUDGE_STREAM=1 switches to SSE streaming: headers arrive immediately and
+  // each chunk resets the idle timers. Unset by default: NIM/OpenAI are unaffected.
+  const useStream = process.env.LLM_JUDGE_STREAM === '1';
+  if (useStream) body.stream = true;
   let res;
   try {
     res = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
@@ -509,8 +524,32 @@ async function callJudge({ baseUrl, apiKey, model }, messages, transportAttempt 
     throw new Error(`judge HTTP ${res.status} after ${MAX_TRANSPORT_RETRIES} transport attempts: ${(await res.text()).slice(0, 300)}`);
   }
   if (!res.ok) throw new Error(`judge HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  const data = await res.json();
+  const data = useStream ? await readSseCompletion(res) : await res.json();
   return data.choices?.[0]?.message?.content;
+}
+
+/* Accumulate an OpenAI-compatible SSE stream (stream:true) into the same shape
+   as the non-streamed response: { choices: [{ message: { content } }] }. */
+async function readSseCompletion(res) {
+  const decoder = new TextDecoder();
+  let buf = '';
+  let content = '';
+  for await (const chunk of res.body) {
+    buf += decoder.decode(chunk, { stream: true });
+    const lines = buf.split('\n');
+    buf = lines.pop() ?? '';
+    for (const line of lines) {
+      const m = line.match(/^data:\s*(.*)$/);
+      if (!m) continue;
+      const payload = m[1].trim();
+      if (payload === '[DONE]') return { choices: [{ message: { content } }] };
+      try {
+        const json = JSON.parse(payload);
+        content += json.choices?.[0]?.delta?.content ?? '';
+      } catch { /* partial JSON payload — skip */ }
+    }
+  }
+  return { choices: [{ message: { content } }] };
 }
 
 /**
