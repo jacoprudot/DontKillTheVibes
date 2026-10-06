@@ -91,13 +91,15 @@ Scope, honestly: the contract guarantees *shape*, not *truth* — a well-formed 
 
 ## Measured results (not claimed)
 
-5 real public repos — the RealWorld API control (named; already public via `examples/`) plus 4 vibe-coded targets published under neutral labels target-1..target-4 (nobody wants their repo on a public scoreboard) — × 3 approaches × a **blind judge** (a different model, 3 runs per target — we publish ranges, not decimals):
+5 real public repos — the RealWorld API control (named; already public via `examples/`) plus 4 vibe-coded targets kept under neutral labels target-1..target-4 in the evidence (`benchmark/targets.json` publishes which repo each label is, and why — see [`benchmark/README.md` §5b](benchmark/README.md#target-anonymity)) — × 3 approaches × a **blind judge** (a different model, 3 runs per target — we publish ranges, not decimals):
 
 | Arm | What it is | Verified findings |
 |---|---|---|
 | **A — free prose** | "Audit this repo" in a plain prompt | 64 claims, **0 mechanically decidable** — confident prose with no file:line anchor |
-| **B — this toolkit, single pass (Path B)** | Digest in, one validated call | 9/14 real where the judge could verify (range 0.2–1.0) |
-| **C — this toolkit, 8-agent orchestrator (Path C)** | Specialists + deterministic synthesis | **22/25 real (range 0.84–1.0)** — wins or ties in 4/5 repos |
+| **B — this toolkit, single pass (Path B)** | Digest in, one validated call | 9/15 real where the judge could verify (pooled 0.6; per-repo 0.2–1.0 over the three targets where B produced a *decidable* precision — B ran on 4, but target-3's 5 claims were 0 real / 0 false, so its precision is `null`) |
+| **C — this toolkit, 8-agent orchestrator (Path C)** | Specialists + deterministic synthesis | **21/25 real (pooled 0.84; per-repo 0.625–1.0)** — never behind arm B in any target where the comparison is decidable (arm C vs arm B, 3 of 5: control 1.0 vs 1.0, target-2 0.9 vs 0.2, target-4 1.0 vs 0.333 — arm B was never run on target-1, and its target-3 row has no decidable claim) |
+
+Corrected 2026-10-06: an earlier revision showed 22/25 and 9/14; the raw judge output is 21/25 and 9/15 (`real ÷ real+false` in `benchmark/results/*/scores.json`). The 0.84 that was quoted as the range floor is the pooled arm-C precision, not a per-repo value — the true per-repo range is 0.625–1.0 (0.625, 0.9, 1.0, 1.0, 1.0).
 
 Structural findings beat free prose not because the model is smarter, but because the contract makes every claim checkable. Honest caveats: convenience sample (not representative), judge has run-to-run variance, recall against ground truth is measured only on the control repo. Full evidence is versioned in [`benchmark/results/`](benchmark/results/) and reproducible from [`benchmark/run.mjs`](benchmark/run.mjs) + [`benchmark/judge.mjs`](benchmark/judge.mjs).
 
@@ -140,7 +142,7 @@ Every finding carries its canonical rule ID, severity, effort, confidence, prior
 - **MCPs are tested, not just smoke-tested:** 244 unit tests across both custom MCPs, branch coverage in the mid-80s, enforced 80% gate in CI.
 - **Security has its own gates:** `pnpm security:audit` fails on `shell: true`, `execSync`/`exec`/`spawn`, `eval` and `...process.env` spreads under `mcps/*/src`; `scripts/mcp-smoke.mjs` drives the real servers to assert injection guards fire. Every invocation appends a hash-only line to `.dontkillthevibes/audit.log`. What is *not* enforced is listed in `templates/security-model.md`.
 - **CI runs all of it** on every push: install → build → test (80% gate) → security audit → skills/MCP validation → assessment-contract validation (both shipped examples) → MCP smoke tests.
-- **Known gaps:** the single-pass CLI's recall is capped by the digest budget (that's what the orchestrator exists for); the "Data Availability" rules (cost/performance without runtime metrics) are documented in 5 of the 8 skills but not yet measured against a live server; the benchmark MCP was not exercised live in the shipped example; an empty assessment (zero findings) still passes the contract; a one-command Docker demo is pending.
+- **Known gaps:** the single-pass CLI's recall is capped by the digest budget (that's what the orchestrator exists for); the "Data Availability" rules (cost/performance without runtime metrics) are documented in 5 of the 8 skills but not yet measured against a live server; the benchmark MCP was not exercised live in the shipped example; an empty assessment (zero findings) still passes the contract; a one-command Docker demo is pending; the digest walks files in alphabetical order and stops when the char budget runs out, so a monorepo can be assessed on `packages/a-*` alone and still read as complete; some canonical rules cannot fire from either runner at all — `security-secret-in-history-2` needs git history, and `.git` is in the runners' `SKIP_DIRS`; `scripts/` has no tests, so the 244 tests and the 80% gate cover `mcps/*` only; no cost-per-run figure is published — the runners log token usage (`Tokens: N in / M out`), never dollars.
 
 > Note: commit timestamps reflect the author's system clock.
 
