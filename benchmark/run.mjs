@@ -276,7 +276,11 @@ if (!doc.metadata || !doc.summary || !doc.work_plan || !Array.isArray(doc.findin
 if (!Number.isInteger(doc.summary.total_findings) || doc.summary.total_findings !== doc.findings.length) errors.push('summary.total_findings does not match findings.length');
 const seen = new Set();
 for (const [i, f] of doc.findings.entries()) {
-  if (!/^[a-z-]+-\\d+$/.test(f.id)) errors.push(\`findings[\${i}].id invalid\`);
+  // Same contract as templates/finding-schema.json (widened 2026-10-06 to
+  // ^[a-z0-9-]+-\d+$: digit-bearing names like cost-overprovisioned-k8s-1 are
+  // valid canonical ids — 14 of 368 rules carry one). The mock must enforce the
+  // SAME pattern the real validator does or it green-lights ids the gate rejects.
+  if (!/^[a-z0-9-]+-\\d+$/.test(f.id)) errors.push(\`findings[\${i}].id invalid\`);
   if (seen.has(f.id)) errors.push(\`findings[\${i}].id duplicated\`);
   seen.add(f.id);
   for (const req of ['module', 'severity', 'location', 'description', 'remediation', 'effort', 'confidence']) {

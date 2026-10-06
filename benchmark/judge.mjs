@@ -350,6 +350,37 @@ function citedLocation(c) {
 }
 
 /**
+ * Remove the runner's line-number gutter from digest content, when present.
+ *
+ * METRIC DEFINITION CHANGE (recorded so no one compares across it): since
+ * 2026-10-06 the toolkit digest annotates every line (`   42 | content`,
+ * scripts/dktv-assess.mjs withLineNumbers). Content read WITH that gutter
+ * silently broke every consumer that regex-tested the line text (a comment
+ * line `   3 | // foo` no longer matches ^//, so weak_citations would have
+ * dropped 1/4 → 0/4 — a false improvement published as real). This helper
+ * restores the invariant: consumers ALWAYS see bare content, whether the
+ * digest was built before or after the gutter existed.
+ *
+ * Detection is per-file and conservative: the gutter is only stripped when
+ * the file's first non-empty lines are overwhelmingly gutter-shaped, so a
+ * legacy plain digest (or a code line that merely starts `1 | x`) passes
+ * through unchanged.
+ */
+const gutterMemo = new Map();
+function stripGutter(content) {
+  if (typeof content !== 'string') return content;
+  if (gutterMemo.has(content)) return gutterMemo.get(content);
+  const lines = content.split('\n');
+  const sample = lines.filter((l) => l.trim() !== '').slice(0, 8);
+  const shaped = sample.filter((l) => /^\s*\d+ \| /.test(l)).length;
+  const out = sample.length > 0 && shaped / sample.length >= 0.75
+    ? lines.map((l) => l.replace(/^\s*\d+ \| /, '')).join('\n')
+    : content;
+  gutterMemo.set(content, out);
+  return out;
+}
+
+/**
  * Real code lines around the cited location, read from the shared digest of the
  * repo under assessment (never invented). Up to 11 lines centered on the cited
  * line (±5), capped at 300 chars. null when the file is not in the digest or
@@ -359,7 +390,7 @@ function codeSnippet(loc, digestFiles) {
   if (!loc?.file || loc.line == null || loc.line < 1) return null;
   const content = digestFiles?.get(normalizeRel(loc.file));
   if (content == null) return null;
-  const lines = content.split('\n');
+  const lines = stripGutter(content).split('\n');
   if (loc.line > lines.length) return null;
   const start = Math.max(1, loc.line - 5);
   const end = Math.min(lines.length, loc.line + 5);
@@ -699,12 +730,17 @@ function aggregateRuns(runs, claims, repeat) {
  * an import/export-from line, or only braces/closers. This measures the
  * product bug where findings cite the import block instead of the handler.
  * Metric only — never affects verdicts.
+ *
+ * The tested line is read WITHOUT the digest gutter (stripGutter): the metric's
+ * definition is "the cited line of CODE carries no evidentiary weight", and the
+ * gutter is annotation, not code. Recorded 2026-10-06 as a definition change —
+ * do not compare weak_citations between gutter-era and pre-gutter digests.
  */
 function isWeakCitedLine(digestFiles, loc) {
   if (!loc?.file || loc.line == null || loc.line < 1) return false;
   const content = digestFiles?.get(normalizeRel(loc.file));
   if (content == null) return false;
-  const line = content.split('\n')[loc.line - 1];
+  const line = stripGutter(content).split('\n')[loc.line - 1];
   if (line === undefined) return false;
   const t = line.trim();
   if (!t) return true;
