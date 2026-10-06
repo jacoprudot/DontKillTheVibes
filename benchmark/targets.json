@@ -1,0 +1,117 @@
+{
+  "$comment": "PUBLIC re-run manifest - the real repositories behind the benchmark, each with the commit its committed run resolved to, and the label -> repo mapping. Every url/commit pair was copied field-by-field from a committed results*/<name>/meta.json (field \"commit\", written by benchmark/run.mjs from git rev-parse HEAD); none was typed by hand and no SHA is taken from a target list. WHY THIS FILE EXISTS: benchmark/repos.json (tracked) carries the label list used by benchmark/results/ (target-1..target-4 as aliases, empty urls), so a fresh clone could not tell which repositories were benchmarked at all - targets.json is what makes the sample re-runnable. WHY IT CARRIES THE LABEL MAPPING (label_map below): the mapping was never actually private - it shipped from the start in the tracked benchmark/anonymize-results.mjs (LABEL_MAP) and each results/target-N/meta.json keeps its commit - so withholding it bought no anonymity while making the sample look cherry-picked and the scores unverifiable. It is now published because reproducibility matters more; benchmark/README.md \"Target anonymity\" tells that story in full. label_map values are copied from that LABEL_MAP, not retyped from memory. NOT READ BY run.mjs: it is a manifest, not a run input. To reproduce one run: git clone <url> benchmark/work/<name> && git -C benchmark/work/<name> checkout <commit>, then node benchmark/run.mjs --only <name> - run.mjs reuses a clone that already exists in benchmark/work/<name> instead of re-cloning, resolves HEAD from it and records that same commit in meta.json.",
+  "label_map": {
+    "$comment": "The one-time disclosure, published 2026-10-06. Keys are the labels used by the committed evidence in benchmark/results/<label>/; values are the target names in this file. Copied from LABEL_MAP in benchmark/anonymize-results.mjs:52-57 (chatbot-ui -> target-1, roomgpt -> target-2, screenshot-to-code -> target-3, llamacoder -> target-4).",
+    "target-1": "chatbot-ui",
+    "target-2": "roomgpt",
+    "target-3": "screenshot-to-code",
+    "target-4": "llamacoder"
+  },
+  "targets": [
+    {
+      "name": "realworld-control",
+      "url": "https://github.com/gothinkster/node-express-realworld-example-app",
+      "commit": "30b68e1e881462b2f4164ea09ab4c4f5699c7b0b"
+    },
+    {
+      "name": "roomgpt",
+      "url": "https://github.com/Nutlope/roomGPT",
+      "commit": "611398c78da64f1794df2d99018c3d02d3ab0048"
+    },
+    {
+      "name": "screenshot-to-code",
+      "url": "https://github.com/abi/screenshot-to-code",
+      "commit": "d026163f586dfa8c5c10d28c36edd59a9d3b0e88"
+    },
+    {
+      "name": "llamacoder",
+      "url": "https://github.com/Nutlope/llamacoder",
+      "commit": "75a3a78e1fa080657b696b95e6d7e393dfa999a5"
+    },
+    {
+      "name": "chatbot-ui",
+      "url": "https://github.com/mckaywrigley/chatbot-ui",
+      "commit": "81328b61d2a4ab597a7a057be70e785cf756d9f8"
+    },
+    {
+      "name": "httpx",
+      "url": "https://github.com/encode/httpx",
+      "commit": "b5addb64f0161ff6bfe94c124ef76f6a1fba5254"
+    },
+    {
+      "name": "rich",
+      "url": "https://github.com/Textualize/rich",
+      "commit": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f"
+    },
+    {
+      "name": "mini-redis",
+      "url": "https://github.com/tokio-rs/mini-redis",
+      "commit": "3d93b42bc363220f85af4fc9e1bebd35b588a4a3"
+    },
+    {
+      "name": "vegeta",
+      "url": "https://github.com/tsenart/vegeta",
+      "commit": "cf5811269046c672a604b1eb352204d30f16ae4a"
+    },
+    {
+      "name": "fatfree",
+      "url": "https://github.com/bcosca/fatfree",
+      "commit": "1036a7dc6438f1d5905c21493afbf69a7c85dc4e"
+    },
+    {
+      "name": "sinatra",
+      "url": "https://github.com/sinatra/sinatra",
+      "commit": "cb22afd7902b566b6eaba6c4ea89739494a65d12"
+    },
+    {
+      "name": "jarvis-voice",
+      "url": "https://github.com/Julian-Ivanov/jarvis-voice-assistant",
+      "commit": "0dbc657e311018a3022b8df50d2e4eb516e6c26c"
+    },
+    {
+      "name": "eurekagent",
+      "url": "https://github.com/THU-Team-Eureka/EurekAgent",
+      "commit": "fb96df897dfb99797a77623aa0dd9ee178fe89d2"
+    },
+    {
+      "name": "deutsia-radio",
+      "url": "https://github.com/deutsia/deutsia-radio",
+      "commit": "38499d6f2555a80de4b7df1b1073f3e0cdb1f124"
+    },
+    {
+      "name": "holo-gestures",
+      "url": "https://github.com/zubair-trabzada/holo-gestures",
+      "commit": "55626ff00f6b49c649a407ffdb3cad174479c637"
+    },
+    {
+      "name": "ai-job-agent",
+      "url": "https://github.com/AkbarDevop/ai-job-agent",
+      "commit": "9ce47d29b5fcfd37ea2fdd5588c8d178bbfa7305"
+    },
+    {
+      "name": "agentgraphed",
+      "url": "https://github.com/sudomichael/agentgraphed",
+      "commit": "0fc90d5961cc42de1c50044d3bbf2b3d54af09cf"
+    },
+    {
+      "name": "crypto-claude-desk",
+      "url": "https://github.com/hugoguerrap/crypto-claude-desk",
+      "commit": "298cfd58408aa86ef3c7ce863c0c19858636df7a"
+    },
+    {
+      "name": "cyberpunk-hud",
+      "url": "https://github.com/hi-godot/cyberpunk-hud-demo",
+      "commit": "6dbc1460155c2a12ffbbb4bdf6a90d712ea35f08"
+    },
+    {
+      "name": "obs-airplay",
+      "url": "https://github.com/aomkoyo/obs-airplay-receiver",
+      "commit": "a1b57cd56b276e7e2d381c8083f76cd80e2a2e0b"
+    },
+    {
+      "name": "aurora-synth",
+      "url": "https://github.com/pixbvr/aurora-synth",
+      "commit": "aa204456bfbfff49f79322bfea4673f22d4b4de3"
+    }
+  ]
+}

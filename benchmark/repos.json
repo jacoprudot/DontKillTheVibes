@@ -1,34 +1,39 @@
 {
-  "$comment": "Benchmark target list — ANONYMIZED (tracked). The four vibe-coding targets are labelled target-1..target-4; their real repo URLs, notes and provenance live in benchmark/repos.local.json (gitignored, available on request). run.mjs reads repos.local.json when it exists and falls back to this file, so a fresh checkout runs the anonymized list and the author's machine runs the real one. Commit SHAs are NEVER stored in either file: benchmark/run.mjs records the resolved commit (git rev-parse HEAD) into results/<name>/meta.json at run time. realworld-control stays NAMED (not anonymized) because it is already public via examples/realworld-assessment — the control must be independently reproducible, and naming it leaks nothing that is not already in the repo. SAMPLING LIMITATION, stated up front: two of the four anonymized targets are by the same author and share a Next.js house style, and three of four are TypeScript. This is a small, convenience sample, not a representative one. The mapping real-name -> label is defined ONCE in benchmark/anonymize-results.mjs (LABEL_MAP).",
+  "$comment": "Benchmark target list — LABELS (tracked, fallback run list for a fresh clone). target-1..target-4 are aliases, nothing more: each label is the committed directory name under benchmark/results/<label>/, and the label -> repo mapping is published openly in benchmark/targets.json (label_map) and benchmark/README.md, \"Target anonymity\". run.mjs reads benchmark/repos.local.json when it exists (the author's 21-repo list) and falls back to this file, so a fresh clone runs these five shipped-run targets. Every url and commit below was copied from the committed evidence — url from benchmark/targets.json, commit from benchmark/results/<label>/meta.json (field \"commit\", written by benchmark/run.mjs from git rev-parse HEAD) — never typed from memory. NOTE: run.mjs does not check out the recorded commit; it shallow-clones the default branch and re-resolves HEAD, recording that resolved commit in results/<name>/meta.json. To reproduce a shipped run at its pinned commit, clone and then check out the commit listed here. realworld-control is a real name, not a label, because it is already public via examples/realworld-assessment — the control must be independently reproducible, and naming it leaks nothing that is not already in the repo. SAMPLING LIMITATION, stated up front: two of the four labelled targets are by the same author and share a Next.js house style, and three of four are TypeScript. This is a small, convenience sample, not a representative one. The mapping real-name -> label is defined ONCE in benchmark/anonymize-results.mjs (LABEL_MAP) — a tracked file, so the mapping was never actually withheld; publishing it in targets.json costs no anonymity and makes the sample verifiable. See benchmark/README.md, \"Target anonymity\".",
   "targets": [
     {
       "name": "realworld-control",
       "url": "https://github.com/gothinkster/node-express-realworld-example-app",
+      "commit": "30b68e1e881462b2f4164ea09ab4c4f5699c7b0b",
       "note": "control: the Express+Prisma+Nx implementation assessed by hand in examples/realworld-assessment. NOT the gothinkster/realworld spec repo (docs only, no code to assess). Stays named because it is already public via examples/realworld-assessment.",
       "provenance": "Reference implementation (NestJS + Prisma + JWT). Control, not a vibe-coding sample."
     },
     {
       "name": "target-2",
-      "url": "",
-      "note": "recorded in benchmark/repos.local.json (gitignored) — available on request",
+      "url": "https://github.com/Nutlope/roomGPT",
+      "commit": "611398c78da64f1794df2d99018c3d02d3ab0048",
+      "note": "real repo published in benchmark/targets.json (label_map) — see benchmark/README.md, \"Target anonymity\"",
       "provenance": ""
     },
     {
       "name": "target-3",
-      "url": "",
-      "note": "recorded in benchmark/repos.local.json (gitignored) — available on request",
+      "url": "https://github.com/abi/screenshot-to-code",
+      "commit": "d026163f586dfa8c5c10d28c36edd59a9d3b0e88",
+      "note": "real repo published in benchmark/targets.json (label_map) — see benchmark/README.md, \"Target anonymity\"",
       "provenance": ""
     },
     {
       "name": "target-4",
-      "url": "",
-      "note": "recorded in benchmark/repos.local.json (gitignored) — available on request",
+      "url": "https://github.com/Nutlope/llamacoder",
+      "commit": "75a3a78e1fa080657b696b95e6d7e393dfa999a5",
+      "note": "real repo published in benchmark/targets.json (label_map) — see benchmark/README.md, \"Target anonymity\"",
       "provenance": ""
     },
     {
       "name": "target-1",
-      "url": "",
-      "note": "recorded in benchmark/repos.local.json (gitignored) — available on request",
+      "url": "https://github.com/mckaywrigley/chatbot-ui",
+      "commit": "81328b61d2a4ab597a7a057be70e785cf756d9f8",
+      "note": "real repo published in benchmark/targets.json (label_map) — see benchmark/README.md, \"Target anonymity\"",
       "provenance": ""
     }
   ]

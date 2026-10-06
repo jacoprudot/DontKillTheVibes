@@ -20,8 +20,10 @@
  *   --only <name>        Run just one target from repos.json
  *   --force              Re-run arms whose output already exists
  *   --arm-c              Also run ARM C (orchestrated/B2, scripts/dktv-orchestrate.mjs)
- *                        against the same clone. Opt-in: pending the shared
- *                        canonical-registry fix, arm C output is not comparable.
+ *                        against the same clone. Opt-in: arm C output is not
+ *                        comparable TO RUNS MADE BEFORE the shared canonical-registry
+ *                        fix (before it, severity/effort were the model's, not the
+ *                        rule's) — runs made after the fix are comparable.
  *                        (env ARM_C=1 also works)
  *   --model <id>         Model id (env LLM_MODEL)
  *   --base-url <url>     OpenAI-compatible base (env LLM_BASE_URL,
@@ -58,8 +60,10 @@ overrides a conflicting --only).
 Target list — local-first:
   run.mjs reads benchmark/repos.local.json when it exists (gitignored, real
   repo URLs, author machine only) and falls back to the tracked
-  benchmark/repos.json, which is the ANONYMIZED list (target-1..target-4 +
-  the named control). See benchmark/README.md, "Target anonymity".
+  benchmark/repos.json, which is the LABEL list (target-1..target-4 + the named
+  control). The labels are aliases — the committed directory names under
+  benchmark/results/ — not a secrecy boundary: benchmark/targets.json publishes
+  the label -> repo mapping openly. See benchmark/README.md, "Target anonymity".
 
 What it does, per target:
   1. shallow-clone the repo into benchmark/work/<name> (skipped with --mock)
@@ -91,16 +95,18 @@ Options:
   --only <name>      only run this target
   --force            re-run an arm even if its output already exists
   --arm-c            also run ARM C (B2 orchestrated, scripts/dktv-orchestrate.mjs)
-                     against the same clone. Opt-in: pending the shared
-                     canonical-registry fix, arm C output is not comparable yet.
-                     (env ARM_C=1 also works)
+                     against the same clone. Opt-in: arm C output is not comparable to
+                     runs made BEFORE the shared canonical-registry fix (severity/effort
+                     came from the model then, from the rule now); runs made after it are
+                     comparable. (env ARM_C=1 also works)
   --model <id>       model id for ALL arms
   --base-url <url>   OpenAI-compatible base URL for ALL arms
   --fixture <dir>    fixture target for --mock (default examples/realworld-assessment)
   --help             show this help
 
 Safety: entries with an empty "url" are skipped with a notice (that is the
-expected state of the anonymized target-N slots in the tracked repos.json).
+expected state of the label-only target-N slots in the tracked repos.json —
+their real URLs are published in benchmark/targets.json).
 Commits are resolved at run time; no SHA is ever taken from the target list.
 `;
 
@@ -406,14 +412,15 @@ async function main() {
   const fixtureDir = resolve(parsed.fixture || join(REPO_ROOT, 'examples', 'realworld-assessment'));
 
   // Local-first target list: repos.local.json (gitignored, real URLs) wins when
-  // present; the tracked repos.json is the anonymized fallback for fresh clones.
+  // present; the tracked repos.json is the label-list fallback for fresh clones
+  // (the labels are aliases, and targets.json publishes the mapping).
   const reposLocal = join(BENCH_DIR, 'repos.local.json');
   const reposFile = existsSync(reposLocal) ? reposLocal : join(BENCH_DIR, 'repos.json');
   if (!existsSync(reposFile)) {
     fail(`missing ${reposFile}`);
     return 2;
   }
-  log(`targets: ${reposFile === reposLocal ? 'repos.local.json (local, gitignored)' : 'repos.json (tracked, anonymized)'}`);
+  log(`targets: ${reposFile === reposLocal ? 'repos.local.json (local, gitignored)' : 'repos.json (tracked, label list)'}`);
   const targets = (readJson(reposFile).targets || []).filter((t) => t && t.name);
   if (parsed.all) {
     log(`--all: running every target (${targets.length})`);
@@ -429,7 +436,10 @@ async function main() {
     }
     if (!model) {
       fail('No model configured. Set LLM_MODEL or pass --model <id>.');
-      log('  NIM examples: moonshotai/kimi-k2-instruct-0905, deepseek-ai/deepseek-v3.1, zai-org/glm-4.6-air');
+      // Model ids move: NIM retires ids (moonshotai/kimi-k2-instruct-0905 now 404s —
+      // README.md) and gates others per account. nvidia/nemotron-3-super-120b-a12b is
+      // the id the README's worked example and the shipped benchmark run both used.
+      log('  NIM examples: nvidia/nemotron-3-super-120b-a12b, deepseek-ai/deepseek-v3.1, zai-org/glm-4.6-air');
       return 2;
     }
   }
@@ -621,7 +631,7 @@ async function main() {
       }
     }
 
-    /* ---- 4c. ARM C: orchestrated (B2) — opt-in; pending shared-registry fix ---- */
+    /* ---- 4c. ARM C: orchestrated (B2) — opt-in; comparable with post-registry-fix runs ---- */
     const orchDir = join(targetResults, 'orchestrated');
     const orchFile = join(orchDir, 'assessment.json');
     const orchMetricsFile = join(orchDir, 'metrics.json');

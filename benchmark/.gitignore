@@ -7,7 +7,8 @@ work/
 tmp/
 
 # Local-only target list with the real repo URLs. The tracked repos.json is the
-# anonymized version (target-N labels); this file is never committed.
+# label list (target-N aliases, empty urls); the label -> repo mapping is
+# published in benchmark/targets.json. This file is never committed.
 repos.local.json
 
 # Raw per-module agent transcripts from Arm C orchestrated runs (lote 2).
