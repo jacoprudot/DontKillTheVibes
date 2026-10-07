@@ -15,6 +15,10 @@ coverage/
 .env
 .env.*
 !.env.example
+# Detector fixtures NEED committed .env files (security-env-file-committed-3):
+# narrow exception, only inside the fixture tree.
+!tests/fixtures/detectors/**/.env
+!tests/fixtures/detectors/**/.env.*
 
 # Logs
 logs
