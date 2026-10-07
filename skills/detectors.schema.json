@@ -2,27 +2,43 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "detectors.schema.json",
   "title": "DKTV detector sidecar",
-  "description": "One entry per canonical rule id (skills/*.skill.md registry). Declares HOW each rule is proven: by a deterministic detector, by model judgment (closed question), or not at all (declared, never deleted). Enforced by scripts/validate-detectors.mjs — that script is the source of truth; this file documents the shape.",
+  "description": "One entry per canonical rule id (skills/*.skill.md registry). Declares HOW each rule is proven. Enforced by scripts/validate-detectors.mjs — that script is the source of truth (it compiles regexes and checks per-tool spec shape); this file documents the contract. Post-audit (2026-10-06): `query` prose and `confidence` were removed — prose queries validated nothing and confidence was the same defect class as invented severities. `spec` is structured per tool and must parse. `ausencia` marks checks that only prove the ABSENCE of a guard (weaker proof, labelled differently in the report). The census stays PROVISIONAL until positive/negative fixtures exist per rule (PLAN.md Fase 1).",
   "type": "object",
+  "properties": {
+    "$comment": { "type": "string" }
+  },
   "additionalProperties": {
     "type": "object",
     "required": ["type"],
     "properties": {
       "type": {
         "type": "string",
-        "enum": ["detector", "juicio", "fuera"],
-        "description": "detector = a deterministic tool proves the violation; juicio = a model decides applicability AND violation; fuera = not detectable and not judgeable — declared, never deleted."
+        "enum": ["detector", "ausencia", "juicio", "fuera"],
+        "description": "detector = a deterministic tool proves the PRESENCE of the violation; ausencia = a deterministic check proves only the ABSENCE of a guard/config (weaker proof, reported separately); juicio = a model decides applicability AND violation with a closed question; fuera = not detectable and not judgeable — declared, never deleted."
       },
       "tool": {
         "type": "string",
-        "enum": ["gitleaks", "semgrep", "osv-scanner", "npm-audit", "node-matcher", "yaml-check", "git-log", "license-scan"],
-        "description": "Only meaningful when type=detector."
+        "enum": ["gitleaks", "semgrep", "osv-scanner", "npm-audit", "node-matcher", "yaml-check", "git-log", "license-scan", "github-api"],
+        "description": "Required when type is detector or ausencia; must be absent otherwise."
       },
-      "query": { "type": "string", "description": "Concrete pattern / scan / check. Only meaningful when type=detector." },
-      "confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "Expected precision of the detector on this rule (pre-registration; to be validated by the Fase 2 human-adjudicated sample with IC before any number is published)." }
+      "spec": {
+        "type": "object",
+        "description": "Structured, tool-specific declaration. Shape is enforced per tool by scripts/validate-detectors.mjs: gitleaks {regex, path_regex?, keywords?}; semgrep {pattern, languages[], path_glob?}; osv-scanner {severity_min? | kev_only? | unmaintained_months? | transitive?}; npm-audit {severity_min}; node-matcher {matcher, params} with matcher in the validator's registry; yaml-check {file_glob, check: presence|absence, pattern}; git-log {check, threshold?}; license-scan {allowlist[]}; github-api {check, threshold_days?}."
+      }
     },
-    "if": { "properties": { "type": { "const": "detector" } } },
-    "then": { "required": ["tool", "query", "confidence"] },
-    "else": { "not": { "anyOf": [{ "required": ["tool"] }, { "required": ["query"] }, { "required": ["confidence"] }] } }
+    "allOf": [
+      {
+        "if": { "properties": { "type": { "const": "detector" } }, "required": ["type"] },
+        "then": { "required": ["tool", "spec"] }
+      },
+      {
+        "if": { "properties": { "type": { "const": "ausencia" } }, "required": ["type"] },
+        "then": { "required": ["tool", "spec"] }
+      },
+      {
+        "if": { "properties": { "type": { "enum": ["juicio", "fuera"] } }, "required": ["type"] },
+        "then": { "not": { "anyOf": [{ "required": ["tool"] }, { "required": ["spec"] }] } }
+      }
+    ]
   }
 }

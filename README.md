@@ -12,7 +12,11 @@ Free, MIT, LLM-agnostic. Works with Claude Code, Cursor, Gemini, or any OpenAI-c
 
 ## ⚠️ Pivot (2026-10-06): the LLM-as-detector paths are retired
 
-Measured on 10 vibe-coded repos ([evidence](benchmark/results-lote2-crossjudge/VALIDATION-REPORT-REV5.md)): only **60%** of citations resolve to a real line, and **88%** of orchestrated findings were unverifiable. The unreliable part was the LLM as *detector*; the asset is the **368-rule registry + contract**. New direction, declared in [PLAN.md](PLAN.md): deterministic detectors (`gitleaks`/`semgrep`/`osv-scanner`) find, the registry translates, code assembles the report — citations valid by construction. Paths A/B/C below stay as **versioned evidence**, not as the recommended path.
+**What v0.1.0 was:** an LLM-as-detector toolkit — a digest of your repo fed to a model, 8 specialist agent prompts, a single-pass CLI, and a strict output contract (368 canonical rules owning their own severity/effort). It produced impressively structured reports.
+
+**Why it did not serve vibecoders:** the structure was real but the findings were not actionable. Measured on 10 vibe-coded repos ([evidence](benchmark/results-lote2-crossjudge/VALIDATION-REPORT-REV5.md)): only **60%** of citations resolve to a real line, **88%** of orchestrated findings were unverifiable, and precision over all claims was **24%** (single pass) / **10%** (orchestrator). A user cannot fix a finding they cannot verify — the report read complete and wasn't. The unreliable part was the LLM as *detector*; the asset that survived is the **368-rule registry + contract**.
+
+**New direction**, declared in [PLAN.md](PLAN.md): deterministic detectors (`gitleaks`/`semgrep`/`osv-scanner`) find, the registry translates, code assembles the report — citations valid by construction. Paths A/B/C below stay as **versioned evidence**, not as the recommended path.
 
 ## Overview
 
@@ -97,7 +101,7 @@ Scope, honestly: the contract guarantees *shape*, not *truth* — a well-formed 
 
 ## Measured results (not claimed)
 
-5 real public repos — the RealWorld API control (named; already public via `examples/`) plus 4 vibe-coded targets kept under neutral labels target-1..target-4 in the evidence (`benchmark/targets.json` publishes which repo each label is, and why — see [`benchmark/README.md` §5b](benchmark/README.md#target-anonymity)) — × 3 approaches × a **blind judge** (a different model, 3 runs per target — we publish ranges, not decimals):
+5 real public repos — the RealWorld API control (named; already public via `examples/`) plus 4 vibe-coded targets kept under neutral labels target-1..target-4 in the evidence (`benchmark/targets.json` publishes which repo each label is, and why — see [`benchmark/README.md` §5b](benchmark/README.md#5b-target-anonymity)) — × 3 approaches × a **blind judge** (a different model, 3 runs per target — we publish ranges, not decimals):
 
 | Arm | What it is | Verified findings |
 |---|---|---|

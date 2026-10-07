@@ -104,9 +104,10 @@ Options:
   --fixture <dir>    fixture target for --mock (default examples/realworld-assessment)
   --help             show this help
 
-Safety: entries with an empty "url" are skipped with a notice (that is the
-expected state of the label-only target-N slots in the tracked repos.json —
-their real URLs are published in benchmark/targets.json).
+Safety: entries with an empty "url" are skipped with a notice (a guard against
+half-edited target lists; since commit ad0cd20 all five tracked targets carry
+real URLs and pinned commits — the label → repo mapping is published in
+benchmark/targets.json).
 Commits are resolved at run time; no SHA is ever taken from the target list.
 `;
 

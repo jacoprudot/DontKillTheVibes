@@ -27,6 +27,7 @@
     "validate:skills": "node scripts/validate-skills.mjs",
     "validate:mcps": "node scripts/validate-mcps.mjs",
     "validate:registry": "node scripts/registry-diff.mjs",
+    "validate:detectors": "node scripts/validate-detectors.mjs",
     "dktv:assess": "node scripts/dktv-assess.mjs"
   },
   "devDependencies": {
