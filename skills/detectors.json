@@ -2324,7 +2324,15 @@
     }
   },
   "security-jwt-weak-3": {
-    "type": "juicio"
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "JWT[_-]?SECRET['\"]?\\s*\\)?\\s*(?:\\|\\||\\?\\?)\\s*['\"][^'\"]+['\"]|JWT[_-]?SECRET['\"]?\\s*[:=]\\s*['\"][^'\"]+['\"]",
+        "path_glob": "**/*.{ts,tsx,js,jsx,mjs,cjs,cts,mts}"
+      }
+    }
   },
   "security-key-rotation-manual-13": {
     "type": "juicio"
