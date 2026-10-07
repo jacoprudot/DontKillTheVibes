@@ -71,6 +71,7 @@ import { openRepo, SKIP_EXT, SENSITIVE_NAME } from './lib/repo-files.mjs';
 // The runner both ENFORCES the contract (id list + validation) and MAKES it hold
 // (stampRuleFields), because severity/effort are rule properties, not LLM judgements.
 import { loadRules, stampRuleFields, diffRuleFields, rulesetFingerprint } from './lib/canonical-registry.mjs';
+import { loadModuleWeights } from './lib/module-weights.mjs';
 import { gradeFromFindings } from './lib/health-grade.mjs';
 // Human-readable artifact: assessment.json is the contract, assessment-report.md is what a
 // human reads. ONE shared renderer (scripts/lib/report-renderer.mjs) so this runner and
@@ -114,13 +115,8 @@ const REPAIR_WINDOW_RADIUS = 40;      // +/- lines around the cited line
 const REPAIR_WINDOW_CAP = 6_000;      // chars of window per finding
 const REPAIR_PROMPT_CAP = 40_000;     // chars for the whole repair prompt
 
-/* Fallback module weights if agents/synthesis-agent.md cannot be parsed.
-   The live table is read from the file; this only exists so the runner does not
-   crash on a moved file. parseModuleWeights() warns when it falls back. */
-const MODULE_WEIGHT_FALLBACK = {
-  security: 1.5, database: 1.3, performance: 1.2, structure: 1.1,
-  flows: 1.0, code: 1.0, cost: 0.8, github: 0.7,
-};
+/* Module weights live in ONE place now: scripts/lib/module-weights.mjs
+   (shared with the deterministic detector report). */
 
 const HELP = `dktv-orchestrate.mjs — multi-agent (per-module, two-round) assessment runner
 
@@ -262,36 +258,9 @@ function stampFindings(findings, rules) {
   return out;
 }
 
-/* ---------- synthesis tables, read from agents/synthesis-agent.md ---------- */
-function parseModuleWeights() {
-  const fallback = { weights: { ...MODULE_WEIGHT_FALLBACK }, source: 'fallback' };
-  let text;
-  try {
-    text = readFileSync(join(root, 'agents/synthesis-agent.md'), 'utf8');
-  } catch {
-    console.warn('WARN: agents/synthesis-agent.md not readable — using fallback module weights');
-    return fallback;
-  }
-  const m = text.match(/Module Weight[^\n]*\n([^\n]*)/i);
-  if (!m) {
-    console.warn('WARN: could not find the Module Weight table in agents/synthesis-agent.md — using fallback weights');
-    return fallback;
-  }
-  const weights = {};
-  for (const pair of m[1].matchAll(/([a-z]+)\s*:\s*([0-9.]+)/g)) weights[pair[1]] = Number(pair[2]);
-  if (!Object.keys(weights).length) {
-    console.warn('WARN: Module Weight table parsed empty — using fallback weights');
-    return fallback;
-  }
-  const source = m[1].trim();
-  for (const def of MODULE_DEFS) {
-    if (!(def.module in weights)) {
-      console.warn(`WARN: no module weight for "${def.module}" in agents/synthesis-agent.md — defaulting to ${MODULE_WEIGHT_FALLBACK[def.module]}`);
-      weights[def.module] = MODULE_WEIGHT_FALLBACK[def.module] ?? 1.0;
-    }
-  }
-  return { weights, source };
-}
+/* ---------- synthesis tables ---------- */
+/* Module weights: scripts/lib/module-weights.mjs (single source of truth,
+   shared with the deterministic detector report). */
 
 /* ---------- prompts ---------- */
 function buildRound1Prompt(def, files, tree, maxFiles, language) {
@@ -1143,7 +1112,7 @@ if (!registry.size) {
   console.error('FATAL: no canonical finding ids found in skills/*.skill.md — refusing to run: every id would be rejected by the validator.');
   hardExit(1);
 }
-const { weights: moduleWeights, source: weightsSource } = parseModuleWeights();
+const { weights: moduleWeights, source: weightsSource } = loadModuleWeights(root, MODULE_DEFS.map((d) => d.module));
 console.log(`Canonical rule registry: ${registry.size} ids from skills/*.skill.md`);
 console.log(`Module weights from agents/synthesis-agent.md: ${weightsSource}`);
 
