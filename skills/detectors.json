@@ -1000,7 +1000,8 @@
       "matcher": "content-absence",
       "params": {
         "pattern": "idle[_-]?[Tt]imeout",
-        "path_glob": "**/*.{ts,js,json,yml,yaml,toml,properties,conf,prisma}"
+        "path_glob": "**/*.{ts,js,json,yml,yaml,toml,properties,conf,prisma}",
+        "exclude_glob": "**/{.vscode,.claude,.idea,.zed,.devcontainer}/**"
       }
     }
   },

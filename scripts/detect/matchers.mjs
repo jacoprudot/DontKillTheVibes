@@ -18,9 +18,10 @@ import { makeGlobMatcher } from './glob.mjs';
 
 const CAP = 20; // findings per rule per run, keeps reports bounded on big repos
 
-function filesForGlob(repo, glob) {
+function filesForGlob(repo, glob, excludeGlob) {
   const match = makeGlobMatcher(glob);
-  return repo.tree.filter((f) => !f.binary && match(f.rel));
+  const exclude = excludeGlob ? makeGlobMatcher(excludeGlob) : null;
+  return repo.tree.filter((f) => !f.binary && match(f.rel) && !(exclude && exclude(f.rel)));
 }
 
 // HARDENING (2026-10-07): regex matchers skip files containing a line longer
@@ -110,7 +111,7 @@ export const MATCHER_IMPL = {
   'content-absence'(repo, p) {
     const re = new RegExp(p.pattern);
     const out = [];
-    for (const f of filesForGlob(repo, p.path_glob)) {
+    for (const f of filesForGlob(repo, p.path_glob, p.exclude_glob)) {
       const r = readMatchable(repo, f.rel);
       if (r === null || r.skippedLongLine) continue;
       if (!re.test(r.content)) out.push({ file: f.rel, line: null, evidence: 'pattern not found in file' });
