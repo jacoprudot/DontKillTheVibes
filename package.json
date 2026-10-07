@@ -28,6 +28,8 @@
     "validate:mcps": "node scripts/validate-mcps.mjs",
     "validate:registry": "node scripts/registry-diff.mjs",
     "validate:detectors": "node scripts/validate-detectors.mjs",
+    "detect": "node scripts/detect/run.mjs",
+    "test:fixtures": "node scripts/detect/test-fixtures.mjs",
     "dktv:assess": "node scripts/dktv-assess.mjs"
   },
   "devDependencies": {

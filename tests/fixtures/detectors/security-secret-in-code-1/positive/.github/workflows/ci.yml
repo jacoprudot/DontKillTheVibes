@@ -1,0 +1,15 @@
+name: ci
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      npm_token: "npm_9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci && npm test

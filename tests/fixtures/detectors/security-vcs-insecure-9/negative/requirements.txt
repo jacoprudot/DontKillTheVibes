@@ -1,0 +1,6 @@
+# Production dependencies for the pricing service.
+flask==3.0.3
+requests==2.32.3
+
+# Internal SDK fetched over HTTPS-only git.
+internal-pricing-sdk @ git+https://git.internal.acme.local/libs/pricing-sdk.git@1.4.2

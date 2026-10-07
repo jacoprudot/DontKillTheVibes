@@ -1,0 +1,20 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_DATABASE: testdb
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run integration tests
+        env:
+          DATABASE_URL: mysql://ci:ci-pass-123@mysql:3306/testdb
+        run: npm test

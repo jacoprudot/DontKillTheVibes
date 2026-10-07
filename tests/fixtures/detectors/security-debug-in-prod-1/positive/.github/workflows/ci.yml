@@ -1,0 +1,16 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: production
+      NEXT_PUBLIC_APP_DEBUG: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm run build

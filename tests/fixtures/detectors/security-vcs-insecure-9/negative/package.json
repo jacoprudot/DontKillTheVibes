@@ -1,0 +1,21 @@
+{
+  "name": "modern-dashboard",
+  "version": "1.2.0",
+  "private": true,
+  "description": "Ops dashboard with all VCS-pinned deps fetched over HTTPS.",
+  "scripts": {
+    "dev": "node src/server.js",
+    "test": "node --test tests/"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "internal-logger": "git+https://github.com/acme-corp/legacy-logger.git#v2.1.0",
+    "internal-reporting": "git+https://git.internal.acme.local/shared/reporting-lib.git#main"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

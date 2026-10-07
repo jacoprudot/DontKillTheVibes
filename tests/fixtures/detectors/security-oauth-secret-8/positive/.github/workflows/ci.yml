@@ -1,0 +1,10 @@
+name: ci
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      OAUTH_TOKEN: "gho_16C7e42F292c4612E7c09d6B7d89f5a4"
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci && npm test

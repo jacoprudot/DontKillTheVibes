@@ -62,6 +62,9 @@ jobs:
     - name: Validate the detector sidecar
       run: pnpm validate:detectors
 
+    - name: Run detector fixtures (positive/negative gate)
+      run: pnpm test:fixtures
+
     - name: Validate the shipped assessment example
       run: node scripts/validate-assessment.mjs examples/realworld-assessment/assessment.json
 

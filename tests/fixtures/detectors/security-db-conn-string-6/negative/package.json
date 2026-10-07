@@ -1,0 +1,12 @@
+{
+  "name": "fixture-negative-security-db-conn-string-6",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test tests/"
+  },
+  "dependencies": {
+    "pg": "^8.11.0"
+  }
+}

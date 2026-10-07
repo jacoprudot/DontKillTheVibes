@@ -1,0 +1,13 @@
+{
+  "name": "acme-analytics-sdk",
+  "version": "1.2.3",
+  "description": "Client SDK for Acme Analytics",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "test": "node --test",
+    "preinstall": "node scripts/check-prereqs.js",
+    "postinstall": "node scripts/postinstall.js"
+  },
+  "license": "MIT"
+}

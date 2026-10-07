@@ -1,0 +1,13 @@
+{
+  "name": "legacy-staging-app",
+  "version": "0.3.1",
+  "private": true,
+  "main": "src/config.js",
+  "scripts": {
+    "start": "node src/config.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "legacy-dashboard",
+  "version": "0.9.3",
+  "private": true,
+  "description": "Internal ops dashboard pinned to old internal forks over plain HTTP.",
+  "scripts": {
+    "dev": "node src/server.js",
+    "test": "node --test tests/"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "internal-logger": "git+http://github.com/acme-corp/legacy-logger.git#v2.1.0",
+    "legacy-reporting": "git+http://git.internal.acme.local/shared/reporting-lib.git#main"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
