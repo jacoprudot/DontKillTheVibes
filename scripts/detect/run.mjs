@@ -42,7 +42,7 @@ try {
 const { findings, degraded, scanned, skipped, repo, timings, skippedLongLineFiles } = result;
 
 console.log(`target: ${resolve(target)}`);
-console.log(`files scanned: ${repo.fileCount} (gitignored skipped: ${repo.skippedIgnored.length}${skippedLongLineFiles ? `; skipped long-line/minified files: ${skippedLongLineFiles}` : ''})`);
+console.log(`files scanned: ${repo.fileCount} (gitignored skipped: ${repo.skippedIgnored.length}${repo.skippedTestLike.length ? `; test/spec/fixture files excluded: ${repo.skippedTestLike.length}` : ''}${skippedLongLineFiles ? `; long-line/minified skipped: ${skippedLongLineFiles}` : ''})`);
 console.log(`rules run: ${scanned} · skipped (tool not implemented): ${skipped}`);
 const slow = timings.filter((t) => t.ms > 500).sort((a, b) => b.ms - a.ms);
 if (slow.length > 0) {

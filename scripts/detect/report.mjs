@@ -124,7 +124,7 @@ for (const f of findings) (byPhase[f.phase] ?? byPhase['90_days']).push(f);
 let md = '';
 md += `# DontKillTheVibes — deterministic assessment\n\n`;
 md += `- target: \`${target}\`\n`;
-md += `- files scanned: ${repo.fileCount} · rules run: ${scanned} · skipped (tool not implemented): ${skipped}\n`;
+md += `- files scanned: ${repo.fileCount} · test/spec/fixture files excluded: ${repo.skippedTestLike.length} · rules run: ${scanned} · skipped (tool not implemented): ${skipped}\n`;
 md += `- overall health: **${grade.display}** (worst-severity grade; ${grade.criticalCount} critical)\n`;
 md += `- every finding is a raw mechanical signal (label \`probado\`) — verify by hand (file:line) before acting; precision is NOT yet measured (see protocol in PLAN.md)\n\n`;
 
@@ -136,20 +136,39 @@ for (const [phase, list] of Object.entries(byPhase)) {
   md += `\n`;
 }
 
-md += `## Findings (priority order)\n\n`;
-let rank = 0;
-for (const f of findings) {
-  rank++;
-  md += `### ${rank}. ${f.rule}${f.name ? ` (${f.name})` : ''}\n\n`;
-  md += `- Severity: **${f.severity}** · Effort: ${f.effort} · Score: ${f.score}\n`;
-  md += `- Label: \`${f.label}\`${f.type === 'ausencia' ? ' · type `ausencia` (absence check — weaker test, see PLAN.md)' : ''}\n`;
-  md += `- Rule: ${f.rule} — skills/${(meta.get(f.rule) || {}).skillFile ?? '?'}\n`;
-  md += `- Location: \`${f.file}${f.line !== null ? `:${f.line}` : ''}\`\n`;
-  md += `- Evidence: \`${f.evidence}\`\n`;
-  md += `- Remediation: ${f.remediation}\n`;
-  if (f.destructive) md += `- ⚠️ **Destructive action involved** — confirm before executing\n`;
+// Presentation (2026-10-07 noise pass): critical+high carry the full detail,
+// grouped by file; medium/low/info go to a one-line appendix. 695 undifferentiated
+// findings is a wall, not a plan — severity is the first filter a human applies.
+const MAIN_SEV = new Set(['critical', 'high']);
+const main = findings.filter((f) => MAIN_SEV.has(f.severity));
+const appendix = findings.filter((f) => !MAIN_SEV.has(f.severity));
+
+md += `## Findings — critical & high (${main.length}), grouped by file\n\n`;
+const byFile = new Map();
+for (const f of main) {
+  if (!byFile.has(f.file)) byFile.set(f.file, []);
+  byFile.get(f.file).push(f);
+}
+for (const [file, list] of [...byFile.entries()].sort((a, b) => b.length - a.length || a[0].localeCompare(b[0]))) {
+  md += `### \`${file}\` (${list.length})\n\n`;
+  for (const f of list) {
+    md += `- **${f.rule}** [${f.severity}, effort ${f.effort}]${f.line !== null ? ` line ${f.line}` : ''} — ${f.evidence}\n`;
+    md += `  Remediation: ${f.remediation}${f.destructive ? ' ⚠️ destructive — confirm first' : ''} — rule: skills/${(meta.get(f.rule) || {}).skillFile ?? '?'}\n`;
+  }
   md += `\n`;
 }
+
+md += `## Appendix: medium / low / info (${appendix.length})\n\n`;
+md += `One line each, priority order. These are signals, not the plan — verify before acting.\n\n`;
+let lastRule = null;
+for (const f of appendix) {
+  if (f.rule !== lastRule) {
+    lastRule = f.rule;
+    md += `- **${f.rule}** [${f.severity}]\n`;
+  }
+  md += `  - ${f.file}${f.line !== null ? `:${f.line}` : ''} — ${f.evidence.slice(0, 100)}\n`;
+}
+md += `\n`;
 
 md += `## Coverage vs baseline ruleset (paso D)\n\n`;
 md += `- Canonical registry: ${counts.registry} rules\n`;
@@ -165,9 +184,10 @@ let pr = '';
 pr += `# Remediation prompts (C2) — one per finding, in report order\n\n`;
 pr += `Generated deterministically from the rule registry — no LLM wrote these. `;
 pr += `Every prompt cites its rule. \`probado\` → direct fix prompt. `;
-pr += `Destructive actions (rotate/revoke/rewrite history) are flagged and must be confirmed by a human — never auto-executed.\n\n`;
-rank = 0;
-for (const f of findings) {
+pr += `Destructive actions (rotate/revoke/rewrite history) are flagged and must be confirmed by a human — never auto-executed. `;
+pr += `Only critical/high findings carry prompts (the rest live in the report appendix; a 555KB prompt file is a wall, not a plan).\n\n`;
+let rank = 0;
+for (const f of main) {
   rank++;
   const loc = `${f.file}${f.line !== null ? `:${f.line}` : ''}`;
   const task = f.type === 'ausencia'

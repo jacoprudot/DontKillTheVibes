@@ -83,6 +83,15 @@ function runGitleaksLite(repo, spec) {
     let m;
     const g = new RegExp(re.source, 'g');
     while ((m = g.exec(r.content)) !== null) {
+      // LITERAL vs VARIABLE (2026-10-07): `api_key = anthropic_api_key` is a
+      // variable reference, not a secret — the dominant FP class in real code.
+      // An unquoted bare-identifier RHS is a reference; quoted values, PEM
+      // headers and connection strings never take this branch.
+      const value = m[0].split(/[:=]/).pop().trim();
+      if (!/["']/.test(m[0]) && /^[A-Za-z_][A-Za-z0-9_]*$/.test(value)) {
+        if (m.index === g.lastIndex) g.lastIndex++;
+        continue;
+      }
       out.push({ file: f.rel, line: lineOf(r.content, m.index), evidence: snippet(r.content, m.index) });
       if (out.length >= 20) break;
       if (m.index === g.lastIndex) g.lastIndex++;
@@ -178,6 +187,16 @@ export function runDetect(targetDir, opts = {}) {
     }
   }
 
-  findings.sort((a, b) => a.rule.localeCompare(b.rule) || String(a.file).localeCompare(String(b.file)) || (a.line ?? 0) - (b.line ?? 0));
-  return { findings, degraded, scanned, skipped, clean, timings, skippedLongLineFiles: takeSkippedLongLineCount(), repo };
+  // exact duplicates can be emitted (overlapping windows, repeated evidence
+  // lines): one finding per (rule, file, line, evidence), keeping first order
+  const seen = new Set();
+  const unique = findings.filter((f) => {
+    const key = `${f.rule}|${f.file}|${f.line}|${f.evidence}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  unique.sort((a, b) => a.rule.localeCompare(b.rule) || String(a.file).localeCompare(String(b.file)) || (a.line ?? 0) - (b.line ?? 0));
+  return { findings: unique, degraded, scanned, skipped, clean, timings, skippedLongLineFiles: takeSkippedLongLineCount(), repo };
 }

@@ -24,7 +24,19 @@ function toPosix(p) {
   return p.split(sep).join('/');
 }
 
-function walk(dir, base, out) {
+// NOISE EXCLUSIONS (2026-10-07): test/spec/fixture files are the dominant
+// false-positive source for secret/cookie/security heuristics (fake keys,
+// example tokens, mocked configs). Skipped by NAME only, counted in the
+// output as skippedTestLike — never silently. Deliberate scope: directory
+// names __tests__/__mocks__/fixtures/fixture and file names *.test.* /
+// *.spec.* / *.e2e.* / *.min.* / *.example* / *.sample* / _test.go /
+// test_*.py. A `tests/` directory is NOT excluded wholesale (real code
+// lives there too) — only the unambiguous shapes above.
+const SKIP_TEST_DIRS = new Set(['__tests__', '__mocks__', 'fixtures', 'fixture']);
+const TEST_LIKE_NAME =
+  /\.(test|spec|e2e)\.[^.]+$|\.min\.[^.]+$|\.example(\.|$)|\.sample(\.|$)|_test\.go$|^test_[^/]*\.py$/i;
+
+function walk(dir, base, out, skippedTestLike) {
   let entries;
   try {
     entries = readdirSync(dir, { withFileTypes: true });
@@ -34,8 +46,12 @@ function walk(dir, base, out) {
   for (const entry of entries) {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) {
-      if (!SKIP_DIRS.has(entry.name)) walk(full, base, out);
+      if (!SKIP_DIRS.has(entry.name) && !SKIP_TEST_DIRS.has(entry.name)) walk(full, base, out, skippedTestLike);
     } else if (entry.isFile()) {
+      if (TEST_LIKE_NAME.test(entry.name)) {
+        skippedTestLike.push(toPosix(relative(base, full)));
+        continue;
+      }
       out.push({ rel: toPosix(relative(base, full)), full, name: entry.name, sensitive: SENSITIVE_NAME.test(entry.name) });
     }
   }
@@ -54,7 +70,8 @@ function walk(dir, base, out) {
  */
 export function openScanRepo(target) {
   const all = [];
-  walk(target, target, all);
+  const skippedTestLike = [];
+  walk(target, target, all, skippedTestLike);
   all.sort((a, b) => a.rel.localeCompare(b.rel));
 
   const isIgnored = loadGitignore(target);
@@ -102,6 +119,7 @@ export function openScanRepo(target) {
     readFile,
     exists: (rel) => resolveRel(rel) !== null,
     skippedIgnored,
+    skippedTestLike,
     fileCount: tree.length,
   };
 }
