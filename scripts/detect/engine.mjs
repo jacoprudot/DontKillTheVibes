@@ -20,7 +20,7 @@ import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openScanRepo } from './scan-repo.mjs';
-import { MATCHER_IMPL } from './matchers.mjs';
+import { MATCHER_IMPL, takeSkippedLongLineCount } from './matchers.mjs';
 import { makeGlobMatcher } from './glob.mjs';
 import { loadRules } from '../lib/canonical-registry.mjs';
 
@@ -97,7 +97,12 @@ function runGitleaksLite(repo, spec) {
  * @param {object} opts
  * @param {Set<string>} [opts.onlyIds] restrict to these rule ids (fixture runner)
  * @param {string} [opts.module] restrict to one module prefix (e.g. 'security')
- * @returns {{findings: object[], degraded: object[], scanned: number, skipped: number, repo: object}}
+ * @returns {{findings: object[], degraded: object[], scanned: number, skipped: number, clean: string[], repo: object, timings: Array<{rule: string, ms: number}>, skippedLongLineFiles: number}}
+ *          `clean` = ids of mechanical rules that RAN and produced zero findings
+ *          (the report's coverage/diff section needs evaluated-but-silent rules,
+ *          not just the ones that fired). `timings` exists so a future hang is
+ *          diagnosable from output alone — the 2026-10-07 incident cost an hour
+ *          precisely because a silent rule gave no trace.
  */
 export function runDetect(targetDir, opts = {}) {
   const doc = JSON.parse(readFileSync(join(ROOT, 'skills', 'detectors.json'), 'utf8'));
@@ -106,8 +111,11 @@ export function runDetect(targetDir, opts = {}) {
 
   const findings = [];
   const degraded = [];
+  const clean = [];
+  const timings = [];
   let scanned = 0;
   let skipped = 0;
+  takeSkippedLongLineCount(); // reset the matcher guard counter for this run
   const sensitiveByRel = new Map(repo.tree.filter((f) => f.sensitive).map((f) => [f.rel, true]));
 
   for (const [id, entry] of Object.entries(doc)) {
@@ -124,6 +132,7 @@ export function runDetect(targetDir, opts = {}) {
 
     let raw = [];
     let degradedReason = null;
+    const t0 = performance.now();
     if (entry.tool === 'node-matcher') {
       const impl = MATCHER_IMPL[entry.spec.matcher];
       if (!impl) {
@@ -150,8 +159,10 @@ export function runDetect(targetDir, opts = {}) {
       skipped++;
       continue;
     }
+    timings.push({ rule: id, ms: Math.round((performance.now() - t0) * 10) / 10 });
 
     const fields = rules.get(id) || {};
+    if (raw.length === 0) clean.push(id);
     for (const f of raw) {
       findings.push({
         rule: id,
@@ -168,5 +179,5 @@ export function runDetect(targetDir, opts = {}) {
   }
 
   findings.sort((a, b) => a.rule.localeCompare(b.rule) || String(a.file).localeCompare(String(b.file)) || (a.line ?? 0) - (b.line ?? 0));
-  return { findings, degraded, scanned, skipped, repo };
+  return { findings, degraded, scanned, skipped, clean, timings, skippedLongLineFiles: takeSkippedLongLineCount(), repo };
 }

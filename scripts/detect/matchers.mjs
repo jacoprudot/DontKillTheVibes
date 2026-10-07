@@ -23,6 +23,38 @@ function filesForGlob(repo, glob) {
   return repo.tree.filter((f) => !f.binary && match(f.rel));
 }
 
+// HARDENING (2026-10-07): regex matchers skip files containing a line longer
+// than MAX_LINE chars. Node has no regex timeout and several specs carry
+// comma-counting heuristics whose backtracking grows with line length — a
+// minified/generated line (bundle, base64 blob) is exactly the trigger, and
+// such files are not where line-oriented heuristics apply. Skipped files are
+// counted by the engine and reported, never silently dropped.
+const MAX_LINE = 2000;
+
+let skippedLongLineFiles = 0;
+/** Engine reads this after a run to report how many files the guard skipped. */
+export function takeSkippedLongLineCount() {
+  const n = skippedLongLineFiles;
+  skippedLongLineFiles = 0;
+  return n;
+}
+
+function readMatchable(repo, rel) {
+  const r = repo.readFile(rel);
+  if (r === null) return null;
+  let lineLen = 0;
+  for (let i = 0; i < r.content.length; i++) {
+    const ch = r.content.charCodeAt(i);
+    if (ch === 10 || ch === 13) {
+      lineLen = 0;
+    } else if (++lineLen > MAX_LINE) {
+      skippedLongLineFiles++;
+      return { skippedLongLine: true };
+    }
+  }
+  return { content: r.content };
+}
+
 function lineOf(content, index) {
   return content.slice(0, index).split('\n').length;
 }
@@ -50,8 +82,8 @@ export const MATCHER_IMPL = {
     const max = p.max_matches ?? CAP;
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = repo.readFile(f.rel);
-      if (r === null) continue;
+      const r = readMatchable(repo, f.rel);
+      if (r === null || r.skippedLongLine) continue;
       let n = 0;
       for (const m of iterMatches(re, r.content)) {
         out.push({ file: f.rel, line: lineOf(r.content, m.index), evidence: snippet(r.content, m.index) });
@@ -66,8 +98,8 @@ export const MATCHER_IMPL = {
     const re = new RegExp(p.pattern);
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = repo.readFile(f.rel);
-      if (r === null) continue;
+      const r = readMatchable(repo, f.rel);
+      if (r === null || r.skippedLongLine) continue;
       const m = re.exec(r.content);
       if (m) out.push({ file: f.rel, line: lineOf(r.content, m.index), evidence: snippet(r.content, m.index) });
       if (out.length >= CAP) break;
@@ -79,8 +111,8 @@ export const MATCHER_IMPL = {
     const re = new RegExp(p.pattern);
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = repo.readFile(f.rel);
-      if (r === null) continue;
+      const r = readMatchable(repo, f.rel);
+      if (r === null || r.skippedLongLine) continue;
       if (!re.test(r.content)) out.push({ file: f.rel, line: null, evidence: 'pattern not found in file' });
       if (out.length >= CAP) break;
     }
@@ -106,8 +138,8 @@ export const MATCHER_IMPL = {
     const re = new RegExp(p.pattern, 'g');
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = repo.readFile(f.rel);
-      if (r === null) continue;
+      const r = readMatchable(repo, f.rel);
+      if (r === null || r.skippedLongLine) continue;
       const count = [...iterMatches(re, r.content)].length;
       if (count > p.max) out.push({ file: f.rel, line: null, evidence: `${count} occurrences (max ${p.max})` });
       if (out.length >= CAP) break;
@@ -118,8 +150,8 @@ export const MATCHER_IMPL = {
   'complexity-limit'(repo, p) {
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = repo.readFile(f.rel);
-      if (r === null) continue;
+      const r = readMatchable(repo, f.rel);
+      if (r === null || r.skippedLongLine) continue;
       if (p.metric === 'line-count') {
         const n = r.content.split('\n').length;
         if (n > p.max) out.push({ file: f.rel, line: null, evidence: `${n} lines (max ${p.max})` });
@@ -145,8 +177,8 @@ export const MATCHER_IMPL = {
     const out = [];
     const match = makeGlobMatcher(p.file);
     for (const f of repo.tree.filter((t) => match(t.rel))) {
-      const r = repo.readFile(f.rel);
-      if (r === null) continue;
+      const r = readMatchable(repo, f.rel);
+      if (r === null || r.skippedLongLine) continue;
       let doc;
       try {
         doc = JSON.parse(r.content);
@@ -175,8 +207,8 @@ export const MATCHER_IMPL = {
     const FLAG_RE = { secure: /\bsecure\b/i, httponly: /\bhttponly\b/i, samesite: /\bsamesite\b/i };
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = repo.readFile(f.rel);
-      if (r === null || !SETS_COOKIE.test(r.content)) continue;
+      const r = readMatchable(repo, f.rel);
+      if (r === null || r.skippedLongLine || !SETS_COOKIE.test(r.content)) continue;
       const missing = p.require.filter((flag) => !FLAG_RE[flag].test(r.content));
       if (missing.length > 0) {
         out.push({ file: f.rel, line: null, evidence: `heuristic: file sets cookies but never sets ${missing.join(', ')}` });
@@ -196,8 +228,8 @@ export const MATCHER_IMPL = {
     ];
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = repo.readFile(f.rel);
-      if (r === null) continue;
+      const r = readMatchable(repo, f.rel);
+      if (r === null || r.skippedLongLine) continue;
       for (const re of PATTERNS) {
         for (const m of iterMatches(re, r.content)) {
           out.push({ file: f.rel, line: lineOf(r.content, m.index), evidence: snippet(r.content, m.index) });
@@ -216,8 +248,8 @@ export const MATCHER_IMPL = {
     const cmp = ops[p.op];
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = repo.readFile(f.rel);
-      if (r === null) continue;
+      const r = readMatchable(repo, f.rel);
+      if (r === null || r.skippedLongLine) continue;
       for (const m of iterMatches(re, r.content)) {
         const num = parseFloat(m[1]);
         if (!Number.isNaN(num) && cmp(num, p.value)) {
@@ -235,8 +267,8 @@ export const MATCHER_IMPL = {
     const none = (p.require_none || []).map((s) => new RegExp(s));
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = repo.readFile(f.rel);
-      if (r === null) continue;
+      const r = readMatchable(repo, f.rel);
+      if (r === null || r.skippedLongLine) continue;
       const okAny = any.some((re) => re.test(r.content));
       const badNone = none.filter((re) => re.test(r.content));
       if (!okAny || badNone.length > 0) {
@@ -247,4 +279,55 @@ export const MATCHER_IMPL = {
     }
     return out;
   },
+
+  // Rolling-hash O(n) implementation — see the registry note in
+  // scripts/validate-detectors.mjs for why this exists (catastrophic regex).
+  'exact-duplication'(repo, p) {
+    const out = [];
+    for (const f of filesForGlob(repo, p.path_glob)) {
+      const r = readMatchable(repo, f.rel);
+      if (r === null || r.skippedLongLine) continue;
+      const dup = findRepeatedWindow(r.content, p.min_chars);
+      if (dup) {
+        out.push({ file: f.rel, line: dup.line, evidence: `block of ${p.min_chars}+ chars repeated at offset ${dup.first} and ${dup.second}` });
+      }
+      if (out.length >= CAP) break;
+    }
+    return out;
+  },
 };
+
+/**
+ * Find the first window of exactly n characters that appears twice in text.
+ * Rolling hash over char codes, mod 2^32 (Math.imul keeps it in int32 range);
+ * hash hits are verified by direct comparison, so collisions never false-positive.
+ * Returns {first, second, line} or null.
+ */
+function findRepeatedWindow(text, n) {
+  if (text.length < n * 2 || n < 1) return null;
+  const BASE = 257;
+  let hash = 0;
+  let highest = 1; // BASE^(n-1) mod 2^32 (Math.imul wraps consistently)
+  for (let i = 0; i < n - 1; i++) highest = Math.imul(highest, BASE);
+  for (let i = 0; i < n; i++) hash = (Math.imul(hash, BASE) + text.charCodeAt(i)) | 0;
+  const seen = new Map([[hash, [0]]]);
+  for (let i = 1; i + n <= text.length; i++) {
+    // H_i = (H_{i-1} - c_{i-1}·B^{n-1})·B + c_{i+n-1}   (mod 2^32)
+    hash = (Math.imul((hash - Math.imul(text.charCodeAt(i - 1), highest)) | 0, BASE) + text.charCodeAt(i + n - 1)) | 0;
+    const start = i;
+    const candidates = seen.get(hash);
+    if (candidates) {
+      const win = text.slice(start, start + n);
+      for (const prev of candidates) {
+        if (text.slice(prev, prev + n) === win) {
+          return { first: prev, second: start, line: lineOf(text, prev) };
+        }
+      }
+      candidates.push(start);
+      if (candidates.length > 64) candidates.shift(); // bound collision-list growth
+    } else {
+      seen.set(hash, [start]);
+    }
+  }
+  return null;
+}

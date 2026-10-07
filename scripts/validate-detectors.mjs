@@ -65,7 +65,14 @@ const MATCHERS = {
   'cookie-flags': { req: { strings: ['path_glob'], lists: ['require'] } },
   'cors-wildcard': { req: { strings: ['path_glob'] } },
   'numeric-bound': { req: { regex: ['pattern'], strings: ['path_glob', 'op'], numbers: ['value'] } },
-  'import-requirement': { req: { strings: ['path_glob'], lists: ['require_any'] }, opt: { lists: ['require_none'] } }
+  'import-requirement': { req: { strings: ['path_glob'], lists: ['require_any'] }, opt: { lists: ['require_none'] } },
+  // Native replacement for the 2026-10-07 catastrophic-regex incident: the
+  // exact-duplication specs used ([\s\S]{N,})[\s\S]*?\1, which backtracks
+  // exponentially on files WITHOUT a repeated block (O(n^3): every capture
+  // length × every rescan). Node has no regex timeout, so this is implemented
+  // as a rolling-hash scan — O(n), equivalent semantics: a block of ≥ min_chars
+  // repeats iff some window of exactly min_chars repeats.
+  'exact-duplication': { req: { strings: ['path_glob'], ints: ['min_chars'] } }
 };
 const COMPLEXITY_METRICS = new Set(['cyclomatic', 'nesting', 'line-count']);
 const NUMERIC_OPS = new Set(['gt', 'lt', 'gte', 'lte']);

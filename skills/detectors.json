@@ -134,11 +134,10 @@
     "type": "detector",
     "tool": "node-matcher",
     "spec": {
-      "matcher": "file-content-regex",
+      "matcher": "exact-duplication",
       "params": {
-        "pattern": "([\\s\\S]{1200,})[\\s\\S]*?\\1",
         "path_glob": "**/*.{js,ts,jsx,tsx,py,go,java,cs,php,kt,swift,dart,c,cpp}",
-        "max_matches": 1000000
+        "min_chars": 1200
       }
     }
   },
@@ -146,11 +145,10 @@
     "type": "detector",
     "tool": "node-matcher",
     "spec": {
-      "matcher": "file-content-regex",
+      "matcher": "exact-duplication",
       "params": {
-        "pattern": "([\\s\\S]{400,})[\\s\\S]*?\\1",
         "path_glob": "**/*.{js,ts,jsx,tsx,py,go,java,cs,php,kt,swift,dart,c,cpp}",
-        "max_matches": 1000000
+        "min_chars": 400
       }
     }
   },
@@ -158,11 +156,10 @@
     "type": "detector",
     "tool": "node-matcher",
     "spec": {
-      "matcher": "file-content-regex",
+      "matcher": "exact-duplication",
       "params": {
-        "pattern": "([\\s\\S]{800,})[\\s\\S]*?\\1",
         "path_glob": "**/*.{js,ts,jsx,tsx,py,go,java,cs,php,kt,swift,dart,c,cpp}",
-        "max_matches": 1000000
+        "min_chars": 800
       }
     }
   },
@@ -329,7 +326,7 @@
     "spec": {
       "matcher": "file-content-regex",
       "params": {
-        "pattern": "def\\s+\\w+\\s*\\(([^)]*,){5,}[^)]*\\)",
+        "pattern": "def\\s+\\w+\\s*\\([^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*\\)",
         "path_glob": "**/*.py",
         "max_matches": 1000000
       }
@@ -367,7 +364,7 @@
     "spec": {
       "matcher": "file-content-regex",
       "params": {
-        "pattern": "(?:function\\s+)?\\w+\\s*\\(([^)]*,){5,}[^)]*\\)[ \\t]*\\{",
+        "pattern": "(?:function\\s+)?\\w+\\s*\\([^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*\\)[ \\t]*\\{",
         "path_glob": "**/*.{js,ts,jsx,tsx,java,cs,php,kt,swift,dart}",
         "max_matches": 1000000
       }
@@ -581,7 +578,7 @@
     "spec": {
       "matcher": "file-content-regex",
       "params": {
-        "pattern": "(?:function\\s+)?\\w+\\s*\\(([^)]*,){7,}[^)]*\\)[ \\t]*\\{",
+        "pattern": "(?:function\\s+)?\\w+\\s*\\([^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*\\)[ \\t]*\\{",
         "path_glob": "**/*.{js,ts,jsx,tsx,java,cs,php,kt,swift,dart}",
         "max_matches": 1000000
       }

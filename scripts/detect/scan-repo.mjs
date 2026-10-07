@@ -86,7 +86,10 @@ export function openScanRepo(target) {
     const f = resolveRel(rel);
     if (!f || f.binary) return null;
     try {
-      if (statSync(f.full).size > 20 * 1024 * 1024) return null;
+      // 512KB scan cap (2026-10-07): lockfiles/bundles exceed this and regex
+      // heuristics have no business in them; names stay in the tree so
+      // file-presence checks still see them, content reads just refuse.
+      if (statSync(f.full).size > 512 * 1024) return null;
       return { content: readFileSync(f.full, 'utf8'), sensitive: f.sensitive };
     } catch {
       return null;

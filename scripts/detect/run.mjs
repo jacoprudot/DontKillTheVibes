@@ -30,6 +30,7 @@ for (let i = 0; i < args.length; i++) {
 }
 if (!target) usage();
 
+console.log(`scanning: ${resolve(target)} …`);
 let result;
 try {
   result = runDetect(resolve(target), { module: module ?? undefined });
@@ -38,11 +39,16 @@ try {
   process.exit(2);
 }
 
-const { findings, degraded, scanned, skipped, repo } = result;
+const { findings, degraded, scanned, skipped, repo, timings, skippedLongLineFiles } = result;
 
 console.log(`target: ${resolve(target)}`);
-console.log(`files scanned: ${repo.fileCount} (gitignored skipped: ${repo.skippedIgnored.length})`);
+console.log(`files scanned: ${repo.fileCount} (gitignored skipped: ${repo.skippedIgnored.length}${skippedLongLineFiles ? `; skipped long-line/minified files: ${skippedLongLineFiles}` : ''})`);
 console.log(`rules run: ${scanned} · skipped (tool not implemented): ${skipped}`);
+const slow = timings.filter((t) => t.ms > 500).sort((a, b) => b.ms - a.ms);
+if (slow.length > 0) {
+  console.log('slowest rules (>500ms):');
+  for (const t of slow.slice(0, 10)) console.log(`  ${t.ms}ms  ${t.rule}`);
+}
 if (degraded.length > 0) {
   console.log('degraded:');
   for (const d of degraded) console.log(`  ${d.rule} — ${d.tool}${d.reason ? ` (${d.reason})` : ''}`);
