@@ -18,6 +18,36 @@ Free, MIT, LLM-agnostic. Works with Claude Code, Cursor, Gemini, or any OpenAI-c
 
 **New direction**, declared in [PLAN.md](PLAN.md): deterministic detectors (`gitleaks`/`semgrep`/`osv-scanner`) find, the registry translates, code assembles the report — citations valid by construction. Paths A/B/C below stay as **versioned evidence**, not as the recommended path.
 
+## 🔍 See it work (20 seconds, no install)
+
+This is the deterministic path on a public RealWorld app — the same repository the [case study](docs/CASE_STUDY.md) used. One command:
+
+```bash
+git clone https://github.com/jacoprudot/dontkillthevibes.git && cd dontkillthevibes
+pnpm install && pnpm detect --target examples/detect-realworld/repo
+```
+
+Raw signal, straight from the scanner — this exact line is in the repo:
+
+```
+src/app/routes/auth/auth.ts:16
+  secret: process.env.JWT_SECRET || 'superSecret',
+```
+
+What the registry turns it into (`pnpm detect:report --target examples/detect-realworld/repo`):
+
+```
+security-jwt-weak-3 — CRITICAL, effort XS, score 150
+src/app/routes/auth/auth.ts:16  (also :21, and token.utils.ts:4)
+Evidence:    secret: process.env.JWT_SECRET || 'superSecret',
+Remediation: Use strong random secret (minimum 32 bytes) from secure source
+Why first:  critical in the security module outranks everything else — that ordering is arithmetic, not a model's mood
+```
+
+**The honest number.** A general single-model pass over the same repo reported **3 findings, 0 security, 0 criticals** ([committed baseline](examples/gemini-baseline/)). It never saw this auth bypass — the most severe thing in the repository. The deterministic detector finds all three sites in ~2s, and every citation resolves to a real line *by construction*: the scanner produced the citation by matching the line.
+
+**The caveat, said out loud.** Precision over *all* detector findings is still unmeasured — it stays unclaimed until the human-adjudicated sample exists ([PLAN.md](PLAN.md) Fase 7, declared up front). What you can verify by hand today is every citation; what you cannot yet trust is how often the rule cries wolf. [The full report this demo produced](examples/detect-realworld/report.md) is committed alongside the [snapshot it scanned](examples/detect-realworld/repo/) — run it yourself and diff.
+
 ## Overview
 
 **DontKillTheVibes** is a toolkit of opinionated *Skills* (decision-tree analysis), *MCPs* (Model Context Protocol servers), and *Agent definitions* that let your LLM audit a repository and emit an actionable 30/60/90-day work plan.
