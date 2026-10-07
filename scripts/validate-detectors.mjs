@@ -57,7 +57,7 @@ const MATCHERS = {
   'file-content-regex': { req: { regex: ['pattern'] }, opt: { strings: ['path_glob'], ints: ['max_matches'] } },
   'content-presence': { req: { regex: ['pattern'], strings: ['path_glob'] } },
   'content-absence': { req: { regex: ['pattern'], strings: ['path_glob'] } },
-  'file-presence': { req: { strings: ['path_glob'] } },
+  'file-presence': { req: { strings: ['path_glob'] }, opt: { strings: ['exclude_glob'] } },
   'file-absence': { req: { strings: ['path_glob'] } },
   'max-occurrences': { req: { regex: ['pattern'], strings: ['path_glob'], ints: ['max'] } },
   'complexity-limit': { req: { strings: ['path_glob', 'metric'], ints: ['max'] } },

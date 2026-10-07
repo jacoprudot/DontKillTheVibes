@@ -2235,7 +2235,8 @@
     "spec": {
       "matcher": "file-presence",
       "params": {
-        "path_glob": "**/.env*"
+        "path_glob": "**/.env*",
+        "exclude_glob": "**/.env.{example,sample,template}"
       }
     }
   },
@@ -2258,7 +2259,7 @@
     "spec": {
       "file_glob": ".github/workflows/*.y*ml",
       "check": "presence",
-      "pattern": "uses:\\s*[^@\\s]+/(?!actions/)[^@\\s]+@(main|master|v\\d+)\\s*$"
+      "pattern": "uses:\\s*(?!actions/)[^@\\s]+/[^@\\s]+@(main|master|v\\d+)\\s*$"
     }
   },
   "security-gha-auto-deploy-prod-9": {
