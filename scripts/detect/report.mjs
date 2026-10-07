@@ -87,7 +87,17 @@ const findings = raw.map((f) => {
 });
 findings.sort((a, b) => b.score - a.score || a.rule.localeCompare(b.rule) || String(a.file).localeCompare(String(b.file)));
 
-const grade = gradeFromFindings(findings);
+// STRUCTURAL SPLIT (2026-10-07): an `ausencia` hit is a missing safeguard —
+// a checklist gap, not a violation. It fires by construction in almost any
+// repo (a missing timeout is missing everywhere), which is why presenting it
+// as a severity-stamped finding produced walls of noise. Detector-type
+// findings carry the report; ausencia gets its own short grouped section,
+// no displayed severity, no C2 prompt.
+const detectorFindings = findings.filter((f) => f.type === 'detector');
+const ausenciaFindings = findings.filter((f) => f.type === 'ausencia');
+
+// The grade answers "how bad is this repo" — checklist gaps don't move it.
+const grade = gradeFromFindings(detectorFindings);
 
 // ---- coverage diff against the baseline ruleset (paso D) ----
 const detectorsDoc = JSON.parse(readFileSync(join(ROOT, 'skills', 'detectors.json'), 'utf8'));
@@ -119,14 +129,15 @@ writeFileSync(join(out, 'findings.json'), JSON.stringify(document, null, 2));
 
 // ---- report.md ----
 const byPhase = { '30_days': [], '60_days': [], '90_days': [] };
-for (const f of findings) (byPhase[f.phase] ?? byPhase['90_days']).push(f);
+for (const f of detectorFindings) (byPhase[f.phase] ?? byPhase['90_days']).push(f);
 
 let md = '';
 md += `# DontKillTheVibes — deterministic assessment\n\n`;
 md += `- target: \`${target}\`\n`;
 md += `- files scanned: ${repo.fileCount} · test/spec/fixture files excluded: ${repo.skippedTestLike.length} · rules run: ${scanned} · skipped (tool not implemented): ${skipped}\n`;
-md += `- overall health: **${grade.display}** (worst-severity grade; ${grade.criticalCount} critical)\n`;
-md += `- every finding is a raw mechanical signal (label \`probado\`) — verify by hand (file:line) before acting; precision is NOT yet measured (see protocol in PLAN.md)\n\n`;
+md += `- overall health: **${grade.display}** (worst-severity grade over detector findings; ${grade.criticalCount} critical)\n`;
+md += `- ${detectorFindings.length} detector finding(s) + ${ausenciaFindings.length} checklist gap(s) — an ausencia hit means a safeguard is MISSING, not that a violation was found\n`;
+md += `- every detector finding is a raw mechanical signal (label \`probado\`) — verify by hand (file:line) before acting; precision is NOT yet measured (see protocol in PLAN.md)\n\n`;
 
 md += `## Work plan (30/60/90)\n\n`;
 md += `Bucketing is deterministic: critical+high → 30 days, medium → 60, low/info → 90; order inside a phase is severity × module weight.\n\n`;
@@ -137,11 +148,10 @@ for (const [phase, list] of Object.entries(byPhase)) {
 }
 
 // Presentation (2026-10-07 noise pass): critical+high carry the full detail,
-// grouped by file; medium/low/info go to a one-line appendix. 695 undifferentiated
-// findings is a wall, not a plan — severity is the first filter a human applies.
+// grouped by file; medium/low/info go to a one-line appendix.
 const MAIN_SEV = new Set(['critical', 'high']);
-const main = findings.filter((f) => MAIN_SEV.has(f.severity));
-const appendix = findings.filter((f) => !MAIN_SEV.has(f.severity));
+const main = detectorFindings.filter((f) => MAIN_SEV.has(f.severity));
+const appendix = detectorFindings.filter((f) => !MAIN_SEV.has(f.severity));
 
 md += `## Findings — critical & high (${main.length}), grouped by file\n\n`;
 const byFile = new Map();
@@ -169,6 +179,19 @@ for (const f of appendix) {
   md += `  - ${f.file}${f.line !== null ? `:${f.line}` : ''} — ${f.evidence.slice(0, 100)}\n`;
 }
 md += `\n`;
+
+md += `## Checklist gaps — ausencia checks (${ausenciaFindings.length})\n\n`;
+md += `These prove a safeguard is MISSING (a timeout, a budget, a monitor). They are not violations and carry no severity: a missing thing is missing in every repo until it isn't. Grouped by rule; fix is "add the safeguard", no per-finding prompt needed.\n\n`;
+const gapsByRule = new Map();
+for (const f of ausenciaFindings) {
+  if (!gapsByRule.has(f.rule)) gapsByRule.set(f.rule, { name: f.name, remediation: f.remediation, files: [] });
+  gapsByRule.get(f.rule).files.push(f.file);
+}
+for (const [rule, gap] of [...gapsByRule.entries()].sort((a, b) => b[1].files.length - a[1].files.length || a[0].localeCompare(b[0]))) {
+  md += `### ${rule}${gap.name ? ` (${gap.name})` : ''} — ${gap.files.length} file(s)\n\n`;
+  md += `Missing in: ${gap.files.slice(0, 8).map((f) => `\`${f}\``).join(', ')}${gap.files.length > 8 ? ` … +${gap.files.length - 8} more` : ''}\n\n`;
+  md += `Add: ${gap.remediation}\n\n`;
+}
 
 md += `## Coverage vs baseline ruleset (paso D)\n\n`;
 md += `- Canonical registry: ${counts.registry} rules\n`;
@@ -213,4 +236,4 @@ writeFileSync(join(out, 'prompts.md'), pr);
 console.log(`report written: ${join(out, 'report.md')}`);
 console.log(`prompts written: ${join(out, 'prompts.md')}`);
 console.log(`findings written: ${join(out, 'findings.json')}`);
-console.log(`grade: ${grade.display} · findings: ${findings.length} across ${firedRules.size} rule(s) · clean: ${clean.length} · degraded: ${degraded.length} · juicio not evaluated: ${counts.juicioNotEvaluated}`);
+console.log(`grade: ${grade.display} · detector findings: ${detectorFindings.length} (main: ${main.length}) · checklist gaps (ausencia): ${ausenciaFindings.length} · clean: ${clean.length} · degraded: ${degraded.length} · juicio not evaluated: ${counts.juicioNotEvaluated}`);
