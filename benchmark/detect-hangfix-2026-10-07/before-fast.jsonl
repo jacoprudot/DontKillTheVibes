@@ -1,0 +1,6 @@
+{"name":"cyberpunk-hud","status":"ok","seconds":0.43,"exit_code":"0","findings_json_bytes":13718,"report_md_bytes":5042,"prompts_md_bytes":450,"stdout_bytes":542}
+{"name":"realworld-control","status":"ok","seconds":1.29,"exit_code":"0","findings_json_bytes":202167,"report_md_bytes":20290,"prompts_md_bytes":8548,"stdout_bytes":559}
+{"name":"rich","status":"ok","seconds":2.17,"exit_code":"0","findings_json_bytes":337578,"report_md_bytes":66464,"prompts_md_bytes":65552,"stdout_bytes":522}
+{"name":"httpx","status":"ok","seconds":0.7,"exit_code":"0","findings_json_bytes":257340,"report_md_bytes":50676,"prompts_md_bytes":39746,"stdout_bytes":525}
+{"name":"mini-redis","status":"ok","seconds":0.35,"exit_code":"0","findings_json_bytes":22565,"report_md_bytes":8724,"prompts_md_bytes":450,"stdout_bytes":533}
+{"name":"sinatra","status":"ok","seconds":0.61,"exit_code":"0","findings_json_bytes":108456,"report_md_bytes":16015,"prompts_md_bytes":2475,"stdout_bytes":529}

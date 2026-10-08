@@ -1,0 +1,3 @@
+@echo off
+"C:\Program Files\nodejs\node.exe" "C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\scripts\detect\report.mjs" --target "C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work\deutsia-radio" --out "C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\deutsia-radio" > "C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\deutsia-radio\stdout.txt" 2> "C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\deutsia-radio\stderr.txt"
+echo %ERRORLEVEL% > "C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\deutsia-radio\exit.txt"

@@ -1,0 +1,2631 @@
+{
+  "$comment": "Detector sidecar for the canonical rule registry (PLAN.md, Fase 1). One entry per canonical rule id. type: detector (a deterministic tool proves the PRESENCE of the violation) | ausencia (proves only the ABSENCE of a guard ? weaker proof, reported separately) | juicio (a model decides with a closed question) | fuera (declared, never deleted). Post-audit 2026-10-06: query prose and confidence removed; spec is structured per tool and must parse (validated by scripts/validate-detectors.mjs). The census is PROVISIONAL until positive/negative fixtures pass per rule. Validate: node scripts/validate-detectors.mjs",
+  "code-any-type-6": {
+    "type": "juicio"
+  },
+  "code-bare-except-1": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "except:\n  ...",
+      "languages": [
+        "py"
+      ]
+    }
+  },
+  "code-bare-except-with-others-2": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "try:\n  ...\nexcept $EXC:\n  ...\nexcept:\n  ...",
+      "languages": [
+        "py"
+      ]
+    }
+  },
+  "code-blocking-in-goroutine-3": {
+    "type": "juicio"
+  },
+  "code-boilerplate-repetition-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?m:^\\s*(?:[#*]+\\s*)?(?:Copyright|SPDX-License-Identifier)[^\\n]*(?:\\n\\s*[#*].+){4,})",
+        "path_glob": "**/*",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "code-boolean-parameter-plague-11": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "function $F(..., $A: boolean, ..., $B: boolean, ..., $C: boolean, ..., $D: boolean, ...) {\n  ...\n}",
+      "languages": [
+        "ts"
+      ]
+    }
+  },
+  "code-callback-hell-10": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "$F(..., function ($A) {\n  ...\n  $G(..., function ($B) {\n    ...\n    $H(..., function ($C) {\n      ...\n    }, ...)\n    ...\n  }, ...)\n  ...\n}, ...)",
+      "languages": [
+        "js",
+        "ts",
+        "jsx",
+        "tsx"
+      ]
+    }
+  },
+  "code-catch-and-continue-9": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "for (...) {\n  ...\n  try {\n    ...\n  } catch ($E) {\n    ...\n    continue;\n    ...\n  }\n  ...\n}",
+      "languages": [
+        "js",
+        "ts",
+        "jsx",
+        "tsx",
+        "java",
+        "cs",
+        "php",
+        "kt",
+        "swift",
+        "dart"
+      ]
+    }
+  },
+  "code-channel-not-closed-5": {
+    "type": "juicio"
+  },
+  "code-console-log-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "console\\.(log|debug|info)\\s*\\(",
+        "path_glob": "src/**/*.{js,ts,jsx,tsx}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "code-copy-paste-variant-6": {
+    "type": "juicio"
+  },
+  "code-deep-inheritance-9": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "class $C1($C2):\n  ...\nclass $C2($C3):\n  ...\nclass $C3($C4):\n  ...\nclass $C4($C5):\n  ...\nclass $C5($C6):\n  ...",
+      "languages": [
+        "py"
+      ]
+    }
+  },
+  "code-empty-catch-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}|except\\s*(?:[A-Za-z_][\\w.]*\\s*)?:\\s*pass\\b",
+        "path_glob": "**/*.{js,ts,jsx,tsx,java,cs,php,kt,swift,dart,py}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "code-error-assigned-unused-2": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "$A, err := $F(...)",
+      "languages": [
+        "go"
+      ]
+    }
+  },
+  "code-exact-duplication-massive-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "exact-duplication",
+      "params": {
+        "path_glob": "**/*.{js,ts,jsx,tsx,py,go,java,cs,php,kt,swift,dart,c,cpp}",
+        "min_chars": 1200
+      }
+    }
+  },
+  "code-exact-duplication-minor-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "exact-duplication",
+      "params": {
+        "path_glob": "**/*.{js,ts,jsx,tsx,py,go,java,cs,php,kt,swift,dart,c,cpp}",
+        "min_chars": 400
+      }
+    }
+  },
+  "code-exact-duplication-significant-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "exact-duplication",
+      "params": {
+        "path_glob": "**/*.{js,ts,jsx,tsx,py,go,java,cs,php,kt,swift,dart,c,cpp}",
+        "min_chars": 800
+      }
+    }
+  },
+  "code-extreme-complexity-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "complexity-limit",
+      "params": {
+        "path_glob": "**/*.{js,ts,jsx,tsx,py,go,java,cs,php,kt,swift,dart,c,cpp}",
+        "metric": "cyclomatic",
+        "max": 20
+      }
+    }
+  },
+  "code-extreme-length-6": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "complexity-limit",
+      "params": {
+        "path_glob": "**/*.{js,ts,jsx,tsx,py,go,java,cs,php,kt,swift,dart,c,cpp}",
+        "metric": "line-count",
+        "max": 150
+      }
+    }
+  },
+  "code-extreme-nesting-4": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "if ($A) {\n  if ($B) {\n    if ($C) {\n      if ($D) {\n        if ($E) {\n          if ($F) {\n            ...\n          }\n        }\n      }\n    }\n  }\n}",
+      "languages": [
+        "js",
+        "ts",
+        "jsx",
+        "tsx",
+        "java",
+        "cs",
+        "php",
+        "kt",
+        "swift",
+        "dart",
+        "go",
+        "rust",
+        "c",
+        "cpp"
+      ]
+    }
+  },
+  "code-generic-catch-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "catch\\s*\\(\\s*(?:Exception|Throwable)\\s+\\w+\\s*\\)|except\\s+(?:Exception|BaseException)\\s*:",
+        "path_glob": "**/*.{java,cs,py}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "code-god-object-6": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "max-occurrences",
+      "params": {
+        "pattern": "(?m:^    def \\w+\\()",
+        "path_glob": "**/*.py",
+        "max": 30
+      }
+    }
+  },
+  "code-god-package-9": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "max-occurrences",
+      "params": {
+        "pattern": "(?m:^package\\s+\\w+\\s*$)",
+        "path_glob": "**/*.go",
+        "max": 50
+      }
+    }
+  },
+  "code-high-complexity-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "complexity-limit",
+      "params": {
+        "path_glob": "**/*.{js,ts,jsx,tsx,py,go,java,cs,php,kt,swift,dart,c,cpp}",
+        "metric": "cyclomatic",
+        "max": 15
+      }
+    }
+  },
+  "code-high-nesting-5": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "if ($A) {\n  if ($B) {\n    if ($C) {\n      if ($D) {\n        if ($E) {\n          ...\n        }\n      }\n    }\n  }\n}",
+      "languages": [
+        "js",
+        "ts",
+        "jsx",
+        "tsx",
+        "java",
+        "cs",
+        "php",
+        "kt",
+        "swift",
+        "dart",
+        "go",
+        "rust",
+        "c",
+        "cpp"
+      ]
+    }
+  },
+  "code-ignores-return-value-6": {
+    "type": "juicio"
+  },
+  "code-interface-bloat-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "max-occurrences",
+      "params": {
+        "pattern": "(?m:^\\t\\w+\\s*\\([^)\\n]*\\)\\s*(?:\\([^)\\n]*\\)|[\\w.\\[\\]*]+)?\\s*$)",
+        "path_glob": "**/*.go",
+        "max": 10
+      }
+    }
+  },
+  "code-logs-secrets-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?i:(?:console|logger|log|logging|sys)\\.(?:log|debug|info|warn|warning|error|exception)\\s*\\([^)\\n]*(?:password|passwd|token|secret|api[_-]?key|credential))",
+        "path_glob": "**/*.{js,ts,jsx,tsx,py,java,cs,go}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "code-long-function-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "complexity-limit",
+      "params": {
+        "path_glob": "**/*.{js,ts,jsx,tsx,py,go,java,cs,php,kt,swift,dart,c,cpp}",
+        "metric": "line-count",
+        "max": 100
+      }
+    }
+  },
+  "code-long-parameter-list-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "def\\s+\\w+\\s*\\([^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*\\)",
+        "path_glob": "**/*.py",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "code-loose-equality-1": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "$A == $B",
+      "languages": [
+        "js",
+        "ts",
+        "jsx",
+        "tsx"
+      ]
+    }
+  },
+  "code-loose-inequality-2": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "$A != $B",
+      "languages": [
+        "js",
+        "ts",
+        "jsx",
+        "tsx"
+      ]
+    }
+  },
+  "code-many-params-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?:function\\s+)?\\w+\\s*\\([^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*\\)[ \\t]*\\{",
+        "path_glob": "**/*.{js,ts,jsx,tsx,java,cs,php,kt,swift,dart}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "code-map-lookup-unchecked-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?m:^\\s*\\w+\\s*:?=\\s*\\w+\\[[^\\]\\n]+\\]\\s*$)",
+        "path_glob": "**/*.go",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "code-medium-length-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "complexity-limit",
+      "params": {
+        "path_glob": "**/*.{js,ts,jsx,tsx,py,go,java,cs,php,kt,swift,dart,c,cpp}",
+        "metric": "line-count",
+        "max": 50
+      }
+    }
+  },
+  "code-missing-docstring-10": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "(?m:^(?:def|class)\\s+(?!_)\\w+[^\\n]*:\\s*\\n\\s+\"\"\")",
+        "path_glob": "**/*.py"
+      }
+    }
+  },
+  "code-missing-error-main-10": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "func main() {\n  ...\n  $R := $F(...)\n  ...\n}",
+      "languages": [
+        "go"
+      ]
+    }
+  },
+  "code-missing-return-type-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?m:^export\\s+(?:async\\s+)?function\\s+\\w+\\s*\\([^)]*\\)\\s*\\{)",
+        "path_glob": "**/*.ts",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "code-missing-validation-4": {
+    "type": "juicio"
+  },
+  "code-moderate-complexity-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "complexity-limit",
+      "params": {
+        "path_glob": "**/*.{js,ts,jsx,tsx,py,go,java,cs,php,kt,swift,dart,c,cpp}",
+        "metric": "cyclomatic",
+        "max": 10
+      }
+    }
+  },
+  "code-multiple-return-points-12": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "max-occurrences",
+      "params": {
+        "pattern": "(?m:^\\s*return\\b)",
+        "path_glob": "**/*.{js,ts,jsx,tsx,py,java,cs,php,go,kt,swift,dart}",
+        "max": 6
+      }
+    }
+  },
+  "code-mutable-default-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "def\\s+\\w+\\s*\\([^)]*=\\s*(?:\\[\\]|\\{\\}|set\\(\\)|dict\\(\\)|list\\(\\))",
+        "path_glob": "**/*.py",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "code-mutex-missing-4": {
+    "type": "juicio"
+  },
+  "code-nested-ternary-9": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "$C ? $A : $D ? $B : $E",
+      "languages": [
+        "js",
+        "ts",
+        "jsx",
+        "tsx",
+        "java",
+        "cs",
+        "kt"
+      ]
+    }
+  },
+  "code-null-instead-of-exception-3": {
+    "type": "juicio"
+  },
+  "code-print-statement-5": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "print(...)",
+      "languages": [
+        "py"
+      ]
+    }
+  },
+  "code-print-statement-8": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "System.$OUT.println(...)",
+      "languages": [
+        "java"
+      ],
+      "path_glob": "src/main/**/*.java"
+    }
+  },
+  "code-promise-chain-missing-catch-5": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "\\.(?:catch|finally)\\s*\\(",
+        "path_glob": "**/*.{js,ts,jsx,tsx}"
+      }
+    }
+  },
+  "code-slice-append-in-loop-6": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "for ... {\n  ...\n  $X = append($X, ...)\n  ...\n}",
+      "languages": [
+        "go"
+      ]
+    }
+  },
+  "code-sql-injection-risk-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?i:(?:SELECT|INSERT|UPDATE|DELETE)[^\"'\\n]*[\"']\\s*\\+\\s*\\w+|f[\"'][^\"'\\n]*(?:SELECT|INSERT|UPDATE|DELETE)[^\"'\\n]*\\{[^}]+\\})",
+        "path_glob": "**/*.py",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "code-structural-duplication-high-4": {
+    "type": "juicio"
+  },
+  "code-structural-duplication-medium-5": {
+    "type": "juicio"
+  },
+  "code-system-exit-misuse-5": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "\\b(?:System\\.exit|os\\.Exit|sys\\.exit|process\\.exit)\\s*\\(",
+        "path_glob": "**/*.{java,go,py,js,ts}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "code-too-many-attributes-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "max-occurrences",
+      "params": {
+        "pattern": "(?m:^\\s{8}self\\.\\w+\\s*=[^=])",
+        "path_glob": "**/*.py",
+        "max": 20
+      }
+    }
+  },
+  "code-too-many-params-9": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?:function\\s+)?\\w+\\s*\\([^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*,[^()]*(?:\\([^()]*\\)[^()]*)*\\)[ \\t]*\\{",
+        "path_glob": "**/*.{js,ts,jsx,tsx,java,cs,php,kt,swift,dart}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "code-unchecked-error-1": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "$F($X...)",
+      "languages": [
+        "go"
+      ]
+    }
+  },
+  "code-unhandled-promise-4": {
+    "type": "juicio"
+  },
+  "code-var-usage-3": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "var $X = ...",
+      "languages": [
+        "js",
+        "ts",
+        "jsx",
+        "tsx"
+      ]
+    }
+  },
+  "code-warning-suppression-7": {
+    "type": "juicio"
+  },
+  "cost-api-deprecated-endpoint-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(api\\.twitter\\.com/1\\.[01]/|graph\\.facebook\\.com/v([0-9]|1[01])\\b|api\\.facebook\\.com/v([0-9]|1[01])\\b)",
+        "path_glob": "**/*.{ts,tsx,js,jsx,py,go,java,kt}"
+      }
+    }
+  },
+  "cost-api-in-loop-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "\\b(for|while)\\s*\\([^)]*\\)\\s*\\{[^}]{0,2000}?(fetch\\s*\\(|axios\\s*\\.|stripe\\s*\\.)",
+        "path_glob": "**/*.{ts,tsx,js,jsx,py,go,java}"
+      }
+    }
+  },
+  "cost-api-no-client-rate-limit-4": {
+    "type": "juicio"
+  },
+  "cost-api-no-idempotency-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "stripe\\.(charges|paymentIntents|payment_intents|subscriptions)\\.[a-zA-Z]+\\s*\\(",
+        "path_glob": "**/*.{ts,tsx,js,jsx,py,go,java}"
+      }
+    }
+  },
+  "cost-api-no-response-cache-5": {
+    "type": "juicio"
+  },
+  "cost-api-no-retry-strategy-8": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "(?i:(retry|backoff|polly|cockatiel|opossum|tenacity|resilience4j))",
+        "path_glob": "**/*.{ts,js,py,java,go}"
+      }
+    }
+  },
+  "cost-api-no-usage-monitoring-9": {
+    "type": "juicio"
+  },
+  "cost-api-wrong-tier-6": {
+    "type": "juicio"
+  },
+  "cost-db-backup-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(0\\s+0\\s+\\*\\s+\\*\\s+\\*[^\\n]*(pg_dump|mysqldump|mongodump)|\\b(pg_dump|mysqldump|mongodump)\\b[^\\n]*--(clean|full|format=t))",
+        "path_glob": "**/*.{sh,cron,yml,yaml,conf}"
+      }
+    }
+  },
+  "cost-db-growth-3": {
+    "type": "fuera"
+  },
+  "cost-db-no-pooling-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "new\\s+(pg\\.)?Client\\s*\\(|createConnection\\s*\\(|DriverManager\\.getConnection\\s*\\(",
+        "path_glob": "**/*.{ts,js,py,java,go,kt}"
+      }
+    }
+  },
+  "cost-db-pool-5": {
+    "type": "fuera"
+  },
+  "cost-deprecated-version-10": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "spec": {
+      "unmaintained_months": 12
+    }
+  },
+  "cost-dev-setup-missing-3": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-absence",
+      "params": {
+        "path_glob": "**/{docker-compose.yml,docker-compose.yaml,Makefile,dev.sh,Taskfile.yml}"
+      }
+    }
+  },
+  "cost-documentation-poor-7": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-absence",
+      "params": {
+        "path_glob": "**/{README.md,README,README.adoc,README.txt,CHANGELOG.md,docs/**}"
+      }
+    }
+  },
+  "cost-export-restriction-8": {
+    "type": "fuera"
+  },
+  "cost-flaky-tests-5": {
+    "type": "fuera"
+  },
+  "cost-gha-always-on-8": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": ".github/workflows/*.{yml,yaml}",
+      "check": "presence",
+      "pattern": "(\\n\\s{2}(push|pull_request):(?!.*branches)|on:\\s*\\[[^\\]]*(push|pull_request)[^\\]]*\\])"
+    }
+  },
+  "cost-gha-concurrent-limit-7": {
+    "type": "juicio"
+  },
+  "cost-gha-expensive-runner-4": {
+    "type": "juicio"
+  },
+  "cost-gha-high-usage-1": {
+    "type": "fuera"
+  },
+  "cost-gha-infinite-artifacts-6": {
+    "type": "ausencia",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": ".github/workflows/*.{yml,yaml}",
+      "check": "absence",
+      "pattern": "retention-days"
+    }
+  },
+  "cost-gha-matrix-inefficient-10": {
+    "type": "juicio"
+  },
+  "cost-gha-no-dependency-cache-5": {
+    "type": "ausencia",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": ".github/workflows/*.{yml,yaml}",
+      "check": "absence",
+      "pattern": "(actions/cache@|cache:\\s)"
+    }
+  },
+  "cost-gha-no-timeout-9": {
+    "type": "ausencia",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": ".github/workflows/*.{yml,yaml}",
+      "check": "absence",
+      "pattern": "timeout-minutes"
+    }
+  },
+  "cost-gha-public-usage-2": {
+    "type": "fuera"
+  },
+  "cost-gha-wasteful-retries-3": {
+    "type": "fuera"
+  },
+  "cost-license-attribution-missing-2": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "(MIT License|Apache License|BSD License|Third-party|Attribution)",
+        "path_glob": "**/{README*,NOTICE,NOTICE.md,LICENSE-3RD-PARTY*,docs/**}"
+      }
+    }
+  },
+  "cost-license-incompatible-1": {
+    "type": "detector",
+    "tool": "license-scan",
+    "spec": {
+      "allowlist": [
+        "MIT",
+        "MIT-0",
+        "Apache-2.0",
+        "BSD-2-Clause",
+        "BSD-3-Clause",
+        "ISC",
+        "Zlib",
+        "Unlicense",
+        "0BSD",
+        "Python-2.0"
+      ]
+    }
+  },
+  "cost-license-share-alike-3": {
+    "type": "detector",
+    "tool": "license-scan",
+    "spec": {
+      "allowlist": [
+        "MIT",
+        "MIT-0",
+        "Apache-2.0",
+        "BSD-2-Clause",
+        "BSD-3-Clause",
+        "ISC",
+        "Zlib",
+        "Unlicense",
+        "0BSD",
+        "Python-2.0"
+      ]
+    }
+  },
+  "cost-llm-high-usage-1": {
+    "type": "fuera"
+  },
+  "cost-llm-very-high-usage-2": {
+    "type": "fuera"
+  },
+  "cost-missing-cdn-7": {
+    "type": "juicio"
+  },
+  "cost-no-automated-tests-4": {
+    "type": "ausencia",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": ".github/workflows/*.{yml,yaml}",
+      "check": "absence",
+      "pattern": "(npm\\s+(run\\s+)?test|yarn\\s+test|pnpm\\s+(run\\s+)?test|pytest|mvn\\s+test|go\\s+test|cargo\\s+test)"
+    }
+  },
+  "cost-no-code-review-6": {
+    "type": "fuera"
+  },
+  "cost-no-http-compression-9": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "(gzip\\s+on|brotli\\s+on|Compress::)",
+        "path_glob": "**/{nginx*.conf,*.nginx.conf,httpd.conf,.htaccess}"
+      }
+    }
+  },
+  "cost-no-knowledge-sharing-8": {
+    "type": "fuera"
+  },
+  "cost-no-license-tracking-5": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-absence",
+      "params": {
+        "path_glob": "**/{fossa.yml,.fossa.yml,.fossa.yaml,.license-checker.json,license-checker.config.js,.snyk}"
+      }
+    }
+  },
+  "cost-no-oss-policy-9": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-absence",
+      "params": {
+        "path_glob": "**/{OSS-POLICY.md,OPEN-SOURCE-POLICY.md,open-source-policy.md,LICENSE-POLICY.md,docs/oss-policy.md}"
+      }
+    }
+  },
+  "cost-no-performance-budget-10": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-absence",
+      "params": {
+        "path_glob": "**/{.lighthouserc.js,.lighthouserc.yml,.lighthouserc.json,lighthouse-budget.json,bundlesize.config.js}"
+      }
+    }
+  },
+  "cost-non-commercial-use-6": {
+    "type": "detector",
+    "tool": "license-scan",
+    "spec": {
+      "allowlist": [
+        "MIT",
+        "MIT-0",
+        "Apache-2.0",
+        "BSD-2-Clause",
+        "BSD-3-Clause",
+        "ISC",
+        "Zlib",
+        "Unlicense",
+        "0BSD",
+        "Python-2.0",
+        "GPL-2.0",
+        "GPL-3.0",
+        "AGPL-3.0",
+        "LGPL-2.1",
+        "LGPL-3.0",
+        "MPL-2.0",
+        "EPL-2.0"
+      ]
+    }
+  },
+  "cost-overprovisioned-k8s-1": {
+    "type": "fuera"
+  },
+  "cost-overprovisioned-k8s-limits-2": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": "**/*.{yaml,yml}",
+      "check": "presence",
+      "pattern": "limits:[\\s\\S]{0,300}?(cpu:\\s*[\"']?[3-9]\\d*m?\\b|memory:\\s*[\"']?([4-9]|[1-9]\\d+)(Gi|G)\\b)"
+    }
+  },
+  "cost-patent-risk-4": {
+    "type": "fuera"
+  },
+  "cost-redis-as-db-6": {
+    "type": "juicio"
+  },
+  "cost-slow-build-1": {
+    "type": "fuera"
+  },
+  "cost-slow-tests-2": {
+    "type": "fuera"
+  },
+  "cost-technical-debt-high-9": {
+    "type": "fuera"
+  },
+  "cost-trademark-risk-7": {
+    "type": "juicio"
+  },
+  "cost-unoptimized-images-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-presence",
+      "params": {
+        "path_glob": "**/{assets,public,static,images,img}/**/*.{jpg,jpeg,png}"
+      }
+    }
+  },
+  "database-connection-timeout-high-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "numeric-bound",
+      "params": {
+        "pattern": "connection[_-]?[Tt]imeout(?:Millis|MS)?[\"']?\\s*[:=]\\s*[\"']?(\\d+)",
+        "path_glob": "**/*.{ts,js,json,yml,yaml,toml,properties,conf,prisma}",
+        "op": "gt",
+        "value": 30000
+      }
+    }
+  },
+  "database-effective-cache-misconfigured-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "numeric-bound",
+      "params": {
+        "pattern": "\\beffective_cache_size\\s*=\\s*([0-9]+)MB",
+        "path_glob": "**/*.conf",
+        "op": "lt",
+        "value": 256
+      }
+    }
+  },
+  "database-full-table-scan-3": {
+    "type": "fuera"
+  },
+  "database-heavy-migration-5": {
+    "type": "fuera"
+  },
+  "database-idle-timeout-missing-4": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "idle[_-]?[Tt]imeout",
+        "path_glob": "**/*.{ts,js,json,yml,yaml,toml,properties,conf,prisma}",
+        "exclude_glob": "**/{.vscode,.claude,.idea,.zed,.devcontainer}/**"
+      }
+    }
+  },
+  "database-index-bloat-7": {
+    "type": "fuera"
+  },
+  "database-irreversible-migration-1": {
+    "type": "juicio"
+  },
+  "database-irreversible-migration-2": {
+    "type": "juicio"
+  },
+  "database-iteration-overload-5": {
+    "type": "juicio"
+  },
+  "database-lazy-loading-danger-3": {
+    "type": "fuera"
+  },
+  "database-lock-timeout-missing-10": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "lock[_-]?[Tt]imeout",
+        "path_glob": "**/*.{ts,js,json,yml,yaml,toml,properties,conf,prisma}"
+      }
+    }
+  },
+  "database-maintenance-work-mem-too-low-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "numeric-bound",
+      "params": {
+        "pattern": "\\bmaintenance_work_mem\\s*=\\s*([0-9]+)MB",
+        "path_glob": "**/*.conf",
+        "op": "lt",
+        "value": 256
+      }
+    }
+  },
+  "database-max-lifetime-missing-5": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "max[_-]?[Ll]ifetime|connection[_-]?[Ll]ifetime",
+        "path_glob": "**/*.{ts,js,json,yml,yaml,toml,properties,conf,prisma}"
+      }
+    }
+  },
+  "database-missing-app-pool-8": {
+    "type": "juicio"
+  },
+  "database-missing-bloat-monitoring-5": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "bloat",
+        "path_glob": "**/*.{sql,sh,yml,yaml,js,ts,py}"
+      }
+    }
+  },
+  "database-missing-composite-index-5": {
+    "type": "fuera"
+  },
+  "database-missing-index-fk-1": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "@@index|CREATE\\s+(?:UNIQUE\\s+)?INDEX|db_index\\s*=\\s*True|@Index",
+        "path_glob": "**/*.{sql,prisma,py}"
+      }
+    }
+  },
+  "database-missing-index-hot-path-2": {
+    "type": "fuera"
+  },
+  "database-missing-index-where-4": {
+    "type": "fuera"
+  },
+  "database-missing-prefetch-4": {
+    "type": "juicio"
+  },
+  "database-n-plus-one-confirmed-2": {
+    "type": "fuera"
+  },
+  "database-n-plus-one-risk-1": {
+    "type": "juicio"
+  },
+  "database-not-null-violation-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "ALTER\\s+TABLE\\s+[\\w\".]+\\s+ADD\\s+COLUMN\\s+(?:(?!DEFAULT)[^;])*NOT\\s+NULL(?:(?!DEFAULT)[^;])*;",
+        "path_glob": "**/migrations/**"
+      }
+    }
+  },
+  "database-overfetch-relation-1": {
+    "type": "juicio"
+  },
+  "database-oversized-pool-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "numeric-bound",
+      "params": {
+        "pattern": "(?:maximum[_-]?pool[_-]?size|connection[_-]?limit|pool[_-]?size)[\"']?\\s*[:=]\\s*[\"']?(\\d+)",
+        "path_glob": "**/*.{ts,js,json,yml,yaml,toml,properties,conf,prisma}",
+        "op": "gt",
+        "value": 32
+      }
+    }
+  },
+  "database-pg-stat-statements-disabled-1": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "pg_stat_statements",
+        "path_glob": "**/*.{conf,cnf,yml,yaml,tf,sh}"
+      }
+    }
+  },
+  "database-risky-migration-3": {
+    "type": "juicio"
+  },
+  "database-sequential-pagination-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "await\\s+[\\w.]+\\.count\\([^)]*\\)[^\\n]*\\n(?:[^\\n]*\\n){0,4}[^\\n]*await\\s+[\\w.]+\\.findMany\\(",
+        "path_glob": "**/*.{ts,js,tsx}"
+      }
+    }
+  },
+  "database-statement-timeout-missing-9": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "statement[_-]?[Tt]imeout",
+        "path_glob": "**/*.{ts,js,json,yml,yaml,toml,properties,conf,prisma}"
+      }
+    }
+  },
+  "database-undersized-pool-2": {
+    "type": "juicio"
+  },
+  "database-unused-indexes-6": {
+    "type": "fuera"
+  },
+  "database-work-mem-too-low-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "numeric-bound",
+      "params": {
+        "pattern": "\\bwork_mem\\s*=\\s*([0-9]+)MB",
+        "path_glob": "**/*.conf",
+        "op": "lt",
+        "value": 64
+      }
+    }
+  },
+  "flows-auth-order-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "app\\.use\\(\\s*[^)]*validat[\\s\\S]{0,2000}?app\\.use\\(\\s*[^)]*(?:auth|jwt)",
+        "path_glob": "**/*.{js,ts}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "flows-consumer-group-lag-3": {
+    "type": "fuera"
+  },
+  "flows-dlq-not-monitored-5": {
+    "type": "juicio"
+  },
+  "flows-dlq-on-repeat-failures-10": {
+    "type": "ausencia",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": "**/*.{yml,yaml,tf}",
+      "check": "absence",
+      "pattern": "(redrivePolicy|maxReceiveCount|deadLetterTargetArn|dead_letter|dead-letter-exchange)"
+    }
+  },
+  "flows-error-leaks-stack-6": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "$RES.$METHOD(...).$SEND({..., stack: $ERR.stack, ...})",
+      "languages": [
+        "js",
+        "ts"
+      ]
+    }
+  },
+  "flows-fire-and-forget-critical-1": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "(?i:^\\s*(?!(?:await|return|const|let|var)\\s)(?:[\\w$.]+\\.)?[\\w$]*(?:payment|charge|transaction|order)[\\w$]*\\s*\\()",
+      "languages": [
+        "js",
+        "ts",
+        "jsx",
+        "tsx"
+      ]
+    }
+  },
+  "flows-inconsistent-response-4": {
+    "type": "juicio"
+  },
+  "flows-message-breaking-schema-2": {
+    "type": "detector",
+    "tool": "git-log",
+    "spec": {
+      "check": "schema-breaking-change"
+    }
+  },
+  "flows-message-not-compressed-10": {
+    "type": "ausencia",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": "**/*.{yml,yaml,tf}",
+      "check": "absence",
+      "pattern": "(?i:compression\\.codec|compression\\.type|compressionType|compress(?:ion)?\\s*[:=]\\s*true|gzip|snappy|lz4|zstd)"
+    }
+  },
+  "flows-message-not-encrypted-9": {
+    "type": "juicio"
+  },
+  "flows-message-not-idempotent-8": {
+    "type": "juicio"
+  },
+  "flows-message-ordering-needed-4": {
+    "type": "juicio"
+  },
+  "flows-message-retention-too-long-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "numeric-bound",
+      "params": {
+        "pattern": "(?i:retention[^\n]{0,40}(d+)s*(d|day))",
+        "path_glob": "**/*.{yml,yaml,json,ts,js,py}",
+        "op": "gt",
+        "value": 30
+      }
+    }
+  },
+  "flows-message-retention-too-short-6": {
+    "type": "juicio"
+  },
+  "flows-message-schema-no-version-1": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "(?i:[\"']version[\"']|\\bversion\\s*:|[\"']?\\$id[\"']?\\s*:)",
+        "path_glob": "**/*.{ts,tsx,json}"
+      }
+    }
+  },
+  "flows-missing-circuit-breaker-7": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "import-requirement",
+      "params": {
+        "path_glob": "package.json",
+        "require_any": [
+          "opossum",
+          "circuit-breaker",
+          "cockatiel"
+        ]
+      }
+    }
+  },
+  "flows-missing-cors-9": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "import-requirement",
+      "params": {
+        "path_glob": "package.json",
+        "require_any": [
+          "cors"
+        ]
+      }
+    }
+  },
+  "flows-missing-dlq-2": {
+    "type": "ausencia",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": "**/*.{yml,yaml,tf}",
+      "check": "absence",
+      "pattern": "(deadLetterTargetArn|deadLetterTarget|dead-letter-exchange|dead_letter_exchange|redrivePolicy|maxReceiveCount)"
+    }
+  },
+  "flows-missing-error-handler-5": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "(err,\\s*req,\\s*res,\\s*next|errorHandler|error-handler|handleError)",
+        "path_glob": "**/*.{js,ts}"
+      }
+    }
+  },
+  "flows-missing-idempotency-3": {
+    "type": "juicio"
+  },
+  "flows-missing-rate-limit-8": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "import-requirement",
+      "params": {
+        "path_glob": "package.json",
+        "require_any": [
+          "express-rate-limit",
+          "rate-limit",
+          "koa-ratelimit",
+          "@fastify/rate-limit"
+        ]
+      }
+    }
+  },
+  "flows-missing-request-id-7": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "(?i:x-request-id|x-correlation-id|express-request-id|correlationid)",
+        "path_glob": "**/*.{js,ts}"
+      }
+    }
+  },
+  "flows-missing-security-headers-10": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "import-requirement",
+      "params": {
+        "path_glob": "package.json",
+        "require_any": [
+          "helmet"
+        ]
+      }
+    }
+  },
+  "flows-missing-timeout-6": {
+    "type": "ausencia",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "(?i:\\b(?:axios|fetch|https?\\.get|https?\\.request)\\s*\\(\\s*(?:(?!timeout|AbortSignal|signal\\s*:)[^()])*\\))",
+      "languages": [
+        "js",
+        "ts",
+        "jsx",
+        "tsx"
+      ]
+    }
+  },
+  "flows-missing-visibility-timeout-9": {
+    "type": "ausencia",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": "**/*.{yml,yaml,tf}",
+      "check": "absence",
+      "pattern": "(?i:visibilitytimeout)"
+    }
+  },
+  "flows-n8n-code-node-format-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "\"type\"\\s*:\\s*\"[^\"]*[Cc]ode\"[\\s\\S]{0,3000}?\"functionCode\"\\s*:\\s*\"((?:(?!json\\s*:)[^\"\\\\]|\\\\.)*)\"",
+        "path_glob": "**/*.json",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "flows-n8n-hardcoded-secrets-7": {
+    "type": "detector",
+    "tool": "gitleaks",
+    "spec": {
+      "regex": "(?i:(?:api[_-]?key|access[_-]?token|auth[_-]?token|secret|password|credential)[\"']?\\s*[:=]\\s*[\"'][A-Za-z0-9_\\-./+=]{12,}[\"'])",
+      "path_regex": "(?i:workflows?|n8n)/.*\\.json$",
+      "keywords": [
+        "apiKey",
+        "api_key",
+        "token",
+        "secret",
+        "password",
+        "access_token"
+      ]
+    }
+  },
+  "flows-n8n-no-changelog-9": {
+    "type": "juicio"
+  },
+  "flows-n8n-no-error-handling-1": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "(?i:errorTrigger|\"onError\"\\s*:\\s*\"(?:continueRegularOutput|continueErrorOutput|retryLater|stopWorkflow)\")",
+        "path_glob": "**/*.json"
+      }
+    }
+  },
+  "flows-n8n-no-logging-8": {
+    "type": "juicio"
+  },
+  "flows-n8n-no-retry-5": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "\"retryOnFail\"\\s*:\\s*true",
+        "path_glob": "**/*.json"
+      }
+    }
+  },
+  "flows-n8n-no-timeout-4": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "\"timeout\"\\s*:\\s*\\d+",
+        "path_glob": "**/*.json"
+      }
+    }
+  },
+  "flows-n8n-no-validation-6": {
+    "type": "juicio"
+  },
+  "flows-n8n-schedule-format-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "\"(?:triggerIntervals|minutes|hours)\"\\s*:\\s*\"[^\"]*(?:every|daily|weekly|monthly|hour|minute|day)[^\"]*\"",
+        "path_glob": "**/*.json",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "flows-n8n-too-many-nodes-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "max-occurrences",
+      "params": {
+        "pattern": "\"typeVersion\"\\s*:",
+        "path_glob": "**/*.json",
+        "max": 30
+      }
+    }
+  },
+  "flows-ngrx-selectors-not-memoized-4": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "export const $SEL = ($STATE: $T) => $EXPR",
+      "languages": [
+        "ts"
+      ]
+    }
+  },
+  "flows-no-schema-registry-8": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "(?i:schema.?registry|@confluentinc/kafka-schema-registry|client-glue|apicurio)",
+        "path_glob": "**/*.{ts,js,json,py}"
+      }
+    }
+  },
+  "flows-no-state-persistence-6": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "import-requirement",
+      "params": {
+        "path_glob": "package.json",
+        "require_any": [
+          "redux-persist",
+          "vuex-persistedstate"
+        ]
+      }
+    }
+  },
+  "flows-no-time-travel-9": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "import-requirement",
+      "params": {
+        "path_glob": "package.json",
+        "require_any": [
+          "@ngrx/store-devtools",
+          "redux-devtools"
+        ]
+      }
+    }
+  },
+  "flows-redux-mutates-state-1": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "state.$X.push(...)",
+      "languages": [
+        "js",
+        "ts"
+      ]
+    }
+  },
+  "flows-redux-side-effects-2": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "(?s:function\\s+\\w*[Rr]educer\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,3000}?(?:\\bfetch\\s*\\(|\\baxios\\s*\\(|Date\\.now\\s*\\(|Math\\.random\\s*\\(|localStorage\\.))",
+      "languages": [
+        "js",
+        "ts"
+      ]
+    }
+  },
+  "flows-retry-no-backoff-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?i:\\bcatch\\s*\\([^)]*\\)\\s*\\{[^{}]{0,300}?\\b(?:retry|attempt|recall)\\w*\\s*\\()",
+        "path_glob": "**/*.{js,ts}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "flows-retry-no-max-5": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?i:while\\s*\\(\\s*(?:true|1)\\s*\\)\\s*\\{[\\s\\S]{0,500}?\\b(?:retry|attempt|recall)\\w*\\s*\\()",
+        "path_glob": "**/*.{js,ts}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "flows-state-excessive-nesting-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "\\bstate\\.\\w+\\.\\w+\\.\\w+\\.\\w+",
+        "path_glob": "**/*.{ts,tsx,js,jsx}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "flows-state-expensive-update-5": {
+    "type": "juicio"
+  },
+  "flows-state-inefficient-access-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "useSelector\\(\\s*\\(?\\s*state\\s*\\)?\\s*=>\\s*state\\s*\\)",
+        "path_glob": "**/*.{ts,tsx,js,jsx}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "flows-state-missing-defaults-10": {
+    "type": "juicio"
+  },
+  "flows-validation-placement-2": {
+    "type": "juicio"
+  },
+  "flows-validation-too-early-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "app\\.use\\(\\s*[^)]*(?:validat|schema)[^)]*\\)[\\s\\S]{0,800}?app\\.use\\(\\s*[^)]*(?:express\\.json|bodyParser|urlencoded)",
+        "path_glob": "**/*.{js,ts}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "flows-vuex-denormalized-state-3": {
+    "type": "juicio"
+  },
+  "github-commit-history-1": {
+    "type": "detector",
+    "tool": "git-log",
+    "spec": {
+      "check": "commit-rate",
+      "threshold": 2
+    }
+  },
+  "github-commit-history-10": {
+    "type": "detector",
+    "tool": "git-log",
+    "spec": {
+      "check": "commit-hour-distribution",
+      "threshold": 20
+    }
+  },
+  "github-commit-history-2": {
+    "type": "detector",
+    "tool": "git-log",
+    "spec": {
+      "check": "commit-rate",
+      "threshold": 20
+    }
+  },
+  "github-commit-history-3": {
+    "type": "detector",
+    "tool": "git-log",
+    "spec": {
+      "check": "commit-message-pattern",
+      "threshold": 30
+    }
+  },
+  "github-commit-history-4": {
+    "type": "detector",
+    "tool": "git-log",
+    "spec": {
+      "check": "commit-message-pattern",
+      "threshold": 50
+    }
+  },
+  "github-commit-history-5": {
+    "type": "detector",
+    "tool": "git-log",
+    "spec": {
+      "check": "commit-message-pattern",
+      "threshold": 40
+    }
+  },
+  "github-commit-history-6": {
+    "type": "detector",
+    "tool": "git-log",
+    "spec": {
+      "check": "no-merge-refs",
+      "threshold": 50
+    }
+  },
+  "github-commit-history-7": {
+    "type": "detector",
+    "tool": "git-log",
+    "spec": {
+      "check": "squash-dominance",
+      "threshold": 70
+    }
+  },
+  "github-commit-history-8": {
+    "type": "detector",
+    "tool": "git-log",
+    "spec": {
+      "check": "commit-message-pattern",
+      "threshold": 80
+    }
+  },
+  "github-commit-history-9": {
+    "type": "detector",
+    "tool": "git-log",
+    "spec": {
+      "check": "commit-size-lines",
+      "threshold": 500
+    }
+  },
+  "github-issue-health-1": {
+    "type": "fuera"
+  },
+  "github-issue-health-10": {
+    "type": "fuera"
+  },
+  "github-issue-health-11": {
+    "type": "fuera"
+  },
+  "github-issue-health-12": {
+    "type": "detector",
+    "tool": "github-api",
+    "spec": {
+      "check": "label-hygiene",
+      "threshold": 80
+    }
+  },
+  "github-issue-health-2": {
+    "type": "fuera"
+  },
+  "github-issue-health-3": {
+    "type": "fuera"
+  },
+  "github-issue-health-4": {
+    "type": "fuera"
+  },
+  "github-issue-health-5": {
+    "type": "fuera"
+  },
+  "github-issue-health-6": {
+    "type": "fuera"
+  },
+  "github-issue-health-7": {
+    "type": "fuera"
+  },
+  "github-issue-health-8": {
+    "type": "fuera"
+  },
+  "github-issue-health-9": {
+    "type": "fuera"
+  },
+  "github-log-pattern-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "\b([Ww]inston|[Pp]ino|[Ll]og4[jJ]|[Ll]ogback|[Ll]ogrotate)\b|[Ll]ogging.ya?ml",
+        "path_glob": "**/*",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "github-log-pattern-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(^|\n)s*{[^\n]*\\\"(level|msg|message|timestamp|time)\\\"s*:",
+        "path_glob": "**/*.log",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "github-log-pattern-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "\b([Ee]rror|[Ee]xception|[Ff]atal)\b",
+        "path_glob": "**/*.log",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "github-log-pattern-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "\b(GET|POST|PUT|DELETE)\b[^\n]*HTTP/1.[01]\\\" [0-9]{3}",
+        "path_glob": "**/*.log",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "github-log-pattern-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(401|403)|[Aa]uth(entication|orization)s+(failed|error)|invalids+(token|credentials)",
+        "path_glob": "**/*.log",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "github-log-pattern-5": {
+    "type": "juicio"
+  },
+  "github-log-pattern-6": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?i:(LOG_LEVEL|log[_-]?level)s*[:=]s*['\"]?(debug|trace))",
+        "path_glob": "**/*.{env,yaml,yml,json,ts,js,py}"
+      }
+    }
+  },
+  "github-log-pattern-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "[Ll]ogrotate|maxFiles|maxSize|retention|[Rr]otation",
+        "path_glob": "**/*.{json,yaml,yml,toml,xml,conf,properties,js,ts,py}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "github-log-pattern-8": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "[Ff]ilebeat|[Ff]luentd|[Pp]romtail|[Ll]ogstash|[Cc]loudwatch|[Ll]oki|\bELK\b",
+        "path_glob": "**/*.{json,yaml,yml,toml,xml,conf}",
+        "max_matches": 1000000
+      }
+    }
+  },
+  "github-log-pattern-9": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-absence",
+      "params": {
+        "path_glob": "**/*.log"
+      }
+    }
+  },
+  "performance-cache-eviction-high-20": {
+    "type": "fuera"
+  },
+  "performance-cache-miss-rate-19": {
+    "type": "fuera"
+  },
+  "performance-cap-exceeded-in-6mo-1": {
+    "type": "fuera"
+  },
+  "performance-cpu-hotspot-1": {
+    "type": "fuera"
+  },
+  "performance-cpu-kernel-heavy-2": {
+    "type": "fuera"
+  },
+  "performance-db-bottleneck-7": {
+    "type": "fuera"
+  },
+  "performance-db-index-overuse-6": {
+    "type": "fuera"
+  },
+  "performance-db-no-pooling-1": {
+    "type": "juicio"
+  },
+  "performance-db-pool-oversized-7": {
+    "type": "fuera"
+  },
+  "performance-dns-lookup-14": {
+    "type": "fuera"
+  },
+  "performance-encryption-12": {
+    "type": "fuera"
+  },
+  "performance-external-api-8": {
+    "type": "fuera"
+  },
+  "performance-gc-major-pause-5": {
+    "type": "fuera"
+  },
+  "performance-gc-pressure-4": {
+    "type": "fuera"
+  },
+  "performance-http-no-pooling-2": {
+    "type": "juicio"
+  },
+  "performance-image-processing-11": {
+    "type": "fuera"
+  },
+  "performance-io-bound-sync-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "readFileSync|writeFileSync|readdirSync|statSync|execSync|spawnSync",
+        "path_glob": "**/*.{js,ts,mjs,cjs}"
+      }
+    }
+  },
+  "performance-lock-contention-6": {
+    "type": "fuera"
+  },
+  "performance-log-retention-too-long-8": {
+    "type": "ausencia",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": "**/*.{yaml,yml,conf}",
+      "check": "absence",
+      "pattern": "retention|rotation|max_age|expire|ttl"
+    }
+  },
+  "performance-log-retention-too-short-9": {
+    "type": "juicio"
+  },
+  "performance-long-critical-path-1": {
+    "type": "juicio"
+  },
+  "performance-memory-leak-3": {
+    "type": "fuera"
+  },
+  "performance-no-adaptive-concurrency-9": {
+    "type": "juicio"
+  },
+  "performance-no-adaptive-timeout-6": {
+    "type": "juicio"
+  },
+  "performance-no-backpressure-10": {
+    "type": "juicio"
+  },
+  "performance-no-bulkhead-5": {
+    "type": "juicio"
+  },
+  "performance-no-chaos-engineering-4": {
+    "type": "juicio"
+  },
+  "performance-no-checkpointing-7": {
+    "type": "juicio"
+  },
+  "performance-no-circuit-breaker-4": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "(?i:(circuit.?breaker|opossum|cockatiel|resilience4j|hystrix|gobreaker|pybreaker))",
+        "path_glob": "**/*.{ts,js,py,java,go}"
+      }
+    }
+  },
+  "performance-no-compression-13": {
+    "type": "ausencia",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": "**/*.{yaml,yml,conf,properties}",
+      "check": "absence",
+      "pattern": "gzip|brotli|deflate|compression"
+    }
+  },
+  "performance-no-connection-pool-7": {
+    "type": "juicio"
+  },
+  "performance-no-cost-perf-tradeoff-8": {
+    "type": "juicio"
+  },
+  "performance-no-data-archiving-10": {
+    "type": "ausencia",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": "**/*.{yaml,yml}",
+      "check": "absence",
+      "pattern": "lifecycle|ilm|transition|archive|storage_class|glacier|cold_storage"
+    }
+  },
+  "performance-no-error-budget-7": {
+    "type": "juicio"
+  },
+  "performance-no-graceful-degradation-7": {
+    "type": "juicio"
+  },
+  "performance-no-internal-compression-3": {
+    "type": "juicio"
+  },
+  "performance-no-keep-alive-9": {
+    "type": "juicio"
+  },
+  "performance-no-lb-round-robin-8": {
+    "type": "juicio"
+  },
+  "performance-no-load-testing-3": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "k6|locust|artillery|wrk|load[._-]?test",
+        "path_glob": "**/*.{js,ts,py,yml,yaml}"
+      }
+    }
+  },
+  "performance-no-partitioning-8": {
+    "type": "juicio"
+  },
+  "performance-no-perf-budgets-10": {
+    "type": "fuera"
+  },
+  "performance-no-pipelining-5": {
+    "type": "juicio"
+  },
+  "performance-no-priority-queuing-10": {
+    "type": "juicio"
+  },
+  "performance-no-regression-detection-5": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "benchmark|regression|baseline",
+        "path_glob": ".github/workflows/*.{yml,yaml}"
+      }
+    }
+  },
+  "performance-no-request-collapsing-4": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "(?i:(singleflight|request.?collapsing|coalesc))",
+        "path_glob": "**/*.{ts,js,py,java,go}"
+      }
+    }
+  },
+  "performance-no-request-id-3": {
+    "type": "juicio"
+  },
+  "performance-no-resource-isolation-9": {
+    "type": "juicio"
+  },
+  "performance-no-response-streaming-5": {
+    "type": "juicio"
+  },
+  "performance-no-retry-jitter-8": {
+    "type": "juicio"
+  },
+  "performance-no-self-rate-limit-6": {
+    "type": "juicio"
+  },
+  "performance-no-slo-6": {
+    "type": "juicio"
+  },
+  "performance-no-tcp-nodelay-10": {
+    "type": "juicio"
+  },
+  "performance-no-tech-debt-alloc-9": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "content-absence",
+      "params": {
+        "pattern": "(?i:tech(nical)?[-_ ]?debt)",
+        "path_glob": "**/*.{md,yml,yaml,json}"
+      }
+    }
+  },
+  "performance-no-udp-11": {
+    "type": "juicio"
+  },
+  "performance-no-windowing-6": {
+    "type": "juicio"
+  },
+  "performance-queue-wait-17": {
+    "type": "fuera"
+  },
+  "performance-reserved-instance-5": {
+    "type": "fuera"
+  },
+  "performance-resource-exhausted-in-3mo-2": {
+    "type": "fuera"
+  },
+  "performance-serialization-9": {
+    "type": "fuera"
+  },
+  "performance-serialization-format-2": {
+    "type": "juicio"
+  },
+  "performance-serialization-format-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?i:(pickle.(dump|dumps|load|loads)|BinaryFormatter|TypeNameHandling))",
+        "path_glob": "**/*.{py,cs,ts,js,java}"
+      }
+    }
+  },
+  "performance-spot-eligible-4": {
+    "type": "fuera"
+  },
+  "performance-ssl-handshake-16": {
+    "type": "fuera"
+  },
+  "performance-suboptimal-batch-1": {
+    "type": "juicio"
+  },
+  "performance-tcp-handshake-15": {
+    "type": "fuera"
+  },
+  "performance-template-rendering-10": {
+    "type": "fuera"
+  },
+  "performance-transport-protocol-3": {
+    "type": "juicio"
+  },
+  "performance-underutilized-compute-1": {
+    "type": "fuera"
+  },
+  "performance-underutilized-memory-2": {
+    "type": "fuera"
+  },
+  "performance-underutilized-storage-3": {
+    "type": "fuera"
+  },
+  "performance-worker-idle-18": {
+    "type": "fuera"
+  },
+  "security-binary-dep-10": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?i:(preinstall|install|postinstall)\"?\\s*:\\s*\"[^\"]*\\b(curl|wget|bash|\\.sh)\\b)",
+        "path_glob": "**/package.json"
+      }
+    }
+  },
+  "security-cors-wildcard-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "cors-wildcard",
+      "params": {
+        "path_glob": "**/*.{ts,js,py,go,java}"
+      }
+    }
+  },
+  "security-cve-critical-1": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "spec": {
+      "severity_min": "CRITICAL"
+    }
+  },
+  "security-cve-high-2": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "spec": {
+      "severity_min": "HIGH"
+    }
+  },
+  "security-cve-medium-3": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "spec": {
+      "severity_min": "MEDIUM"
+    }
+  },
+  "security-db-conn-string-6": {
+    "type": "detector",
+    "tool": "gitleaks",
+    "spec": {
+      "regex": "(postgres(ql)?|mysql|mariadb|mongodb(\\+srv)?|redis|amqp)://[^\\s'\"]+:[^\\s'\"]+@",
+      "keywords": [
+        "postgres://",
+        "mysql://",
+        "mongodb",
+        "redis://"
+      ]
+    }
+  },
+  "security-db-no-tls-11": {
+    "type": "juicio"
+  },
+  "security-debug-in-prod-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?i:(app\\.debug\\s*=\\s*True|DEBUG\\s*=\\s*['\"]?1|NEXT_PUBLIC_[A-Z_]*DEBUG))",
+        "path_glob": "**/*.{py,js,ts,env,yaml,yml}"
+      }
+    }
+  },
+  "security-directory-listing-8": {
+    "type": "juicio"
+  },
+  "security-encryption-weak-5": {
+    "type": "juicio"
+  },
+  "security-env-file-committed-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-presence",
+      "params": {
+        "path_glob": "**/.env*",
+        "exclude_glob": "**/.env.{example,sample,template}"
+      }
+    }
+  },
+  "security-error-detail-1": {
+    "type": "juicio"
+  },
+  "security-exploit-in-wild-5": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "spec": {
+      "kev_only": true
+    }
+  },
+  "security-file-upload-weak-7": {
+    "type": "juicio"
+  },
+  "security-gha-action-unpinned-5": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": ".github/workflows/*.y*ml",
+      "check": "presence",
+      "pattern": "uses:\\s*(?!actions/)[^@\\s]+/[^@\\s]+@(main|master|v\\d+)\\s*$"
+    }
+  },
+  "security-gha-auto-deploy-prod-9": {
+    "type": "juicio"
+  },
+  "security-gha-fork-pr-4": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": ".github/workflows/*.y*ml",
+      "check": "presence",
+      "pattern": "pull_request_target[\\s\\S]{0,300}secrets\\."
+    }
+  },
+  "security-gha-job-no-timeout-7": {
+    "type": "ausencia",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": ".github/workflows/*.y*ml",
+      "check": "absence",
+      "pattern": "timeout-minutes"
+    }
+  },
+  "security-gha-no-concurrency-prod-10": {
+    "type": "juicio"
+  },
+  "security-gha-no-container-8": {
+    "type": "juicio"
+  },
+  "security-gha-overpermissive-2": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": ".github/workflows/*.y*ml",
+      "check": "presence",
+      "pattern": "permissions:\\s*write-all"
+    }
+  },
+  "security-gha-pr-target-risk-1": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": ".github/workflows/*.y*ml",
+      "check": "presence",
+      "pattern": "pull_request_target[\\s\\S]{0,400}(actions/checkout|secrets\\.)"
+    }
+  },
+  "security-gha-secret-leak-3": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": ".github/workflows/*.y*ml",
+      "check": "presence",
+      "pattern": "run:[^\\n]*\\{\\{[^}]*\\bsecrets\\."
+    }
+  },
+  "security-gha-workspace-not-cleaned-6": {
+    "type": "detector",
+    "tool": "yaml-check",
+    "spec": {
+      "file_glob": ".github/workflows/*.y*ml",
+      "check": "presence",
+      "pattern": "persist-credentials:\\s*true"
+    }
+  },
+  "security-jwt-weak-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "JWT[_-]?SECRET['\"]?\\s*\\)?\\s*(?:\\|\\||\\?\\?)\\s*['\"][^'\"]+['\"]|JWT[_-]?SECRET['\"]?\\s*[:=]\\s*['\"][^'\"]+['\"]",
+        "path_glob": "**/*.{ts,tsx,js,jsx,mjs,cjs,cts,mts}"
+      }
+    }
+  },
+  "security-key-rotation-manual-13": {
+    "type": "juicio"
+  },
+  "security-license-incompatible-6": {
+    "type": "detector",
+    "tool": "license-scan",
+    "spec": {
+      "allowlist": [
+        "MIT",
+        "BSD-2-Clause",
+        "BSD-3-Clause",
+        "Apache-2.0",
+        "ISC",
+        "CC0-1.0",
+        "Unlicense",
+        "0BSD",
+        "Python-2.0",
+        "Zlib"
+      ]
+    }
+  },
+  "security-logs-contain-secrets-12": {
+    "type": "juicio"
+  },
+  "security-missing-headers-10": {
+    "type": "juicio"
+  },
+  "security-no-input-validation-14": {
+    "type": "juicio"
+  },
+  "security-no-security-maintenance-7": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "spec": {
+      "unmaintained_months": 24
+    }
+  },
+  "security-oauth-secret-8": {
+    "type": "detector",
+    "tool": "gitleaks",
+    "spec": {
+      "regex": "(?i:(client[_-]?secret|oauth[_-]?(secret|token))\\s*[:=]\\s*['\"][^'\"]{8,}['\"])"
+    }
+  },
+  "security-outdated-server-9": {
+    "type": "juicio"
+  },
+  "security-password-weak-5": {
+    "type": "juicio"
+  },
+  "security-private-key-7": {
+    "type": "detector",
+    "tool": "gitleaks",
+    "spec": {
+      "regex": "-----BEGIN (RSA |EC |OPENSSH |PGP )?PRIVATE KEY( BLOCK)?-----",
+      "keywords": [
+        "PRIVATE KEY"
+      ]
+    }
+  },
+  "security-rate-limit-weak-6": {
+    "type": "juicio"
+  },
+  "security-secret-in-code-1": {
+    "type": "detector",
+    "tool": "gitleaks",
+    "spec": {
+      "regex": "(?i:(api[_-]?key|secret|token|password|passwd|pwd)\\s*[:=]\\s*['\"]?[A-Za-z0-9_\\-/+=]{16,}['\"]?)",
+      "keywords": [
+        "key",
+        "secret",
+        "token",
+        "password"
+      ]
+    }
+  },
+  "security-secret-in-history-2": {
+    "type": "detector",
+    "tool": "gitleaks",
+    "spec": {
+      "regex": "(?i:(api[_-]?key|secret|token|password|passwd|pwd)\\s*[:=]\\s*['\"]?[A-Za-z0-9_\\-/+=]{16,}['\"]?)",
+      "path_regex": "\\.git/"
+    }
+  },
+  "security-session-cookie-not-http-only-4": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "cookie-flags",
+      "params": {
+        "path_glob": "**/*.{ts,js}",
+        "require": [
+          "httponly"
+        ]
+      }
+    }
+  },
+  "security-session-cookie-not-secure-3": {
+    "type": "ausencia",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "cookie-flags",
+      "params": {
+        "path_glob": "**/*.{ts,js}",
+        "require": [
+          "secure"
+        ]
+      }
+    }
+  },
+  "security-transitive-vuln-8": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "spec": {
+      "transitive": true
+    }
+  },
+  "security-unmaintained-dep-4": {
+    "type": "detector",
+    "tool": "osv-scanner",
+    "spec": {
+      "unmaintained_months": 18
+    }
+  },
+  "security-vcs-insecure-9": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "git\\+http://",
+        "path_glob": "**/{package.json,requirements.txt,go.mod,pyproject.toml}"
+      }
+    }
+  },
+  "security-weak-crypto-9": {
+    "type": "juicio"
+  },
+  "security-weak-rng-10": {
+    "type": "juicio"
+  },
+  "structure-adapter-violation-10": {
+    "type": "juicio"
+  },
+  "structure-class-dependency-cycle-3": {
+    "type": "juicio"
+  },
+  "structure-config-logic-8": {
+    "type": "juicio"
+  },
+  "structure-controller-logic-6": {
+    "type": "juicio"
+  },
+  "structure-decorator-violation-9": {
+    "type": "juicio"
+  },
+  "structure-dependency-cycle-1": {
+    "type": "juicio"
+  },
+  "structure-dto-logic-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?m:^\\s*(?:(?:public|private|protected|static|async|override|readonly|final|abstract|internal|virtual)\\s+)*(?:[\\w$<>[\\]|.,&?]+\\s+)?(?!get[A-Z$\\s]|set[A-Z$\\s]|constructor\\s*\\(|if\\s*\\(|for\\s*\\(|while\\s*\\(|switch\\s*\\(|catch\\s*\\(|return\\b|new\\s|throw\\b|else\\b|case\\b|do\\s*\\{)[\\w$]+\\s*\\([^()]*\\)\\s*(?::\\s*[\\w$<>[\\]|.,&?\\s]+)?\\s*(?:\\{|;|=>))",
+        "path_glob": "**/*{DTO,Dto}.*"
+      }
+    }
+  },
+  "structure-extremely-unstable-3": {
+    "type": "juicio"
+  },
+  "structure-factory-violation-4": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?m:^\\s*(?:(?:public)\\s+[\\w$]*Factory\\s*\\([^()]*\\)|(?:public\\s+)?constructor\\s*\\([^()]*\\))\\s*(?::\\s*[\\w$<>[\\]|.,&?\\s]+)?\\s*(?:\\{|;|throws\\b))",
+        "path_glob": "**/*Factory.*"
+      }
+    }
+  },
+  "structure-framework-cycle-5": {
+    "type": "juicio"
+  },
+  "structure-framework-leak-3": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?m:^\\s*(?:import\\s+(?:static\\s+)?(?:[\\w${},*\\s]+\\s+from\\s+)?|from\\s+)['\"]?@?(?:javax\\.servlet|jakarta\\.servlet|org\\.springframework\\.web|angular/core|flask|django|fastapi|express)\\b[\\w./'\"]*)",
+        "path_glob": "**/{entities,models,domain}/**"
+      }
+    }
+  },
+  "structure-high-coupling-1": {
+    "type": "juicio"
+  },
+  "structure-high-coupling-2": {
+    "type": "juicio"
+  },
+  "structure-highly-unstable-4": {
+    "type": "juicio"
+  },
+  "structure-inverted-dependency-2": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?m:^\\s*(?:import\\s+(?:static\\s+)?[\\w.]*[Cc]ontroller[\\w.]*|from\\s+[\\w.]*[Cc]ontroller[\\w.]*|(?:import|from)\\b[^;\\n]*[\"'][\\w./@-]*[Cc]ontroller[\\w./@-]*[\"']|(?:[\\w$\\s{}()[\\],*.]*?=\\s*)?require\\(\\s*[\"'][\\w./@-]*[Cc]ontroller[\\w./@-]*[\"']\\s*\\)))",
+        "path_glob": "**/*Service.*"
+      }
+    }
+  },
+  "structure-layer-violation-1": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?m:^\\s*(?:import\\s+(?:static\\s+)?[\\w.]*[Rr]epositor(?:y|ies)[\\w.]*|from\\s+[\\w.]*[Rr]epositor(?:y|ies)[\\w.]*|(?:import|from)\\b[^;\\n]*[\"'][\\w./@-]*[Rr]epositor(?:y|ies)[\\w./@-]*[\"']|(?:[\\w$\\s{}()[\\],*.]*?=\\s*)?require\\(\\s*[\"'][\\w./@-]*[Rr]epositor(?:y|ies)[\\w./@-]*[\"']\\s*\\)))",
+        "path_glob": "**/*Controller.*"
+      }
+    }
+  },
+  "structure-low-cohesion-5": {
+    "type": "juicio"
+  },
+  "structure-medium-cohesion-6": {
+    "type": "juicio"
+  },
+  "structure-observer-violation-6": {
+    "type": "juicio"
+  },
+  "structure-package-dependency-cycle-2": {
+    "type": "juicio"
+  },
+  "structure-repository-logic-4": {
+    "type": "juicio"
+  },
+  "structure-repository-no-crud-2": {
+    "type": "juicio"
+  },
+  "structure-repository-violation-1": {
+    "type": "juicio"
+  },
+  "structure-service-orchestration-3": {
+    "type": "juicio"
+  },
+  "structure-service-sql-5": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?i:\\b(?:select\\s+(?:distinct\\s+)?[\\w*\\s,()]+?\\s+from\\s+[\\w.]+|insert\\s+into\\s+[\\w.]+|update\\s+[\\w.]+\\s+set\\s+\\w+|delete\\s+from\\s+[\\w.]+|join\\s+[\\w.]+|(?:\\.query|\\.raw|\\.execute)\\(\\s*['\"]\\s*(?:select|insert|update|delete)))",
+        "path_glob": "**/*Service.*"
+      }
+    }
+  },
+  "structure-singleton-violation-5": {
+    "type": "detector",
+    "tool": "semgrep",
+    "spec": {
+      "pattern": "class $C {\n  ...\n  static getInstance(...) {\n    ...\n  }\n  ...\n  constructor(...) {\n    ...\n  }\n  ...\n}",
+      "languages": [
+        "ts",
+        "tsx",
+        "js",
+        "jsx"
+      ]
+    }
+  },
+  "structure-strategy-hardcoded-7": {
+    "type": "detector",
+    "tool": "node-matcher",
+    "spec": {
+      "matcher": "file-content-regex",
+      "params": {
+        "pattern": "(?:switch\\s*\\([^)]*\\)\\s*\\{|(?:else\\s+)?if\\s*\\([^)]*\\)\\s*\\{|else\\s*\\{|case\\s+[^:\\n]+:)[^{}]*?\\bnew\\s+[\\w$]*Strategy\\s*\\(",
+        "path_glob": "**/*{Service,Strategy}.*"
+      }
+    }
+  },
+  "structure-template-method-8": {
+    "type": "juicio"
+  },
+  "structure-transitive-cycle-4": {
+    "type": "juicio"
+  }
+}

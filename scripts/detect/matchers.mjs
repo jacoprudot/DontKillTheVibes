@@ -13,47 +13,65 @@
  * Heuristic matchers (complexity-limit non-line-count metrics, cookie-flags,
  * cors-wildcard) say so in their evidence string. Honesty over cleverness: a
  * crude heuristic that declares itself beats a smart one that hides it.
+ *
+ * WHAT ACTUALLY RUNS WHERE (2026-10-07 fixes):
+ *   - File READS go through repo.readText() / repo.readRegexText() (see
+ *     scan-repo.mjs). Every refusal is named in the engine's coverage block;
+ *     a matcher never learns that a file was skipped without the report
+ *     learning it too.
+ *   - A per-rule STEP BUDGET (beginRuleContext/endRuleContext, driven by the
+ *     engine) is checked between files and between matches. Node cannot
+ *     interrupt a single exec(), so the budget cannot save a pattern that
+ *     backtracks forever inside one call — that is what unrolling the pattern
+ *     (skills/detectors.json) and the whole-file content cap are for. What the
+ *     budget does guarantee: a matcher that keeps yielding stops at a NAMED
+ *     failure instead of running to the wall clock, and the findings it already
+ *     collected are kept.
+ *   - CAP (findings per rule per run) is a TRUNCATION, not a total. When a
+ *     matcher stops at the cap it says so via markCapHit(); the engine turns
+ *     that into a named truncation in findings.json and report.md. Counts were
+ *     previously floors masquerading as totals (2026-10-07 sweep, surprise 3).
  */
 import { makeGlobMatcher } from './glob.mjs';
 
-const CAP = 20; // findings per rule per run, keeps reports bounded on big repos
+export const CAP = 20; // findings per rule per run, keeps reports bounded on big repos
+
+// ---- per-rule run context (step budget + truncation flag) ----
+let ruleCtx = null;
+
+/** Called by the engine before each rule; `budgetMs <= 0` disables the budget. */
+export function beginRuleContext(id, budgetMs) {
+  ruleCtx = {
+    id,
+    budgetMs,
+    deadline: budgetMs > 0 ? performance.now() + budgetMs : Infinity,
+    exceeded: false,
+    capHit: false,
+  };
+  return ruleCtx;
+}
+
+/** Called by the engine after each rule; returns the context (or null). */
+export function endRuleContext() {
+  const ctx = ruleCtx;
+  ruleCtx = null;
+  return ctx;
+}
+
+function budgetExceeded() {
+  if (ruleCtx && !ruleCtx.exceeded && performance.now() > ruleCtx.deadline) ruleCtx.exceeded = true;
+  return ruleCtx ? ruleCtx.exceeded : false;
+}
+
+/** Records that this rule stopped early because of CAP (never silent). */
+export function markCapHit() {
+  if (ruleCtx) ruleCtx.capHit = true;
+}
 
 function filesForGlob(repo, glob, excludeGlob) {
   const match = makeGlobMatcher(glob);
   const exclude = excludeGlob ? makeGlobMatcher(excludeGlob) : null;
   return repo.tree.filter((f) => !f.binary && match(f.rel) && !(exclude && exclude(f.rel)));
-}
-
-// HARDENING (2026-10-07): regex matchers skip files containing a line longer
-// than MAX_LINE chars. Node has no regex timeout and several specs carry
-// comma-counting heuristics whose backtracking grows with line length — a
-// minified/generated line (bundle, base64 blob) is exactly the trigger, and
-// such files are not where line-oriented heuristics apply. Skipped files are
-// counted by the engine and reported, never silently dropped.
-const MAX_LINE = 2000;
-
-let skippedLongLineFiles = 0;
-/** Engine reads this after a run to report how many files the guard skipped. */
-export function takeSkippedLongLineCount() {
-  const n = skippedLongLineFiles;
-  skippedLongLineFiles = 0;
-  return n;
-}
-
-function readMatchable(repo, rel) {
-  const r = repo.readFile(rel);
-  if (r === null) return null;
-  let lineLen = 0;
-  for (let i = 0; i < r.content.length; i++) {
-    const ch = r.content.charCodeAt(i);
-    if (ch === 10 || ch === 13) {
-      lineLen = 0;
-    } else if (++lineLen > MAX_LINE) {
-      skippedLongLineFiles++;
-      return { skippedLongLine: true };
-    }
-  }
-  return { content: r.content };
 }
 
 function lineOf(content, index) {
@@ -83,14 +101,19 @@ export const MATCHER_IMPL = {
     const max = p.max_matches ?? CAP;
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = readMatchable(repo, f.rel);
-      if (r === null || r.skippedLongLine) continue;
+      if (budgetExceeded()) break;
+      const r = repo.readRegexText(f.rel);
+      if (r === null) continue;
       let n = 0;
       for (const m of iterMatches(re, r.content)) {
         out.push({ file: f.rel, line: lineOf(r.content, m.index), evidence: snippet(r.content, m.index) });
         if (++n >= max) break;
+        if (budgetExceeded()) break;
       }
-      if (out.length >= CAP) break;
+      // CAP is enforced ACROSS files, exactly as before this change: a single
+      // file may push a rule past 20, so the reported count is a floor either
+      // way — which is why the truncation is printed instead of assumed.
+      if (out.length >= CAP) { markCapHit(); break; }
     }
     return out;
   },
@@ -99,11 +122,12 @@ export const MATCHER_IMPL = {
     const re = new RegExp(p.pattern);
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = readMatchable(repo, f.rel);
-      if (r === null || r.skippedLongLine) continue;
+      if (budgetExceeded()) break;
+      const r = repo.readRegexText(f.rel);
+      if (r === null) continue;
       const m = re.exec(r.content);
       if (m) out.push({ file: f.rel, line: lineOf(r.content, m.index), evidence: snippet(r.content, m.index) });
-      if (out.length >= CAP) break;
+      if (out.length >= CAP) { markCapHit(); break; }
     }
     return out;
   },
@@ -112,10 +136,11 @@ export const MATCHER_IMPL = {
     const re = new RegExp(p.pattern);
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob, p.exclude_glob)) {
-      const r = readMatchable(repo, f.rel);
-      if (r === null || r.skippedLongLine) continue;
+      if (budgetExceeded()) break;
+      const r = repo.readRegexText(f.rel);
+      if (r === null) continue;
       if (!re.test(r.content)) out.push({ file: f.rel, line: null, evidence: 'pattern not found in file' });
-      if (out.length >= CAP) break;
+      if (out.length >= CAP) { markCapHit(); break; }
     }
     return out;
   },
@@ -123,10 +148,9 @@ export const MATCHER_IMPL = {
   'file-presence'(repo, p) {
     const match = makeGlobMatcher(p.path_glob);
     const exclude = p.exclude_glob ? makeGlobMatcher(p.exclude_glob) : null;
-    return repo.tree
-      .filter((f) => match(f.rel) && !(exclude && exclude(f.rel)))
-      .slice(0, CAP)
-      .map((f) => ({ file: f.rel, line: null, evidence: 'file exists in repo' }));
+    const all = repo.tree.filter((f) => match(f.rel) && !(exclude && exclude(f.rel)));
+    if (all.length > CAP) markCapHit(); // exact: the tree knows the real total
+    return all.slice(0, CAP).map((f) => ({ file: f.rel, line: null, evidence: 'file exists in repo' }));
   },
 
   'file-absence'(repo, p) {
@@ -139,11 +163,16 @@ export const MATCHER_IMPL = {
     const re = new RegExp(p.pattern, 'g');
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = readMatchable(repo, f.rel);
-      if (r === null || r.skippedLongLine) continue;
-      const count = [...iterMatches(re, r.content)].length;
+      if (budgetExceeded()) break;
+      const r = repo.readRegexText(f.rel);
+      if (r === null) continue;
+      let count = 0;
+      for (const _ of iterMatches(re, r.content)) {
+        count++;
+        if (budgetExceeded()) break;
+      }
       if (count > p.max) out.push({ file: f.rel, line: null, evidence: `${count} occurrences (max ${p.max})` });
-      if (out.length >= CAP) break;
+      if (out.length >= CAP) { markCapHit(); break; }
     }
     return out;
   },
@@ -151,8 +180,9 @@ export const MATCHER_IMPL = {
   'complexity-limit'(repo, p) {
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = readMatchable(repo, f.rel);
-      if (r === null || r.skippedLongLine) continue;
+      if (budgetExceeded()) break;
+      const r = repo.readText(f.rel);
+      if (r === null) continue;
       if (p.metric === 'line-count') {
         const n = r.content.split('\n').length;
         if (n > p.max) out.push({ file: f.rel, line: null, evidence: `${n} lines (max ${p.max})` });
@@ -169,7 +199,7 @@ export const MATCHER_IMPL = {
         }
         if (maxDepth > p.max) out.push({ file: f.rel, line: null, evidence: `heuristic max nesting depth ${maxDepth} (max ${p.max}); file-level approximation` });
       }
-      if (out.length >= CAP) break;
+      if (out.length >= CAP) { markCapHit(); break; }
     }
     return out;
   },
@@ -178,8 +208,9 @@ export const MATCHER_IMPL = {
     const out = [];
     const match = makeGlobMatcher(p.file);
     for (const f of repo.tree.filter((t) => match(t.rel))) {
-      const r = readMatchable(repo, f.rel);
-      if (r === null || r.skippedLongLine) continue;
+      if (budgetExceeded()) break;
+      const r = repo.readText(f.rel);
+      if (r === null) continue;
       let doc;
       try {
         doc = JSON.parse(r.content);
@@ -196,7 +227,7 @@ export const MATCHER_IMPL = {
       if (p.absent ? present : !present) {
         out.push({ file: f.rel, line: null, evidence: `field "${p.field}" is ${present ? 'present' : 'missing'} (required ${p.absent ? 'absent' : 'present'})` });
       }
-      if (out.length >= CAP) break;
+      if (out.length >= CAP) { markCapHit(); break; }
     }
     return out;
   },
@@ -208,13 +239,14 @@ export const MATCHER_IMPL = {
     const FLAG_RE = { secure: /\bsecure\b/i, httponly: /\bhttponly\b/i, samesite: /\bsamesite\b/i };
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = readMatchable(repo, f.rel);
-      if (r === null || r.skippedLongLine || !SETS_COOKIE.test(r.content)) continue;
+      if (budgetExceeded()) break;
+      const r = repo.readRegexText(f.rel);
+      if (r === null || !SETS_COOKIE.test(r.content)) continue;
       const missing = p.require.filter((flag) => !FLAG_RE[flag].test(r.content));
       if (missing.length > 0) {
         out.push({ file: f.rel, line: null, evidence: `heuristic: file sets cookies but never sets ${missing.join(', ')}` });
       }
-      if (out.length >= CAP) break;
+      if (out.length >= CAP) { markCapHit(); break; }
     }
     return out;
   },
@@ -229,8 +261,9 @@ export const MATCHER_IMPL = {
     ];
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = readMatchable(repo, f.rel);
-      if (r === null || r.skippedLongLine) continue;
+      if (budgetExceeded()) break;
+      const r = repo.readRegexText(f.rel);
+      if (r === null) continue;
       for (const re of PATTERNS) {
         for (const m of iterMatches(re, r.content)) {
           out.push({ file: f.rel, line: lineOf(r.content, m.index), evidence: snippet(r.content, m.index) });
@@ -238,7 +271,7 @@ export const MATCHER_IMPL = {
         }
         if (out.length >= CAP) break;
       }
-      if (out.length >= CAP) break;
+      if (out.length >= CAP) { markCapHit(); break; }
     }
     return out;
   },
@@ -249,16 +282,18 @@ export const MATCHER_IMPL = {
     const cmp = ops[p.op];
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = readMatchable(repo, f.rel);
-      if (r === null || r.skippedLongLine) continue;
+      if (budgetExceeded()) break;
+      const r = repo.readRegexText(f.rel);
+      if (r === null) continue;
       for (const m of iterMatches(re, r.content)) {
         const num = parseFloat(m[1]);
         if (!Number.isNaN(num) && cmp(num, p.value)) {
           out.push({ file: f.rel, line: lineOf(r.content, m.index), evidence: `${num} (${p.op} ${p.value}) — ${snippet(r.content, m.index)}` });
         }
         if (out.length >= CAP) break;
+        if (budgetExceeded()) break;
       }
-      if (out.length >= CAP) break;
+      if (out.length >= CAP) { markCapHit(); break; }
     }
     return out;
   },
@@ -268,15 +303,16 @@ export const MATCHER_IMPL = {
     const none = (p.require_none || []).map((s) => new RegExp(s));
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = readMatchable(repo, f.rel);
-      if (r === null || r.skippedLongLine) continue;
+      if (budgetExceeded()) break;
+      const r = repo.readRegexText(f.rel);
+      if (r === null) continue;
       const okAny = any.some((re) => re.test(r.content));
       const badNone = none.filter((re) => re.test(r.content));
       if (!okAny || badNone.length > 0) {
         const why = [!okAny ? `none of ${p.require_any.length} required imports found` : null, badNone.length > 0 ? `forbidden import present` : null].filter(Boolean).join('; ');
         out.push({ file: f.rel, line: null, evidence: why });
       }
-      if (out.length >= CAP) break;
+      if (out.length >= CAP) { markCapHit(); break; }
     }
     return out;
   },
@@ -286,13 +322,14 @@ export const MATCHER_IMPL = {
   'exact-duplication'(repo, p) {
     const out = [];
     for (const f of filesForGlob(repo, p.path_glob)) {
-      const r = readMatchable(repo, f.rel);
-      if (r === null || r.skippedLongLine) continue;
+      if (budgetExceeded()) break;
+      const r = repo.readText(f.rel);
+      if (r === null) continue;
       const dup = findRepeatedWindow(r.content, p.min_chars);
       if (dup) {
         out.push({ file: f.rel, line: dup.line, evidence: `block of ${p.min_chars}+ chars repeated at offset ${dup.first} and ${dup.second}` });
       }
-      if (out.length >= CAP) break;
+      if (out.length >= CAP) { markCapHit(); break; }
     }
     return out;
   },

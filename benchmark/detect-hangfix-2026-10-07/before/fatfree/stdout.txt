@@ -1,0 +1,4 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\before\fatfree\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\before\fatfree\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\before\fatfree\findings.json
+grade: C · detector findings: 2 (main: 0) · checklist gaps (ausencia): 19 · clean: 117 · degraded: 50 · juicio not evaluated: 116

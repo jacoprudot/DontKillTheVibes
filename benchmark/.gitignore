@@ -33,3 +33,18 @@ detect-sweep-2026-10-07/runs/*/prompts.md
 # names the single triggering file). The root "*.log" rule would swallow them, so they
 # are re-included explicitly. ~7 KB total.
 !detect-sweep-2026-10-07/diag/**/*.log
+
+# Raw per-repo BEFORE/AFTER dumps from the 2026-10-07 hang-fix capture (60 files,
+# ~5.07 MB): findings.json, report.md, prompts.md for every repo under before/ and
+# after/. Kept instead: README.md (carries every number), the harness itself
+# (run-bounded.ps1, compare.cjs, patch-*.cjs, pattern-semantics.cjs), the raw gate
+# captures (gates-before/, gates-after/), the smoke/ edge cases (~47 KB), and each
+# repo's run.cmd + stdout/stderr/exit - so "180 s and ZERO artifacts" before versus
+# "1.7 s / 2.3 s with all three artifacts" after stays verifiable from committed
+# bytes. Same reasoning as the sweep dumps above.
+detect-hangfix-2026-10-07/before/*/findings.json
+detect-hangfix-2026-10-07/before/*/report.md
+detect-hangfix-2026-10-07/before/*/prompts.md
+detect-hangfix-2026-10-07/after/*/findings.json
+detect-hangfix-2026-10-07/after/*/report.md
+detect-hangfix-2026-10-07/after/*/prompts.md

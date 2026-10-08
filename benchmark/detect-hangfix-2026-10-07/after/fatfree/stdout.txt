@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\fatfree\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\fatfree\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\fatfree\findings.json
+grade: C · detector findings: 2 (main: 0) · checklist gaps (ausencia): 19 · clean: 117 · degraded: 50 · juicio not evaluated: 116
+coverage: 13 non-binary file(s) · matched by ≥1 rule path-glob: 5 · NO rule path-glob: 8 · refused by read guards: 0 · NOT examined by any regex rule: 8 (61.5%)
+rule failures: 0 · rules stopped at the 20-finding cap: 0

@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\rich\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\rich\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\rich\findings.json
+grade: F·26 · detector findings: 229 (main: 88) · checklist gaps (ausencia): 402 · clean: 81 · degraded: 50 · juicio not evaluated: 116
+coverage: 464 non-binary file(s) · matched by ≥1 rule path-glob: 454 · NO rule path-glob: 10 · refused by read guards: 178 · NOT examined by any regex rule: 187 (40.3%)
+rule failures: 0 · rules stopped at the 20-finding cap: 18 (code-extreme-complexity-1, code-extreme-length-6, code-high-complexity-2, code-long-function-7, code-long-parameter-list-8, code-medium-length-8, code-missing-docstring-10, code-moderate-complexity-3, code-multiple-return-points-12, cost-api-no-retry-strategy-8, cost-license-attribution-missing-2, database-missing-bloat-monitoring-5, database-missing-index-fk-1, flows-no-schema-registry-8, performance-no-circuit-breaker-4, performance-no-load-testing-3, performance-no-request-collapsing-4, performance-no-tech-debt-alloc-9)

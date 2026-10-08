@@ -1,0 +1,4 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\before\httpx\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\before\httpx\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\before\httpx\findings.json
+grade: F·13 · detector findings: 186 (main: 53) · checklist gaps (ausencia): 295 · clean: 79 · degraded: 50 · juicio not evaluated: 116

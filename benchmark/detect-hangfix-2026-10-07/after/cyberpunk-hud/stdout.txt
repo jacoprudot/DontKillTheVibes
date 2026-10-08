@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\cyberpunk-hud\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\cyberpunk-hud\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\cyberpunk-hud\findings.json
+grade: C* · detector findings: 0 (main: 0) · checklist gaps (ausencia): 16 · clean: 129 · degraded: 50 · juicio not evaluated: 116
+coverage: 25 non-binary file(s) · matched by ≥1 rule path-glob: 6 · NO rule path-glob: 19 · refused by read guards: 0 · NOT examined by any regex rule: 19 (76.0%)
+rule failures: 0 · rules stopped at the 20-finding cap: 0

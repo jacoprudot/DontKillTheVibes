@@ -1,0 +1,8 @@
+{"name":"realworld-control","status":"ok","seconds":0.69,"exit_code":"0","cap_seconds":180,"findings_json_bytes":206797,"report_md_bytes":23953,"prompts_md_bytes":8548,"stdout_bytes":1250,"stderr_bytes":0}
+{"name":"rich","status":"ok","seconds":2.25,"exit_code":"0","cap_seconds":180,"findings_json_bytes":433881,"report_md_bytes":73461,"prompts_md_bytes":65883,"stdout_bytes":1284,"stderr_bytes":0}
+{"name":"httpx","status":"ok","seconds":0.75,"exit_code":"0","cap_seconds":180,"findings_json_bytes":264839,"report_md_bytes":54161,"prompts_md_bytes":39746,"stdout_bytes":1121,"stderr_bytes":0}
+{"name":"mini-redis","status":"ok","seconds":0.47,"exit_code":"0","cap_seconds":180,"findings_json_bytes":27239,"report_md_bytes":11005,"prompts_md_bytes":779,"stdout_bytes":759,"stderr_bytes":0}
+{"name":"sinatra","status":"ok","seconds":0.69,"exit_code":"0","cap_seconds":180,"findings_json_bytes":134859,"report_md_bytes":19136,"prompts_md_bytes":2807,"stdout_bytes":793,"stderr_bytes":0}
+{"name":"fatfree","status":"ok","seconds":0.49,"exit_code":"0","cap_seconds":180,"findings_json_bytes":19771,"report_md_bytes":9285,"prompts_md_bytes":777,"stdout_bytes":747,"stderr_bytes":0}
+{"name":"deutsia-radio","status":"ok","seconds":1.75,"exit_code":"0","cap_seconds":180,"findings_json_bytes":242082,"report_md_bytes":91828,"prompts_md_bytes":88655,"stdout_bytes":955,"stderr_bytes":0}
+{"name":"screenshot-to-code","status":"ok","seconds":1.73,"exit_code":"0","cap_seconds":180,"findings_json_bytes":358780,"report_md_bytes":76940,"prompts_md_bytes":62193,"stdout_bytes":1554,"stderr_bytes":0}

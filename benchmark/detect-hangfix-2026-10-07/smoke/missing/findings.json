@@ -1,0 +1,62 @@
+{
+  "generated_by": "dktv-detect-report",
+  "target": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\does-not-exist",
+  "generated_at": "2026-10-08T02:38:34.844Z",
+  "label_legend": {
+    "probado": "mechanically proven by the deterministic engine",
+    "juzgado": "LLM-judged (none in this report)"
+  },
+  "grade": {
+    "letter": "C",
+    "display": "C*",
+    "criticalCount": 0,
+    "worstSeverity": null,
+    "coverageLimited": true,
+    "coverage": {
+      "files_text": 0,
+      "files_matched_by_no_rule_glob": 0,
+      "uncovered_ratio": null,
+      "material_uncovered_ratio": 0.2,
+      "uncapped_letter": "A",
+      "reason": "coverage could not be computed (the scan failed, or no non-binary file was in scope): an unknown scope is not evidence of health"
+    }
+  },
+  "counts": {
+    "registry": 368,
+    "mechanical": 186,
+    "fired": 0,
+    "clean": 0,
+    "degraded": 0,
+    "failed": 1,
+    "capped": 0,
+    "guardSkipped": 0,
+    "juicioNotEvaluated": 116,
+    "fuera": 66
+  },
+  "module_weights": {
+    "security": 1.5,
+    "database": 1.3,
+    "performance": 1.2,
+    "structure": 1.1,
+    "flows": 1,
+    "code": 1,
+    "cost": 0.8,
+    "github": 0.7
+  },
+  "findings": [],
+  "degraded": [],
+  "rule_failures": [
+    {
+      "rule": null,
+      "reason": "fatal-scan-error",
+      "message": "target does not exist: C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\does-not-exist"
+    }
+  ],
+  "cap_truncations": [],
+  "guard_skips": [],
+  "coverage": null,
+  "fatal_error": {
+    "message": "target does not exist: C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\does-not-exist",
+    "stack": "Error: target does not exist: C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\does-not-exist\n    at openScanRepo (file:///C:/Users/jfpru/Desktop/proyectos/DontKillTheVibes/scripts/detect/scan-repo.mjs:146:11)\n    at runDetect (file:///C:/Users/jfpru/Desktop/proyectos/DontKillTheVibes/scripts/detect/engine.mjs:248:16)\n    at file:///C:/Users/jfpru/Desktop/proyectos/DontKillTheVibes/scripts/detect/report.mjs:103:10\n    at ModuleJob.run (node:internal/modules/esm/module_job:430:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:661:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)"
+  }
+}

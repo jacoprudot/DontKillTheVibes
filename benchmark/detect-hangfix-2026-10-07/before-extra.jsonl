@@ -1,0 +1,3 @@
+{"name":"fatfree","status":"ok","seconds":0.37,"exit_code":"0","cap_seconds":180,"findings_json_bytes":16203,"report_md_bytes":6908,"prompts_md_bytes":450,"stdout_bytes":524,"stderr_bytes":58}
+{"name":"screenshot-to-code","status":"ok","seconds":1.63,"exit_code":"0","cap_seconds":180,"findings_json_bytes":350761,"report_md_bytes":72269,"prompts_md_bytes":62193,"stdout_bytes":564,"stderr_bytes":58}
+{"name":"deutsia-radio","status":"ok","seconds":54,"exit_code":"0","cap_seconds":180,"findings_json_bytes":234242,"report_md_bytes":88799,"prompts_md_bytes":88655,"stdout_bytes":549,"stderr_bytes":58}

@@ -1,0 +1,4 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\before\deutsia-radio\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\before\deutsia-radio\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\before\deutsia-radio\findings.json
+grade: F·57 · detector findings: 244 (main: 98) · checklist gaps (ausencia): 166 · clean: 87 · degraded: 50 · juicio not evaluated: 116

@@ -39,11 +39,23 @@ try {
   process.exit(2);
 }
 
-const { findings, degraded, scanned, skipped, repo, timings, skippedLongLineFiles } = result;
+const { findings, degraded, scanned, skipped, repo, timings, skippedLongLineFiles, ruleFailures, capHits, coverage, guardSkips } = result;
 
 console.log(`target: ${resolve(target)}`);
 console.log(`files scanned: ${repo.fileCount} (gitignored skipped: ${repo.skippedIgnored.length}${repo.skippedTestLike.length ? `; test/spec/fixture files excluded: ${repo.skippedTestLike.length}` : ''}${skippedLongLineFiles ? `; long-line/minified skipped: ${skippedLongLineFiles}` : ''})`);
 console.log(`rules run: ${scanned} · skipped (tool not implemented): ${skipped}`);
+if (coverage) {
+  console.log(`coverage: ${coverage.files_text} non-binary file(s); matched by no rule path-glob: ${coverage.files_matched_by_no_rule_glob}; refused by read guards: ${coverage.files_refused_by_read_guards}; NOT examined by any regex rule: ${coverage.files_not_analysed} (${(coverage.uncovered_ratio * 100).toFixed(1)}%)`);
+  for (const s of guardSkips.slice(0, 10)) console.log(`  guard-skip: ${s.file} — ${s.reason} (${s.detail})`);
+}
+if (ruleFailures.length > 0) {
+  console.log('rule failures (partial run — counts are floors):');
+  for (const f of ruleFailures) console.log(`  ${f.rule ?? '(engine)'} — ${f.reason}${f.message ? `: ${f.message}` : ` after ${f.elapsed_ms}ms (budget ${f.budget_ms}ms, ${f.partial_findings} partial finding(s) kept)`}`);
+}
+if (capHits.length > 0) {
+  console.log(`rules truncated at the ${20}-findings cap (real counts are higher):`);
+  for (const c of capHits) console.log(`  ${c.rule} — reported ${c.reported}`);
+}
 const slow = timings.filter((t) => t.ms > 500).sort((a, b) => b.ms - a.ms);
 if (slow.length > 0) {
   console.log('slowest rules (>500ms):');

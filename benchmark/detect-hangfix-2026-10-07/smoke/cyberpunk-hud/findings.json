@@ -1,0 +1,652 @@
+{
+  "generated_by": "dktv-detect-report",
+  "target": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\cyberpunk-hud",
+  "generated_at": "2026-10-08T02:38:35.168Z",
+  "label_legend": {
+    "probado": "mechanically proven by the deterministic engine",
+    "juzgado": "LLM-judged (none in this report)"
+  },
+  "grade": {
+    "letter": "C",
+    "display": "C*",
+    "criticalCount": 0,
+    "worstSeverity": null,
+    "coverageLimited": true,
+    "coverage": {
+      "files_text": 25,
+      "files_matched_by_no_rule_glob": 19,
+      "uncovered_ratio": 0.76,
+      "material_uncovered_ratio": 0.2,
+      "uncapped_letter": "A",
+      "reason": "19 of 25 non-binary files are matched by no rule path-glob (76%): A/B would assert health over code no rule examined, so the letter is capped at C"
+    }
+  },
+  "counts": {
+    "registry": 368,
+    "mechanical": 186,
+    "fired": 7,
+    "clean": 129,
+    "degraded": 50,
+    "failed": 0,
+    "capped": 0,
+    "guardSkipped": 0,
+    "juicioNotEvaluated": 116,
+    "fuera": 66
+  },
+  "module_weights": {
+    "security": 1.5,
+    "database": 1.3,
+    "performance": 1.2,
+    "structure": 1.1,
+    "flows": 1,
+    "code": 1,
+    "cost": 0.8,
+    "github": 0.7
+  },
+  "findings": [
+    {
+      "rule": "cost-dev-setup-missing-3",
+      "module": "cost",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "high",
+      "effort": "M",
+      "file": "(repo root)",
+      "line": null,
+      "evidence": "no file matches **/{docker-compose.yml,docker-compose.yaml,Makefile,dev.sh,Taskfile.yml}",
+      "name": "no_local_development_setup",
+      "remediation": "Provide docker-compose or similar for local development",
+      "label": "probado",
+      "score": 40,
+      "phase": "30_days",
+      "destructive": false
+    },
+    {
+      "rule": "cost-license-attribution-missing-2",
+      "module": "cost",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "medium",
+      "effort": "M",
+      "file": "docs/friction-log-cyberpunk-hud.md",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "license_requires_attribution_missing",
+      "remediation": "Add required attribution to documentation and/about page",
+      "label": "probado",
+      "score": 16,
+      "phase": "60_days",
+      "destructive": false
+    },
+    {
+      "rule": "cost-license-attribution-missing-2",
+      "module": "cost",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "medium",
+      "effort": "M",
+      "file": "docs/prompt-friction-fixes.md",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "license_requires_attribution_missing",
+      "remediation": "Add required attribution to documentation and/about page",
+      "label": "probado",
+      "score": 16,
+      "phase": "60_days",
+      "destructive": false
+    },
+    {
+      "rule": "cost-license-attribution-missing-2",
+      "module": "cost",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "medium",
+      "effort": "M",
+      "file": "docs/prompt-hud-v2.md",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "license_requires_attribution_missing",
+      "remediation": "Add required attribution to documentation and/about page",
+      "label": "probado",
+      "score": 16,
+      "phase": "60_days",
+      "destructive": false
+    },
+    {
+      "rule": "cost-license-attribution-missing-2",
+      "module": "cost",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "medium",
+      "effort": "M",
+      "file": "docs/prompt-hud-v3.md",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "license_requires_attribution_missing",
+      "remediation": "Add required attribution to documentation and/about page",
+      "label": "probado",
+      "score": 16,
+      "phase": "60_days",
+      "destructive": false
+    },
+    {
+      "rule": "cost-license-attribution-missing-2",
+      "module": "cost",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "medium",
+      "effort": "M",
+      "file": "README.md",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "license_requires_attribution_missing",
+      "remediation": "Add required attribution to documentation and/about page",
+      "label": "probado",
+      "score": 16,
+      "phase": "60_days",
+      "destructive": false
+    },
+    {
+      "rule": "cost-no-license-tracking-5",
+      "module": "cost",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "medium",
+      "effort": "M",
+      "file": "(repo root)",
+      "line": null,
+      "evidence": "no file matches **/{fossa.yml,.fossa.yml,.fossa.yaml,.license-checker.json,license-checker.config.js,.snyk}",
+      "name": "no_license_compliance_tracking",
+      "remediation": "Implement automated license compliance checking (FOSSA, Snyk License)",
+      "label": "probado",
+      "score": 16,
+      "phase": "60_days",
+      "destructive": false
+    },
+    {
+      "rule": "cost-no-oss-policy-9",
+      "module": "cost",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "medium",
+      "effort": "M",
+      "file": "(repo root)",
+      "line": null,
+      "evidence": "no file matches **/{OSS-POLICY.md,OPEN-SOURCE-POLICY.md,open-source-policy.md,LICENSE-POLICY.md,docs/oss-policy.md}",
+      "name": "no_open_source_license_policy",
+      "remediation": "Create and implement open source use policy",
+      "label": "probado",
+      "score": 16,
+      "phase": "60_days",
+      "destructive": false
+    },
+    {
+      "rule": "cost-no-performance-budget-10",
+      "module": "cost",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "medium",
+      "effort": "M",
+      "file": "(repo root)",
+      "line": null,
+      "evidence": "no file matches **/{.lighthouserc.js,.lighthouserc.yml,.lighthouserc.json,lighthouse-budget.json,bundlesize.config.js}",
+      "name": "no_performance_budgeting",
+      "remediation": "Establish performance budgets and monitor against them",
+      "label": "probado",
+      "score": 16,
+      "phase": "60_days",
+      "destructive": false
+    },
+    {
+      "rule": "github-log-pattern-9",
+      "module": "github",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "medium",
+      "effort": "M",
+      "file": "(repo root)",
+      "line": null,
+      "evidence": "no file matches **/*.log",
+      "name": "no",
+      "remediation": "Treat as an observability gap only after confirming the deployment does not log elsewhere",
+      "label": "probado",
+      "score": 14,
+      "phase": "60_days",
+      "destructive": false
+    },
+    {
+      "rule": "performance-no-tech-debt-alloc-9",
+      "module": "performance",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "low",
+      "effort": "M",
+      "file": "CLAUDE.md",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "no_technical_debt_allocation",
+      "remediation": "Allocate sprint capacity (e.g., 20%) for performance improvements",
+      "label": "probado",
+      "score": 6,
+      "phase": "90_days",
+      "destructive": false
+    },
+    {
+      "rule": "performance-no-tech-debt-alloc-9",
+      "module": "performance",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "low",
+      "effort": "M",
+      "file": "docs/friction-log-cyberpunk-hud.md",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "no_technical_debt_allocation",
+      "remediation": "Allocate sprint capacity (e.g., 20%) for performance improvements",
+      "label": "probado",
+      "score": 6,
+      "phase": "90_days",
+      "destructive": false
+    },
+    {
+      "rule": "performance-no-tech-debt-alloc-9",
+      "module": "performance",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "low",
+      "effort": "M",
+      "file": "docs/prompt-friction-fixes.md",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "no_technical_debt_allocation",
+      "remediation": "Allocate sprint capacity (e.g., 20%) for performance improvements",
+      "label": "probado",
+      "score": 6,
+      "phase": "90_days",
+      "destructive": false
+    },
+    {
+      "rule": "performance-no-tech-debt-alloc-9",
+      "module": "performance",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "low",
+      "effort": "M",
+      "file": "docs/prompt-hud-v2.md",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "no_technical_debt_allocation",
+      "remediation": "Allocate sprint capacity (e.g., 20%) for performance improvements",
+      "label": "probado",
+      "score": 6,
+      "phase": "90_days",
+      "destructive": false
+    },
+    {
+      "rule": "performance-no-tech-debt-alloc-9",
+      "module": "performance",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "low",
+      "effort": "M",
+      "file": "docs/prompt-hud-v3.md",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "no_technical_debt_allocation",
+      "remediation": "Allocate sprint capacity (e.g., 20%) for performance improvements",
+      "label": "probado",
+      "score": 6,
+      "phase": "90_days",
+      "destructive": false
+    },
+    {
+      "rule": "performance-no-tech-debt-alloc-9",
+      "module": "performance",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "low",
+      "effort": "M",
+      "file": "README.md",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "no_technical_debt_allocation",
+      "remediation": "Allocate sprint capacity (e.g., 20%) for performance improvements",
+      "label": "probado",
+      "score": 6,
+      "phase": "90_days",
+      "destructive": false
+    }
+  ],
+  "degraded": [
+    {
+      "tool": "semgrep",
+      "rule": "code-bare-except-1"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-bare-except-with-others-2"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-boolean-parameter-plague-11"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-callback-hell-10"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-catch-and-continue-9"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-deep-inheritance-9"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-error-assigned-unused-2"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-extreme-nesting-4"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-high-nesting-5"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-loose-equality-1"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-loose-inequality-2"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-missing-error-main-10"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-nested-ternary-9"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-print-statement-5"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-print-statement-8"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-slice-append-in-loop-6"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-unchecked-error-1"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "code-var-usage-3"
+    },
+    {
+      "tool": "osv-scanner",
+      "rule": "cost-deprecated-version-10"
+    },
+    {
+      "tool": "license-scan",
+      "rule": "cost-license-incompatible-1"
+    },
+    {
+      "tool": "license-scan",
+      "rule": "cost-license-share-alike-3"
+    },
+    {
+      "tool": "license-scan",
+      "rule": "cost-non-commercial-use-6"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "flows-error-leaks-stack-6"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "flows-fire-and-forget-critical-1"
+    },
+    {
+      "tool": "git-log",
+      "rule": "flows-message-breaking-schema-2"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "flows-missing-timeout-6"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "flows-ngrx-selectors-not-memoized-4"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "flows-redux-mutates-state-1"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "flows-redux-side-effects-2"
+    },
+    {
+      "tool": "git-log",
+      "rule": "github-commit-history-1"
+    },
+    {
+      "tool": "git-log",
+      "rule": "github-commit-history-10"
+    },
+    {
+      "tool": "git-log",
+      "rule": "github-commit-history-2"
+    },
+    {
+      "tool": "git-log",
+      "rule": "github-commit-history-3"
+    },
+    {
+      "tool": "git-log",
+      "rule": "github-commit-history-4"
+    },
+    {
+      "tool": "git-log",
+      "rule": "github-commit-history-5"
+    },
+    {
+      "tool": "git-log",
+      "rule": "github-commit-history-6"
+    },
+    {
+      "tool": "git-log",
+      "rule": "github-commit-history-7"
+    },
+    {
+      "tool": "git-log",
+      "rule": "github-commit-history-8"
+    },
+    {
+      "tool": "git-log",
+      "rule": "github-commit-history-9"
+    },
+    {
+      "tool": "github-api",
+      "rule": "github-issue-health-12"
+    },
+    {
+      "tool": "osv-scanner",
+      "rule": "security-cve-critical-1"
+    },
+    {
+      "tool": "osv-scanner",
+      "rule": "security-cve-high-2"
+    },
+    {
+      "tool": "osv-scanner",
+      "rule": "security-cve-medium-3"
+    },
+    {
+      "tool": "osv-scanner",
+      "rule": "security-exploit-in-wild-5"
+    },
+    {
+      "tool": "license-scan",
+      "rule": "security-license-incompatible-6"
+    },
+    {
+      "tool": "osv-scanner",
+      "rule": "security-no-security-maintenance-7"
+    },
+    {
+      "tool": "gitleaks",
+      "rule": "security-secret-in-history-2",
+      "reason": "spec targets git history; lite runner scans the working tree only (install gitleaks for history)"
+    },
+    {
+      "tool": "osv-scanner",
+      "rule": "security-transitive-vuln-8"
+    },
+    {
+      "tool": "osv-scanner",
+      "rule": "security-unmaintained-dep-4"
+    },
+    {
+      "tool": "semgrep",
+      "rule": "structure-singleton-violation-5"
+    }
+  ],
+  "rule_failures": [],
+  "cap_truncations": [],
+  "guard_skips": [],
+  "coverage": {
+    "files_total": 26,
+    "files_text": 25,
+    "files_binary": 1,
+    "files_matched_by_any_rule_glob": 6,
+    "files_matched_by_no_rule_glob": 19,
+    "uncovered_ratio": 0.76,
+    "uncovered_files": {
+      "count": 19,
+      "names": [
+        ".gitignore",
+        "autoload/game_state.gd",
+        "cyberpunk_hud.gd",
+        "hud_loader.gd",
+        "hud_v1.tscn",
+        "hud_v2.tscn",
+        "hud_v3.tscn",
+        "main.tscn",
+        "project.godot",
+        "scripts/angular_frame.gd",
+        "scripts/brackets.gd",
+        "scripts/cooldown_gauge.gd",
+        "scripts/log_pulse.gd",
+        "scripts/orbit_dot.gd",
+        "scripts/radar_sweep.gd",
+        "scripts/scanlines.gd",
+        "scripts/shield_gradient.gd",
+        "scripts/waveform.gd",
+        "themes/cyberpunk.tres"
+      ],
+      "omitted": 0
+    },
+    "by_extension": [
+      {
+        "ext": ".gd",
+        "files": 12,
+        "uncovered": 12
+      },
+      {
+        "ext": ".md",
+        "files": 6,
+        "uncovered": 0
+      },
+      {
+        "ext": ".tscn",
+        "files": 4,
+        "uncovered": 4
+      },
+      {
+        "ext": ".godot",
+        "files": 1,
+        "uncovered": 1
+      },
+      {
+        "ext": ".tres",
+        "files": 1,
+        "uncovered": 1
+      },
+      {
+        "ext": "(none)",
+        "files": 1,
+        "uncovered": 1
+      }
+    ],
+    "skipped": {
+      "gitignored": {
+        "count": 0,
+        "names": [],
+        "omitted": 0
+      },
+      "test_like": {
+        "count": 0,
+        "names": [],
+        "omitted": 0
+      },
+      "binary": {
+        "count": 1,
+        "names": [
+          "docs/cyberpunk-hud-demo.png"
+        ],
+        "omitted": 0
+      },
+      "read_guards": []
+    },
+    "submodules": {
+      "declared": [],
+      "uninitialised": []
+    },
+    "rules_with_path_glob": 66,
+    "rules_whole_tree": [
+      {
+        "rule": "code-boilerplate-repetition-7",
+        "why": "catch-all glob **/*"
+      },
+      {
+        "rule": "flows-n8n-hardcoded-secrets-7",
+        "why": "no path filter: reads every file"
+      },
+      {
+        "rule": "github-log-pattern-1",
+        "why": "catch-all glob **/*"
+      },
+      {
+        "rule": "security-db-conn-string-6",
+        "why": "no path filter: reads every file"
+      },
+      {
+        "rule": "security-oauth-secret-8",
+        "why": "no path filter: reads every file"
+      },
+      {
+        "rule": "security-private-key-7",
+        "why": "no path filter: reads every file"
+      },
+      {
+        "rule": "security-secret-in-code-1",
+        "why": "no path filter: reads every file"
+      }
+    ],
+    "read_guard_limits": {
+      "max_line": 2000,
+      "max_content": 262144,
+      "read_cap": 524288
+    }
+  },
+  "fatal_error": null
+}

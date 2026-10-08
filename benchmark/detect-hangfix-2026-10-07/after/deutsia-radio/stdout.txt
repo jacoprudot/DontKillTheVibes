@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\deutsia-radio\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\deutsia-radio\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-hangfix-2026-10-07\after\deutsia-radio\findings.json
+grade: F·57 · detector findings: 244 (main: 98) · checklist gaps (ausencia): 166 · clean: 87 · degraded: 50 · juicio not evaluated: 116
+coverage: 278 non-binary file(s) · matched by ≥1 rule path-glob: 261 · NO rule path-glob: 17 · refused by read guards: 1 · NOT examined by any regex rule: 18 (6.5%)
+rule failures: 0 · rules stopped at the 20-finding cap: 7 (code-extreme-complexity-1, code-extreme-length-6, code-high-complexity-2, code-long-function-7, code-medium-length-8, code-moderate-complexity-3, code-multiple-return-points-12)

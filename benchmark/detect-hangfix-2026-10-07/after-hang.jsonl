@@ -1,0 +1,3 @@
+{"name":"chatbot-ui","status":"ok","seconds":1.69,"exit_code":"0","cap_seconds":180,"findings_json_bytes":300827,"report_md_bytes":66293,"prompts_md_bytes":54986,"stdout_bytes":1411,"stderr_bytes":0}
+{"name":"aurora-synth","status":"ok","seconds":2.26,"exit_code":"0","cap_seconds":180,"findings_json_bytes":288308,"report_md_bytes":63693,"prompts_md_bytes":47316,"stdout_bytes":1457,"stderr_bytes":0}
+{"name":"cyberpunk-hud","status":"ok","seconds":0.41,"exit_code":"0","cap_seconds":180,"findings_json_bytes":17899,"report_md_bytes":7342,"prompts_md_bytes":779,"stdout_bytes":768,"stderr_bytes":0}
