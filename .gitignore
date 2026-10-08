@@ -102,3 +102,9 @@ SOUL.md
 PROMPT_NEMO_*.md
 docs/internal/
 
+# unlazy - piloto 2026-10 (ver roster/ACL.md). Ledger y estado del hook NO se commitean:
+# son artefactos de ejecucion, no parte del contrato publico del proyecto.
+.unlazy/
+.unlazy-hook-state.json
+.claude/settings.local.json
+
