@@ -1,0 +1,4 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\obs-airplay\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\obs-airplay\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\obs-airplay\findings.json
+grade: F·3 · detector findings: 21 (main: 9) · checklist gaps (ausencia): 28 · clean: 103 · degraded: 50 · juicio not evaluated: 116

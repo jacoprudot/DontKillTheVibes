@@ -1,0 +1,20 @@
+TARGET C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work\chatbot-ui candidateFiles=261 pattern=201chars
+START supabase/types.ts bytes=52704
+DONE supabase/types.ts 1ms
+START components/utility/profile-settings.tsx bytes=26588
+DONE components/utility/profile-settings.tsx 169ms
+START components/sidebar/items/all/sidebar-update-item.tsx bytes=19536
+DONE components/sidebar/items/all/sidebar-update-item.tsx 2ms
+START components/messages/message.tsx bytes=14757
+DONE components/messages/message.tsx 0ms
+START components/chat/chat-helpers/index.ts bytes=14366
+DONE components/chat/chat-helpers/index.ts 9ms
+START components/chat/chat-hooks/use-chat-handler.tsx bytes=12018
+DONE components/chat/chat-hooks/use-chat-handler.tsx 12ms
+START components/sidebar/items/assistants/assistant-item.tsx bytes=11025
+DONE components/sidebar/items/assistants/assistant-item.tsx 12ms
+START components/sidebar/sidebar-data-list.tsx bytes=10778
+DONE components/sidebar/sidebar-data-list.tsx 1ms
+START components/chat/quick-settings.tsx bytes=10316
+DONE components/chat/quick-settings.tsx 2ms
+START components/utility/global-state.tsx bytes=10276

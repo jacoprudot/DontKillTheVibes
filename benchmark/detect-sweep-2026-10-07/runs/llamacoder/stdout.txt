@@ -1,0 +1,4 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\llamacoder\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\llamacoder\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\llamacoder\findings.json
+grade: F·24 · detector findings: 219 (main: 66) · checklist gaps (ausencia): 350 · clean: 77 · degraded: 50 · juicio not evaluated: 116

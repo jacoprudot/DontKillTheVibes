@@ -1,0 +1,4 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\agentgraphed\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\agentgraphed\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\agentgraphed\findings.json
+grade: F·22 · detector findings: 199 (main: 63) · checklist gaps (ausencia): 345 · clean: 72 · degraded: 50 · juicio not evaluated: 116

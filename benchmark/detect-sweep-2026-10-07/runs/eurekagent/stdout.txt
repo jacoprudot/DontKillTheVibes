@@ -1,0 +1,4 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\eurekagent\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\eurekagent\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\eurekagent\findings.json
+grade: F·52 · detector findings: 240 (main: 117) · checklist gaps (ausencia): 222 · clean: 86 · degraded: 50 · juicio not evaluated: 116

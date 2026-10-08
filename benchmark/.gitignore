@@ -17,3 +17,19 @@ repos.local.json
 # with sha256 in results-lote2-deepseek/MODULES-EXCLUDED.sha256 so the evidence
 # is hash-verifiable without shipping the bulk.
 results-lote2-deepseek/*/orchestrated/modules/
+
+# Per-repo report dumps from the 2026-10-07 detect sweep (19 repos x findings.json,
+# report.md, prompts.md): 57 files, ~4.35 MB of generated output. The summary evidence
+# (SWEEP.md, sweep.json, run-log.json), the timeout diagnostics (diag/) and every repo's
+# invocation record (runs/<repo>/run.cmd, stdout.txt, stderr.txt, exit.txt) ARE
+# committed, so each figure in SWEEP.md stays backed by a committed artifact without
+# shipping 4.35 MB of duplicated dumps. Same reasoning as the excluded modules above.
+detect-sweep-2026-10-07/runs/*/findings.json
+detect-sweep-2026-10-07/runs/*/report.md
+detect-sweep-2026-10-07/runs/*/prompts.md
+
+# The per-rule / per-file timeout bisection logs ARE the diagnostic evidence SWEEP.md
+# points at (diag/<repo>/diag.log names code-many-params-10 as the hang; diag/file/...
+# names the single triggering file). The root "*.log" rule would swallow them, so they
+# are re-included explicitly. ~7 KB total.
+!detect-sweep-2026-10-07/diag/**/*.log

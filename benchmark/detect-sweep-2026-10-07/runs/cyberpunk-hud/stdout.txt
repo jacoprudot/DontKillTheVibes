@@ -1,0 +1,4 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\cyberpunk-hud\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\cyberpunk-hud\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\cyberpunk-hud\findings.json
+grade: A · detector findings: 0 (main: 0) · checklist gaps (ausencia): 16 · clean: 129 · degraded: 50 · juicio not evaluated: 116

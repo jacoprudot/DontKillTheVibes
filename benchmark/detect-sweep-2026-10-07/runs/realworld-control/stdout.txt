@@ -1,0 +1,4 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\realworld-control\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\realworld-control\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\realworld-control\findings.json
+grade: F·4 · detector findings: 30 (main: 10) · checklist gaps (ausencia): 335 · clean: 93 · degraded: 50 · juicio not evaluated: 116

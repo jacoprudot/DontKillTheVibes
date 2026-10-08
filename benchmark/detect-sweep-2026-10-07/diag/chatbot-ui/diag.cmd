@@ -1,0 +1,2 @@
+@echo off
+"C:\Program Files\nodejs\node.exe" "C:\Users\jfpru\AppData\Local\Temp\dktv-sweep-2026-10-07\diag.mjs" "C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work\chatbot-ui" > "C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\diag\chatbot-ui\diag.log" 2> "C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\diag\chatbot-ui\diag.err"

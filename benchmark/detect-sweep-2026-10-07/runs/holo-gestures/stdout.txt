@@ -1,0 +1,4 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\holo-gestures\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\holo-gestures\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\detect-sweep-2026-10-07\runs\holo-gestures\findings.json
+grade: F·7 · detector findings: 17 (main: 12) · checklist gaps (ausencia): 32 · clean: 104 · degraded: 50 · juicio not evaluated: 116

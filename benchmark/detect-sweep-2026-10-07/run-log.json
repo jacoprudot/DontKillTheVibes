@@ -1,0 +1,233 @@
+[
+    {
+        "name":  "realworld-control",
+        "url":  "https://github.com/gothinkster/node-express-realworld-example-app",
+        "pinned_commit":  "30b68e1e881462b2f4164ea09ab4c4f5699c7b0b",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\realworld-control",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\realworld-control",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\realworld-control\\run.cmd",
+        "status":  "ok",
+        "seconds":  1.98,
+        "exit_code":  0
+    },
+    {
+        "name":  "roomgpt",
+        "url":  "https://github.com/Nutlope/roomGPT",
+        "pinned_commit":  "611398c78da64f1794df2d99018c3d02d3ab0048",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\roomgpt",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\roomgpt",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\roomgpt\\run.cmd",
+        "status":  "ok",
+        "seconds":  1.24,
+        "exit_code":  0
+    },
+    {
+        "name":  "screenshot-to-code",
+        "url":  "https://github.com/abi/screenshot-to-code",
+        "pinned_commit":  "d026163f586dfa8c5c10d28c36edd59a9d3b0e88",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\screenshot-to-code",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\screenshot-to-code",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\screenshot-to-code\\run.cmd",
+        "status":  "ok",
+        "seconds":  3.09,
+        "exit_code":  0
+    },
+    {
+        "name":  "llamacoder",
+        "url":  "https://github.com/Nutlope/llamacoder",
+        "pinned_commit":  "75a3a78e1fa080657b696b95e6d7e393dfa999a5",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\llamacoder",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\llamacoder",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\llamacoder\\run.cmd",
+        "status":  "ok",
+        "seconds":  9.67,
+        "exit_code":  0
+    },
+    {
+        "name":  "chatbot-ui",
+        "url":  "https://github.com/mckaywrigley/chatbot-ui",
+        "pinned_commit":  "81328b61d2a4ab597a7a057be70e785cf756d9f8",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\chatbot-ui",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\chatbot-ui",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\chatbot-ui\\run.cmd",
+        "status":  "timeout",
+        "seconds":  180.05,
+        "exit_code":  null
+    },
+    {
+        "name":  "httpx",
+        "url":  "https://github.com/encode/httpx",
+        "pinned_commit":  "b5addb64f0161ff6bfe94c124ef76f6a1fba5254",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\httpx",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\httpx",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\httpx\\run.cmd",
+        "status":  "ok",
+        "seconds":  1.07,
+        "exit_code":  0
+    },
+    {
+        "name":  "rich",
+        "url":  "https://github.com/Textualize/rich",
+        "pinned_commit":  "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\rich",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\rich",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\rich\\run.cmd",
+        "status":  "ok",
+        "seconds":  4.04,
+        "exit_code":  0
+    },
+    {
+        "name":  "mini-redis",
+        "url":  "https://github.com/tokio-rs/mini-redis",
+        "pinned_commit":  "3d93b42bc363220f85af4fc9e1bebd35b588a4a3",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\mini-redis",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\mini-redis",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\mini-redis\\run.cmd",
+        "status":  "ok",
+        "seconds":  0.37,
+        "exit_code":  0
+    },
+    {
+        "name":  "vegeta",
+        "url":  "https://github.com/tsenart/vegeta",
+        "pinned_commit":  "cf5811269046c672a604b1eb352204d30f16ae4a",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\vegeta",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\vegeta",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\vegeta\\run.cmd",
+        "status":  "ok",
+        "seconds":  0.59,
+        "exit_code":  0
+    },
+    {
+        "name":  "fatfree",
+        "url":  "https://github.com/bcosca/fatfree",
+        "pinned_commit":  "1036a7dc6438f1d5905c21493afbf69a7c85dc4e",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\fatfree",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\fatfree",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\fatfree\\run.cmd",
+        "status":  "ok",
+        "seconds":  0.43,
+        "exit_code":  0
+    },
+    {
+        "name":  "sinatra",
+        "url":  "https://github.com/sinatra/sinatra",
+        "pinned_commit":  "cb22afd7902b566b6eaba6c4ea89739494a65d12",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\sinatra",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\sinatra",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\sinatra\\run.cmd",
+        "status":  "ok",
+        "seconds":  0.94,
+        "exit_code":  0
+    },
+    {
+        "name":  "jarvis-voice",
+        "url":  "https://github.com/Julian-Ivanov/jarvis-voice-assistant",
+        "pinned_commit":  "0dbc657e311018a3022b8df50d2e4eb516e6c26c",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\jarvis-voice",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\jarvis-voice",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\jarvis-voice\\run.cmd",
+        "status":  "ok",
+        "seconds":  0.43,
+        "exit_code":  0
+    },
+    {
+        "name":  "eurekagent",
+        "url":  "https://github.com/THU-Team-Eureka/EurekAgent",
+        "pinned_commit":  "fb96df897dfb99797a77623aa0dd9ee178fe89d2",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\eurekagent",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\eurekagent",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\eurekagent\\run.cmd",
+        "status":  "ok",
+        "seconds":  1.76,
+        "exit_code":  0
+    },
+    {
+        "name":  "deutsia-radio",
+        "url":  "https://github.com/deutsia/deutsia-radio",
+        "pinned_commit":  "38499d6f2555a80de4b7df1b1073f3e0cdb1f124",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\deutsia-radio",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\deutsia-radio",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\deutsia-radio\\run.cmd",
+        "status":  "ok",
+        "seconds":  109.47,
+        "exit_code":  0
+    },
+    {
+        "name":  "holo-gestures",
+        "url":  "https://github.com/zubair-trabzada/holo-gestures",
+        "pinned_commit":  "55626ff00f6b49c649a407ffdb3cad174479c637",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\holo-gestures",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\holo-gestures",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\holo-gestures\\run.cmd",
+        "status":  "ok",
+        "seconds":  0.43,
+        "exit_code":  0
+    },
+    {
+        "name":  "ai-job-agent",
+        "url":  "https://github.com/AkbarDevop/ai-job-agent",
+        "pinned_commit":  "9ce47d29b5fcfd37ea2fdd5588c8d178bbfa7305",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\ai-job-agent",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\ai-job-agent",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\ai-job-agent\\run.cmd",
+        "status":  "ok",
+        "seconds":  0.92,
+        "exit_code":  0
+    },
+    {
+        "name":  "agentgraphed",
+        "url":  "https://github.com/sudomichael/agentgraphed",
+        "pinned_commit":  "0fc90d5961cc42de1c50044d3bbf2b3d54af09cf",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\agentgraphed",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\agentgraphed",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\agentgraphed\\run.cmd",
+        "status":  "ok",
+        "seconds":  31.82,
+        "exit_code":  0
+    },
+    {
+        "name":  "crypto-claude-desk",
+        "url":  "https://github.com/hugoguerrap/crypto-claude-desk",
+        "pinned_commit":  "298cfd58408aa86ef3c7ce863c0c19858636df7a",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\crypto-claude-desk",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\crypto-claude-desk",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\crypto-claude-desk\\run.cmd",
+        "status":  "ok",
+        "seconds":  30.06,
+        "exit_code":  0
+    },
+    {
+        "name":  "cyberpunk-hud",
+        "url":  "https://github.com/hi-godot/cyberpunk-hud-demo",
+        "pinned_commit":  "6dbc1460155c2a12ffbbb4bdf6a90d712ea35f08",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\cyberpunk-hud",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\cyberpunk-hud",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\cyberpunk-hud\\run.cmd",
+        "status":  "ok",
+        "seconds":  0.41,
+        "exit_code":  0
+    },
+    {
+        "name":  "obs-airplay",
+        "url":  "https://github.com/aomkoyo/obs-airplay-receiver",
+        "pinned_commit":  "a1b57cd56b276e7e2d381c8083f76cd80e2a2e0b",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\obs-airplay",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\obs-airplay",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\obs-airplay\\run.cmd",
+        "status":  "ok",
+        "seconds":  0.41,
+        "exit_code":  0
+    },
+    {
+        "name":  "aurora-synth",
+        "url":  "https://github.com/pixbvr/aurora-synth",
+        "pinned_commit":  "aa204456bfbfff49f79322bfea4673f22d4b4de3",
+        "clone_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\aurora-synth",
+        "run_dir":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\aurora-synth",
+        "cmd_file":  "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\detect-sweep-2026-10-07\\runs\\aurora-synth\\run.cmd",
+        "status":  "timeout",
+        "seconds":  180.07,
+        "exit_code":  null
+    }
+]

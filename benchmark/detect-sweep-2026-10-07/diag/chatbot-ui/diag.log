@@ -1,0 +1,56 @@
+TARGET C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work\chatbot-ui rules=186
+START code-bare-except-1
+DONE code-bare-except-1 56ms findings=0 longLine=0
+START code-bare-except-with-others-2
+DONE code-bare-except-with-others-2 31ms findings=0 longLine=0
+START code-boilerplate-repetition-7
+DONE code-boilerplate-repetition-7 137ms findings=0 longLine=1
+START code-boolean-parameter-plague-11
+DONE code-boolean-parameter-plague-11 25ms findings=0 longLine=0
+START code-callback-hell-10
+DONE code-callback-hell-10 28ms findings=0 longLine=0
+START code-catch-and-continue-9
+DONE code-catch-and-continue-9 33ms findings=0 longLine=0
+START code-console-log-7
+DONE code-console-log-7 29ms findings=0 longLine=0
+START code-deep-inheritance-9
+DONE code-deep-inheritance-9 28ms findings=0 longLine=0
+START code-empty-catch-1
+DONE code-empty-catch-1 94ms findings=0 longLine=1
+START code-error-assigned-unused-2
+DONE code-error-assigned-unused-2 27ms findings=0 longLine=0
+START code-exact-duplication-massive-1
+DONE code-exact-duplication-massive-1 169ms findings=0 longLine=1
+START code-exact-duplication-minor-3
+DONE code-exact-duplication-minor-3 187ms findings=9 longLine=1
+START code-exact-duplication-significant-2
+DONE code-exact-duplication-significant-2 151ms findings=1 longLine=1
+START code-extreme-complexity-1
+DONE code-extreme-complexity-1 82ms findings=15 longLine=1
+START code-extreme-length-6
+DONE code-extreme-length-6 42ms findings=20 longLine=1
+START code-extreme-nesting-4
+DONE code-extreme-nesting-4 21ms findings=0 longLine=0
+START code-generic-catch-2
+DONE code-generic-catch-2 20ms findings=0 longLine=0
+START code-god-object-6
+DONE code-god-object-6 23ms findings=0 longLine=0
+START code-god-package-9
+DONE code-god-package-9 22ms findings=0 longLine=0
+START code-high-complexity-2
+DONE code-high-complexity-2 65ms findings=20 longLine=1
+START code-high-nesting-5
+DONE code-high-nesting-5 22ms findings=0 longLine=0
+START code-interface-bloat-8
+DONE code-interface-bloat-8 20ms findings=0 longLine=0
+START code-logs-secrets-10
+DONE code-logs-secrets-10 87ms findings=0 longLine=1
+START code-long-function-7
+DONE code-long-function-7 38ms findings=20 longLine=0
+START code-long-parameter-list-8
+DONE code-long-parameter-list-8 19ms findings=0 longLine=0
+START code-loose-equality-1
+DONE code-loose-equality-1 19ms findings=0 longLine=0
+START code-loose-inequality-2
+DONE code-loose-inequality-2 22ms findings=0 longLine=0
+START code-many-params-10
