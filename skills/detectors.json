@@ -1,5 +1,5 @@
 {
-  "$comment": "Detector sidecar for the canonical rule registry (PLAN.md, Fase 1). One entry per canonical rule id. type: detector (a deterministic tool proves the PRESENCE of the violation) | ausencia (proves only the ABSENCE of a guard — weaker proof, reported separately) | juicio (a model decides with a closed question) | fuera (declared, never deleted). Post-audit 2026-10-06: query prose and confidence removed; spec is structured per tool and must parse (validated by scripts/validate-detectors.mjs). The census is PROVISIONAL until positive/negative fixtures pass per rule. Validate: node scripts/validate-detectors.mjs",
+  "$comment": "Detector sidecar for the canonical rule registry (PLAN.md, Fase 1). One entry per canonical rule id. type: detector (a deterministic tool proves the PRESENCE of the violation) | ausencia (proves only the ABSENCE of a guard — weaker proof, reported separately) | juicio (a model decides with a closed question) | fuera (declared, never deleted). Post-audit 2026-10-06: query prose and confidence removed; spec is structured per tool and must parse (validated by scripts/validate-detectors.mjs). The census is PROVISIONAL until positive/negative fixtures pass per rule. Validate: node scripts/validate-detectors.mjs. SCOPE FIELDS (added 2026-10-08, defect 6a): a field that looks like a scope but does nothing is a lie in the schema. A `gitleaks` spec's `path_regex` is consulted ONLY by isHistoryPathSpec (scripts/detect/matchers.mjs), which tests it against `.git/` to route the spec to the git-history scan; for a working-tree spec the runner (runGitleaksLite in scripts/detect/engine.mjs) walks every text file and IGNORES path_regex. A working-tree gitleaks spec must therefore NOT carry one. Optionally, a spec may carry a free-text `note` stating its real scope; `note` is not executed.",
   "code-any-type-6": {
     "type": "juicio"
   },
@@ -235,16 +235,8 @@
     }
   },
   "code-god-package-9": {
-    "type": "detector",
-    "tool": "node-matcher",
-    "spec": {
-      "matcher": "max-occurrences",
-      "params": {
-        "pattern": "(?m:^package\\s+\\w+\\s*$)",
-        "path_glob": "**/*.go",
-        "max": 50
-      }
-    }
+    "type": "juicio",
+    "reason": "Reclassified detector -> juicio on 2026-10-08 (defect 3). The rule's condition is PACKAGE-level (\"god_package_detected (> 50 files in package)\", skills/code-quality-assessment.skill.md), but the spec it carried was a max-occurrences count of `(?m:^package\\s+\\w+\\s*$)` with max 50 — a count of matches INSIDE one file. A valid Go file contains exactly one `package` clause, so the only input that could fire was an INVALID Go file with 51 concatenated clauses (measured: realistic store.go -> 0 findings; 51 concatenated `package pN` lines -> 1 finding). No matcher in the node-matcher vocabulary counts files per package, and fixing it needs a new matcher in scripts/detect/matchers.mjs plus a new entry in the COMPLEXITY/MATCHERS registry — a new tool, not a spec correction. It is left for a model with repo access (Fase 3) rather than approximated, exactly like the structure-* coupling/cycle rules (structure-high-coupling-1 and 30 other repo-level structural rules are `juicio`). No fixture can exist for a `juicio` rule: the engine runs no tool for it, so a positive/negative pair would be evidence for nothing."
   },
   "code-high-complexity-2": {
     "type": "detector",
@@ -302,7 +294,7 @@
     "spec": {
       "matcher": "file-content-regex",
       "params": {
-        "pattern": "(?i:(?:console|logger|log|logging|sys)\\.(?:log|debug|info|warn|warning|error|exception)\\s*\\([^)\\n]*(?:password|passwd|token|secret|api[_-]?key|credential))",
+        "pattern": "(?i:(?:console|logger|log|logging|sys)\\.(?:log|debug|info|warn|warning|error|exception)\\s*\\([^)\\n]*(?:password|passwd|token|secret|api[_-]?key|credential)\\w*\\s*[,)\\]};])",
         "path_glob": "**/*.{js,ts,jsx,tsx,py,java,cs,go}",
         "max_matches": 1000000
       }
@@ -536,7 +528,7 @@
     "spec": {
       "matcher": "file-content-regex",
       "params": {
-        "pattern": "(?i:(?:SELECT|INSERT|UPDATE|DELETE)[^\"'\\n]*[\"']\\s*\\+\\s*\\w+|f[\"'][^\"'\\n]*(?:SELECT|INSERT|UPDATE|DELETE)[^\"'\\n]*\\{[^}]+\\})",
+        "pattern": "(?i:(?:SELECT|INSERT|UPDATE|DELETE)[^\"'\\n]*[\"']\\s*\\+\\s*\\w+|f[\"'][^\"'\\n]*(?:SELECT|INSERT|UPDATE|DELETE)[^\\n]*?\\{[^}\\n]+\\})",
         "path_glob": "**/*.py",
         "max_matches": 1000000
       }
@@ -1416,7 +1408,6 @@
     "tool": "gitleaks",
     "spec": {
       "regex": "(?i:(?:api[_-]?key|access[_-]?token|auth[_-]?token|secret|password|credential)[\"']?\\s*[:=]\\s*[\"'][A-Za-z0-9_\\-./+=]{12,}[\"'])",
-      "path_regex": "(?i:workflows?|n8n)/.*\\.json$",
       "keywords": [
         "apiKey",
         "api_key",
@@ -1424,7 +1415,8 @@
         "secret",
         "password",
         "access_token"
-      ]
+      ],
+      "note": "WHOLE-TREE scan, stated plainly (defect 6a, 2026-10-08). This spec carried a path_regex of `(?i:workflows?|n8n)/.*\\.json$` that the runner IGNORES: runGitleaksLite (scripts/detect/engine.mjs) walks every text file in the tree and only consults path_regex to route a spec to the git-HISTORY scan (isHistoryPathSpec, which tests the regex against `.git/`). Measured before removal: it fired on config/settings.json and on src/legacy.js, i.e. outside any workflows/ directory. The field was a scope that did nothing, so it is deleted rather than kept as a lie in the schema; the rule is global by declaration now, and the positive fixture carries a non-workflow file so that behaviour is asserted instead of assumed. Re-adding a real scope means implementing path filtering in runGitleaksLite first."
     }
   },
   "flows-n8n-no-changelog-9": {
@@ -1641,6 +1633,7 @@
     "tool": "git-log",
     "spec": {
       "check": "commit-rate",
+      "op": "lt",
       "threshold": 2
     }
   },
@@ -1657,6 +1650,7 @@
     "tool": "git-log",
     "spec": {
       "check": "commit-rate",
+      "op": "gt",
       "threshold": 20
     }
   },
@@ -1665,6 +1659,7 @@
     "tool": "git-log",
     "spec": {
       "check": "commit-message-pattern",
+      "pattern": "refactor",
       "threshold": 30
     }
   },
@@ -1673,6 +1668,7 @@
     "tool": "git-log",
     "spec": {
       "check": "commit-message-pattern",
+      "pattern": "feature",
       "threshold": 50
     }
   },
@@ -1681,6 +1677,7 @@
     "tool": "git-log",
     "spec": {
       "check": "commit-message-pattern",
+      "pattern": "bugfix",
       "threshold": 40
     }
   },
@@ -1705,6 +1702,7 @@
     "tool": "git-log",
     "spec": {
       "check": "commit-message-pattern",
+      "pattern": "conventional",
       "threshold": 80
     }
   },
@@ -1826,7 +1824,7 @@
     "spec": {
       "matcher": "file-content-regex",
       "params": {
-        "pattern": "(?i:(LOG_LEVEL|log[_-]?level)s*[:=]s*['\"]?(debug|trace))",
+        "pattern": "(?i:(LOG_LEVEL|log[_-]?level)\\s*[:=]\\s*['\"]?(debug|trace))",
         "path_glob": "**/*.{env,yaml,yml,json,ts,js,py}"
       }
     }

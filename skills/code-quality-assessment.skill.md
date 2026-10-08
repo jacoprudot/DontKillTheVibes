@@ -105,7 +105,7 @@ Emit findings[] array and code-quality-summary.json with:
 5. IF nesting_depth > 4 → FINDING: code-high-nesting-5 (severity: medium, effort: S)
    - Evidence: "4 levels of nesting in nested loop processing matrix"
    - Remediation: "Extract inner loop to separate function with clear purpose"
-6. IF function_lines > 150 → FINDING: code-extreme-length-6 (severity: high, effort: L)
+6. IF file_lines > 150 → FINDING: code-extreme-length-6 (severity: high, effort: L)
    - Evidence: "Component render method spans 200 lines with mixed concerns"
    - Remediation: "Split into presentational and container components"
 7. IF function_lines > 100 → FINDING: code-long-function-7 (severity: medium, effort: M)

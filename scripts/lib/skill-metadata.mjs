@@ -49,12 +49,33 @@ export function loadSkillMetadata(skillsDir) {
       const m = FINDING_RE.exec(lines[i]);
       if (!m) continue;
       const [, id, severity, effort] = m;
-      // human name: nearest preceding "IF <name>" line
+      // human name: the rule's OWN "IF <name>" token.
+      //
+      // DEFECT 6b (measured 2026-10-08). The walk below used to be BACKWARD-ONLY,
+      // so a rule written on ONE line — `6. IF file_lines > 150 → FINDING:
+      // code-extreme-length-6` — never saw its own token: it took the nearest
+      // preceding IF line, i.e. the PREVIOUS rule's condition. docs/RULES.md
+      // printed `nesting_depth` for code-extreme-length-6 while
+      // skills/code-quality-assessment.skill.md declares `file_lines`. Two rules
+      // that share a condition name (nesting_depth on rules 4 and 5) hid it.
+      //
+      // Fix, in the same parser (no second parser): read this line FIRST — the
+      // one-line form is the common one — and only fall back to the backward walk
+      // for the two-line form:
+      //   11. IF boolean_parameter_count > 3
+      //       → FINDING: code-boolean-parameter-plague-11 (...)
+      // The backward walk now stops at a line that already carries `→ FINDING:`
+      // BEFORE testing it for an IF token, so a continuation line can never
+      // borrow the previous block's condition.
       let name = null;
-      for (let j = i - 1; j >= 0 && j >= i - 4; j--) {
-        const im = /^\s*\d*\.\s*IF\s+([a-z0-9_]+)/i.exec(lines[j]);
-        if (im) { name = im[1]; break; }
-        if (lines[j].includes('→ FINDING:')) break; // previous rule's block: stop
+      const own = /^\s*\d*\.\s*IF\s+([a-z0-9_]+)/i.exec(lines[i]);
+      if (own) name = own[1];
+      else {
+        for (let j = i - 1; j >= 0 && j >= i - 4; j--) {
+          if (lines[j].includes('→ FINDING:')) break; // previous rule's block: stop
+          const im = /^\s*\d*\.\s*IF\s+([a-z0-9_]+)/i.exec(lines[j]);
+          if (im) { name = im[1]; break; }
+        }
       }
       let evidence = null;
       let remediation = null;
