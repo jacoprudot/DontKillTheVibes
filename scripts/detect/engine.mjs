@@ -7,14 +7,29 @@
  * be visible, not silent):
  *   node-matcher  → MATCHER_IMPL in ./matchers.mjs (all 13 matchers)
  *   yaml-check    → regex presence/absence over files matched by file_glob
+ *   git-log       → IMPLEMENTED (2026-10-08) in ./matchers.mjs: git is run
+ *                   inside the target with an ARGUMENT ARRAY (no shell), output
+ *                   captured through a file descriptor (this sandbox denies
+ *                   piped stdio), bounded by GIT_LIMITS — a per-command timeout,
+ *                   a commit cap and a byte cap, each NAMED in `capHits` when
+ *                   hit. 10 of the 11 git-log specs run; `schema-breaking-change`
+ *                   (flows-message-breaking-schema-2) is refused BY NAME, because
+ *                   "a required event field was removed without a deprecation
+ *                   period" needs the event schema's field model, which git
+ *                   history alone does not carry. A target that is not a
+ *                   checkout, or a shallow one, degrades by name: a history
+ *                   statistic over a 1-commit shallow clone is not a statistic.
  *   gitleaks      → LITE: spec.regex executed in-process over the working tree
- *                   (keyword prefilter honored). History specs (path_regex
- *                   touching .git/) are DEGRADED — no binary, no history scan.
+ *                   (keyword prefilter honored). A spec whose path_regex
+ *                   targets .git/ IS a history scan (security-secret-in-history-2)
+ *                   and now runs over `git log -p` with the same bounds,
+ *                   emitting REDACTED evidence — the matched value is never
+ *                   stored, so it cannot be printed.
  *   semgrep       → DEGRADED. Windows decision per PLAN.md Fase 2 is option (b):
  *                   no Docker dependency; patterns trivial enough to matter are
  *                   ported to node-matcher specs as fixtures earn them.
  *   osv-scanner, npm-audit → DEGRADED (need network or binaries; not vendored)
- *   license-scan, git-log, github-api → DEGRADED (not implemented yet)
+ *   license-scan, github-api → DEGRADED (not implemented yet)
  *
  * FAILURE HONESTY (2026-10-07 sweep, defects 1 and 2). A rule may now end in
  * exactly four named ways, and every one of them reaches the report:
@@ -33,20 +48,44 @@ import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openScanRepo, nameList, MAX_CONTENT, MAX_LINE, READ_CAP } from './scan-repo.mjs';
-import { MATCHER_IMPL, CAP, beginRuleContext, endRuleContext } from './matchers.mjs';
+import {
+  MATCHER_IMPL, CAP, beginRuleContext, endRuleContext,
+  runGitLog, runGitHistorySecrets, isHistoryPathSpec,
+} from './matchers.mjs';
 import { makeGlobMatcher } from './glob.mjs';
 import { loadRules } from '../lib/canonical-registry.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
-const DEGRADED_TOOLS = new Set(['semgrep', 'osv-scanner', 'npm-audit', 'license-scan', 'git-log', 'github-api']);
+/**
+ * Tools this runner does NOT implement at all: a `detector`/`ausencia` rule
+ * carrying one of these is skipped by name (`degraded`), never silently dropped.
+ *
+ * `git-log` was REMOVED from this set on 2026-10-08 because it now runs (see
+ * ./matchers.mjs). That removal is per TOOL, not per rule: the one git-log spec
+ * this runner cannot implement honestly (`flows-message-breaking-schema-2`,
+ * check `schema-breaking-change`) still ends as `degraded`, with its own reason,
+ * from the runner's per-rule return value — exactly like the gitleaks history
+ * spec did before it was implemented. Do not read "git-log is not in this set"
+ * as "all 11 git-log rules are covered": the area table in report.md reports the
+ * per-run truth, because scripts/lib/area-verdicts.mjs folds the engine's
+ * `degraded` record into the blocked count.
+ *
+ * EXPORTED (2026-10-08) so the per-area verdicts (scripts/lib/area-verdicts.mjs)
+ * count "blocked" rules from THIS set instead of re-deriving it. A second copy
+ * of the list would be a second chance for the report to say an area is
+ * unassessed when it is not (or the reverse).
+ */
+export const DEGRADED_TOOLS = new Set(['semgrep', 'osv-scanner', 'npm-audit', 'license-scan', 'github-api']);
 
 /**
  * Per-rule step budget, in ms. Generous on purpose: it exists to convert an
  * unbounded hang into a NAMED partial failure, not to police slow-but-honest
  * rules (the slowest completing run in the 2026-10-07 sweep spent 109 s over
- * 186 rules). Override with opts.ruleBudgetMs (tests use a tiny value to prove
- * the degradation path).
+ * 186 rules). Override with opts.ruleBudgetMs: a POSITIVE value is a wall-clock
+ * budget, `0` means "already exhausted" (every running rule is named
+ * budget-exceeded at its first check — deterministic by construction, see
+ * matchers.beginRuleContext), and a NEGATIVE value disables the budget.
  */
 export const DEFAULT_RULE_BUDGET_MS = 20000;
 
@@ -63,7 +102,9 @@ function snippet(content, index, len = 120) {
 }
 
 function budgetOver(ctx) {
-  if (ctx && !ctx.exceeded && performance.now() > ctx.deadline) ctx.exceeded = true;
+  // `>=` for the same reason as matchers.budgetExceeded(): a 0 ms budget means
+  // "already exhausted", not "exhausted one clock tick from now".
+  if (ctx && !ctx.exceeded && performance.now() >= ctx.deadline) ctx.exceeded = true;
   return ctx ? ctx.exceeded : false;
 }
 
@@ -95,10 +136,13 @@ function runYamlCheck(repo, spec, ctx) {
   return out;
 }
 
+/**
+ * Working-tree secret scan (gitleaks-lite). Specs whose path_regex targets .git/
+ * never reach here: runDetect routes them to runGitHistorySecrets() in
+ * ./matchers.mjs, which scans `git log -p` with the same bounds and redacts
+ * structurally.
+ */
 function runGitleaksLite(repo, spec, ctx) {
-  if (spec.path_regex && new RegExp(spec.path_regex).test('.git/')) {
-    return { findings: [], degradedReason: 'spec targets git history; lite runner scans the working tree only (install gitleaks for history)' };
-  }
   const re = new RegExp(spec.regex, 'g');
   const keywords = spec.keywords || [];
   const out = [];
@@ -136,6 +180,9 @@ function runGitleaksLite(repo, spec, ctx) {
  * The path-glob(s) a spec applies to, or `null` for "reads the whole tree".
  * ONE place, used by the coverage computation; the matchers read the same
  * param names, so a rule cannot claim coverage of files it never opens.
+ *
+ * NOT reached for `git-log` / gitleaks-history rules: runDetect routes those
+ * before calling this, because they read commits and cover no tree file at all.
  */
 function pathGlobsFor(entry) {
   const spec = entry.spec || {};
@@ -248,7 +295,14 @@ function computeCoverage(repo, runGlobs, wholeTreeRules) {
  * @param {object} opts
  * @param {Set<string>} [opts.onlyIds] restrict to these rule ids (fixture runner)
  * @param {string} [opts.module] restrict to one module prefix (e.g. 'security')
- * @param {number} [opts.ruleBudgetMs] per-rule step budget in ms (0 disables)
+ * @param {number} [opts.ruleBudgetMs] per-rule step budget in ms; 0 = already
+ *        exhausted (deterministic degradation probe), negative = disabled
+ * @param {{timeoutMs?: number, maxCommits?: number, maxDiffBytes?: number,
+ *          windowDays?: number}} [opts.gitLimits] override the git-history bounds
+ *        (./matchers.mjs GIT_LIMITS). Exists so the fixture gate can drive the
+ *        commit cap and the byte cap DETERMINISTICALLY (a 1-commit cap on a
+ *        2-commit fixture) instead of racing a wall clock or building a
+ *        50 000-commit repository.
  * @returns {{findings: object[], degraded: object[], ruleFailures: object[],
  *            capHits: object[], guardSkips: object[], coverage: object,
  *            scanned: number, skipped: number, clean: string[], repo: object,
@@ -306,8 +360,22 @@ export function runDetect(targetDir, opts = {}) {
       } else if (entry.tool === 'yaml-check') {
         raw = runYamlCheck(repo, entry.spec, ctx);
         ran = true;
+      } else if (entry.tool === 'git-log') {
+        const res = runGitLog(repo, entry.spec, { gitLimits: opts.gitLimits });
+        raw = res.findings;
+        if (res.degradedReason) {
+          endRuleContext();
+          degraded.push({ tool: 'git-log', rule: id, reason: res.degradedReason });
+          skipped++;
+          continue;
+        }
+        ran = true;
       } else if (entry.tool === 'gitleaks') {
-        const res = runGitleaksLite(repo, entry.spec, ctx);
+        // A spec whose path_regex targets .git/ is a HISTORY scan (see
+        // security-secret-in-history-2): it reads `git log -p`, not the tree.
+        const res = isHistoryPathSpec(entry.spec)
+          ? runGitHistorySecrets(repo, entry.spec, { gitLimits: opts.gitLimits })
+          : runGitleaksLite(repo, entry.spec, ctx);
         raw = res.findings;
         if (res.degradedReason) {
           endRuleContext();
@@ -345,18 +413,37 @@ export function runDetect(targetDir, opts = {}) {
       });
     }
     if (finished && finished.capHit) {
-      capHits.push({ rule: id, cap: CAP, reported: raw.length, note: `stopped at the ${CAP}-findings-per-rule cap: the real count is >= ${raw.length}` });
+      // A matcher that names its own cap (the history rules pass e.g.
+      // 'MAX_COMMITS=2000' or 'SHALLOW_CHECKOUT') must not be reported as if it
+      // had hit CAP: the label and the note travel with the truncation, so the
+      // report can say WHAT was truncated and WHY the count is a floor.
+      const labels = finished.capLabels && finished.capLabels.length > 0
+        ? [...new Set(finished.capLabels.flatMap((l) => String(l).split('+')))].join('+')
+        : null;
+      const note = finished.capNotes && finished.capNotes.length > 0
+        ? [...new Set(finished.capNotes)].join('; ')
+        : `stopped at the ${CAP}-findings-per-rule cap: the real count is >= ${raw.length}`;
+      capHits.push({ rule: id, cap: labels ?? CAP, reported: raw.length, note });
     }
     // A rule that ran registers its own path scope for the coverage block.
     // Catch-all globs and glob-less rules are recorded as whole-tree: they are
     // not language coverage (see isCatchAllGlob).
-    const globs = pathGlobsFor(entry);
-    if (globs === null) {
-      wholeTreeRules.push({ rule: id, why: 'no path filter: reads every file' });
+    //
+    // HISTORY rules are neither: they read commits, not working-tree files, so
+    // they cover exactly zero files of the tree. Counting them as whole-tree
+    // would let `security-secret-in-history-2` inflate the "rules touching every
+    // file" list, and that list is explicitly NOT language coverage.
+    if (entry.tool === 'git-log' || (entry.tool === 'gitleaks' && isHistoryPathSpec(entry.spec))) {
+      wholeTreeRules.push({ rule: id, why: 'reads the git history, not working-tree files: contributes no path-glob coverage' });
     } else {
-      const specific = globs.filter((g) => !isCatchAllGlob(g));
-      if (specific.length === 0) wholeTreeRules.push({ rule: id, why: `catch-all glob ${globs.join(', ')}` });
-      for (const g of specific) runGlobs.add(g);
+      const globs = pathGlobsFor(entry);
+      if (globs === null) {
+        wholeTreeRules.push({ rule: id, why: 'no path filter: reads every file' });
+      } else {
+        const specific = globs.filter((g) => !isCatchAllGlob(g));
+        if (specific.length === 0) wholeTreeRules.push({ rule: id, why: `catch-all glob ${globs.join(', ')}` });
+        for (const g of specific) runGlobs.add(g);
+      }
     }
 
     const fields = rules.get(id) || {};

@@ -48,6 +48,7 @@ import { fileURLToPath } from 'node:url';
 import { runDetect } from './engine.mjs';
 import { loadSkillMetadata } from '../lib/skill-metadata.mjs';
 import { loadModuleWeights } from '../lib/module-weights.mjs';
+import { computeAreaVerdicts, areaVerdictJson, renderAreaSection } from '../lib/area-verdicts.mjs';
 import { gradeWithCoverage } from '../lib/health-grade.mjs';
 import { loadRules } from '../lib/canonical-registry.mjs';
 
@@ -136,6 +137,16 @@ findings.sort((a, b) => b.score - a.score || a.rule.localeCompare(b.rule) || Str
 const detectorFindings = findings.filter((f) => f.type === 'detector');
 const ausenciaFindings = findings.filter((f) => f.type === 'ausencia');
 
+// ---- per-area verdicts (2026-10-08) ----
+// The findings above are grouped by FILE and the gaps by RULE: nothing said what
+// each ASSESSMENT AREA got. An area with zero findings then read as healthy —
+// `structure` on the demo repo produced none while 21 of its 29 rules need a
+// judgment engine Fase 3 does not have. This block exists so silence is never
+// mistaken for a pass; the counts come from skills/detectors.json and the
+// blocked-tool set from the engine (see scripts/lib/area-verdicts.mjs).
+const areaOpts = { root: ROOT, ruleFailures, degraded, moduleFilter: module ?? null, scanFailed: Boolean(fatalError) };
+const areaVerdicts = computeAreaVerdicts(findings, areaOpts);
+
 // The grade answers "how bad is this repo" — checklist gaps don't move it.
 // Coverage does: an A/B over code no rule could match is not a health claim.
 const grade = gradeWithCoverage(detectorFindings, coverage);
@@ -166,6 +177,7 @@ const document = {
   grade,
   counts,
   module_weights: moduleWeights,
+  area_verdicts: areaVerdicts.map(areaVerdictJson),
   findings: findings.map((f) => ({ ...f })),
   degraded,
   rule_failures: ruleFailures,
@@ -198,6 +210,11 @@ if (ruleFailures.length > 0) {
 }
 md += `- ${detectorFindings.length} detector finding(s) + ${ausenciaFindings.length} checklist gap(s) — an ausencia hit means a safeguard is MISSING, not that a violation was found\n`;
 md += `- every detector finding is a raw mechanical signal (label \`probado\`) — verify by hand (file:line) before acting; precision is NOT yet measured (see protocol in PLAN.md)\n\n`;
+
+// ---- per-area verdicts: what was assessed, and what was not (2026-10-08) ----
+// Placed BEFORE coverage on purpose: "how much of the tree could a glob match"
+// only means something once the reader knows which areas were evaluated at all.
+md += renderAreaSection(areaVerdicts, areaOpts);
 
 // ---- coverage of THIS repository (defect 2, 2026-10-07) ----
 md += `## Coverage — what this run could actually see\n\n`;

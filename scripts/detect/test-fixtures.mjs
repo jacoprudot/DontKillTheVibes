@@ -8,17 +8,237 @@
  * tested detector (PLAN.md Fase 1/2; the validator prints PROVISIONAL until
  * this passes).
  *
+ * GIT-HISTORY FIXTURES (2026-10-08). A rule whose tool reads COMMITS cannot be
+ * tested against a plain directory, and `git clone` is blocked in this sandbox
+ * (measured: msys NtCreateDirectoryObject 0xC0000022). `git init` + commit in a
+ * temp directory DOES work, so those fixtures are MATERIALISED at test time:
+ *
+ *   <fixture>/{positive,negative}/commits/<YYYY-MM-DDTHHMM[~N]>/<tree files…>
+ *
+ *   - each state dir REPLACES the repo tree (a file absent from it is deleted,
+ *     which is how "committed then deleted" is expressed),
+ *   - the dir name carries the commit's timestamp (no colon: Windows cannot
+ *     hold one), `~N` repeats the same state N times (for commit-rate),
+ *   - an optional `subject.txt` inside a state dir sets that commit's subject,
+ *   - `<fixture>/secret_value.txt`, when present, holds the obviously-fake value
+ *     that must NEVER appear anywhere in the scan output.
+ *   The temp repo is built once per side, scanned with onlyIds = {rule}, and
+ *   thrown away. Every date is fixed by the directory name, so nothing here
+ *   depends on the wall clock.
+ *
  * Rules whose tools are not implemented in the engine yet are reported as
  * SKIP (with the tool name), never as PASS. Exit 0 = all run fixtures pass,
  * 1 = at least one failure.
+ *
+ * `git-log` was REMOVED from the SKIP set below when it started running (see
+ * scripts/detect/matchers.mjs). It is not "all 11 rules work" — the one spec the
+ * runner refuses by name (flows-message-breaking-schema-2) has no fixture and
+ * must not get one that fakes it.
  */
-import { readdirSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { readdirSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runDetect } from './engine.mjs';
 
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'tests', 'fixtures', 'detectors');
-const DEGRADED = new Set(['semgrep', 'osv-scanner', 'npm-audit', 'license-scan', 'git-log', 'github-api']);
+const DEGRADED = new Set(['semgrep', 'osv-scanner', 'npm-audit', 'license-scan', 'github-api']);
+
+// ---------------------------------------------------------------------------
+// git-history fixture materialiser (see the header note)
+// ---------------------------------------------------------------------------
+
+/** Run git inside `dir` with an argv array (never a shell). Returns the exit code. */
+function gitRun(dir, args, iso) {
+  const env = Object.assign({}, process.env, {
+    GIT_AUTHOR_DATE: iso ?? '2024-01-01T12:00:00+00:00',
+    GIT_COMMITTER_DATE: iso ?? '2024-01-01T12:00:00+00:00',
+    GIT_AUTHOR_NAME: 'dktv fixture',
+    GIT_AUTHOR_EMAIL: 'fixture@dktv.invalid',
+    GIT_COMMITTER_NAME: 'dktv fixture',
+    GIT_COMMITTER_EMAIL: 'fixture@dktv.invalid',
+  });
+  try {
+    execFileSync('git', [
+      '-C', dir,
+      '-c', 'commit.gpgsign=false',
+      '-c', 'user.name=dktv fixture',
+      '-c', 'user.email=fixture@dktv.invalid',
+      '-c', 'init.defaultBranch=main',
+      ...args,
+    ], { stdio: 'ignore', windowsHide: true, env });
+    return 0;
+  } catch (e) {
+    return typeof e?.status === 'number' ? e.status : -1;
+  }
+}
+
+/** Relative file paths under `dir` (skips .git), used to mirror and to prune. */
+function walkFiles(dir, base = dir, out = []) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === '.git') continue;
+    const full = join(dir, entry.name);
+    const rel = base === dir ? entry.name : `${full.slice(base.length + 1)}`.split('\\').join('/');
+    if (entry.isDirectory()) walkFiles(full, base, out);
+    else out.push(rel);
+  }
+  return out;
+}
+
+/** Make `destDir`'s tree identical to `srcDir`'s tree (subject.txt is fixture metadata). */
+function replaceTree(srcDir, destDir) {
+  const wanted = new Set();
+  for (const rel of walkFiles(srcDir)) {
+    if (rel === 'subject.txt') continue;
+    wanted.add(rel);
+    const full = join(destDir, rel);
+    mkdirSync(dirname(full), { recursive: true });
+    writeFileSync(full, readFileSync(join(srcDir, rel)));
+  }
+  for (const rel of walkFiles(destDir)) {
+    if (!wanted.has(rel)) rmSync(join(destDir, rel), { force: true });
+  }
+}
+
+const COMMIT_DIR_RE = /^(\d{4})-(\d{2})-(\d{2})T(\d{2})(\d{2})(?:~(\d+))?$/;
+
+/** Build the git repo described by a fixture side. Returns the commit count. */
+function materializeHistoryRepo(caseDir, destDir) {
+  mkdirSync(destDir, { recursive: true });
+  if (gitRun(destDir, ['init', '-q']) !== 0) throw new Error('git init failed');
+  const commitsRoot = join(caseDir, 'commits');
+  const states = readdirSync(commitsRoot, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name)
+    .sort();
+  if (states.length === 0) throw new Error('no commits/<stamp> state dirs');
+  let commits = 0;
+  for (const name of states) {
+    const m = COMMIT_DIR_RE.exec(name);
+    if (!m) throw new Error(`commit dir name must be YYYY-MM-DDTHHMM[~N], got "${name}"`);
+    const iso = `${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:00+00:00`;
+    const repeats = m[6] ? Number(m[6]) : 1;
+    const src = join(commitsRoot, name);
+    replaceTree(src, destDir);
+    if (gitRun(destDir, ['add', '-A']) !== 0) throw new Error(`git add failed in ${name}`);
+    const subjectFile = join(src, 'subject.txt');
+    const subject = existsSync(subjectFile)
+      ? (readFileSync(subjectFile, 'utf8').split(/\r?\n/)[0].trim() || `fixture commit ${name}`)
+      : `fixture commit ${name}`;
+    for (let i = 0; i < repeats; i++) {
+      const rc = gitRun(destDir, ['commit', '-q', '--allow-empty', '-m', subject], iso);
+      if (rc !== 0) throw new Error(`git commit failed (exit ${rc}) in ${name}`);
+      commits++;
+    }
+  }
+  return commits;
+}
+
+/**
+ * Mark the checkout shallow exactly the way `git clone --depth 1` does: list a
+ * commit in .git/shallow and git grafts its parents away. Deterministic, no
+ * clone, no network.
+ */
+function makeShallow(dir) {
+  const head = readFileSync(join(dir, '.git', 'HEAD'), 'utf8').trim();
+  const ref = head.replace(/^ref:\s*/, '');
+  const tip = readFileSync(join(dir, '.git', ref), 'utf8').trim();
+  writeFileSync(join(dir, '.git', 'shallow'), `${tip}\n`);
+  return tip;
+}
+
+/**
+ * The git-history contract, with the assertions that make it mean something:
+ *   - the rule RAN on both sides (a degraded/skipped rule fails, never passes),
+ *   - positive >= 1 finding, negative === 0 findings,
+ *   - neither side hit a history cap (so the negative 0 is a complete answer),
+ *   - a capped run NAMES its cap (deterministic: gitLimits.maxCommits = 1),
+ *   - a shallow checkout NAMES SHALLOW_CHECKOUT,
+ *   - the fixture secret never appears anywhere in the output, capped or not.
+ */
+function runHistoryFixture(id, base) {
+  const secretFile = join(base, 'secret_value.txt');
+  const secret = existsSync(secretFile) ? readFileSync(secretFile, 'utf8').trim() : null;
+  const notes = [];
+  const commitCount = { positive: 0, negative: 0 };
+  let posDir = null;
+  let negDir = null;
+  try {
+    for (const side of ['positive', 'negative']) {
+      const dir = mkdtempSync(join(tmpdir(), `dktv-hist-${id}-${side}-`));
+      if (side === 'positive') posDir = dir; else negDir = dir;
+      commitCount[side] = materializeHistoryRepo(join(base, side), dir);
+      const probe = runDetect(dir, { onlyIds: new Set([id]) });
+
+      const degradedForRule = probe.degraded.filter((d) => d.rule === id);
+      if (degradedForRule.length > 0) return { ok: false, detail: `${side}: the rule did not run — degraded: ${degradedForRule[0].reason}` };
+      const failures = probe.ruleFailures.filter((f) => f.rule === id);
+      if (failures.length > 0) return { ok: false, detail: `${side}: the rule failed — ${JSON.stringify(failures)}` };
+      const capped = probe.capHits.filter((c) => c.rule === id);
+      if (capped.length > 0) return { ok: false, detail: `${side}: the fixture history was capped (${capped.map((c) => c.cap).join('+')}), so this is not a complete-history test` };
+
+      const found = probe.findings.filter((f) => f.rule === id);
+      if (secret && JSON.stringify(probe).includes(secret)) {
+        return { ok: false, detail: `${side}: REDACTION FAILURE — the fixture secret value appears in the scan output` };
+      }
+      if (side === 'positive') {
+        if (found.length < 1) return { ok: false, detail: 'positive: 0 findings (expected >= 1)' };
+        if (secret && !found.some((f) => String(f.evidence).includes('<redacted'))) {
+          return { ok: false, detail: 'positive: no finding carried a redaction marker' };
+        }
+        notes.push(`positive: ${found.length} finding(s)${secret ? ', secret value absent from the whole output' : ''}`);
+      } else {
+        if (found.length !== 0) return { ok: false, detail: `negative: expected 0 findings, got ${found.length}` };
+        notes.push('negative: 0 findings on an uncapped clean history');
+      }
+    }
+
+    // deterministic cap probes. Both are driven by explicit limits, never by a
+    // clock: (a) a 1-commit cap, (b) a 64-byte cap. A 1-commit positive fixture
+    // cannot exercise (a) — the cap is only "hit" when the repo has more commits
+    // than the cap — so it is asserted only when the fixture has >= 2 commits;
+    // (b) applies to every fixture with a non-trivial diff.
+    const tight = runDetect(posDir, { onlyIds: new Set([id]), gitLimits: { maxCommits: 1 } });
+    const tightCaps = tight.capHits.filter((c) => c.rule === id).map((c) => String(c.cap));
+    if (commitCount.positive >= 2) {
+      if (!tightCaps.some((c) => c.includes('MAX_COMMITS'))) {
+        return { ok: false, detail: `the commit cap was not named at gitLimits.maxCommits=1 (capHits=${JSON.stringify(tight.capHits)})` };
+      }
+      notes.push(`commit cap named: ${tightCaps.join('+')}`);
+    } else {
+      notes.push(`commit cap not exercisable (${commitCount.positive}-commit fixture)`);
+    }
+    if (secret) {
+      if (JSON.stringify(tight).includes(secret)) return { ok: false, detail: 'REDACTION FAILURE in the capped run' };
+      const tightFound = tight.findings.filter((f) => f.rule === id).length;
+      if (tightFound < 1) return { ok: false, detail: `the capped run found nothing (${tightFound}) although the newest commit still carries the secret line as a removal` };
+    }
+
+    const byteCapped = runDetect(posDir, { onlyIds: new Set([id]), gitLimits: { maxDiffBytes: 64 } });
+    const byteCaps = byteCapped.capHits.filter((c) => c.rule === id).map((c) => String(c.cap));
+    if (!byteCaps.some((c) => c.includes('MAX_DIFF_BYTES'))) {
+      return { ok: false, detail: `the byte cap was not named at gitLimits.maxDiffBytes=64 (capHits=${JSON.stringify(byteCapped.capHits)})` };
+    }
+    if (secret && JSON.stringify(byteCapped).includes(secret)) return { ok: false, detail: 'REDACTION FAILURE in the byte-capped run' };
+    notes.push(`byte cap named: ${byteCaps.join('+')}`);
+
+    // shallow checkout: a statistic over 1 visible commit is NOT an answer, and
+    // the run must say so instead of reporting a number.
+    makeShallow(posDir);
+    const shallowProbe = runDetect(posDir, { onlyIds: new Set([id]) });
+    const shallowCaps = shallowProbe.capHits.filter((c) => c.rule === id).map((c) => String(c.cap));
+    if (!shallowCaps.some((c) => c.includes('SHALLOW_CHECKOUT'))) {
+      return { ok: false, detail: `a shallow checkout was not named (capHits=${JSON.stringify(shallowProbe.capHits)})` };
+    }
+    notes.push('shallow checkout named');
+    return { ok: true, detail: notes.join('; ') };
+  } catch (e) {
+    return { ok: false, detail: `fixture build failed: ${e?.message ?? String(e)}` };
+  } finally {
+    for (const d of [posDir, negDir]) if (d) { try { rmSync(d, { recursive: true, force: true }); } catch { /* temp */ } }
+  }
+}
 
 function readRuleIds() {
   if (!existsSync(FIXTURES)) return [];
@@ -46,6 +266,21 @@ for (const id of ids) {
     console.log(`FAIL ${id} — missing positive/ or negative/ dir`);
     fail++;
     failures.push(id);
+    continue;
+  }
+
+  // A fixture that ships `commits/` state dirs needs a REAL repository: build
+  // it, scan it, throw it away (see the header note).
+  if (existsSync(join(posDir, 'commits'))) {
+    const res = runHistoryFixture(id, base);
+    if (res.ok) {
+      console.log(`PASS ${id} (history: ${res.detail})`);
+      pass++;
+    } else {
+      console.log(`FAIL ${id} — ${res.detail}`);
+      fail++;
+      failures.push(id);
+    }
     continue;
   }
 
@@ -147,6 +382,13 @@ for (const id of ids) {
   for (let i = 0; i < 6000; i++) big.push(`export const big${i} = fn(a, (b), c, d, e, f, g, h, i, j);`);
   writeFileSync(join(dir, 'over-content.ts'), big.join('\n'));
 
+  // (d) one python file, so the THIRD comma rule (`code-long-parameter-list-8`,
+  //     path_glob `**/*.py`) actually has a file to open. A rule whose glob
+  //     matches nothing never reaches a budget check, so without this the
+  //     "every exhausted rule is named" assertion below would silently be a
+  //     claim about two rules while reading as one about three.
+  writeFileSync(join(dir, 'dense-normal-format.py'), 'def handler(a, b, c, d, e, f, g, h):\n    return a\n');
+
   const COMMA_RULES = ['code-many-params-10', 'code-too-many-params-9', 'code-long-parameter-list-8'];
   const t0 = Date.now();
   const res = runDetect(dir, { onlyIds: new Set(COMMA_RULES) });
@@ -159,9 +401,24 @@ for (const id of ids) {
   const full = runDetect(dir, { ruleBudgetMs: 10000 });
   const fullWall = Date.now() - t1;
 
-  // a tiny budget must DEGRADE TO A NAMED FAILURE, not to a hang and not to silence
-  const tight = runDetect(dir, { onlyIds: new Set(COMMA_RULES), ruleBudgetMs: 1 });
-  const named = tight.ruleFailures.filter((f) => f.reason === 'budget-exceeded').length;
+  // An EXHAUSTED per-rule budget must DEGRADE TO A NAMED FAILURE, not to a hang
+  // and not to silence. The budget is exactly 0 ms on purpose: the deadline is
+  // "now", `budgetExceeded()` compares with `>=` and performance.now() is
+  // monotonic, so the first between-step check of every rule that has a file to
+  // open is guaranteed to trip. That makes the input exceed the budget BY
+  // CONSTRUCTION and the assertion independent of machine speed.
+  //
+  // Why not a 1 ms budget (the original probe): the budget is consulted BETWEEN
+  // steps, so a rule can finish its last — and most expensive — step after its
+  // final check and end with nobody having observed the deadline. Measured on
+  // the tree below: `code-many-params-10` spends 2.1 ms reading the 400 KB
+  // `over-content.ts` AFTER its last check, and with a 1 ms budget it ran 3.5 ms
+  // to completion while naming nothing (2 of 10 gate runs went green; the other 8
+  // reported a false FAIL). This is a property of between-step budgets, not a
+  // regression: the 0 ms budget removes the race instead of widening it.
+  const tight = runDetect(dir, { onlyIds: new Set(COMMA_RULES), ruleBudgetMs: 0 });
+  const namedRules = new Set(tight.ruleFailures.filter((f) => f.reason === 'budget-exceeded').map((f) => f.rule));
+  const notNamed = COMMA_RULES.filter((id) => !namedRules.has(id));
   const capped = full.capHits.length;
 
   rmSync(dir, { recursive: true, force: true });
@@ -175,8 +432,8 @@ for (const id of ids) {
     console.log(`FAIL torture-whole-file — bounded (${wall}ms) but the unrolled patterns stopped matching real violations (many-params=${foundMany}, too-many-params=${foundTooMany}; both must be >= 1)`);
     fail++;
     failures.push('(torture-whole-file)');
-  } else if (named < 1) {
-    console.log(`FAIL torture-whole-file — a 1ms per-rule budget produced no NAMED rule failure (ruleFailures=${JSON.stringify(tight.ruleFailures)})`);
+  } else if (notNamed.length > 0) {
+    console.log(`FAIL torture-whole-file — an exhausted per-rule budget (0ms) produced no NAMED rule failure for: ${notNamed.join(', ')} (ruleFailures=${JSON.stringify(tight.ruleFailures)})`);
     fail++;
     failures.push('(torture-whole-file)');
   } else if (fullWall >= 15000) {
@@ -184,7 +441,7 @@ for (const id of ids) {
     fail++;
     failures.push('(torture-whole-file)');
   } else {
-    console.log(`PASS torture-whole-file (comma rules: ${wall}ms, many-params=${foundMany}, too-many-params=${foundTooMany}; full rule set: ${fullWall}ms, ${full.scanned} rules, over-content guarded: ${full.coverage.skipped.read_guards.length}; 1ms budget → ${named} named failure(s), cap hits: ${capped})`);
+    console.log(`PASS torture-whole-file (comma rules: ${wall}ms, many-params=${foundMany}, too-many-params=${foundTooMany}; full rule set: ${fullWall}ms, ${full.scanned} rules, over-content guarded: ${full.coverage.skipped.read_guards.length}; 0ms budget → ${namedRules.size}/${COMMA_RULES.length} rules named budget-exceeded, cap hits: ${capped})`);
     pass++;
   }
 }

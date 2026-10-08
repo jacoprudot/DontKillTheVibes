@@ -8,10 +8,16 @@
  * Degraded tools (semgrep, osv-scanner, npm-audit, license-scan, git-log,
  * github-api, gitleaks-history) are listed in the summary, never silently
  * skipped. Findings in sensitive-named files carry redacted evidence.
+ *
+ * PER-AREA VERDICTS (2026-10-08): the STDOUT summary carries the same per-area
+ * block report.md prints (scripts/lib/area-verdicts.mjs, one shared wording).
+ * Without it, an area with zero findings — `structure` on the demo repo — looks
+ * healthy here while report.md explains it was never evaluated.
  */
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { runDetect } from './engine.mjs';
+import { computeAreaVerdicts, formatAreaSummary } from '../lib/area-verdicts.mjs';
 
 function usage() {
   console.error(`usage: node scripts/detect/run.mjs --target <dir> [--module <name>] [--json <file>]`);
@@ -65,6 +71,12 @@ if (degraded.length > 0) {
   console.log('degraded:');
   for (const d of degraded) console.log(`  ${d.rule} — ${d.tool}${d.reason ? ` (${d.reason})` : ''}`);
 }
+
+// Same block report.md prints, from the same function: an area with zero
+// findings must never read as healthy in either entry point.
+const areaOpts = { ruleFailures, degraded, moduleFilter: module ?? null };
+const areaVerdicts = computeAreaVerdicts(findings, areaOpts);
+for (const line of formatAreaSummary(areaVerdicts, areaOpts)) console.log(line);
 console.log('');
 
 if (findings.length === 0) {
