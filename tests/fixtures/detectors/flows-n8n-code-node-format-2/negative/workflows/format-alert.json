@@ -1,0 +1,19 @@
+{
+  "//": "flows-n8n-code-node-format-2 negative: the same Code node now returns items wrapped in a json property, so it must NOT fire; a naive 'Code node with a functionCode' scan would flag it.",
+  "name": "Format alert",
+  "nodes": [
+    {
+      "type": "n8n-nodes-base.code",
+      "name": "Double amounts",
+      "position": [460, 300],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "functionCode": "return items.map(item => ({ json: { amount: item.json.amount * 2 } }));"
+      }
+    }
+  ],
+  "connections": {},
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}

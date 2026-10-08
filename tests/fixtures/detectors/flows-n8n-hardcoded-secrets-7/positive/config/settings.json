@@ -1,0 +1,9 @@
+{
+  "//": "flows-n8n-hardcoded-secrets-7 positive, SECOND case: this file is not an n8n workflow and lives outside any workflows/ directory, and it MUST fire. The spec used to carry a path_regex claiming the rule only covered workflows?/n8n JSON, but the runner ignores path_regex for a working-tree gitleaks spec (runGitleaksLite walks the whole tree), so the rule was already global while declaring a scope that did nothing (defect 6a). This file turns the assumed global scope into an asserted one.",
+  "slack": {
+    "apiKey": "xoxb-9pQ2rS4tU6vW8xY0zA1bC3dE"
+  },
+  "retry": {
+    "maxAttempts": 3
+  }
+}

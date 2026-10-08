@@ -1,0 +1,21 @@
+{
+  "//": "flows-n8n-hardcoded-secrets-7 negative: apiKey holds an n8n credential expression, not a literal, so it must NOT fire; a naive keyword-value scan without the 12+ char value requirement would flag it.",
+  "name": "Slack error notifier",
+  "nodes": [
+    {
+      "type": "n8n-nodes-base.slack",
+      "name": "Notify Slack",
+      "position": [460, 300],
+      "parameters": {
+        "resource": "message",
+        "operation": "post",
+        "channel": "#alerts",
+        "apiKey": "={{ $credentials.slackApiKey }}",
+        "text": "=Order sync failed: {{ $json.error }}"
+      }
+    }
+  ],
+  "connections": {},
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}

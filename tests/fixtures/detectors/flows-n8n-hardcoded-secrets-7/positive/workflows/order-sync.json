@@ -1,0 +1,21 @@
+{
+  "//": "flows-n8n-hardcoded-secrets-7 positive: the Slack node carries a hardcoded apiKey value, so this workflow MUST fire.",
+  "name": "Slack error notifier",
+  "nodes": [
+    {
+      "type": "n8n-nodes-base.slack",
+      "name": "Notify Slack",
+      "position": [460, 300],
+      "parameters": {
+        "resource": "message",
+        "operation": "post",
+        "channel": "#alerts",
+        "apiKey": "xoxb-2481-9374-5H8xQ2eZvKYlo2C9mN4bT7rW",
+        "text": "=Order sync failed: {{ $json.error }}"
+      }
+    }
+  ],
+  "connections": {},
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}

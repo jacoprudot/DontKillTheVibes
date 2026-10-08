@@ -1,0 +1,10 @@
+export const v0 = 0;
+export const v1 = 1;
+export const v2 = 2;
+export const v3 = 3;
+export const v4 = 4;
+export const v5 = 5;
+export const v6 = 6;
+export const v7 = 7;
+export const v8 = 8;
+export const v9 = 9;
