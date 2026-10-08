@@ -96,8 +96,69 @@ for (const dup of findDuplicateIds(skillsDir)) {
   fail('skills/', `duplicate finding id "${dup.id}" defined ${dup.count} times (${dup.files.join(', ')}) — loadRules() silently keeps the last one`);
 }
 
+/* Check 4: scripts/lib/skill-metadata.mjs must survive CRLF (regression lock).
+   That parser was fixed on 2026-10-07 from split('\n') to split(/\r?\n/): on a
+   Windows checkout (core.autocrlf=true, the Git for Windows default) the old
+   split left a trailing \r on every line, FINDING_RE stopped matching, and all
+   368 rules silently lost their remediation text — the sweep's report then
+   blamed the RULES for missing remediation. The fix is one character class, so
+   it is exactly the kind of fix that comes back. This check parses the SAME
+   rule text twice (LF and CRLF) in a throwaway directory and requires
+   identical results; nothing in skills/ is touched. */
+{
+  const { mkdtempSync, writeFileSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { loadSkillMetadata } = await import('./lib/skill-metadata.mjs');
+
+  const probe = (id) => [
+    '---',
+    'name: crlf-probe',
+    'description: parser regression probe',
+    'version: 1.0',
+    'module: probe',
+    'llmCapabilities: [tool-use]',
+    'inputs: []',
+    'outputs: []',
+    'mcpDependencies: []',
+    '---',
+    '',
+    '1. IF crlf_probe_triggered',
+    `   → FINDING: ${id} (severity: high, effort: XS)`,
+    '   - Evidence: "probe evidence text"',
+    '   - Remediation: "probe remediation text"',
+    '',
+  ].join('\n');
+
+  const dir = mkdtempSync(join(tmpdir(), 'dktv-crlf-'));
+  let lf = null;
+  let crlf = null;
+  try {
+    writeFileSync(join(dir, 'a-lf.skill.md'), probe('crlf-probe-lf-1'), 'utf8');
+    writeFileSync(join(dir, 'b-crlf.skill.md'), probe('crlf-probe-crlf-1').split('\n').join('\r\n'), 'utf8');
+    const parsed = loadSkillMetadata(dir);
+    lf = parsed.get('crlf-probe-lf-1');
+    crlf = parsed.get('crlf-probe-crlf-1');
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+
+  if (!lf) fail('skills/ (parser self-check)', 'skill-metadata did not parse an LF probe file at all');
+  else if (!crlf) fail('skills/ (parser self-check)', 'skill-metadata did not parse a CRLF probe file at all — a Windows checkout would lose every remediation text');
+  else {
+    for (const key of ['name', 'evidence', 'remediation']) {
+      if (lf[key] !== crlf[key]) {
+        fail('skills/ (parser self-check)', `skill-metadata parsed ${key} differently for CRLF vs LF input (LF=${JSON.stringify(lf[key])}, CRLF=${JSON.stringify(crlf[key])}) — split(/\r?\n/) regressed`);
+      }
+    }
+    if (crlf.remediation !== 'probe remediation text') {
+      fail('skills/ (parser self-check)', `skill-metadata returned ${JSON.stringify(crlf.remediation)} for the CRLF probe instead of the quoted remediation`);
+    }
+  }
+}
+
 if (failures > 0) {
   console.error(`\nvalidate-skills: ${failures} failure(s) across ${checked} skill(s)`);
   process.exit(1);
 }
 console.log(`validate-skills: OK — ${checked} skill(s) valid`);
+console.log('validate-skills: parser self-check OK — skill-metadata parses CRLF and LF inputs identically (2026-10-07 regression locked)');

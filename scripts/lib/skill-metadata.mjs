@@ -39,7 +39,12 @@ export function loadSkillMetadata(skillsDir) {
     } catch {
       continue;
     }
-    const lines = content.split('\n');
+    // Split on /\r?\n/, NOT '\n'. A Windows checkout (core.autocrlf=true, the
+    // Git for Windows default) leaves a trailing \r that broke FINDING_RE, so
+    // every rule silently lost its remediation and the report blamed the rule.
+    // Found 2026-10-07 by an external review; canonical-registry.mjs:93 was
+    // already CRLF-safe, so the two parsers of the same format disagreed.
+    const lines = content.split(/\r?\n/);
     for (let i = 0; i < lines.length; i++) {
       const m = FINDING_RE.exec(lines[i]);
       if (!m) continue;

@@ -1,0 +1,31 @@
+# Line-ending policy.
+#
+# Why this file exists (2026-10-07): an external review found that
+# scripts/lib/skill-metadata.mjs split content on '\n' while its sibling
+# canonical-registry.mjs:93 split on /\r?\n/. On a Windows checkout
+# (core.autocrlf=true is the Git for Windows default) the trailing \r broke
+# the rule regex, so all 368 rules silently lost their remediation text and
+# the report printed "(no remediation text in the rule — improve the rule,
+# not the report)" — blaming the rules for a parser bug, on the platform the
+# whole target audience uses.
+#
+# The parser is now CRLF-safe regardless. This pins LF anyway so the two
+# never disagree again: the repository, the working tree and CI all see the
+# same bytes.
+* text=auto eol=lf
+
+# Binary assets must never be converted.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
+*.zip binary
+
+# Fixture .env files are committed on purpose (security-env-file-committed-3)
+# and must keep their exact shape.
+tests/fixtures/detectors/**/.env text eol=lf
+tests/fixtures/detectors/**/.env.* text eol=lf
