@@ -1,7 +1,7 @@
 {
   "generated_by": "dktv-detect-report",
-  "target": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\benchmark\\work\\realworld-control",
-  "generated_at": "2026-10-07T22:54:10.460Z",
+  "target": "C:\\Users\\jfpru\\Desktop\\proyectos\\DontKillTheVibes\\examples\\detect-realworld\\repo",
+  "generated_at": "2026-10-08T19:10:30.878Z",
   "label_legend": {
     "probado": "mechanically proven by the deterministic engine",
     "juzgado": "LLM-judged (none in this report)"
@@ -10,7 +10,17 @@
     "letter": "F",
     "display": "F·4",
     "criticalCount": 4,
-    "worstSeverity": "critical"
+    "worstSeverity": "critical",
+    "coverageLimited": false,
+    "letterCapped": false,
+    "coverage": {
+      "files_text": 54,
+      "files_not_analysed": 5,
+      "files_matched_by_no_rule_glob": 5,
+      "files_refused_by_read_guards": 0,
+      "uncovered_ratio": 0.0926,
+      "material_uncovered_ratio": 0.2
+    }
   },
   "counts": {
     "registry": 368,
@@ -18,6 +28,9 @@
     "fired": 43,
     "clean": 93,
     "degraded": 50,
+    "failed": 0,
+    "capped": 14,
+    "guardSkipped": 0,
     "juicioNotEvaluated": 116,
     "fuera": 66
   },
@@ -31,6 +44,120 @@
     "cost": 0.8,
     "github": 0.7
   },
+  "area_verdicts": [
+    {
+      "module": "security",
+      "name": "security-assessment",
+      "status": "CUBIERTA",
+      "rules_total": 45,
+      "detector_runnable": 16,
+      "detector_blocked": 9,
+      "ausencia": 3,
+      "juicio": 17,
+      "fuera": 0,
+      "findings": 3,
+      "critical_high": 3,
+      "gaps": 0
+    },
+    {
+      "module": "database",
+      "name": "database-assessment",
+      "status": "PARCIAL",
+      "rules_total": 32,
+      "detector_runnable": 7,
+      "detector_blocked": 0,
+      "ausencia": 7,
+      "juicio": 9,
+      "fuera": 9,
+      "findings": 2,
+      "critical_high": 2,
+      "gaps": 103
+    },
+    {
+      "module": "performance",
+      "name": "performance-assessment",
+      "status": "PARCIAL",
+      "rules_total": 71,
+      "detector_runnable": 2,
+      "detector_blocked": 0,
+      "ausencia": 8,
+      "juicio": 32,
+      "fuera": 29,
+      "findings": 0,
+      "critical_high": 0,
+      "gaps": 70
+    },
+    {
+      "module": "structure",
+      "name": "structure-assessment",
+      "status": "PARCIAL",
+      "rules_total": 29,
+      "detector_runnable": 7,
+      "detector_blocked": 1,
+      "ausencia": 0,
+      "juicio": 21,
+      "fuera": 0,
+      "findings": 0,
+      "critical_high": 0,
+      "gaps": 0
+    },
+    {
+      "module": "code",
+      "name": "code-quality-assessment",
+      "status": "CUBIERTA",
+      "rules_total": 59,
+      "detector_runnable": 27,
+      "detector_blocked": 18,
+      "ausencia": 2,
+      "juicio": 12,
+      "fuera": 0,
+      "findings": 23,
+      "critical_high": 5,
+      "gaps": 20
+    },
+    {
+      "module": "flows",
+      "name": "flows-assessment",
+      "status": "CUBIERTA",
+      "rules_total": 50,
+      "detector_runnable": 11,
+      "detector_blocked": 6,
+      "ausencia": 18,
+      "juicio": 14,
+      "fuera": 1,
+      "findings": 0,
+      "critical_high": 0,
+      "gaps": 112
+    },
+    {
+      "module": "cost",
+      "name": "cost-analysis",
+      "status": "PARCIAL",
+      "rules_total": 50,
+      "detector_runnable": 8,
+      "detector_blocked": 4,
+      "ausencia": 12,
+      "juicio": 10,
+      "fuera": 16,
+      "findings": 2,
+      "critical_high": 0,
+      "gaps": 25
+    },
+    {
+      "module": "github",
+      "name": "github-intelligence",
+      "status": "PARCIAL",
+      "rules_total": 32,
+      "detector_runnable": 8,
+      "detector_blocked": 11,
+      "ausencia": 1,
+      "juicio": 1,
+      "fuera": 11,
+      "findings": 0,
+      "critical_high": 0,
+      "gaps": 1
+    }
+  ],
   "findings": [
     {
       "rule": "security-jwt-weak-3",
@@ -345,23 +472,6 @@
       "tool": "node-matcher",
       "severity": "high",
       "effort": "S",
-      "file": "package-lock.json",
-      "line": null,
-      "evidence": "pattern not found in file",
-      "name": "n8n_workflow_has_no_error_trigger",
-      "remediation": "Add error trigger node connected to notification/escalation flow",
-      "label": "probado",
-      "score": 50,
-      "phase": "30_days",
-      "destructive": false
-    },
-    {
-      "rule": "flows-n8n-no-error-handling-1",
-      "module": "flows",
-      "type": "ausencia",
-      "tool": "node-matcher",
-      "severity": "high",
-      "effort": "S",
       "file": "package.json",
       "line": null,
       "evidence": "pattern not found in file",
@@ -634,23 +744,6 @@
       "tool": "node-matcher",
       "severity": "medium",
       "effort": "XS",
-      "file": "package-lock.json",
-      "line": null,
-      "evidence": "pattern not found in file",
-      "name": "lock_timeout_not_configured",
-      "remediation": "Set lock_timeout to prevent indefinite blocking (e.g., 1000ms)",
-      "label": "probado",
-      "score": 26,
-      "phase": "60_days",
-      "destructive": false
-    },
-    {
-      "rule": "database-lock-timeout-missing-10",
-      "module": "database",
-      "type": "ausencia",
-      "tool": "node-matcher",
-      "severity": "medium",
-      "effort": "XS",
       "file": "package.json",
       "line": null,
       "evidence": "pattern not found in file",
@@ -771,6 +864,23 @@
       "severity": "medium",
       "effort": "XS",
       "file": "src/app/routes/article/author.mapper.ts",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "lock_timeout_not_configured",
+      "remediation": "Set lock_timeout to prevent indefinite blocking (e.g., 1000ms)",
+      "label": "probado",
+      "score": 26,
+      "phase": "60_days",
+      "destructive": false
+    },
+    {
+      "rule": "database-lock-timeout-missing-10",
+      "module": "database",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "medium",
+      "effort": "XS",
+      "file": "src/app/routes/article/comment.model.ts",
       "line": null,
       "evidence": "pattern not found in file",
       "name": "lock_timeout_not_configured",
@@ -1314,23 +1424,6 @@
       "tool": "node-matcher",
       "severity": "medium",
       "effort": "XS",
-      "file": "package-lock.json",
-      "line": null,
-      "evidence": "pattern not found in file",
-      "name": "statement_timeout_not_configured",
-      "remediation": "Set statement_timeout to prevent runaway queries (e.g., 5000ms)",
-      "label": "probado",
-      "score": 26,
-      "phase": "60_days",
-      "destructive": false
-    },
-    {
-      "rule": "database-statement-timeout-missing-9",
-      "module": "database",
-      "type": "ausencia",
-      "tool": "node-matcher",
-      "severity": "medium",
-      "effort": "XS",
       "file": "package.json",
       "line": null,
       "evidence": "pattern not found in file",
@@ -1451,6 +1544,23 @@
       "severity": "medium",
       "effort": "XS",
       "file": "src/app/routes/article/author.mapper.ts",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "statement_timeout_not_configured",
+      "remediation": "Set statement_timeout to prevent runaway queries (e.g., 5000ms)",
+      "label": "probado",
+      "score": 26,
+      "phase": "60_days",
+      "destructive": false
+    },
+    {
+      "rule": "database-statement-timeout-missing-9",
+      "module": "database",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "medium",
+      "effort": "XS",
+      "file": "src/app/routes/article/comment.model.ts",
       "line": null,
       "evidence": "pattern not found in file",
       "name": "statement_timeout_not_configured",
@@ -3745,23 +3855,6 @@
       "tool": "node-matcher",
       "severity": "medium",
       "effort": "M",
-      "file": "package-lock.json",
-      "line": null,
-      "evidence": "pattern not found in file",
-      "name": "n8n_workflow_no_retry_on_failed_nodes",
-      "remediation": "Enable retry on failed nodes with appropriate backoff",
-      "label": "probado",
-      "score": 20,
-      "phase": "60_days",
-      "destructive": false
-    },
-    {
-      "rule": "flows-n8n-no-retry-5",
-      "module": "flows",
-      "type": "ausencia",
-      "tool": "node-matcher",
-      "severity": "medium",
-      "effort": "M",
       "file": "package.json",
       "line": null,
       "evidence": "pattern not found in file",
@@ -3899,23 +3992,6 @@
       "severity": "medium",
       "effort": "M",
       "file": "nx.json",
-      "line": null,
-      "evidence": "pattern not found in file",
-      "name": "n8n_workflow_missing_timeout_handling",
-      "remediation": "Set reasonable timeout values on all HTTP Request nodes",
-      "label": "probado",
-      "score": 20,
-      "phase": "60_days",
-      "destructive": false
-    },
-    {
-      "rule": "flows-n8n-no-timeout-4",
-      "module": "flows",
-      "type": "ausencia",
-      "tool": "node-matcher",
-      "severity": "medium",
-      "effort": "M",
-      "file": "package-lock.json",
       "line": null,
       "evidence": "pattern not found in file",
       "name": "n8n_workflow_missing_timeout_handling",
@@ -4187,23 +4263,6 @@
       "tool": "node-matcher",
       "severity": "medium",
       "effort": "M",
-      "file": "package-lock.json",
-      "line": null,
-      "evidence": "pattern not found in file",
-      "name": "no_schema_registry_for_events",
-      "remediation": "Use schema registry (Confluent, AWS Glue) for version control and validation",
-      "label": "probado",
-      "score": 20,
-      "phase": "60_days",
-      "destructive": false
-    },
-    {
-      "rule": "flows-no-schema-registry-8",
-      "module": "flows",
-      "type": "ausencia",
-      "tool": "node-matcher",
-      "severity": "medium",
-      "effort": "M",
       "file": "package.json",
       "line": null,
       "evidence": "pattern not found in file",
@@ -4324,6 +4383,23 @@
       "severity": "medium",
       "effort": "M",
       "file": "src/app/routes/article/author.mapper.ts",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "no_schema_registry_for_events",
+      "remediation": "Use schema registry (Confluent, AWS Glue) for version control and validation",
+      "label": "probado",
+      "score": 20,
+      "phase": "60_days",
+      "destructive": false
+    },
+    {
+      "rule": "flows-no-schema-registry-8",
+      "module": "flows",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "medium",
+      "effort": "M",
+      "file": "src/app/routes/article/comment.model.ts",
       "line": null,
       "evidence": "pattern not found in file",
       "name": "no_schema_registry_for_events",
@@ -4986,23 +5062,6 @@
       "tool": "node-matcher",
       "severity": "low",
       "effort": "XS",
-      "file": "package-lock.json",
-      "line": null,
-      "evidence": "pattern not found in file",
-      "name": "idle_timeout_not_configured",
-      "remediation": "Set appropriate idle connection timeout (e.g., 300 seconds)",
-      "label": "probado",
-      "score": 6.5,
-      "phase": "90_days",
-      "destructive": false
-    },
-    {
-      "rule": "database-idle-timeout-missing-4",
-      "module": "database",
-      "type": "ausencia",
-      "tool": "node-matcher",
-      "severity": "low",
-      "effort": "XS",
       "file": "package.json",
       "line": null,
       "evidence": "pattern not found in file",
@@ -5123,6 +5182,23 @@
       "severity": "low",
       "effort": "XS",
       "file": "src/app/routes/article/author.mapper.ts",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "idle_timeout_not_configured",
+      "remediation": "Set appropriate idle connection timeout (e.g., 300 seconds)",
+      "label": "probado",
+      "score": 6.5,
+      "phase": "90_days",
+      "destructive": false
+    },
+    {
+      "rule": "database-idle-timeout-missing-4",
+      "module": "database",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "low",
+      "effort": "XS",
+      "file": "src/app/routes/article/comment.model.ts",
       "line": null,
       "evidence": "pattern not found in file",
       "name": "idle_timeout_not_configured",
@@ -5326,23 +5402,6 @@
       "tool": "node-matcher",
       "severity": "low",
       "effort": "XS",
-      "file": "package-lock.json",
-      "line": null,
-      "evidence": "pattern not found in file",
-      "name": "max_lifetime_not_configured",
-      "remediation": "Set maximum connection lifetime to prevent resource leaks (e.g., 3600s)",
-      "label": "probado",
-      "score": 6.5,
-      "phase": "90_days",
-      "destructive": false
-    },
-    {
-      "rule": "database-max-lifetime-missing-5",
-      "module": "database",
-      "type": "ausencia",
-      "tool": "node-matcher",
-      "severity": "low",
-      "effort": "XS",
       "file": "package.json",
       "line": null,
       "evidence": "pattern not found in file",
@@ -5473,6 +5532,23 @@
       "destructive": false
     },
     {
+      "rule": "database-max-lifetime-missing-5",
+      "module": "database",
+      "type": "ausencia",
+      "tool": "node-matcher",
+      "severity": "low",
+      "effort": "XS",
+      "file": "src/app/routes/article/comment.model.ts",
+      "line": null,
+      "evidence": "pattern not found in file",
+      "name": "max_lifetime_not_configured",
+      "remediation": "Set maximum connection lifetime to prevent resource leaks (e.g., 3600s)",
+      "label": "probado",
+      "score": 6.5,
+      "phase": "90_days",
+      "destructive": false
+    },
+    {
       "rule": "performance-no-tech-debt-alloc-9",
       "module": "performance",
       "type": "ausencia",
@@ -5548,23 +5624,6 @@
       "severity": "low",
       "effort": "M",
       "file": "nx.json",
-      "line": null,
-      "evidence": "pattern not found in file",
-      "name": "no_technical_debt_allocation",
-      "remediation": "Allocate sprint capacity (e.g., 20%) for performance improvements",
-      "label": "probado",
-      "score": 6,
-      "phase": "90_days",
-      "destructive": false
-    },
-    {
-      "rule": "performance-no-tech-debt-alloc-9",
-      "module": "performance",
-      "type": "ausencia",
-      "tool": "node-matcher",
-      "severity": "low",
-      "effort": "M",
-      "file": "package-lock.json",
       "line": null,
       "evidence": "pattern not found in file",
       "name": "no_technical_debt_allocation",
@@ -6440,5 +6499,241 @@
       "tool": "semgrep",
       "rule": "structure-singleton-violation-5"
     }
-  ]
+  ],
+  "rule_failures": [],
+  "cap_truncations": [
+    {
+      "rule": "code-promise-chain-missing-catch-5",
+      "cap": 20,
+      "reported": 20,
+      "note": "stopped at the 20-findings-per-rule cap: the real count is >= 20"
+    },
+    {
+      "rule": "cost-api-no-retry-strategy-8",
+      "cap": 20,
+      "reported": 20,
+      "note": "stopped at the 20-findings-per-rule cap: the real count is >= 20"
+    },
+    {
+      "rule": "database-idle-timeout-missing-4",
+      "cap": 20,
+      "reported": 20,
+      "note": "stopped at the 20-findings-per-rule cap: the real count is >= 20"
+    },
+    {
+      "rule": "database-lock-timeout-missing-10",
+      "cap": 20,
+      "reported": 20,
+      "note": "stopped at the 20-findings-per-rule cap: the real count is >= 20"
+    },
+    {
+      "rule": "database-max-lifetime-missing-5",
+      "cap": 20,
+      "reported": 20,
+      "note": "stopped at the 20-findings-per-rule cap: the real count is >= 20"
+    },
+    {
+      "rule": "database-missing-bloat-monitoring-5",
+      "cap": 20,
+      "reported": 20,
+      "note": "stopped at the 20-findings-per-rule cap: the real count is >= 20"
+    },
+    {
+      "rule": "database-statement-timeout-missing-9",
+      "cap": 20,
+      "reported": 20,
+      "note": "stopped at the 20-findings-per-rule cap: the real count is >= 20"
+    },
+    {
+      "rule": "flows-message-schema-no-version-1",
+      "cap": 20,
+      "reported": 20,
+      "note": "stopped at the 20-findings-per-rule cap: the real count is >= 20"
+    },
+    {
+      "rule": "flows-missing-error-handler-5",
+      "cap": 20,
+      "reported": 20,
+      "note": "stopped at the 20-findings-per-rule cap: the real count is >= 20"
+    },
+    {
+      "rule": "flows-missing-request-id-7",
+      "cap": 20,
+      "reported": 20,
+      "note": "stopped at the 20-findings-per-rule cap: the real count is >= 20"
+    },
+    {
+      "rule": "flows-no-schema-registry-8",
+      "cap": 20,
+      "reported": 20,
+      "note": "stopped at the 20-findings-per-rule cap: the real count is >= 20"
+    },
+    {
+      "rule": "performance-no-circuit-breaker-4",
+      "cap": 20,
+      "reported": 20,
+      "note": "stopped at the 20-findings-per-rule cap: the real count is >= 20"
+    },
+    {
+      "rule": "performance-no-load-testing-3",
+      "cap": 20,
+      "reported": 20,
+      "note": "stopped at the 20-findings-per-rule cap: the real count is >= 20"
+    },
+    {
+      "rule": "performance-no-request-collapsing-4",
+      "cap": 20,
+      "reported": 20,
+      "note": "stopped at the 20-findings-per-rule cap: the real count is >= 20"
+    }
+  ],
+  "guard_skips": [],
+  "coverage": {
+    "files_total": 57,
+    "files_text": 54,
+    "files_binary": 3,
+    "files_matched_by_any_rule_glob": 49,
+    "files_matched_by_no_rule_glob": 5,
+    "files_refused_by_read_guards": 0,
+    "files_not_analysed": 5,
+    "uncovered_ratio": 0.0926,
+    "uncovered_files": {
+      "count": 5,
+      "names": [
+        ".eslintignore",
+        ".gitignore",
+        ".prettierignore",
+        ".prettierrc",
+        "Dockerfile"
+      ],
+      "omitted": 0
+    },
+    "unmatched_files": {
+      "count": 5,
+      "names": [
+        ".eslintignore",
+        ".gitignore",
+        ".prettierignore",
+        ".prettierrc",
+        "Dockerfile"
+      ],
+      "omitted": 0
+    },
+    "by_extension": [
+      {
+        "ext": ".ts",
+        "files": 32,
+        "uncovered": 0
+      },
+      {
+        "ext": ".json",
+        "files": 9,
+        "uncovered": 0
+      },
+      {
+        "ext": "(none)",
+        "files": 5,
+        "uncovered": 5
+      },
+      {
+        "ext": ".sql",
+        "files": 4,
+        "uncovered": 0
+      },
+      {
+        "ext": ".js",
+        "files": 1,
+        "uncovered": 0
+      },
+      {
+        "ext": ".md",
+        "files": 1,
+        "uncovered": 0
+      },
+      {
+        "ext": ".prisma",
+        "files": 1,
+        "uncovered": 0
+      },
+      {
+        "ext": ".toml",
+        "files": 1,
+        "uncovered": 0
+      }
+    ],
+    "skipped": {
+      "gitignored": {
+        "count": 1,
+        "names": [
+          ".vscode/extensions.json"
+        ],
+        "omitted": 0
+      },
+      "test_like": {
+        "count": 8,
+        "names": [
+          "e2e/src/server/server.spec.ts",
+          "e2e/tsconfig.spec.json",
+          "src/tests/services/article.service.test.ts",
+          "src/tests/services/auth.service.test.ts",
+          "src/tests/services/profile.service.test.ts",
+          "src/tests/services/tag.service.test.ts",
+          "src/tests/utils/profile.utils.test.ts",
+          "tsconfig.spec.json"
+        ],
+        "omitted": 0
+      },
+      "binary": {
+        "count": 3,
+        "names": [
+          "project-logo.png",
+          "src/assets/images/demo-avatar.png",
+          "src/assets/images/smiley-cyrus.jpeg"
+        ],
+        "omitted": 0
+      },
+      "read_guards": []
+    },
+    "submodules": {
+      "declared": [],
+      "uninitialised": []
+    },
+    "rules_with_path_glob": 66,
+    "rules_whole_tree": [
+      {
+        "rule": "code-boilerplate-repetition-7",
+        "why": "catch-all glob **/*"
+      },
+      {
+        "rule": "flows-n8n-hardcoded-secrets-7",
+        "why": "no path filter: reads every file"
+      },
+      {
+        "rule": "github-log-pattern-1",
+        "why": "catch-all glob **/*"
+      },
+      {
+        "rule": "security-db-conn-string-6",
+        "why": "no path filter: reads every file"
+      },
+      {
+        "rule": "security-oauth-secret-8",
+        "why": "no path filter: reads every file"
+      },
+      {
+        "rule": "security-private-key-7",
+        "why": "no path filter: reads every file"
+      },
+      {
+        "rule": "security-secret-in-code-1",
+        "why": "no path filter: reads every file"
+      }
+    ],
+    "read_guard_limits": {
+      "max_line": 2000,
+      "max_content": 262144,
+      "read_cap": 524288
+    }
+  },
+  "fatal_error": null
 }

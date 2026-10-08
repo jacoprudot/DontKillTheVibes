@@ -34,7 +34,7 @@ src/app/routes/auth/auth.ts:16
   secret: process.env.JWT_SECRET || 'superSecret',
 ```
 
-What the registry turns it into (`pnpm detect:report --target examples/detect-realworld/repo`):
+What the registry turns it into (`pnpm detect:report --target examples/detect-realworld/repo --out examples/detect-realworld`):
 
 ```
 security-jwt-weak-3 — CRITICAL, effort XS, score 150
@@ -44,9 +44,9 @@ Remediation: Use strong random secret (minimum 32 bytes) from secure source
 Why first:  critical in the security module outranks everything else — that ordering is arithmetic, not a model's mood
 ```
 
-**The honest number.** A general single-model pass over the same repo reported **3 findings, 0 security, 0 criticals** ([committed baseline](examples/gemini-baseline/)). It never saw this auth bypass — the most severe thing in the repository. The deterministic detector finds all three sites in ~2s, and every citation resolves to a real line *by construction*: the scanner produced the citation by matching the line.
+**The honest number.** A general single-model pass over the same repo reported **3 findings, 0 security, 0 criticals** ([committed baseline](examples/gemini-baseline/)). It never saw this auth bypass — the most severe thing in the repository. The deterministic detector finds all three sites in 402 ms on the committed snapshot (`pnpm detect`, measured here — no network, no model, no API key), and every citation resolves to a real line *by construction*: the scanner produced the citation by matching the line.
 
-**The caveat, said out loud.** Precision over *all* detector findings is still unmeasured — it stays unclaimed until the human-adjudicated sample exists ([PLAN.md](PLAN.md) Fase 7, declared up front). What you can verify by hand today is every citation; what you cannot yet trust is how often the rule cries wolf. [The full report this demo produced](examples/detect-realworld/report.md) is committed alongside the [snapshot it scanned](examples/detect-realworld/repo/) — run it yourself and diff.
+**The caveat, said out loud.** Precision over *all* detector findings is still unmeasured — it stays unclaimed until the human-adjudicated sample exists ([PLAN.md](PLAN.md) Fase 7, declared up front). What you can verify by hand today is every citation; what you cannot yet trust is how often the rule cries wolf. [The full report this demo produced](examples/detect-realworld/report.md) is committed alongside the [snapshot it scanned](examples/detect-realworld/repo/) — reproduce it with that exact command and diff. The `--out` is not decoration: the tool's default output directory is `<target>/.dontkillthevibes/`, i.e. *inside* the frozen snapshot, so without it the committed artifacts stay untouched and the diff is empty. Be exact about what is reproducible: `report.md` and `prompts.md` come out **byte-identical**, and `findings.json` differs in exactly two fields — `generated_at` (a wall-clock timestamp) and `target` (the absolute path of *your* checkout, which `report.md` and `prompts.md` print too). Nothing else varies between runs; the finding counts, ordering and citations are deterministic.
 
 ## Overview
 

@@ -7,7 +7,7 @@ Generated deterministically from the rule registry — no LLM wrote these. Every
 Rule cited: security-jwt-weak-3 (score 150, label `probado`)
 
 ```text
-You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work\realworld-control.
+You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\examples\detect-realworld\repo.
 Rule: security-jwt-weak-3 (jwt_secret_default_or_short) — severity critical, effort XS.
 Location: src/app/routes/auth/auth.ts:16
 Evidence: secret: process.env.JWT_SECRET || 'superSecret',
@@ -20,7 +20,7 @@ Find every occurrence of this issue in the repository and fix it. Follow the rem
 Rule cited: security-jwt-weak-3 (score 150, label `probado`)
 
 ```text
-You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work\realworld-control.
+You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\examples\detect-realworld\repo.
 Rule: security-jwt-weak-3 (jwt_secret_default_or_short) — severity critical, effort XS.
 Location: src/app/routes/auth/auth.ts:21
 Evidence: secret: process.env.JWT_SECRET || 'superSecret',
@@ -33,7 +33,7 @@ Find every occurrence of this issue in the repository and fix it. Follow the rem
 Rule cited: security-jwt-weak-3 (score 150, label `probado`)
 
 ```text
-You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work\realworld-control.
+You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\examples\detect-realworld\repo.
 Rule: security-jwt-weak-3 (jwt_secret_default_or_short) — severity critical, effort XS.
 Location: src/app/routes/auth/token.utils.ts:4
 Evidence: jwt.sign({ user: { id } }, process.env.JWT_SECRET || 'superSecret', {
@@ -46,7 +46,7 @@ Find every occurrence of this issue in the repository and fix it. Follow the rem
 Rule cited: code-extreme-complexity-1 (score 100, label `probado`)
 
 ```text
-You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work\realworld-control.
+You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\examples\detect-realworld\repo.
 Rule: code-extreme-complexity-1 — severity critical, effort L.
 Location: src/app/routes/article/article.service.ts
 Evidence: heuristic cyclomatic ≈ 26 (max 20); file-level approximation, not per-function
@@ -59,7 +59,7 @@ Find every occurrence of this issue in the repository and fix it. Follow the rem
 Rule cited: database-sequential-pagination-1 (score 65, label `probado`)
 
 ```text
-You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work\realworld-control.
+You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\examples\detect-realworld\repo.
 Rule: database-sequential-pagination-1 (sequential_count_and_findmany_on_paginated_endpoint) — severity high, effort S.
 Location: src/app/routes/article/article.service.ts:71
 Evidence: const articlesCount = await prisma.article.count({
@@ -72,7 +72,7 @@ Find every occurrence of this issue in the repository and fix it. Follow the rem
 Rule cited: database-sequential-pagination-1 (score 65, label `probado`)
 
 ```text
-You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work\realworld-control.
+You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\examples\detect-realworld\repo.
 Rule: database-sequential-pagination-1 (sequential_count_and_findmany_on_paginated_endpoint) — severity high, effort S.
 Location: src/app/routes/article/article.service.ts:114
 Evidence: const articlesCount = await prisma.article.count({
@@ -85,7 +85,7 @@ Find every occurrence of this issue in the repository and fix it. Follow the rem
 Rule cited: code-extreme-length-6 (score 50, label `probado`)
 
 ```text
-You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work\realworld-control.
+You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\examples\detect-realworld\repo.
 Rule: code-extreme-length-6 (nesting_depth) — severity high, effort L.
 Location: src/app/routes/article/article.controller.ts
 Evidence: 244 lines (max 150)
@@ -98,7 +98,7 @@ Find every occurrence of this issue in the repository and fix it. Follow the rem
 Rule cited: code-extreme-length-6 (score 50, label `probado`)
 
 ```text
-You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work\realworld-control.
+You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\examples\detect-realworld\repo.
 Rule: code-extreme-length-6 (nesting_depth) — severity high, effort L.
 Location: src/app/routes/article/article.service.ts
 Evidence: 653 lines (max 150)
@@ -111,7 +111,7 @@ Find every occurrence of this issue in the repository and fix it. Follow the rem
 Rule cited: code-extreme-length-6 (score 50, label `probado`)
 
 ```text
-You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work\realworld-control.
+You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\examples\detect-realworld\repo.
 Rule: code-extreme-length-6 (nesting_depth) — severity high, effort L.
 Location: src/app/routes/auth/auth.service.ts
 Evidence: 184 lines (max 150)
@@ -124,7 +124,7 @@ Find every occurrence of this issue in the repository and fix it. Follow the rem
 Rule cited: code-high-complexity-2 (score 50, label `probado`)
 
 ```text
-You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work\realworld-control.
+You are fixing one finding in the repository at C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\examples\detect-realworld\repo.
 Rule: code-high-complexity-2 (cyclomatic_complexity) — severity high, effort M.
 Location: src/app/routes/article/article.service.ts
 Evidence: heuristic cyclomatic ≈ 26 (max 15); file-level approximation, not per-function
