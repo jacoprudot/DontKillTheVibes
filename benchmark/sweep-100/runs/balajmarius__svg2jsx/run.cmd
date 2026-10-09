@@ -1,0 +1,1 @@
+"C:\Program Files\nodejs\node.exe" C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\scripts\detect\report.mjs --target C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work100\balajmarius__svg2jsx --out C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\balajmarius__svg2jsx

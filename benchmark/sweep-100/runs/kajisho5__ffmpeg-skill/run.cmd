@@ -1,0 +1,1 @@
+"C:\Program Files\nodejs\node.exe" C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\scripts\detect\report.mjs --target C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work100\kajisho5__ffmpeg-skill --out C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\kajisho5__ffmpeg-skill

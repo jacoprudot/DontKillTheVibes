@@ -1,0 +1,7 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\coji__natural-japanese\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\coji__natural-japanese\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\coji__natural-japanese\findings.json
+grade: C · detector findings: 78 (main: 0) · checklist gaps (ausencia, ungraded): 140 · clean: 96 · degraded: 39 · juicio not evaluated: 117
+declared exclusions: 1 hit(s) dropped by policy across 1 rule(s) — see "Declared exclusions" in report.md
+coverage: 54 non-binary file(s) · matched by ≥1 rule path-glob: 38 · NO rule path-glob: 16 · refused by read guards: 0 · NOT examined by any regex rule: 16 (29.6%)
+rule failures: 0 · rules stopped at the 20-finding cap: 1 (performance-no-tech-debt-alloc-9)

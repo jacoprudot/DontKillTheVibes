@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\hi-godot__cyberpunk-hud-demo\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\hi-godot__cyberpunk-hud-demo\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\hi-godot__cyberpunk-hud-demo\findings.json
+grade: C* · detector findings: 0 (main: 0) · checklist gaps (ausencia, ungraded): 16 · clean: 139 · degraded: 39 · juicio not evaluated: 117
+coverage: 25 non-binary file(s) · matched by ≥1 rule path-glob: 6 · NO rule path-glob: 19 · refused by read guards: 0 · NOT examined by any regex rule: 19 (76.0%)
+rule failures: 0 · rules stopped at the 20-finding cap: 0

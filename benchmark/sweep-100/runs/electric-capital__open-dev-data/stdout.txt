@@ -1,0 +1,7 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\electric-capital__open-dev-data\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\electric-capital__open-dev-data\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\electric-capital__open-dev-data\findings.json
+grade: F·3 · detector findings: 69 (main: 3) · checklist gaps (ausencia, ungraded): 156 · clean: 98 · degraded: 39 · juicio not evaluated: 117
+declared exclusions: 1 hit(s) dropped by policy across 1 rule(s) — see "Declared exclusions" in report.md
+coverage: 988 non-binary file(s) · matched by ≥1 rule path-glob: 970 · NO rule path-glob: 18 · refused by read guards: 71 · NOT examined by any regex rule: 89 (9.0%)
+rule failures: 0 · rules stopped at the 20-finding cap: 11 (github-commit-history-1, github-commit-history-10, github-commit-history-2, github-commit-history-3, github-commit-history-4, github-commit-history-5, github-commit-history-6, github-commit-history-7, github-commit-history-8, github-commit-history-9, security-secret-in-history-2)

@@ -1,0 +1,7 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\XiaoMaColtAI__math-modeling-skill\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\XiaoMaColtAI__math-modeling-skill\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\XiaoMaColtAI__math-modeling-skill\findings.json
+grade: C · detector findings: 231 (main: 0) · checklist gaps (ausencia, ungraded): 282 · clean: 90 · degraded: 40 · juicio not evaluated: 117
+declared exclusions: 1 hit(s) dropped by policy across 1 rule(s) — see "Declared exclusions" in report.md
+coverage: 229 non-binary file(s) · matched by ≥1 rule path-glob: 170 · NO rule path-glob: 59 · refused by read guards: 5 · NOT examined by any regex rule: 64 (28.0%)
+rule failures: 0 · rules stopped at the 20-finding cap: 20 (code-empty-catch-1, code-extreme-complexity-1, code-extreme-length-6, code-generic-catch-2, code-high-complexity-2, code-long-function-7, code-long-parameter-list-8, code-medium-length-8, code-missing-docstring-10, code-moderate-complexity-3, code-multiple-return-points-12, code-system-exit-misuse-5, cost-api-no-retry-strategy-8, database-missing-bloat-monitoring-5, database-missing-index-fk-1, flows-no-schema-registry-8, performance-no-circuit-breaker-4, performance-no-load-testing-3, performance-no-request-collapsing-4, performance-no-tech-debt-alloc-9)

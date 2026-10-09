@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\balajmarius__svg2jsx\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\balajmarius__svg2jsx\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\balajmarius__svg2jsx\findings.json
+grade: C · detector findings: 14 (main: 0) · checklist gaps (ausencia, ungraded): 322 · clean: 99 · degraded: 39 · juicio not evaluated: 117
+coverage: 62 non-binary file(s) · matched by ≥1 rule path-glob: 57 · NO rule path-glob: 5 · refused by read guards: 1 · NOT examined by any regex rule: 6 (9.7%)
+rule failures: 0 · rules stopped at the 20-finding cap: 14 (code-promise-chain-missing-catch-5, cost-api-no-retry-strategy-8, database-idle-timeout-missing-4, database-lock-timeout-missing-10, database-max-lifetime-missing-5, database-missing-bloat-monitoring-5, database-statement-timeout-missing-9, flows-message-schema-no-version-1, flows-missing-error-handler-5, flows-missing-request-id-7, flows-no-schema-registry-8, performance-no-circuit-breaker-4, performance-no-load-testing-3, performance-no-request-collapsing-4)

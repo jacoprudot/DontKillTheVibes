@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\zanwei__design-dna\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\zanwei__design-dna\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\zanwei__design-dna\findings.json
+grade: C · detector findings: 3 (main: 0) · checklist gaps (ausencia, ungraded): 30 · clean: 128 · degraded: 39 · juicio not evaluated: 117
+coverage: 15 non-binary file(s) · matched by ≥1 rule path-glob: 13 · NO rule path-glob: 2 · refused by read guards: 0 · NOT examined by any regex rule: 2 (13.3%)
+rule failures: 0 · rules stopped at the 20-finding cap: 0

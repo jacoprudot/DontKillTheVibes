@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\kadirnar__whisper-plus\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\kadirnar__whisper-plus\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\kadirnar__whisper-plus\findings.json
+grade: C · detector findings: 148 (main: 0) · checklist gaps (ausencia, ungraded): 249 · clean: 100 · degraded: 39 · juicio not evaluated: 117
+coverage: 58 non-binary file(s) · matched by ≥1 rule path-glob: 50 · NO rule path-glob: 8 · refused by read guards: 2 · NOT examined by any regex rule: 8 (13.8%)
+rule failures: 0 · rules stopped at the 20-finding cap: 11 (code-long-function-7, code-long-parameter-list-8, code-medium-length-8, code-missing-docstring-10, cost-api-no-retry-strategy-8, database-missing-bloat-monitoring-5, database-missing-index-fk-1, flows-no-schema-registry-8, performance-no-circuit-breaker-4, performance-no-load-testing-3, performance-no-request-collapsing-4)

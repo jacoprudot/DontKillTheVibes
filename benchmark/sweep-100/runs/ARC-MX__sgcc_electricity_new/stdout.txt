@@ -1,0 +1,7 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\ARC-MX__sgcc_electricity_new\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\ARC-MX__sgcc_electricity_new\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\ARC-MX__sgcc_electricity_new\findings.json
+grade: F·20 · detector findings: 152 (main: 20) · checklist gaps (ausencia, ungraded): 216 · clean: 92 · degraded: 39 · juicio not evaluated: 117
+declared exclusions: 10 hit(s) dropped by policy across 4 rule(s) — see "Declared exclusions" in report.md
+coverage: 31 non-binary file(s) · matched by ≥1 rule path-glob: 26 · NO rule path-glob: 5 · refused by read guards: 0 · NOT examined by any regex rule: 5 (16.1%)
+rule failures: 0 · rules stopped at the 20-finding cap: 3 (code-empty-catch-1, code-generic-catch-2, cost-unoptimized-images-8)

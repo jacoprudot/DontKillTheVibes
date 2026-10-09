@@ -1,0 +1,7 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\Julian-Ivanov__jarvis-voice-assistant\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\Julian-Ivanov__jarvis-voice-assistant\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\Julian-Ivanov__jarvis-voice-assistant\findings.json
+grade: F·2 · detector findings: 23 (main: 2) · checklist gaps (ausencia, ungraded): 59 · clean: 111 · degraded: 39 · juicio not evaluated: 117
+declared exclusions: 2 hit(s) dropped by policy across 2 rule(s) — see "Declared exclusions" in report.md
+coverage: 14 non-binary file(s) · matched by ≥1 rule path-glob: 10 · NO rule path-glob: 4 · refused by read guards: 0 · NOT examined by any regex rule: 4 (28.6%)
+rule failures: 0 · rules stopped at the 20-finding cap: 0

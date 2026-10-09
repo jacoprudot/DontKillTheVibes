@@ -1,0 +1,1 @@
+"C:\Program Files\nodejs\node.exe" C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\scripts\detect\report.mjs --target C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work100\u14app__neo-chat --out C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\u14app__neo-chat

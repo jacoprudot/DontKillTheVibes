@@ -1,0 +1,7 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\feitangyuan__onetake\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\feitangyuan__onetake\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\feitangyuan__onetake\findings.json
+grade: C · detector findings: 134 (main: 0) · checklist gaps (ausencia, ungraded): 166 · clean: 104 · degraded: 39 · juicio not evaluated: 117
+declared exclusions: 1 hit(s) dropped by policy across 1 rule(s) — see "Declared exclusions" in report.md
+coverage: 38 non-binary file(s) · matched by ≥1 rule path-glob: 33 · NO rule path-glob: 5 · refused by read guards: 0 · NOT examined by any regex rule: 5 (13.2%)
+rule failures: 0 · rules stopped at the 20-finding cap: 1 (code-many-params-10)

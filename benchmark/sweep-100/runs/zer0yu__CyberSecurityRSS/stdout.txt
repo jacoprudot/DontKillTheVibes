@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\zer0yu__CyberSecurityRSS\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\zer0yu__CyberSecurityRSS\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\zer0yu__CyberSecurityRSS\findings.json
+grade: C · detector findings: 36 (main: 0) · checklist gaps (ausencia, ungraded): 52 · clean: 101 · degraded: 39 · juicio not evaluated: 117
+coverage: 11 non-binary file(s) · matched by ≥1 rule path-glob: 8 · NO rule path-glob: 3 · refused by read guards: 1 · NOT examined by any regex rule: 4 (36.4%)
+rule failures: 0 · rules stopped at the 20-finding cap: 0

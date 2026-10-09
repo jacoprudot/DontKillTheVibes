@@ -1,0 +1,7 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\rq__django-rq\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\rq__django-rq\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\rq__django-rq\findings.json
+grade: F·3 · detector findings: 97 (main: 4) · checklist gaps (ausencia, ungraded): 219 · clean: 96 · degraded: 39 · juicio not evaluated: 117
+declared exclusions: 20 hit(s) dropped by policy across 4 rule(s) — see "Declared exclusions" in report.md
+coverage: 97 non-binary file(s) · matched by ≥1 rule path-glob: 71 · NO rule path-glob: 26 · refused by read guards: 0 · NOT examined by any regex rule: 26 (26.8%)
+rule failures: 0 · rules stopped at the 20-finding cap: 9 (code-medium-length-8, code-missing-docstring-10, cost-api-no-retry-strategy-8, database-missing-bloat-monitoring-5, database-missing-index-fk-1, flows-no-schema-registry-8, performance-no-circuit-breaker-4, performance-no-load-testing-3, performance-no-request-collapsing-4)

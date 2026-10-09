@@ -1,0 +1,7 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\Jesseovo__last30days-skill-cn\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\Jesseovo__last30days-skill-cn\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\Jesseovo__last30days-skill-cn\findings.json
+grade: C · detector findings: 237 (main: 0) · checklist gaps (ausencia, ungraded): 251 · clean: 94 · degraded: 39 · juicio not evaluated: 117
+declared exclusions: 9 hit(s) dropped by policy across 2 rule(s) — see "Declared exclusions" in report.md
+coverage: 99 non-binary file(s) · matched by ≥1 rule path-glob: 95 · NO rule path-glob: 4 · refused by read guards: 0 · NOT examined by any regex rule: 4 (4.0%)
+rule failures: 0 · rules stopped at the 20-finding cap: 18 (code-empty-catch-1, code-extreme-complexity-1, code-extreme-length-6, code-generic-catch-2, code-high-complexity-2, code-long-function-7, code-long-parameter-list-8, code-medium-length-8, code-moderate-complexity-3, code-multiple-return-points-12, code-system-exit-misuse-5, cost-api-no-retry-strategy-8, database-missing-bloat-monitoring-5, database-missing-index-fk-1, flows-no-schema-registry-8, performance-no-circuit-breaker-4, performance-no-load-testing-3, performance-no-request-collapsing-4)

@@ -1,0 +1,7 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\hugoguerrap__crypto-claude-desk\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\hugoguerrap__crypto-claude-desk\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\hugoguerrap__crypto-claude-desk\findings.json
+grade: F·6 · detector findings: 177 (main: 6) · checklist gaps (ausencia, ungraded): 319 · clean: 99 · degraded: 39 · juicio not evaluated: 117
+declared exclusions: 3 hit(s) dropped by policy across 1 rule(s) — see "Declared exclusions" in report.md
+coverage: 100 non-binary file(s) · matched by ≥1 rule path-glob: 95 · NO rule path-glob: 5 · refused by read guards: 1 · NOT examined by any regex rule: 6 (6.0%)
+rule failures: 0 · rules stopped at the 20-finding cap: 13 (code-extreme-length-6, code-long-function-7, code-medium-length-8, code-moderate-complexity-3, code-promise-chain-missing-catch-5, cost-api-no-retry-strategy-8, database-missing-bloat-monitoring-5, flows-message-schema-no-version-1, flows-no-schema-registry-8, performance-no-circuit-breaker-4, performance-no-load-testing-3, performance-no-request-collapsing-4, performance-no-tech-debt-alloc-9)

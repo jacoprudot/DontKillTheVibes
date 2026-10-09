@@ -1,0 +1,7 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\helallao__perplexity-ai\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\helallao__perplexity-ai\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\helallao__perplexity-ai\findings.json
+grade: C · detector findings: 126 (main: 0) · checklist gaps (ausencia, ungraded): 223 · clean: 99 · degraded: 39 · juicio not evaluated: 117
+declared exclusions: 8 hit(s) dropped by policy across 1 rule(s) — see "Declared exclusions" in report.md
+coverage: 42 non-binary file(s) · matched by ≥1 rule path-glob: 38 · NO rule path-glob: 4 · refused by read guards: 0 · NOT examined by any regex rule: 4 (9.5%)
+rule failures: 0 · rules stopped at the 20-finding cap: 7 (code-medium-length-8, database-missing-bloat-monitoring-5, database-missing-index-fk-1, flows-no-schema-registry-8, performance-no-circuit-breaker-4, performance-no-load-testing-3, performance-no-request-collapsing-4)

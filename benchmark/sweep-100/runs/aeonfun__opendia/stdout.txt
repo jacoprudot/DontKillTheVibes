@@ -1,0 +1,7 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\aeonfun__opendia\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\aeonfun__opendia\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\aeonfun__opendia\findings.json
+grade: F·2 · detector findings: 83 (main: 7) · checklist gaps (ausencia, ungraded): 274 · clean: 95 · degraded: 39 · juicio not evaluated: 117
+declared exclusions: 5 hit(s) dropped by policy across 1 rule(s) — see "Declared exclusions" in report.md
+coverage: 39 non-binary file(s) · matched by ≥1 rule path-glob: 34 · NO rule path-glob: 5 · refused by read guards: 1 · NOT examined by any regex rule: 5 (12.8%)
+rule failures: 0 · rules stopped at the 20-finding cap: 6 (database-idle-timeout-missing-4, database-lock-timeout-missing-10, database-max-lifetime-missing-5, database-statement-timeout-missing-9, flows-no-schema-registry-8, performance-no-tech-debt-alloc-9)

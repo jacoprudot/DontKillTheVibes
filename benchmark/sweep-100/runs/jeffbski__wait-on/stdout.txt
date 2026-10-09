@@ -1,0 +1,7 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\jeffbski__wait-on\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\jeffbski__wait-on\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\jeffbski__wait-on\findings.json
+grade: F·1 · detector findings: 60 (main: 1) · checklist gaps (ausencia, ungraded): 357 · clean: 90 · degraded: 39 · juicio not evaluated: 117
+declared exclusions: 9 hit(s) dropped by policy across 2 rule(s) — see "Declared exclusions" in report.md
+coverage: 59 non-binary file(s) · matched by ≥1 rule path-glob: 53 · NO rule path-glob: 6 · refused by read guards: 0 · NOT examined by any regex rule: 6 (10.2%)
+rule failures: 0 · rules stopped at the 20-finding cap: 8 (cost-license-attribution-missing-2, database-idle-timeout-missing-4, database-lock-timeout-missing-10, database-max-lifetime-missing-5, database-statement-timeout-missing-9, flows-no-schema-registry-8, performance-io-bound-sync-2, performance-no-tech-debt-alloc-9)

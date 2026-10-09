@@ -1,0 +1,7 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\JohnHeibel__PDoomVideo\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\JohnHeibel__PDoomVideo\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\JohnHeibel__PDoomVideo\findings.json
+grade: C · detector findings: 134 (main: 0) · checklist gaps (ausencia, ungraded): 241 · clean: 104 · degraded: 39 · juicio not evaluated: 117
+declared exclusions: 1 hit(s) dropped by policy across 1 rule(s) — see "Declared exclusions" in report.md
+coverage: 25 non-binary file(s) · matched by ≥1 rule path-glob: 22 · NO rule path-glob: 3 · refused by read guards: 0 · NOT examined by any regex rule: 3 (12.0%)
+rule failures: 0 · rules stopped at the 20-finding cap: 1 (code-many-params-10)

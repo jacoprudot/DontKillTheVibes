@@ -1,0 +1,1 @@
+"C:\Program Files\nodejs\node.exe" C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\scripts\detect\report.mjs --target C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\work100\zanwei__design-dna --out C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\zanwei__design-dna

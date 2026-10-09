@@ -54,3 +54,21 @@ detect-hangfix-2026-10-07/before/*/prompts.md
 detect-hangfix-2026-10-07/after/*/findings.json
 detect-hangfix-2026-10-07/after/*/report.md
 detect-hangfix-2026-10-07/after/*/prompts.md
+
+# Per-repo report dumps from the sweep-100 harness (benchmark/sweep-100.mjs): for every
+# one of the 100 targets, findings.json + report.md + prompts.md. Same reasoning as the
+# 2026-10-07 sweep above, one order of magnitude larger: SWEEP-100.md and SWEEP-100.json
+# carry every published figure, and each repo's exact invocation (runs/<name>/run.cmd)
+# plus its stdout/stderr/exit ARE committed, so any single dump can be regenerated from
+# committed bytes. The harness measures what it excluded and writes the total into
+# SWEEP-100.json `summary.excluded_bulk` (files / bytes / per-name) rather than leaving
+# the size to a guess; on the 3-repo synthetic proof the three dumps were 9 files /
+# 1.01 MiB, and detect-sweep-2026-10-07 was 57 files / ~4.35 MB for 19 repos.
+sweep-100/runs/*/findings.json
+sweep-100/runs/*/report.md
+sweep-100/runs/*/prompts.md
+
+# The per-repo run captures (run.cmd, stdout.txt, stderr.txt, exit.txt) are explicitly
+# KEPT: they are the invocation record that makes each SWEEP-100.md row reproducible, and
+# the root "*.log"/"*.txt" habits must not swallow them by accident.
+!sweep-100/runs/**/*.txt

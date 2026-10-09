@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\Swatinem__rust-cache\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\Swatinem__rust-cache\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\Swatinem__rust-cache\findings.json
+grade: C · detector findings: 43 (main: 0) · checklist gaps (ausencia, ungraded): 431 · clean: 91 · degraded: 39 · juicio not evaluated: 117
+coverage: 46 non-binary file(s) · matched by ≥1 rule path-glob: 35 · NO rule path-glob: 11 · refused by read guards: 0 · NOT examined by any regex rule: 11 (23.9%)
+rule failures: 0 · rules stopped at the 20-finding cap: 8 (database-idle-timeout-missing-4, database-lock-timeout-missing-10, database-max-lifetime-missing-5, database-missing-bloat-monitoring-5, database-statement-timeout-missing-9, performance-no-load-testing-3, performance-no-tech-debt-alloc-9, security-secret-in-history-2)

@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\wiedehopf__tar1090\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\wiedehopf__tar1090\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\wiedehopf__tar1090\findings.json
+grade: C · detector findings: 130 (main: 0) · checklist gaps (ausencia, ungraded): 193 · clean: 111 · degraded: 39 · juicio not evaluated: 117
+coverage: 58 non-binary file(s) · matched by ≥1 rule path-glob: 31 · NO rule path-glob: 27 · refused by read guards: 12 · NOT examined by any regex rule: 33 (56.9%)
+rule failures: 0 · rules stopped at the 20-finding cap: 12 (github-commit-history-1, github-commit-history-10, github-commit-history-2, github-commit-history-3, github-commit-history-4, github-commit-history-5, github-commit-history-6, github-commit-history-7, github-commit-history-8, github-commit-history-9, github-log-pattern-7, security-secret-in-history-2)

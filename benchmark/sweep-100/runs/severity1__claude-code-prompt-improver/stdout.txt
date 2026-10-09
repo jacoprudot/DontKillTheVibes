@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\severity1__claude-code-prompt-improver\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\severity1__claude-code-prompt-improver\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\severity1__claude-code-prompt-improver\findings.json
+grade: C · detector findings: 27 (main: 0) · checklist gaps (ausencia, ungraded): 163 · clean: 114 · degraded: 39 · juicio not evaluated: 117
+coverage: 25 non-binary file(s) · matched by ≥1 rule path-glob: 23 · NO rule path-glob: 2 · refused by read guards: 0 · NOT examined by any regex rule: 2 (8.0%)
+rule failures: 0 · rules stopped at the 20-finding cap: 1 (performance-no-tech-debt-alloc-9)

@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\danielwh2__cuelume\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\danielwh2__cuelume\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\danielwh2__cuelume\findings.json
+grade: C · detector findings: 34 (main: 0) · checklist gaps (ausencia, ungraded): 221 · clean: 108 · degraded: 39 · juicio not evaluated: 117
+coverage: 33 non-binary file(s) · matched by ≥1 rule path-glob: 23 · NO rule path-glob: 10 · refused by read guards: 8 · NOT examined by any regex rule: 10 (30.3%)
+rule failures: 0 · rules stopped at the 20-finding cap: 0

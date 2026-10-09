@@ -1,0 +1,1457 @@
+{
+  "generated_by": "dktv-snapshot-sweep",
+  "frozen_at": "2026-10-09T06:10:08.299Z",
+  "ruleset_fingerprint": "368-08ed86b6",
+  "runs_dir": "benchmark/sweep-100/runs",
+  "repos_with_dump": 100,
+  "areas": {
+    "code": {
+      "detector": 14975,
+      "detector_repos": 96,
+      "ausencia": 1827,
+      "ausencia_repos": 93,
+      "critical": 312,
+      "high": 0
+    },
+    "flows": {
+      "detector": 146,
+      "detector_repos": 26,
+      "ausencia": 12095,
+      "ausencia_repos": 99,
+      "critical": 105,
+      "high": 0
+    },
+    "database": {
+      "detector": 13,
+      "detector_repos": 4,
+      "ausencia": 10062,
+      "ausencia_repos": 99,
+      "critical": 0,
+      "high": 12
+    },
+    "performance": {
+      "detector": 741,
+      "detector_repos": 57,
+      "ausencia": 9243,
+      "ausencia_repos": 100,
+      "critical": 0,
+      "high": 0
+    },
+    "cost": {
+      "detector": 1039,
+      "detector_repos": 85,
+      "ausencia": 3985,
+      "ausencia_repos": 100,
+      "critical": 0,
+      "high": 98
+    },
+    "security": {
+      "detector": 643,
+      "detector_repos": 57,
+      "ausencia": 900,
+      "ausencia_repos": 82,
+      "critical": 400,
+      "high": 3
+    },
+    "github": {
+      "detector": 777,
+      "detector_repos": 86,
+      "ausencia": 98,
+      "ausencia_repos": 98,
+      "critical": 0,
+      "high": 15
+    },
+    "structure": {
+      "detector": 70,
+      "detector_repos": 3,
+      "ausencia": 0,
+      "ausencia_repos": 0,
+      "critical": 0,
+      "high": 11
+    }
+  },
+  "totals": {
+    "detector": 18404,
+    "ausencia": 38210,
+    "critical": 817,
+    "high": 139,
+    "critical_high": 956,
+    "ausencia_findings_carrying_a_severity": 0,
+    "detector_findings_marked_ungraded": 0
+  },
+  "headline": {
+    "repos_with_crit_high_and_real_remediation": 63,
+    "repos_with_crit_high_and_real_remediation_names": [
+      "pyupio__safety",
+      "doobidoo__mcp-memory-service",
+      "xiufengsun__TokenTracker",
+      "tsingyuai__growth-lab",
+      "openclaw__clawsweeper",
+      "deer-flow__llm-space",
+      "RedPlanetHQ__core",
+      "LingyiChen-AI__JadeAI",
+      "ai-that-works__ai-that-works",
+      "szczyglis-dev__py-gpt",
+      "reactnativecn__react-native-update",
+      "microsoft__vscode-js-debug",
+      "jeffbski__wait-on",
+      "aipoch__medical-research-skills",
+      "ifandelse__machina.js",
+      "chengzuopeng__stock-sdk",
+      "OpenBMB__StaffDeck",
+      "ShenSeanChen__waku-agent",
+      "microsoft__vscode-eslint",
+      "Zoo-Code-Org__Zoo-Code",
+      "zhangxiangliang__stock-api",
+      "electric-capital__open-dev-data",
+      "filiksyos__gitreverse",
+      "VoidenHQ__voiden",
+      "rq__django-rq",
+      "uber__ADR",
+      "TanShilongMario__PromptFill",
+      "databricks-solutions__ai-dev-kit",
+      "timbrel__GitSavvy",
+      "MicrosoftDocs__mcp",
+      "c15t__c15t",
+      "vstorm-co__full-stack-ai-agent-template",
+      "aeonfun__opendia",
+      "silvertakana__worldwideview",
+      "PowerShell__vscode-powershell",
+      "microsoft__vscode-mssql",
+      "opennextjs__opennextjs-cloudflare",
+      "chinesehuazhou__python-weekly",
+      "karlicoss__promnesia",
+      "RubinLabs26__ISpotify",
+      "kajisho5__ffmpeg-skill",
+      "valor-software__ng2-file-upload",
+      "1lck__Lithe-IDEA",
+      "ARC-MX__sgcc_electricity_new",
+      "evloghq__evlog",
+      "nearform__graphql-hooks",
+      "vercel-labs__emulate",
+      "AminForou__mcp-gsc",
+      "bugy__script-server",
+      "zcpua__midjourney-api",
+      "u14app__neo-chat",
+      "stripe__ai",
+      "trustedsec__hate_crack",
+      "DHTMLX__gantt",
+      "timescale__pg-aiguide",
+      "TencentEdgeOne__edgeone-makers-tools",
+      "nimbalyst__nimbalyst",
+      "dyrector-io__dyrectorio",
+      "Aas-ee__open-webSearch",
+      "Julian-Ivanov__jarvis-voice-assistant",
+      "gothinkster__node-express-realworld-example-app",
+      "AkbarDevop__ai-job-agent",
+      "hugoguerrap__crypto-claude-desk"
+    ],
+    "no_remediation_sentinel_total": 0,
+    "timed_out": 0,
+    "failed": 0
+  },
+  "secret_credential_rules": {
+    "set": [
+      "security-db-conn-string-6",
+      "security-gha-secret-leak-3",
+      "security-oauth-secret-8",
+      "security-secret-in-code-1",
+      "security-secret-in-history-2"
+    ],
+    "total_hits": 387,
+    "by_rule": {
+      "security-gha-secret-leak-3": 11,
+      "security-oauth-secret-8": 18,
+      "security-secret-in-code-1": 175,
+      "security-secret-in-history-2": 183
+    }
+  },
+  "wider_credential_family_total": 565,
+  "suppressions_by_rule": [
+    {
+      "rule": "security-secret-in-history-2",
+      "dropped": 1209,
+      "reported": 165,
+      "by_reason": {
+        "path:test-fixture-example-docs": 220,
+        "value:bare-identifier-reference": 920,
+        "value:placeholder-or-degenerate": 57,
+        "annotation:inline-nosec": 3,
+        "value:equals-key-name": 3,
+        "value:env-var-or-credential-reference": 6
+      }
+    },
+    {
+      "rule": "security-secret-in-code-1",
+      "dropped": 784,
+      "reported": 171,
+      "by_reason": {
+        "path:test-fixture-example-docs": 250,
+        "value:bare-identifier-reference": 474,
+        "value:env-var-or-credential-reference": 4,
+        "value:placeholder-or-degenerate": 49,
+        "annotation:inline-nosec": 3,
+        "value:equals-key-name": 4
+      }
+    },
+    {
+      "rule": "flows-n8n-hardcoded-secrets-7",
+      "dropped": 221,
+      "reported": 93,
+      "by_reason": {
+        "path:test-fixture-example-docs": 151,
+        "value:placeholder-or-degenerate": 60,
+        "value:env-var-or-credential-reference": 3,
+        "annotation:inline-nosec": 3,
+        "value:equals-key-name": 4
+      }
+    },
+    {
+      "rule": "security-oauth-secret-8",
+      "dropped": 26,
+      "reported": 10,
+      "by_reason": {
+        "value:placeholder-or-degenerate": 19,
+        "path:test-fixture-example-docs": 7
+      }
+    },
+    {
+      "rule": "security-db-conn-string-6",
+      "dropped": 24,
+      "reported": 0,
+      "by_reason": {
+        "value:bare-identifier-reference": 14,
+        "value:placeholder-or-degenerate": 5,
+        "path:test-fixture-example-docs": 5
+      }
+    },
+    {
+      "rule": "security-env-file-committed-3",
+      "dropped": 14,
+      "reported": 1,
+      "by_reason": {
+        "path:declared-spec-scope": 14
+      }
+    },
+    {
+      "rule": "security-private-key-7",
+      "dropped": 8,
+      "reported": 2,
+      "by_reason": {
+        "path:test-fixture-example-docs": 8
+      }
+    }
+  ],
+  "per_rule": [
+    {
+      "rule": "code-sql-injection-risk-4",
+      "type": "detector",
+      "severity": "critical",
+      "hits": 244,
+      "repos": 24,
+      "critical": 244,
+      "high": 0,
+      "critical_high": 244
+    },
+    {
+      "rule": "security-secret-in-history-2",
+      "type": "detector",
+      "severity": "critical",
+      "hits": 183,
+      "repos": 25,
+      "critical": 183,
+      "high": 0,
+      "critical_high": 183
+    },
+    {
+      "rule": "security-secret-in-code-1",
+      "type": "detector",
+      "severity": "critical",
+      "hits": 175,
+      "repos": 28,
+      "critical": 175,
+      "high": 0,
+      "critical_high": 175
+    },
+    {
+      "rule": "flows-n8n-hardcoded-secrets-7",
+      "type": "detector",
+      "severity": "critical",
+      "hits": 105,
+      "repos": 23,
+      "critical": 105,
+      "high": 0,
+      "critical_high": 105
+    },
+    {
+      "rule": "code-logs-secrets-10",
+      "type": "detector",
+      "severity": "critical",
+      "hits": 68,
+      "repos": 19,
+      "critical": 68,
+      "high": 0,
+      "critical_high": 68
+    },
+    {
+      "rule": "cost-db-no-pooling-10",
+      "type": "detector",
+      "severity": "high",
+      "hits": 58,
+      "repos": 15,
+      "critical": 0,
+      "high": 58,
+      "critical_high": 58
+    },
+    {
+      "rule": "cost-api-in-loop-3",
+      "type": "detector",
+      "severity": "high",
+      "hits": 40,
+      "repos": 19,
+      "critical": 0,
+      "high": 40,
+      "critical_high": 40
+    },
+    {
+      "rule": "security-oauth-secret-8",
+      "type": "detector",
+      "severity": "critical",
+      "hits": 18,
+      "repos": 5,
+      "critical": 18,
+      "high": 0,
+      "critical_high": 18
+    },
+    {
+      "rule": "github-log-pattern-6",
+      "type": "detector",
+      "severity": "high",
+      "hits": 15,
+      "repos": 9,
+      "critical": 0,
+      "high": 15,
+      "critical_high": 15
+    },
+    {
+      "rule": "security-gha-secret-leak-3",
+      "type": "detector",
+      "severity": "critical",
+      "hits": 11,
+      "repos": 2,
+      "critical": 11,
+      "high": 0,
+      "critical_high": 11
+    },
+    {
+      "rule": "structure-inverted-dependency-2",
+      "type": "detector",
+      "severity": "high",
+      "hits": 11,
+      "repos": 1,
+      "critical": 0,
+      "high": 11,
+      "critical_high": 11
+    },
+    {
+      "rule": "database-not-null-violation-4",
+      "type": "detector",
+      "severity": "high",
+      "hits": 10,
+      "repos": 2,
+      "critical": 0,
+      "high": 10,
+      "critical_high": 10
+    },
+    {
+      "rule": "security-gha-pr-target-risk-1",
+      "type": "detector",
+      "severity": "critical",
+      "hits": 7,
+      "repos": 6,
+      "critical": 7,
+      "high": 0,
+      "critical_high": 7
+    },
+    {
+      "rule": "security-jwt-weak-3",
+      "type": "detector",
+      "severity": "critical",
+      "hits": 3,
+      "repos": 1,
+      "critical": 3,
+      "high": 0,
+      "critical_high": 3
+    },
+    {
+      "rule": "security-private-key-7",
+      "type": "detector",
+      "severity": "critical",
+      "hits": 3,
+      "repos": 3,
+      "critical": 3,
+      "high": 0,
+      "critical_high": 3
+    },
+    {
+      "rule": "database-sequential-pagination-1",
+      "type": "detector",
+      "severity": "high",
+      "hits": 2,
+      "repos": 1,
+      "critical": 0,
+      "high": 2,
+      "critical_high": 2
+    },
+    {
+      "rule": "security-env-file-committed-3",
+      "type": "detector",
+      "severity": "high",
+      "hits": 2,
+      "repos": 2,
+      "critical": 0,
+      "high": 2,
+      "critical_high": 2
+    },
+    {
+      "rule": "security-debug-in-prod-1",
+      "type": "detector",
+      "severity": "high",
+      "hits": 1,
+      "repos": 1,
+      "critical": 0,
+      "high": 1,
+      "critical_high": 1
+    },
+    {
+      "rule": "database-missing-bloat-monitoring-5",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1770,
+      "repos": 98,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-no-schema-registry-8",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1755,
+      "repos": 97,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "performance-no-load-testing-3",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1747,
+      "repos": 98,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "performance-no-tech-debt-alloc-9",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1680,
+      "repos": 100,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "database-lock-timeout-missing-10",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1667,
+      "repos": 99,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "database-max-lifetime-missing-5",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1667,
+      "repos": 99,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "database-statement-timeout-missing-9",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1667,
+      "repos": 99,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "database-idle-timeout-missing-4",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1658,
+      "repos": 99,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "performance-no-circuit-breaker-4",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1655,
+      "repos": 95,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "performance-no-request-collapsing-4",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1655,
+      "repos": 95,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-api-no-retry-strategy-8",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1639,
+      "repos": 95,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-medium-length-8",
+      "type": "detector",
+      "severity": "low",
+      "hits": 1569,
+      "repos": 96,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-long-function-7",
+      "type": "detector",
+      "severity": "low",
+      "hits": 1429,
+      "repos": 96,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-moderate-complexity-3",
+      "type": "detector",
+      "severity": "low",
+      "hits": 1373,
+      "repos": 94,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-extreme-length-6",
+      "type": "detector",
+      "severity": "low",
+      "hits": 1330,
+      "repos": 94,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-promise-chain-missing-catch-5",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1327,
+      "repos": 76,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-message-schema-no-version-1",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1305,
+      "repos": 86,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-high-complexity-2",
+      "type": "detector",
+      "severity": "low",
+      "hits": 1304,
+      "repos": 94,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-missing-request-id-7",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1301,
+      "repos": 77,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-missing-error-handler-5",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1300,
+      "repos": 77,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-multiple-return-points-12",
+      "type": "detector",
+      "severity": "low",
+      "hits": 1278,
+      "repos": 94,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-extreme-complexity-1",
+      "type": "detector",
+      "severity": "low",
+      "hits": 1250,
+      "repos": 94,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-n8n-no-error-handling-1",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1050,
+      "repos": 90,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-n8n-no-retry-5",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1050,
+      "repos": 90,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-n8n-no-timeout-4",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1046,
+      "repos": 90,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "database-pg-stat-statements-disabled-1",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 879,
+      "repos": 89,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-license-attribution-missing-2",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 865,
+      "repos": 93,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-system-exit-misuse-5",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 759,
+      "repos": 66,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "database-missing-index-fk-1",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 754,
+      "repos": 55,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "performance-no-compression-13",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 744,
+      "repos": 85,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-dlq-on-repeat-failures-10",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 743,
+      "repos": 85,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-missing-dlq-2",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 743,
+      "repos": 85,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-missing-visibility-timeout-9",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 743,
+      "repos": 85,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "performance-io-bound-sync-2",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 735,
+      "repos": 55,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "performance-no-data-archiving-10",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 723,
+      "repos": 84,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "performance-log-retention-too-long-8",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 720,
+      "repos": 86,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-message-not-compressed-10",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 716,
+      "repos": 85,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-missing-return-type-8",
+      "type": "detector",
+      "severity": "low",
+      "hits": 656,
+      "repos": 45,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-exact-duplication-minor-3",
+      "type": "detector",
+      "severity": "low",
+      "hits": 613,
+      "repos": 71,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "github-log-pattern-7",
+      "type": "detector",
+      "severity": "info",
+      "hits": 584,
+      "repos": 44,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-many-params-10",
+      "type": "detector",
+      "severity": "low",
+      "hits": 566,
+      "repos": 52,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-unoptimized-images-8",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 542,
+      "repos": 56,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-missing-docstring-10",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 500,
+      "repos": 38,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-empty-catch-1",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 490,
+      "repos": 47,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-generic-catch-2",
+      "type": "detector",
+      "severity": "low",
+      "hits": 482,
+      "repos": 36,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-long-parameter-list-8",
+      "type": "detector",
+      "severity": "low",
+      "hits": 477,
+      "repos": 35,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-too-many-params-9",
+      "type": "detector",
+      "severity": "low",
+      "hits": 373,
+      "repos": 40,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-gha-always-on-8",
+      "type": "detector",
+      "severity": "low",
+      "hits": 349,
+      "repos": 77,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "security-session-cookie-not-secure-3",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 327,
+      "repos": 32,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "security-session-cookie-not-http-only-4",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 324,
+      "repos": 32,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "performance-no-regression-detection-5",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 319,
+      "repos": 76,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-gha-infinite-artifacts-6",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 315,
+      "repos": 80,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-no-automated-tests-4",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 287,
+      "repos": 74,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-gha-no-dependency-cache-5",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 252,
+      "repos": 63,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-gha-no-timeout-9",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 249,
+      "repos": 76,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "security-gha-job-no-timeout-7",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 249,
+      "repos": 76,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-console-log-7",
+      "type": "detector",
+      "severity": "low",
+      "hits": 235,
+      "repos": 22,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-exact-duplication-significant-2",
+      "type": "detector",
+      "severity": "low",
+      "hits": 213,
+      "repos": 41,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "security-gha-action-unpinned-5",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 197,
+      "repos": 35,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-no-oss-policy-9",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 100,
+      "repos": 100,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-no-performance-budget-10",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 100,
+      "repos": 100,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-no-license-tracking-5",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 99,
+      "repos": 99,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "github-log-pattern-9",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 98,
+      "repos": 98,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-god-object-6",
+      "type": "detector",
+      "severity": "low",
+      "hits": 88,
+      "repos": 15,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-exact-duplication-massive-1",
+      "type": "detector",
+      "severity": "low",
+      "hits": 80,
+      "repos": 28,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-dev-setup-missing-3",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 76,
+      "repos": 76,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-missing-circuit-breaker-7",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 58,
+      "repos": 58,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-missing-security-headers-10",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 58,
+      "repos": 58,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-no-state-persistence-6",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 58,
+      "repos": 58,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-no-time-travel-9",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 58,
+      "repos": 58,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "structure-service-sql-5",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 58,
+      "repos": 2,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-missing-rate-limit-8",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 57,
+      "repos": 57,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-too-many-attributes-7",
+      "type": "detector",
+      "severity": "low",
+      "hits": 54,
+      "repos": 13,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-missing-cors-9",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 54,
+      "repos": 54,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "security-cors-wildcard-2",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 39,
+      "repos": 14,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "github-commit-history-9",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 36,
+      "repos": 36,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "github-log-pattern-8",
+      "type": "detector",
+      "severity": "info",
+      "hits": 35,
+      "repos": 4,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "github-commit-history-1",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 32,
+      "repos": 32,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-mutable-default-3",
+      "type": "detector",
+      "severity": "low",
+      "hits": 31,
+      "repos": 5,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-api-no-idempotency-7",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 24,
+      "repos": 3,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-overprovisioned-k8s-limits-2",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 24,
+      "repos": 2,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-n8n-schedule-format-3",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 23,
+      "repos": 2,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "github-commit-history-2",
+      "type": "detector",
+      "severity": "info",
+      "hits": 18,
+      "repos": 18,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "github-commit-history-8",
+      "type": "detector",
+      "severity": "info",
+      "hits": 17,
+      "repos": 17,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-state-excessive-nesting-8",
+      "type": "detector",
+      "severity": "low",
+      "hits": 13,
+      "repos": 4,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-map-lookup-unchecked-7",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 10,
+      "repos": 1,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "github-commit-history-10",
+      "type": "detector",
+      "severity": "low",
+      "hits": 10,
+      "repos": 10,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "github-commit-history-5",
+      "type": "detector",
+      "severity": "info",
+      "hits": 10,
+      "repos": 10,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "github-commit-history-7",
+      "type": "detector",
+      "severity": "info",
+      "hits": 10,
+      "repos": 10,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "performance-serialization-format-4",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 6,
+      "repos": 2,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "flows-retry-no-backoff-4",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 5,
+      "repos": 4,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "github-commit-history-4",
+      "type": "detector",
+      "severity": "info",
+      "hits": 5,
+      "repos": 5,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "code-interface-bloat-8",
+      "type": "detector",
+      "severity": "low",
+      "hits": 3,
+      "repos": 1,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "security-gha-workspace-not-cleaned-6",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 3,
+      "repos": 3,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-api-deprecated-endpoint-10",
+      "type": "detector",
+      "severity": "low",
+      "hits": 2,
+      "repos": 1,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-no-http-compression-9",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 2,
+      "repos": 2,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "github-log-pattern-1",
+      "type": "detector",
+      "severity": "info",
+      "hits": 2,
+      "repos": 1,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "github-log-pattern-4",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 2,
+      "repos": 1,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "cost-documentation-poor-7",
+      "type": "ausencia",
+      "severity": null,
+      "hits": 1,
+      "repos": 1,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "database-oversized-pool-1",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 1,
+      "repos": 1,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "github-commit-history-3",
+      "type": "detector",
+      "severity": "info",
+      "hits": 1,
+      "repos": 1,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "security-gha-fork-pr-4",
+      "type": "detector",
+      "severity": "medium",
+      "hits": 1,
+      "repos": 1,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    },
+    {
+      "rule": "structure-factory-violation-4",
+      "type": "detector",
+      "severity": "low",
+      "hits": 1,
+      "repos": 1,
+      "critical": 0,
+      "high": 0,
+      "critical_high": 0
+    }
+  ]
+}

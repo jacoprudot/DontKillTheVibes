@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\aomkoyo__obs-airplay-receiver\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\aomkoyo__obs-airplay-receiver\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\aomkoyo__obs-airplay-receiver\findings.json
+grade: C · detector findings: 23 (main: 0) · checklist gaps (ausencia, ungraded): 28 · clean: 111 · degraded: 39 · juicio not evaluated: 117
+coverage: 18 non-binary file(s) · matched by ≥1 rule path-glob: 7 · NO rule path-glob: 11 · refused by read guards: 0 · NOT examined by any regex rule: 11 (61.1%)
+rule failures: 0 · rules stopped at the 20-finding cap: 0

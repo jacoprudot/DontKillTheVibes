@@ -1,0 +1,6 @@
+report written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\RubinLabs26__ISpotify\report.md
+prompts written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\RubinLabs26__ISpotify\prompts.md
+findings written: C:\Users\jfpru\Desktop\proyectos\DontKillTheVibes\benchmark\sweep-100\runs\RubinLabs26__ISpotify\findings.json
+grade: F·10 · detector findings: 181 (main: 10) · checklist gaps (ausencia, ungraded): 372 · clean: 92 · degraded: 39 · juicio not evaluated: 117
+coverage: 78 non-binary file(s) · matched by ≥1 rule path-glob: 64 · NO rule path-glob: 14 · refused by read guards: 0 · NOT examined by any regex rule: 14 (17.9%)
+rule failures: 0 · rules stopped at the 20-finding cap: 12 (code-extreme-length-6, code-long-function-7, code-medium-length-8, code-missing-docstring-10, cost-api-no-retry-strategy-8, database-missing-bloat-monitoring-5, database-missing-index-fk-1, flows-no-schema-registry-8, performance-no-circuit-breaker-4, performance-no-load-testing-3, performance-no-request-collapsing-4, performance-no-tech-debt-alloc-9)
