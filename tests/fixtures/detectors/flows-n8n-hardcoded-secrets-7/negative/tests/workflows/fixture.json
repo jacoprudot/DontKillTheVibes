@@ -1,0 +1,15 @@
+{
+  "//": "flows-n8n-hardcoded-secrets-7 NEGATIVE — a fixture path. The value is a realistic hardcoded Slack token, so only the path class (`tests`) keeps the rule silent.",
+  "name": "Fixture workflow",
+  "nodes": [
+    {
+      "type": "n8n-nodes-base.slack",
+      "name": "Notify Slack",
+      "parameters": {
+        "operation": "post",
+        "apiKey": "xoxb-2481-9374-5H8xQ2eZvKYlo2C9mN4bT7rW"
+      }
+    }
+  ],
+  "active": false
+}
