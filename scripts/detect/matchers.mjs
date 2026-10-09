@@ -38,6 +38,7 @@ import { tmpdir } from 'node:os';
 import { isAbsolute, join } from 'node:path';
 import { makeGlobMatcher } from './glob.mjs';
 import { SKIP_DIRS } from '../lib/repo-files.mjs';
+import { classifySecretHit, declaredScopeReason, isSecretNoisePath } from './secret-noise.mjs';
 
 export const CAP = 20; // findings per rule per run, keeps reports bounded on big repos
 
@@ -108,14 +109,46 @@ export function markCapHit(label, note) {
   if (note) (ruleCtx.capNotes ?? (ruleCtx.capNotes = [])).push(String(note));
 }
 
+/**
+ * Record that the rule DROPPED a hit, with the reason it dropped it.
+ *
+ * This is the counter that makes the credential policy auditable: a suppression
+ * with no count is a silent filter, and a silent filter in a security tool is
+ * the same defect as a silent skip. The engine reads the per-rule map out of
+ * `endRuleContext()` and writes it to `findings.json.suppressions` and to the
+ * report's "Declared exclusions" section, per rule and per reason.
+ *
+ * @param {string} reason one of SECRET_NOISE_REASONS (scripts/detect/secret-noise.mjs)
+ */
+export function noteSecretNoise(reason) {
+  if (!ruleCtx) return;
+  const map = ruleCtx.noise ?? (ruleCtx.noise = new Map());
+  map.set(String(reason), (map.get(String(reason)) ?? 0) + 1);
+}
+
 function filesForGlob(repo, glob, excludeGlob) {
   const match = makeGlobMatcher(glob);
   const exclude = excludeGlob ? makeGlobMatcher(excludeGlob) : null;
   return repo.tree.filter((f) => !f.binary && match(f.rel) && !(exclude && exclude(f.rel)));
 }
 
+/**
+ * Index of the first character of the line a match starts on. MIRRORS
+ * scripts/detect/engine.mjs `startOfLine`: a match may legitimately start ON a
+ * newline (`(?:^|\n)` is how a spec anchors to a line start), and treating that
+ * newline as the character before the line returned EMPTY evidence with a line
+ * number one too low. Same defect, same fix, one rule of behaviour.
+ */
+function startOfLine(content, index) {
+  let i = index;
+  if (i < content.length && (content[i] === '\n' || content[i] === '\r')) i++;
+  while (i < content.length && (content[i] === '\n' || content[i] === '\r')) i++;
+  return content.lastIndexOf('\n', i) + 1;
+}
+
+/** 1-based line number of the line the match starts on (see startOfLine). */
 function lineOf(content, index) {
-  return content.slice(0, index).split('\n').length;
+  return content.slice(0, startOfLine(content, index)).split('\n').length;
 }
 
 function* iterMatches(re, content) {
@@ -128,8 +161,8 @@ function* iterMatches(re, content) {
 }
 
 function snippet(content, index, len = 120) {
-  const start = content.lastIndexOf('\n', index) + 1;
-  let end = content.indexOf('\n', index);
+  const start = startOfLine(content, index);
+  let end = content.indexOf('\n', start);
   if (end === -1) end = content.length;
   const line = content.slice(start, end).trim();
   return line.length > len ? `${line.slice(0, len)}…` : line;
@@ -140,8 +173,14 @@ export const MATCHER_IMPL = {
     const re = new RegExp(p.pattern);
     const max = p.max_matches ?? CAP;
     const out = [];
+    // A spec may declare the credential path scope (`noise: "secret-path"`), the
+    // same declared-and-counted scope `file-presence` uses: a debug flag inside a
+    // test fixture is not a production debug flag, and the declaration travels in
+    // detectors.json rather than in a rule-glob the reader has to reverse-engineer.
+    const pathNoise = p.noise === 'secret-path' ? isSecretNoisePath : null;
     for (const f of filesForGlob(repo, p.path_glob)) {
       if (budgetExceeded()) break;
+      if (pathNoise && pathNoise(f.rel)) { noteSecretNoise(declaredScopeReason()); continue; }
       const r = repo.readRegexText(f.rel);
       if (r === null) continue;
       let n = 0;
@@ -188,7 +227,18 @@ export const MATCHER_IMPL = {
   'file-presence'(repo, p) {
     const match = makeGlobMatcher(p.path_glob);
     const exclude = p.exclude_glob ? makeGlobMatcher(p.exclude_glob) : null;
-    const all = repo.tree.filter((f) => match(f.rel) && !(exclude && exclude(f.rel)));
+    const all = [];
+    for (const f of repo.tree) {
+      if (!match(f.rel)) continue;
+      if (exclude && exclude(f.rel)) {
+        // A spec-declared `exclude_glob` is a DECLARED SUPPRESSION, and this rule
+        // declares `params.noise` so it is counted like every other one. Without
+        // the opt-in the loop stays silent, exactly as it was before.
+        if (p.noise === 'secret-path') noteSecretNoise(declaredScopeReason());
+        continue;
+      }
+      all.push(f);
+    }
     if (all.length > CAP) markCapHit(); // exact: the tree knows the real total
     return all.slice(0, CAP).map((f) => ({ file: f.rel, line: null, evidence: 'file exists in repo' }));
   },
@@ -978,23 +1028,19 @@ function diffPath(p) {
 }
 
 /**
- * Does this ONE added/removed diff line contain the spec's secret pattern?
- * The literal-vs-variable rule mirrors runGitleaksLite in ./engine.mjs (an
- * unquoted bare-identifier RHS is a reference, not a credential).
+ * The FIRST match of the spec's pattern in one added/removed diff line, or null.
+ *
+ * The literal-vs-variable rule that used to live here (an unquoted bare-identifier
+ * RHS is a reference, not a credential) MOVED into the shared credential policy
+ * (./secret-noise.mjs, reason `value:bare-identifier-reference`). It is the same
+ * decision, but the drop is now COUNTED instead of silent — and that is the whole
+ * point of the 2026-10-08 calibration.
  */
-function lineHasSecret(text, re, keywords) {
-  if (keywords.length > 0 && !keywords.some((k) => text.toLowerCase().includes(String(k).toLowerCase()))) return false;
+function firstSecretMatch(text, re, keywords) {
+  if (keywords.length > 0 && !keywords.some((k) => text.toLowerCase().includes(String(k).toLowerCase()))) return null;
   const g = new RegExp(re.source, re.flags.includes('g') ? re.flags : `${re.flags}g`);
-  let m;
-  while ((m = g.exec(text)) !== null) {
-    const value = m[0].split(/[:=]/).pop().trim();
-    if (!/["']/.test(m[0]) && /^[A-Za-z_][A-Za-z0-9_]*$/.test(value)) {
-      if (m.index === g.lastIndex) g.lastIndex++;
-      continue;
-    }
-    return true;
-  }
-  return false;
+  const m = g.exec(text);
+  return m ? m[0] : null;
 }
 
 /**
@@ -1010,6 +1056,7 @@ function lineHasSecret(text, re, keywords) {
 function diffSecretFindings(diffText, spec, skipCommits = new Set()) {
   const re = new RegExp(spec.regex);
   const keywords = Array.isArray(spec.keywords) ? spec.keywords : [];
+  const declaredNoise = spec.noise === 'secret';
   const out = [];
   const seen = new Set();
   let commits = 0;
@@ -1054,12 +1101,28 @@ function diffSecretFindings(diffText, spec, skipCommits = new Set()) {
         continue;
       }
       if (raw.startsWith('+')) {
-        if (path && !historyPathIsNoise(path) && lineHasSecret(raw.slice(1), re, keywords)) add({ sha, iso, path, line: newLine, side: 'added' });
+        if (path && !historyPathIsNoise(path)) {
+          const text = raw.slice(1);
+          const match = firstSecretMatch(text, re, keywords);
+          if (match !== null) {
+            const verdict = declaredNoise ? classifySecretHit({ path, line: text, match }) : { suppressed: false, reason: null };
+            if (verdict.suppressed) noteSecretNoise(verdict.reason);
+            else add({ sha, iso, path, line: newLine, side: 'added' });
+          }
+        }
         newLine++;
         continue;
       }
       if (raw.startsWith('-')) {
-        if (path && !historyPathIsNoise(path) && lineHasSecret(raw.slice(1), re, keywords)) add({ sha, iso, path, line: oldLine, side: 'removed' });
+        if (path && !historyPathIsNoise(path)) {
+          const text = raw.slice(1);
+          const match = firstSecretMatch(text, re, keywords);
+          if (match !== null) {
+            const verdict = declaredNoise ? classifySecretHit({ path, line: text, match }) : { suppressed: false, reason: null };
+            if (verdict.suppressed) noteSecretNoise(verdict.reason);
+            else add({ sha, iso, path, line: oldLine, side: 'removed' });
+          }
+        }
         oldLine++;
         continue;
       }

@@ -1407,7 +1407,7 @@
     "type": "detector",
     "tool": "gitleaks",
     "spec": {
-      "regex": "(?i:(?:api[_-]?key|access[_-]?token|auth[_-]?token|secret|password|credential)[\"']?\\s*[:=]\\s*[\"'][A-Za-z0-9_\\-./+=]{12,}[\"'])",
+      "regex": "(?i:(?:api[_-]?key|access[_-]?token|auth[_-]?token|secret|password|credential)[\"']?[ \\t]*[:=][ \\t]*[\"'][A-Za-z0-9_\\-./+=]{12,}[\"'])",
       "keywords": [
         "apiKey",
         "api_key",
@@ -1416,6 +1416,7 @@
         "password",
         "access_token"
       ],
+      "noise": "secret",
       "note": "WHOLE-TREE scan, stated plainly (defect 6a, 2026-10-08). This spec carried a path_regex of `(?i:workflows?|n8n)/.*\\.json$` that the runner IGNORES: runGitleaksLite (scripts/detect/engine.mjs) walks every text file in the tree and only consults path_regex to route a spec to the git-HISTORY scan (isHistoryPathSpec, which tests the regex against `.git/`). Measured before removal: it fired on config/settings.json and on src/legacy.js, i.e. outside any workflows/ directory. The field was a scope that did nothing, so it is deleted rather than kept as a lie in the schema; the rule is global by declaration now, and the positive fixture carries a non-workflow file so that behaviour is asserted instead of assumed. Re-adding a real scope means implementing path filtering in runGitleaksLite first."
     }
   },
@@ -2202,7 +2203,8 @@
         "mysql://",
         "mongodb",
         "redis://"
-      ]
+      ],
+      "noise": "secret"
     }
   },
   "security-db-no-tls-11": {
@@ -2214,8 +2216,9 @@
     "spec": {
       "matcher": "file-content-regex",
       "params": {
-        "pattern": "(?i:(app\\.debug\\s*=\\s*True|DEBUG\\s*=\\s*['\"]?1|NEXT_PUBLIC_[A-Z_]*DEBUG))",
-        "path_glob": "**/*.{py,js,ts,env,yaml,yml}"
+        "pattern": "(?<=^|\\n)[ \\t]*(?:export[ \\t]+)?(?i:(?:app\\.debug|DEBUG|NEXT_PUBLIC_[A-Z0-9_]*DEBUG)[ \\t]*[:=][ \\t]*['\"]?(?:1|true|yes|on)['\"]?)[ \\t]*(?:[#;][^\\n]*)?(?=\\r?\\n|$)",
+        "path_glob": "**/*.{py,js,ts,env,yaml,yml}",
+        "noise": "secret-path"
       }
     }
   },
@@ -2232,7 +2235,8 @@
       "matcher": "file-presence",
       "params": {
         "path_glob": "**/.env*",
-        "exclude_glob": "**/.env.{example,sample,template}"
+        "exclude_glob": "{**/.env{rc,dist,defaults,example,example.*,sample,sample.*,template,template.*,test,test.*,spec,spec.*},**/{test,tests,__tests__,spec,specs,fixture,fixtures,__fixtures__,mock,mocks,__mocks__,example,examples,sample,samples,demo,demos,doc,docs,documentation}/**}",
+        "noise": "secret-path"
       }
     }
   },
@@ -2309,7 +2313,7 @@
     "spec": {
       "file_glob": ".github/workflows/*.y*ml",
       "check": "presence",
-      "pattern": "run:[^\\n]*\\{\\{[^}]*\\bsecrets\\."
+      "pattern": "run:(?![^\\n]*--password-(?:stdin|file))[^\\n]*\\{\\{[^}]*\\bsecrets\\."
     }
   },
   "security-gha-workspace-not-cleaned-6": {
@@ -2373,7 +2377,8 @@
     "type": "detector",
     "tool": "gitleaks",
     "spec": {
-      "regex": "(?i:(client[_-]?secret|oauth[_-]?(secret|token))\\s*[:=]\\s*['\"][^'\"]{8,}['\"])"
+      "regex": "(?i:(client[_-]?secret|oauth[_-]?(secret|token))\\s*[:=]\\s*['\"][^'\"]{8,}['\"])",
+      "noise": "secret"
     }
   },
   "security-outdated-server-9": {
@@ -2389,7 +2394,8 @@
       "regex": "-----BEGIN (RSA |EC |OPENSSH |PGP )?PRIVATE KEY( BLOCK)?-----",
       "keywords": [
         "PRIVATE KEY"
-      ]
+      ],
+      "noise": "secret"
     }
   },
   "security-rate-limit-weak-6": {
@@ -2399,21 +2405,23 @@
     "type": "detector",
     "tool": "gitleaks",
     "spec": {
-      "regex": "(?i:(api[_-]?key|secret|token|password|passwd|pwd)\\s*[:=]\\s*['\"]?[A-Za-z0-9_\\-/+=]{16,}['\"]?)",
+      "regex": "(?i:(api[_-]?key|secret|token|password|passwd|pwd)[ \\t]*[:=][ \\t]*['\"]?[A-Za-z0-9_\\-/+=]{16,}['\"]?)",
       "keywords": [
         "key",
         "secret",
         "token",
         "password"
-      ]
+      ],
+      "noise": "secret"
     }
   },
   "security-secret-in-history-2": {
     "type": "detector",
     "tool": "gitleaks",
     "spec": {
-      "regex": "(?i:(api[_-]?key|secret|token|password|passwd|pwd)\\s*[:=]\\s*['\"]?[A-Za-z0-9_\\-/+=]{16,}['\"]?)",
-      "path_regex": "\\.git/"
+      "regex": "(?i:(api[_-]?key|secret|token|password|passwd|pwd)[ \\t]*[:=][ \\t]*['\"]?[A-Za-z0-9_\\-/+=]{16,}['\"]?)",
+      "path_regex": "\\.git/",
+      "noise": "secret"
     }
   },
   "security-session-cookie-not-http-only-4": {

@@ -41,6 +41,7 @@ import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runDetect } from './engine.mjs';
+import { classifySecretHit, SECRET_NOISE_REASONS } from './secret-noise.mjs';
 
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'tests', 'fixtures', 'detectors');
 const DEGRADED = new Set(['semgrep', 'osv-scanner', 'npm-audit', 'license-scan', 'github-api']);
@@ -295,11 +296,26 @@ for (const id of ids) {
   const pos = probe.findings.filter((f) => f.rule === id).length;
   const neg = runDetect(negDir, { onlyIds: new Set([id]) }).findings.filter((f) => f.rule === id).length;
 
-  if (pos >= 1 && neg === 0) {
-    console.log(`PASS ${id} (positive: ${pos} finding(s), negative: 0)`);
+  // OPT-IN EXACT COUNT (2026-10-08). `pos >= 1` cannot see a spec constraint that
+  // silently drops SOME of its own positives — which is exactly how
+  // `security-debug-in-prod-1` lost every CRLF file and every object-property
+  // shape without a single FAIL. A fixture that ships `expected_positive.txt`
+  // turns its count into part of the contract; every other fixture keeps the
+  // weaker (and much less brittle) `>= 1`.
+  const expectedFile = join(base, 'expected_positive.txt');
+  const expected = existsSync(expectedFile) ? Number.parseInt(readFileSync(expectedFile, 'utf8').trim(), 10) : null;
+  if (expected !== null && (!Number.isInteger(expected) || expected < 0)) {
+    console.log(`FAIL ${id} — expected_positive.txt must hold a non-negative integer`);
+    fail++;
+    failures.push(id);
+    continue;
+  }
+
+  if (pos >= 1 && (expected === null || pos === expected) && neg === 0) {
+    console.log(`PASS ${id} (positive: ${pos} finding(s)${expected === null ? '' : `, exactly the declared ${expected}`}, negative: 0)`);
     pass++;
   } else {
-    console.log(`FAIL ${id} — expected positive>=1, negative=0; got positive=${pos}, negative=${neg}`);
+    console.log(`FAIL ${id} — expected ${expected === null ? 'positive>=1' : `positive=${expected} (declared in expected_positive.txt)`}, negative=0; got positive=${pos}, negative=${neg}`);
     fail++;
     failures.push(id);
   }
@@ -443,6 +459,96 @@ for (const id of ids) {
   } else {
     console.log(`PASS torture-whole-file (comma rules: ${wall}ms, many-params=${foundMany}, too-many-params=${foundTooMany}; full rule set: ${fullWall}ms, ${full.scanned} rules, over-content guarded: ${full.coverage.skipped.read_guards.length}; 0ms budget → ${namedRules.size}/${COMMA_RULES.length} rules named budget-exceeded, cap hits: ${capped})`);
     pass++;
+  }
+}
+
+// ---- the credential-noise policy itself (2026-10-08 calibration 3) ----
+// The per-rule fixtures above prove the SPECS; this block proves the POLICY that
+// those specs declare. Two properties, both required:
+//
+//   1. EVERY declared reason is REACHABLE. SECRET_NOISE_REASONS is the policy's
+//      contract; a reason no input can produce is dead code pretending to be a
+//      safeguard, and a reason that exists but is never exercised is a claim.
+//   2. NO reason fires on a realistic credential. The positive values below are
+//      the ones the rule fixtures carry; if the policy ever swallows one, this
+//      gate fails in the same run as the rule fixture, not three weeks later.
+//
+// The `value:empty` shape is here rather than in a rule fixture ON PURPOSE: the
+// shipped credential regexes already require ≥8/≥16 value characters, so an empty
+// assignment cannot reach the matcher today. It is the policy's second line of
+// defence for the next spec that forgets the floor, and it is tested where it
+// lives.
+{
+  /** [reason constant, hit that must produce it] */
+  const REACHABLE = [
+    [SECRET_NOISE_REASONS.PATH, { path: 'macos/Tests/Fixtures/SigningKeys.swift', line: 'const api_key = "AKIAIOSFODNN7EXAMPLE";' }],
+    [SECRET_NOISE_REASONS.NOSEC, { path: 'src/config.js', line: 'const API_KEY = "abc123def456ghi789"; // #nosec — fixture' }],
+    [SECRET_NOISE_REASONS.ENV_USAGE, { path: 'src/setup.ps1', line: '$password = ConvertTo-SecureString $env:WINDOWS_SIGNING_CERTIFICATE_PASSWORD' }],
+    [SECRET_NOISE_REASONS.BARE_IDENTIFIER, { path: 'src/config.js', line: 'const token = legacy_api_token_reference;' }],
+    [SECRET_NOISE_REASONS.EMPTY, { path: 'src/config.ts', line: 'OPENAI_API_KEY=', match: 'OPENAI_API_KEY=' }],
+    [SECRET_NOISE_REASONS.EQUALS_KEY, { path: 'src/config.js', line: 'const DATABASE_PASSWORD = "DATABASE_PASSWORD";' }],
+    [SECRET_NOISE_REASONS.PLACEHOLDER, { path: 'src/config.js', line: 'const apiKey = "your-api-key-here";' }],
+  ];
+  /** realistic credentials the policy must NOT swallow (mirrors the rule fixtures). */
+  const MUST_SURVIVE = [
+    'api_key: "aK3x9Lm2Qp7Rs4Tw8Vb1Yz5Nh0Jc6Df",',
+    'const DB_PASSWORD = "sup3r-secret-password-123";',
+    '      npm_token: "npm_9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c"',
+    '      OAUTH_TOKEN: "gho_16C7e42F292c4612E7c09d6B7d89f5a4"',
+    '  client_secret: "xK9#mQ2$vL7&pR4!",',
+    '  oauth_token: "ya29.a0AfH6SMBx1y2z3w4v5u6t7",',
+    '        "apiKey": "xoxb-2481-9374-5H8xQ2eZvKYlo2C9mN4bT7rW",',
+    '          DATABASE_URL: mysql://ci:ci-pass-123@mysql:3306/testdb',
+    "  url: 'redis://default:r4nd0mTok3n@redis.svc.internal:6379/0',",
+    "  url: 'postgres://appuser:S3cret!Pass@db.internal.example.com:5432/appdb',",
+    '-----BEGIN RSA PRIVATE KEY-----',
+    'const LEGACY_CLOUD_SECRET = "AKIA4T7YQ2W9ZP1LMN6R";',
+  ];
+  const problems = [];
+  for (const [reason, hit] of REACHABLE) {
+    const got = classifySecretHit(hit);
+    if (!got.suppressed || got.reason !== reason) problems.push(`${reason}: expected, got ${JSON.stringify(got)} for ${JSON.stringify(hit.line)}`);
+  }
+  for (const line of MUST_SURVIVE) {
+    const got = classifySecretHit({ path: 'src/config.js', line, match: line });
+    if (got.suppressed) problems.push(`a realistic credential was suppressed (${got.reason}): ${line}`);
+  }
+  // A reason declared in the constant but absent from REACHABLE would never be
+  // tested — fail loudly instead of quietly shrinking the contract.
+  const declared = new Set(Object.values(SECRET_NOISE_REASONS));
+  const exercised = new Set(REACHABLE.map(([r]) => r));
+  // DECLARED_SCOPE belongs to the file-presence matcher and is asserted below.
+  exercised.add(SECRET_NOISE_REASONS.DECLARED_SCOPE);
+  for (const r of declared) if (!exercised.has(r)) problems.push(`declared reason never exercised: ${r}`);
+
+  // DECLARED_SCOPE + the counted path exclusion, end to end through the engine.
+  const { mkdtempSync, writeFileSync, rmSync, mkdirSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const dir = mkdtempSync(join(tmpdir(), 'dktv-envfile-'));
+  try {
+    writeFileSync(join(dir, '.env'), 'DATABASE_URL=postgres://user:pass@db.internal:5432/app\n');
+    writeFileSync(join(dir, '.envrc'), 'export DATABASE_URL=postgres://user:pass@db.internal:5432/app\n');
+    mkdirSync(join(dir, 'examples', 'app'), { recursive: true });
+    writeFileSync(join(dir, 'examples', 'app', '.env'), 'DATABASE_URL=postgres://user:pass@db.internal:5432/app\n');
+    const res = runDetect(dir, { onlyIds: new Set(['security-env-file-committed-3']) });
+    const fired = res.findings.filter((f) => f.rule === 'security-env-file-committed-3').map((f) => f.file);
+    const sup = res.suppressions.find((s) => s.rule === 'security-env-file-committed-3');
+    const scopeDrops = sup?.by_reason?.[SECRET_NOISE_REASONS.DECLARED_SCOPE] ?? 0;
+    if (!fired.includes('.env')) problems.push(`the committed .env did not fire (fired: ${JSON.stringify(fired)})`);
+    if (fired.includes('.envrc')) problems.push('a committed .envrc was reported (direnv config is not a secret file)');
+    if (scopeDrops < 2) problems.push(`the declared-scope exclusion was not counted (.envrc + examples/app/.env expected, got ${scopeDrops})`);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+
+  if (problems.length === 0) {
+    console.log(`PASS secret-noise-policy (${REACHABLE.length} reason(s) reachable and counted, ${MUST_SURVIVE.length} realistic credential(s) survive, declared-scope exclusion counted end to end)`);
+    pass++;
+  } else {
+    console.log(`FAIL secret-noise-policy — ${problems.length} problem(s)`);
+    for (const p of problems) console.log(`  - ${p}`);
+    fail++;
+    failures.push('(secret-noise-policy)');
   }
 }
 

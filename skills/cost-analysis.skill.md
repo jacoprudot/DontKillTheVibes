@@ -283,11 +283,11 @@ Emit findings[] array and cost-analysis-summary.json with:
    - Evidence: "Full test suite takes 45 minutes to run"
    - Remediation: "Parallelize tests, use test selection, optimize slow tests"
 3. IF no_local_development_setup
-   → FINDING: cost-dev-setup-missing-3 (severity: high, effort: M)
+   → FINDING: cost-dev-setup-missing-3 (severity: low, effort: M)
    - Evidence: "Developers must share staging environment to test changes"
    - Remediation: "Provide docker-compose or similar for local development"
 4. IF no_automated_testing_in_ci
-   → FINDING: cost-no-automated-tests-4 (severity: high, effort: M)
+   → FINDING: cost-no-automated-tests-4 (severity: low, effort: M)
    - Evidence: "CI pipeline builds but does not run automated tests"
    - Remediation: "Add automated testing stage to catch regressions early"
 5. IF test_flakiness_rate_high

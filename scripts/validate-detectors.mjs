@@ -54,10 +54,10 @@ const GITHUB_API_CHECKS = new Set(['issue-staleness', 'issue-response-time', 'la
  * this validator (V8 syntax: inline flags must be scoped, e.g. (?i:...)).
  */
 const MATCHERS = {
-  'file-content-regex': { req: { regex: ['pattern'] }, opt: { strings: ['path_glob'], ints: ['max_matches'] } },
+  'file-content-regex': { req: { regex: ['pattern'] }, opt: { strings: ['path_glob', 'noise'], ints: ['max_matches'] } },
   'content-presence': { req: { regex: ['pattern'], strings: ['path_glob'] } },
   'content-absence': { req: { regex: ['pattern'], strings: ['path_glob'] } },
-  'file-presence': { req: { strings: ['path_glob'] }, opt: { strings: ['exclude_glob'] } },
+  'file-presence': { req: { strings: ['path_glob'] }, opt: { strings: ['exclude_glob', 'noise'] } },
   'file-absence': { req: { strings: ['path_glob'] } },
   'max-occurrences': { req: { regex: ['pattern'], strings: ['path_glob'], ints: ['max'] } },
   'complexity-limit': { req: { strings: ['path_glob', 'metric'], ints: ['max'] } },
@@ -77,6 +77,8 @@ const MATCHERS = {
 const COMPLEXITY_METRICS = new Set(['cyclomatic', 'nesting', 'line-count']);
 const NUMERIC_OPS = new Set(['gt', 'lt', 'gte', 'lte']);
 const COOKIE_FLAGS = new Set(['secure', 'httponly', 'samesite']);
+/** Named noise policies a mechanical spec may declare (scripts/detect/secret-noise.mjs). */
+const NOISE_POLICIES = new Set(['secret', 'secret-path']);
 
 function fail(msg) {
   console.error(`INVALID: ${msg}`);
@@ -92,6 +94,12 @@ const SPEC_CHECKERS = {
     if (typeof spec.regex !== 'string' || !compiles(spec.regex)) err.push(`${id}: gitleaks spec.regex must be a compiling regex string`);
     if (spec.path_regex !== undefined && (typeof spec.path_regex !== 'string' || !compiles(spec.path_regex))) err.push(`${id}: gitleaks spec.path_regex must compile`);
     if (spec.keywords !== undefined && (!Array.isArray(spec.keywords) || spec.keywords.some(k => typeof k !== 'string'))) err.push(`${id}: gitleaks spec.keywords must be a string array`);
+    // MANDATORY DECISION (2026-10-08). A credential spec must say, in data,
+    // whether the shared credential-noise policy applies to it. Leaving it
+    // optional meant a new secret rule could ship with no answer, and the
+    // default for an un-asked question in a security tool is "report
+    // everything" — which is how four in five sweep hits became false.
+    if (spec.noise !== 'secret') err.push(`${id}: gitleaks spec.noise must be "secret" — the shared credential-noise policy (scripts/detect/secret-noise.mjs) is declared per spec, never assumed`);
   },
   semgrep(id, spec, err) {
     if (typeof spec.pattern !== 'string' || spec.pattern.trim() === '') err.push(`${id}: semgrep spec.pattern must be a non-empty string`);
@@ -132,6 +140,10 @@ const SPEC_CHECKERS = {
     if (spec.matcher === 'complexity-limit' && !COMPLEXITY_METRICS.has(p.metric)) err.push(`${id}: complexity-limit params.metric must be ${[...COMPLEXITY_METRICS].join('|')}`);
     if (spec.matcher === 'numeric-bound' && !NUMERIC_OPS.has(p.op)) err.push(`${id}: numeric-bound params.op must be ${[...NUMERIC_OPS].join('|')}`);
     if (spec.matcher === 'cookie-flags' && (Array.isArray(p.require) && p.require.some(f => !COOKIE_FLAGS.has(f)))) err.push(`${id}: cookie-flags params.require values must be in ${[...COOKIE_FLAGS].join('|')}`);
+    // A node-matcher spec may opt into a named noise policy too; the only one
+    // that exists today is the credential path scope, and an unknown name is a
+    // typo that would silently disable counting.
+    if (p.noise !== undefined && !NOISE_POLICIES.has(p.noise)) err.push(`${id}: node-matcher params.noise must be one of ${[...NOISE_POLICIES].join(' | ')}`);
   },
   'yaml-check'(id, spec, err) {
     if (typeof spec.file_glob !== 'string' || spec.file_glob === '') err.push(`${id}: yaml-check spec.file_glob must be a non-empty string`);

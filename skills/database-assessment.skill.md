@@ -92,7 +92,7 @@ Emit findings[] array and schema-summary.json with:
 ### Missing Index Detection (PostgreSQL/Supabase Focus)
 ```markdown
 1. IF foreign_key_column AND NOT index_exists(fk_column) 
-   → FINDING: database-missing-index-fk-1 (severity: high, effort: S)
+   → FINDING: database-missing-index-fk-1 (severity: low, effort: S)
    - Evidence: "Column user_id in orders table has FK but no index"
    - Remediation: "CREATE INDEX idx_orders_user_id ON orders(user_id);"
 2. IF join_column_in_slow_query_log AND NOT index_exists(join_column)

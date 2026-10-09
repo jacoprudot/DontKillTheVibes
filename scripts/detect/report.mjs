@@ -11,8 +11,10 @@
  *   findings.json — machine contract (finding + rule + severity/effort +
  *                   remediation + label + score + phase + coverage + failures)
  *   report.md     — human artifact: grade, coverage of what was actually
- *                   scanned, rule failures, truncated counts, 30/60/90 plan,
- *                   findings in priority order, coverage diff vs the baseline
+ *                   scanned, rule failures, truncated counts, declared
+ *                   exclusions, the graded 30/60 plan, suggestions in an
+ *                   appendix, the ungraded ausencia checklist, findings in
+ *                   priority order, coverage diff vs the baseline
  *                   ruleset (paso D)
  *   prompts.md    — C2: one paste-ready remediation prompt per finding, same
  *                   order, each citing its rule, destructive actions flagged
@@ -57,7 +59,21 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 // Mirrors scripts/dktv-orchestrate.mjs SEVERITY_WEIGHT (the LLM path's scoring).
 // Kept numeric-identical on purpose: the same repo must not get two priorities.
 const SEVERITY_WEIGHT = { critical: 100, high: 50, medium: 20, low: 5, info: 1 };
-const PHASE_OF = { critical: '30_days', high: '30_days', medium: '60_days', low: '90_days', info: '90_days' };
+const PHASE_OF = { critical: '30_days', high: '30_days', medium: '60_days' };
+/**
+ * THE GRADED PLAN (2026-10-08 calibration 1 + 2).
+ *
+ * A severity is a promise about the WORK PLAN, so what belongs in it is a
+ * decision, not a default:
+ *   - critical / high -> 30 days, medium -> 60 days: graded work.
+ *   - low / info      -> NOT in the plan. They are the SUGGESTION tier, which is
+ *     where every demoted metric (cyclomatic complexity, file/function length,
+ *     parameter count, nesting, duplication size, ...) lands. A 3 900-item
+ *     "90 days" list is not a plan; it is the noise this calibration removed.
+ *     They stay in findings.json and in the report's appendix.
+ *   - `ausencia`      -> no severity at all (see the ungrading block below).
+ */
+const PLAN_SEV = new Set(['critical', 'high', 'medium']);
 const DESTRUCTIVE_RE = /rotat|revoke|force.?push|rewrite.{0,20}histor|purges? (the )?history|destr/i;
 
 function usage() {
@@ -89,6 +105,7 @@ const EMPTY_SCAN = {
   degraded: [],
   ruleFailures: [],
   capHits: [],
+  suppressions: [],
   guardSkips: [],
   coverage: null,
   scanned: 0,
@@ -106,23 +123,42 @@ try {
   fatalError = { message: e?.message ?? String(e), stack: e?.stack ?? null };
   console.error(`scan failed: ${fatalError.message} — writing a partial report anyway (a failed run is data, silence is not)`);
 }
-const { findings: raw, degraded, scanned, skipped, clean, repo, ruleFailures: scanFailures, capHits, guardSkips, coverage } = scan ?? EMPTY_SCAN;
+const { findings: raw, degraded, scanned, skipped, clean, repo, ruleFailures: scanFailures, capHits, suppressions, guardSkips, coverage } = scan ?? EMPTY_SCAN;
 const ruleFailures = [...scanFailures];
 if (fatalError) ruleFailures.push({ rule: null, reason: 'fatal-scan-error', message: fatalError.message });
 
 // ---- enrich: score, phase, label, remediation, destructive flag ----
+//
+// UNGRADING THE `ausencia` CLASS (2026-10-08 calibration 2). An ausencia hit
+// proves a safeguard is ABSENT, and an absent safeguard is absent in almost
+// every repository: `performance-no-tech-alloc-9` fired on 100/100 repos and
+// `database-idle-timeout-missing-4` on 99/100 in the 100-repo sweep, 38 210 gaps
+// in total. A number that large is the norm of software, not a graded defect, so
+// these findings carry NO severity, NO score and NO phase — and `graded: false`
+// says so explicitly to any consumer that would otherwise re-derive a priority
+// from the rule's catalog severity.
+//
+// The declared severity stays in skills/*.skill.md on purpose (it is the rule's
+// property and the LLM assessment path still reads it — see
+// scripts/dktv-orchestrate.mjs stampRuleFields), so what changes here is only
+// whether THIS report grades an absence. It does not.
 const findings = raw.map((f) => {
   const m = meta.get(f.rule) || {};
-  const sevWeight = SEVERITY_WEIGHT[f.severity] ?? 0;
-  const score = sevWeight * (moduleWeights[f.module] ?? 1.0);
+  const ungraded = f.type === 'ausencia';
+  const sevWeight = ungraded ? 0 : (SEVERITY_WEIGHT[f.severity] ?? 0);
+  const score = ungraded ? 0 : sevWeight * (moduleWeights[f.module] ?? 1.0);
   const remediation = m.remediation ?? '(no remediation text in the rule — improve the rule, not the report)';
   return {
     ...f,
+    severity: ungraded ? null : f.severity,
+    graded: !ungraded,
     name: m.name ?? null,
     remediation,
     label: 'probado',
     score,
-    phase: PHASE_OF[f.severity] ?? '90_days',
+    // `effort` is a COST estimate, not a grade: it stays, so the checklist can be
+    // planned without being prioritised.
+    phase: ungraded ? null : (PHASE_OF[f.severity] ?? 'suggestion'),
     destructive: DESTRUCTIVE_RE.test(remediation),
   };
 });
@@ -182,6 +218,9 @@ const document = {
   degraded,
   rule_failures: ruleFailures,
   cap_truncations: capHits,
+  // Declared exclusions, per rule and per reason (scripts/detect/secret-noise.mjs).
+  // A count here is the number of hits a rule DROPPED, by policy, in this run.
+  suppressions,
   guard_skips: guardSkips,
   coverage,
   fatal_error: fatalError,
@@ -189,8 +228,11 @@ const document = {
 writeFileSync(join(out, 'findings.json'), JSON.stringify(document, null, 2));
 
 // ---- report.md ----
-const byPhase = { '30_days': [], '60_days': [], '90_days': [] };
-for (const f of detectorFindings) (byPhase[f.phase] ?? byPhase['90_days']).push(f);
+// The graded plan holds critical/high (30 days) and medium (60 days) DETECTOR
+// findings only: every `low`/`info` detector finding is a suggestion, and every
+// `ausencia` hit is an ungraded checklist item with its own section below.
+const byPhase = { '30_days': [], '60_days': [] };
+for (const f of detectorFindings) if (PLAN_SEV.has(f.severity)) (byPhase[f.phase] ?? byPhase['60_days']).push(f);
 
 const listNames = (names, max = 10) => {
   const shown = names.slice(0, max).map((n) => `\`${n}\``).join(', ');
@@ -209,6 +251,8 @@ if (ruleFailures.length > 0) {
   md += `- ⚠️ **${ruleFailures.length} rule(s) did not complete**: ${ruleFailures.map((f) => f.rule ?? '(engine)').join(', ')} — findings below are PARTIAL, see "Rule failures"\n`;
 }
 md += `- ${detectorFindings.length} detector finding(s) + ${ausenciaFindings.length} checklist gap(s) — an ausencia hit means a safeguard is MISSING, not that a violation was found\n`;
+const suppressedTotal = suppressions.reduce((a, s) => a + s.dropped, 0);
+md += `- declared exclusions: **${suppressedTotal}** hit(s) dropped by policy across ${suppressions.length} rule(s) — named and counted below, never silent\n`;
 md += `- every detector finding is a raw mechanical signal (label \`probado\`) — verify by hand (file:line) before acting; precision is NOT yet measured (see protocol in PLAN.md)\n\n`;
 
 // ---- per-area verdicts: what was assessed, and what was not (2026-10-08) ----
@@ -266,16 +310,34 @@ if (capHits.length === 0) {
   md += `\n`;
 }
 
-md += `## Work plan (30/60/90)\n\n`;
-md += `Bucketing is deterministic: critical+high → 30 days, medium → 60, low/info → 90; order inside a phase is severity × module weight.\n\n`;
+md += `## Declared exclusions (suppressed hits, per rule)\n\n`;
+if (suppressions.length === 0) {
+  md += `No rule declared a noise policy, or none suppressed a hit in this run. A rule that hides a hit without appearing here would be a silent filter — the specs declare their policy in \`skills/detectors.json\` (\`spec.noise\`) and the engine counts every drop.\n\n`;
+} else {
+  md += `These rules DROPPED hits by a DECLARED policy (scripts/detect/secret-noise.mjs). The count is how many hits were not reported, and the reason names why. Nothing here is inferred: the number comes from the matcher that made the decision.\n\n`;
+  const byReason = new Map();
+  for (const s of suppressions) for (const [reason, n] of Object.entries(s.by_reason)) byReason.set(reason, (byReason.get(reason) ?? 0) + n);
+  md += `| rule | dropped | reported | ${[...byReason.keys()].sort().map((r) => `\`${r}\``).join(' | ')} |\n`;
+  md += `|---|---:|---:|${[...byReason.keys()].sort().map(() => '---:').join('|')}|\n`;
+  const reasons = [...byReason.keys()].sort();
+  for (const s of [...suppressions].sort((a, b) => b.dropped - a.dropped || a.rule.localeCompare(b.rule))) {
+    md += `| \`${s.rule}\` | ${s.dropped} | ${s.reported} | ${reasons.map((r) => s.by_reason[r] ?? 0).join(' | ')} |\n`;
+  }
+  md += `\nTotal dropped: **${suppressions.reduce((a, s) => a + s.dropped, 0)}** hit(s) across ${suppressions.length} rule(s).\n\n`;
+  md += `Suppression is not deletion: every dropped hit would otherwise be a finding of the severity that rule declares, so this table is the size of the precision correction the policy bought.\n\n`;
+}
+
+md += `## Work plan (30/60)\n\n`;
+md += `Bucketing is deterministic: critical+high → 30 days, medium → 60 days; order inside a phase is severity × module weight. \`low\`/\`info\` detector findings are NOT in this plan — they are suggestions (see the appendix), the tier every demoted metric lands in. \`ausencia\` hits are NOT in this plan either: they are an ungraded checklist further down.\n\n`;
 for (const [phase, list] of Object.entries(byPhase)) {
   md += `### ${phase.replace('_', ' ')} (${list.length})\n\n`;
   for (const f of list) md += `- **${f.rule}** [${f.severity}, effort ${f.effort}, score ${f.score}] — ${f.file}${f.line !== null ? `:${f.line}` : ''}\n`;
   md += `\n`;
 }
 
-// Presentation (2026-10-07 noise pass): critical+high carry the full detail,
-// grouped by file; medium/low/info go to a one-line appendix.
+// Presentation (2026-10-07 noise pass; re-tiered 2026-10-08): critical+high carry
+// the full detail, grouped by file; everything below them goes to a one-line
+// appendix. The appendix is the SUGGESTION tier now, not a second work plan.
 const MAIN_SEV = new Set(['critical', 'high']);
 const main = detectorFindings.filter((f) => MAIN_SEV.has(f.severity));
 const appendix = detectorFindings.filter((f) => !MAIN_SEV.has(f.severity));
@@ -295,8 +357,8 @@ for (const [file, list] of [...byFile.entries()].sort((a, b) => b.length - a.len
   md += `\n`;
 }
 
-md += `## Appendix: medium / low / info (${appendix.length})\n\n`;
-md += `One line each, priority order. These are signals, not the plan — verify before acting.\n\n`;
+md += `## Appendix: suggestions — medium / low / info (${appendix.length})\n\n`;
+md += `One line each, priority order. These are SIGNALS, not the plan: the metrics this tool demoted to \`low\` (complexity, length, parameter count, nesting, duplication size) are here, and so is every \`medium\` finding. Verify before acting; nothing here carries a remediation prompt.\n\n`;
 let lastRule = null;
 for (const f of appendix) {
   if (f.rule !== lastRule) {
@@ -307,8 +369,8 @@ for (const f of appendix) {
 }
 md += `\n`;
 
-md += `## Checklist gaps — ausencia checks (${ausenciaFindings.length})\n\n`;
-md += `These prove a safeguard is MISSING (a timeout, a budget, a monitor). They are not violations and carry no severity: a missing thing is missing in every repo until it isn't. Grouped by rule; fix is "add the safeguard", no per-finding prompt needed.\n\n`;
+md += `## Checklist gaps — ausencia checks, UNGRADED (${ausenciaFindings.length})\n\n`;
+md += `These prove a safeguard is MISSING (a timeout, a budget, a monitor). They are not violations and they carry NO severity, NO score and NO phase (\`graded: false\` in findings.json): a missing thing is missing in every repo until it isn't — 38 210 of these fired across the 2026-10-08 100-repo sweep, on 93–100 of the 100 repositories. An absence present in almost every repository is the norm of software, not a graded defect, so it stays in the report as an ordered checklist and out of the graded plan. Grouped by rule, largest first (then rule id, so the order is deterministic); the fix is "add the safeguard", no per-finding prompt needed.\n\n`;
 const gapsByRule = new Map();
 for (const f of ausenciaFindings) {
   if (!gapsByRule.has(f.rule)) gapsByRule.set(f.rule, { name: f.name, remediation: f.remediation, files: [] });
@@ -371,7 +433,8 @@ writeFileSync(join(out, 'prompts.md'), pr);
 console.log(`report written: ${join(out, 'report.md')}`);
 console.log(`prompts written: ${join(out, 'prompts.md')}`);
 console.log(`findings written: ${join(out, 'findings.json')}`);
-console.log(`grade: ${grade.display} · detector findings: ${detectorFindings.length} (main: ${main.length}) · checklist gaps (ausencia): ${ausenciaFindings.length} · clean: ${clean.length} · degraded: ${degraded.length} · juicio not evaluated: ${counts.juicioNotEvaluated}`);
+console.log(`grade: ${grade.display} · detector findings: ${detectorFindings.length} (main: ${main.length}) · checklist gaps (ausencia, ungraded): ${ausenciaFindings.length} · clean: ${clean.length} · degraded: ${degraded.length} · juicio not evaluated: ${counts.juicioNotEvaluated}`);
+if (suppressedTotal > 0) console.log(`declared exclusions: ${suppressedTotal} hit(s) dropped by policy across ${suppressions.length} rule(s) — see "Declared exclusions" in report.md`);
 if (coverage) {
   console.log(`coverage: ${coverage.files_text} non-binary file(s) · matched by ≥1 rule path-glob: ${coverage.files_matched_by_any_rule_glob} · NO rule path-glob: ${coverage.files_matched_by_no_rule_glob} · refused by read guards: ${coverage.files_refused_by_read_guards} · NOT examined by any regex rule: ${coverage.files_not_analysed} (${(coverage.uncovered_ratio * 100).toFixed(1)}%)`);
 } else {

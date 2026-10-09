@@ -160,7 +160,7 @@ Emit findings[] array and flow-analysis-summary.json with:
    - Evidence: "Payment processing initiated via fire-and-forget - no error handling or confirmation"
    - Remediation: "Use acknowledged async with callback/webhook or synchronous processing for critical ops"
 2. IF no_dead_letter_queue_for_async
-   → FINDING: flows-missing-dlq-2 (severity: high, effort: M)
+   → FINDING: flows-missing-dlq-2 (severity: low, effort: M)
    - Evidence: "Failed message processing goes nowhere - poison messages block queue"
    - Remediation: "Configure dead letter queue for failed message inspection and replay"
 3. IF no_idempotency_key_for_payment
@@ -192,7 +192,7 @@ Emit findings[] array and flow-analysis-summary.json with:
    - Evidence: "SQS visibility timeout too short causes duplicate processing"
    - Remediation: "Set visibility timeout to exceed expected processing time"
 10. IF no_dead_letter_on_repeated_failures
-    → FINDING: flows-dlq-on-repeat-failures-10 (severity: high, effort: M)
+    → FINDING: flows-dlq-on-repeat-failures-10 (severity: low, effort: M)
     - Evidence: "Messages failing same validation repeatedly stay in main queue"
     - Remediation: "Configure dead letter queue for repeatedly failing messages"
 ```
@@ -200,7 +200,7 @@ Emit findings[] array and flow-analysis-summary.json with:
 ### Orchestration (n8n Specific)
 ```markdown
 1. IF n8n_workflow_has_no_error_trigger
-   → FINDING: flows-n8n-no-error-handling-1 (severity: high, effort: S)
+   → FINDING: flows-n8n-no-error-handling-1 (severity: low, effort: S)
    - Evidence: "Workflow lacks error trigger node - failures go unnoticed"
    - Remediation: "Add error trigger node connected to notification/escalation flow"
 2. IF n8n_code_node_returns_wrong_format

@@ -45,7 +45,7 @@ try {
   process.exit(2);
 }
 
-const { findings, degraded, scanned, skipped, repo, timings, skippedLongLineFiles, ruleFailures, capHits, coverage, guardSkips } = result;
+const { findings, degraded, scanned, skipped, repo, timings, skippedLongLineFiles, ruleFailures, capHits, suppressions, coverage, guardSkips } = result;
 
 console.log(`target: ${resolve(target)}`);
 console.log(`files scanned: ${repo.fileCount} (gitignored skipped: ${repo.skippedIgnored.length}${repo.skippedTestLike.length ? `; test/spec/fixture files excluded: ${repo.skippedTestLike.length}` : ''}${skippedLongLineFiles ? `; long-line/minified skipped: ${skippedLongLineFiles}` : ''})`);
@@ -61,6 +61,16 @@ if (ruleFailures.length > 0) {
 if (capHits.length > 0) {
   console.log(`rules truncated at the ${20}-findings cap (real counts are higher):`);
   for (const c of capHits) console.log(`  ${c.rule} — reported ${c.reported}`);
+}
+// Declared exclusions (2026-10-08): a spec that declares a noise policy drops
+// hits, and this CLI is an entry point like report.md — a drop it does not print
+// here is a silent filter at the one screen a human actually reads.
+if (suppressions.length > 0) {
+  console.log('declared exclusions (hits dropped by policy, never silent):');
+  for (const s of suppressions) {
+    const reasons = Object.entries(s.by_reason).map(([r, n]) => `${r} ${n}`).join(' · ');
+    console.log(`  ${s.rule} — ${s.dropped} dropped, ${s.reported} reported · ${reasons}`);
+  }
 }
 const slow = timings.filter((t) => t.ms > 500).sort((a, b) => b.ms - a.ms);
 if (slow.length > 0) {

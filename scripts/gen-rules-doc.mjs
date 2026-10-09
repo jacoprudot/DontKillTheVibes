@@ -509,6 +509,12 @@ function renderHeader(model, generated) {
   L.push('- The `provenance` column is the audit column: **`proven` = demonstrated, `declared` = only asserted.** A rule is `proven` when `tests/fixtures/detectors/<rule-id>/positive/` and `.../negative/` both exist and are non-empty on disk — the evidence `node scripts/detect/test-fixtures.mjs` needs to show the rule fires on what it targets and stays silent on what it should not flag. A rule with no fixture, or with only one side, is `declared`: an untested assertion. The marker is read from disk at generation time; nothing here lists which rules are proven.');
   L.push('- `blocked`, `juicio` and `fuera` rules are **not enforced today**. They are listed so the claim is reviewable, not to imply coverage.');
   L.push('- An `ausencia` rule runs, but a hit only proves that a safeguard is **missing**; it never proves a violation. `ausencia` rules whose tool is not implemented are marked `(not implemented)` and can never fire.');
+  // 2026-10-08 calibration 2. This catalog PRINTS a severity for every rule,
+  // including `ausencia` ones, and that column was the last place an absence still
+  // looked graded. The number is still the rule's declared property (the LLM
+  // assessment path reads it), but the deterministic report does not apply it, so
+  // the catalog has to say so or it contradicts the report it documents.
+  L.push('- An `ausencia` severity is **declared but not applied by the deterministic report**: `ausencia` findings are written to `findings.json` with `severity: null`, `score: 0`, `phase: null` and `graded: false`, and they are an ordered, ungraded checklist in `report.md` (38 210 of them fired across the 2026-10-08 100-repo sweep, on 93–100 of the 100 repositories: an absence that common is the norm of software, not a graded defect). The number in this table is the rule\u2019s declared property, which the LLM path (`scripts/dktv-orchestrate.mjs`, `stampRuleFields`) still scores.');
   L.push(`- The raw \`spec\` is shown for \`detector\` rules only, verbatim from \`skills/detectors.json\` (one line, in a code span). Specifications are structural declarations and stay **provisional** until their positive/negative fixtures pass (PLAN.md Fase 1) — \`${COMMAND}\` does not judge whether a spec is a *good* detector for its rule.`);
   if (model.rules.size > 0) {
     const missingCondition = [...model.rules.values()].filter((r) => r.condition === null).length;

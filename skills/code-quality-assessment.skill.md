@@ -90,38 +90,38 @@ Emit findings[] array and code-quality-summary.json with:
 
 ### Complexity Thresholds (Per Function)
 ```markdown
-1. IF cyclomatic_complexity > 20 → FINDING: code-extreme-complexity-1 (severity: critical, effort: L)
+1. IF cyclomatic_complexity > 20 → FINDING: code-extreme-complexity-1 (severity: low, effort: L)
    - Evidence: "Function processOrder has 25 paths through nested conditionals and loops"
    - Remediation: "Break into smaller functions: validateOrder, calculateTax, applyDiscounts"
-2. IF cyclomatic_complexity > 15 → FINDING: code-high-complexity-2 (severity: high, effort: M)
+2. IF cyclomatic_complexity > 15 → FINDING: code-high-complexity-2 (severity: low, effort: M)
    - Evidence: "Function handleUserLogin has 18 distinct paths"
    - Remediation: "Extract password validation and session creation to separate functions"
-3. IF cyclomatic_complexity > 10 → FINDING: code-moderate-complexity-3 (severity: medium, effort: S)
+3. IF cyclomatic_complexity > 10 → FINDING: code-moderate-complexity-3 (severity: low, effort: S)
    - Evidence: "Function formatAddress has 12 paths through conditional formatting"
    - Remediation: "Consider lookup table or strategy pattern for formatting rules"
-4. IF nesting_depth > 5 → FINDING: code-extreme-nesting-4 (severity: high, effort: M)
+4. IF nesting_depth > 5 → FINDING: code-extreme-nesting-4 (severity: low, effort: M)
    - Evidence: "5 levels of nested if/else in data validation function"
    - Remediation: "Use early returns or guard clauses to reduce nesting"
-5. IF nesting_depth > 4 → FINDING: code-high-nesting-5 (severity: medium, effort: S)
+5. IF nesting_depth > 4 → FINDING: code-high-nesting-5 (severity: low, effort: S)
    - Evidence: "4 levels of nesting in nested loop processing matrix"
    - Remediation: "Extract inner loop to separate function with clear purpose"
-6. IF file_lines > 150 → FINDING: code-extreme-length-6 (severity: high, effort: L)
+6. IF file_lines > 150 → FINDING: code-extreme-length-6 (severity: low, effort: L)
    - Evidence: "Component render method spans 200 lines with mixed concerns"
    - Remediation: "Split into presentational and container components"
-7. IF function_lines > 100 → FINDING: code-long-function-7 (severity: medium, effort: M)
+7. IF function_lines > 100 → FINDING: code-long-function-7 (severity: low, effort: M)
    - Evidence: "Helper function utilityFormatData is 120 lines doing multiple transformations"
    - Remediation: "Break into smaller functions: validateInput, transformData, formatOutput"
 8. IF function_lines > 50 → FINDING: code-medium-length-8 (severity: low, effort: S)
    - Evidence: "Several utility functions in 60-80 line range"
    - Remediation: "Consider if function does one thing well; split if multiple concerns"
-9. IF parameter_count > 7 → FINDING: code-too-many-params-9 (severity: medium, effort: M)
+9. IF parameter_count > 7 → FINDING: code-too-many-params-9 (severity: low, effort: M)
    - Evidence: "Function createUser requires 9 parameters for configuration"
    - Remediation: "Use parameter object or builder pattern"
 10. IF parameter_count > 5 → FINDING: code-many-params-10 (severity: low, effort: S)
     - Evidence: "Function connectToDatabase takes host, port, db, user, password, timeout"
     - Remediation: "Consider connection configuration object"
 11. IF boolean_parameter_count > 3
-    → FINDING: code-boolean-parameter-plague-11 (severity: medium, effort: M)
+    → FINDING: code-boolean-parameter-plague-11 (severity: low, effort: M)
     - Evidence: "Function processPayment(true, false, true) - what do booleans mean?"
     - Remediation: "Replace booleans with enum or named options object"
 12. IF return_statement_count > 6
@@ -133,11 +133,11 @@ Emit findings[] array and code-quality-summary.json with:
 ### Duplication Detection
 ```markdown
 1. IF exact_duplicate_lines >= 30 IN different_files
-   → FINDING: code-exact-duplication-massive-1 (severity: high, effort: L)
+   → FINDING: code-exact-duplication-massive-1 (severity: low, effort: L)
    - Evidence: "30-line validation block copied in 5 different service files"
    - Remediation: "Extract to shared validation utility or base class"
 2. IF exact_duplicate_lines >= 20 IN different_files
-   → FINDING: code-exact-duplication-significant-2 (severity: medium, effort: M)
+   → FINDING: code-exact-duplication-significant-2 (severity: low, effort: M)
    - Evidence: "20-line API response formatter duplicated in 3 controllers"
    - Remediation: "Create shared response formatter utility"
 3. IF exact_duplicate_lines >= 10 IN different_files
@@ -145,7 +145,7 @@ Emit findings[] array and code-quality-summary.json with:
    - Evidence: "10-line logging wrapper duplicated across modules"
    - Remediation: "Create shared logging helper or use aspect-oriented approach"
 4. IF structural_similarity >= 0.9 AND different_names
-   → FINDING: code-structural-duplication-high-4 (severity: medium, effort: M)
+   → FINDING: code-structural-duplication-high-4 (severity: low, effort: M)
    - Evidence: "Two functions with identical logic but different variable names"
    - Remediation: "Extract common algorithm to shared function with parameters"
 5. IF structural_similarity >= 0.8 AND different_names
@@ -153,7 +153,7 @@ Emit findings[] array and code-quality-summary.json with:
    - Evidence: "Similar validation logic in user and product services"
    - Remediation: "Create shared validation library with configurable rules"
 6. IF copy_paste_with_minor_changes
-   → FINDING: code-copy-paste-variant-6 (severity: medium, effort: M)
+   → FINDING: code-copy-paste-variant-6 (severity: low, effort: M)
    - Evidence: "Same 15-line pattern with only variable names changed"
    - Remediation: "Parameterize the varying parts and extract to shared function"
 7. IF boilerplate_code_in_every_file
@@ -165,11 +165,11 @@ Emit findings[] array and code-quality-summary.json with:
 ### Error Handling Anti-Patterns
 ```markdown
 1. IF empty_catch_block
-   → FINDING: code-empty-catch-1 (severity: critical, effort: XS)
+   → FINDING: code-empty-catch-1 (severity: medium, effort: XS)
    - Evidence: "catch (Exception e) { } - silently swallowing all exceptions"
    - Remediation: "At minimum log the exception; preferably handle or rethrow"
 2. IF catch_generic_exception AND NOT rethrow
-   → FINDING: code-generic-catch-2 (severity: high, effort: S)
+   → FINDING: code-generic-catch-2 (severity: low, effort: S)
    - Evidence: "catch (Exception e) { log.error(e); } - hiding failure from caller"
    - Remediation: "Either handle specific exceptions or rethrow after logging"
 3. IF throws_exception_or_returns_null
@@ -255,15 +255,15 @@ Emit findings[] array and code-quality-summary.json with:
 #### Python
 ```markdown
 1. IF `except:` bare
-   → FINDING: code-bare-except-1 (severity: critical, effort: XS)
+   → FINDING: code-bare-except-1 (severity: medium, effort: XS)
    - Evidence: "except: pass - catches KeyboardInterrupt and SystemExit"
    - Remediation: "Specify exceptions to catch or use except Exception:"
 2. IF bare_except_in_try_with_multiple_except
-   → FINDING: code-bare-except-with-others-2 (severity: high, effort: S)
+   → FINDING: code-bare-except-with-others-2 (severity: low, effort: S)
    - Evidence: "except ValueError: ...; except: ... - bare except overrides specificity"
    - Remediation: "Order exceptions from specific to general; avoid bare except"
 3. IF mutable_default_argument
-   → FINDING: code-mutable-default-3 (severity: high, effort: XS)
+   → FINDING: code-mutable-default-3 (severity: low, effort: XS)
    - Evidence: "def process(items=[]): items.append('item') - shared across calls"
    - Remediation: "Use None default and initialize inside function: def process(items=None)"
 4. IF sql_string_concatenation
@@ -275,19 +275,19 @@ Emit findings[] array and code-quality-summary.json with:
    - Evidence: "Debug print in library function"
    - Remediation: "Use logging module with appropriate level"
 6. IF god_object_detected (class > 30 methods OR > 2000 lines)
-   → FINDING: code-god-object-6 (severity: high, effort: L)
+   → FINDING: code-god-object-6 (severity: low, effort: L)
    - Evidence: "DataManager class handles DB, file I/O, networking, and business logic"
    - Remediation: "Apply Single Responsibility Principle; split into focused classes"
 7. IF too_many_attributes (class > 20 attributes)
-   → FINDING: code-too-many-attributes-7 (severity: medium, effort: M)
+   → FINDING: code-too-many-attributes-7 (severity: low, effort: M)
    - Evidence: "User class tracks 25 different properties suggesting poor cohesion"
    - Remediation: "Group related attributes into nested objects or separate classes"
 8. IF long_parameter_list (> 5 parameters)
-   → FINDING: code-long-parameter-list-8 (severity: medium, effort: M)
+   → FINDING: code-long-parameter-list-8 (severity: low, effort: M)
    - Evidence: "def create_user(name, email, phone, address, dob, ssn, license, passport)"
    - Remediation: "Use parameter object or builder pattern"
 9. IF deep_inheritance_hierarchy (> 5 levels)
-   → FINDING: code-deep-inheritance-9 (severity: medium, effort: M)
+   → FINDING: code-deep-inheritance-9 (severity: low, effort: M)
    - Evidence: "Animal → Mammal → DomesticDog → BreedSpecific → ShowDog → Champion"
    - Remediation: "Consider composition over inheritance for behavioral variation"
 10. IF missing_docstring_in_public_api
@@ -327,11 +327,11 @@ Emit findings[] array and code-quality-summary.json with:
    - Evidence: "value := myMap[key] - panics if key doesn't exist"
    - Remediation: "Use value, ok := myMap[key]; if !ok { /* handle missing key */ }"
 8. IF interface_bloat (> 10 methods)
-   → FINDING: code-interface-bloat-8 (severity: medium, effort: M)
+   → FINDING: code-interface-bloat-8 (severity: low, effort: M)
    - Evidence: "Service interface with 12 methods violating ISP"
    - Remediation: "Split into smaller, focused interfaces by concern"
 9. IF god_package_detected (> 50 files in package)
-   → FINDING: code-god-package-9 (severity: high, effort: L)
+   → FINDING: code-god-package-9 (severity: low, effort: L)
    - Evidence: "utils package contains unrelated string, math, networking, and UI functions"
    - Remediation: "Split into domain-specific packages: strutil, mathutil, netutil, uiutil"
 10. IF missing_error_handling_in_main
