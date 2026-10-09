@@ -1,0 +1,1310 @@
+{
+  "selection_rule": "benchmark/SELECTION-100.md",
+  "frozen_at": "2026-10-09T01:51:57.036Z",
+  "clone": "full, no --depth",
+  "cloned": 100,
+  "failed": 0,
+  "targets": [
+    {
+      "name": "pyupio__safety",
+      "url": "https://github.com/pyupio/safety",
+      "commit": "997602736a20c6f4d9fec8c2a5d479624b9ddb9a",
+      "stars": 2000,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 883
+    },
+    {
+      "name": "doobidoo__mcp-memory-service",
+      "url": "https://github.com/doobidoo/mcp-memory-service",
+      "commit": "5c9f37772891320aa7637c2c5319e117b804e4f9",
+      "stars": 1999,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "python",
+      "commits": 3567
+    },
+    {
+      "name": "unjs__fontaine",
+      "url": "https://github.com/unjs/fontaine",
+      "commit": "68acd61e250cf3518275c27cd3ce04fe1c17f93f",
+      "stars": 1999,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 969
+    },
+    {
+      "name": "xiufengsun__TokenTracker",
+      "url": "https://github.com/xiufengsun/TokenTracker",
+      "commit": "4e225c312744cdbfb9266ace4002b5a54875635c",
+      "stars": 1999,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "node",
+      "commits": 1626
+    },
+    {
+      "name": "unadlib__mutative",
+      "url": "https://github.com/unadlib/mutative",
+      "commit": "e6af4b0e1ce5f4a5161f2e7a4e8433eebdbf3378",
+      "stars": 1998,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 693
+    },
+    {
+      "name": "tsingyuai__growth-lab",
+      "url": "https://github.com/tsingyuai/growth-lab",
+      "commit": "2d0807c5831c69eac4267702f539957a621e7689",
+      "stars": 1997,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 42
+    },
+    {
+      "name": "openclaw__clawsweeper",
+      "url": "https://github.com/openclaw/clawsweeper",
+      "commit": "302764b2cccc1fee2ffa15f1fede88517c75bd90",
+      "stars": 1994,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 7220
+    },
+    {
+      "name": "deer-flow__llm-space",
+      "url": "https://github.com/deer-flow/llm-space",
+      "commit": "777eb9ca7ec3cd9550395413394a0bb70dc26364",
+      "stars": 1993,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "node",
+      "commits": 782
+    },
+    {
+      "name": "RedPlanetHQ__core",
+      "url": "https://github.com/RedPlanetHQ/core",
+      "commit": "4a5b18d8db55d66e5dfda41b18461f359b340c42",
+      "stars": 1990,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 1214
+    },
+    {
+      "name": "astrofox-io__astrofox",
+      "url": "https://github.com/astrofox-io/astrofox",
+      "commit": "ef3312505eb2830f34440da0196fa1ec545be659",
+      "stars": 1990,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "shadcn",
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 1324
+    },
+    {
+      "name": "LingyiChen-AI__JadeAI",
+      "url": "https://github.com/LingyiChen-AI/JadeAI",
+      "commit": "aca6fbbb0beaba3b4615cce8a7e8cb52e387dc64",
+      "stars": 1988,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "shadcn",
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 273
+    },
+    {
+      "name": "ai-that-works__ai-that-works",
+      "url": "https://github.com/ai-that-works/ai-that-works",
+      "commit": "738a9c18b0302737d5d354d9988f34482966cce6",
+      "stars": 1988,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 516
+    },
+    {
+      "name": "szczyglis-dev__py-gpt",
+      "url": "https://github.com/szczyglis-dev/py-gpt",
+      "commit": "a6766d0b2b7e839c2501f68575c1f00d7cfe012f",
+      "stars": 1985,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "python-requirements"
+      ],
+      "primary_stack": "python",
+      "commits": 5438
+    },
+    {
+      "name": "opensheetmusicdisplay__opensheetmusicdisplay",
+      "url": "https://github.com/opensheetmusicdisplay/opensheetmusicdisplay",
+      "commit": "a422ebbd53d3764fd679388122311084a6923606",
+      "stars": 1983,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 3322
+    },
+    {
+      "name": "reactnativecn__react-native-update",
+      "url": "https://github.com/reactnativecn/react-native-update",
+      "commit": "94b0eeca343a372928f0b9438327c49264460b4f",
+      "stars": 1983,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 1304
+    },
+    {
+      "name": "microsoft__vscode-js-debug",
+      "url": "https://github.com/microsoft/vscode-js-debug",
+      "commit": "b24ecc5de754e4bfcb194688a59d07cad70440b3",
+      "stars": 1982,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 2698
+    },
+    {
+      "name": "jeffbski__wait-on",
+      "url": "https://github.com/jeffbski/wait-on",
+      "commit": "fae57e2e074a241551a8a5e9089e48099247ac41",
+      "stars": 1980,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "node",
+      "commits": 364
+    },
+    {
+      "name": "zer0yu__CyberSecurityRSS",
+      "url": "https://github.com/zer0yu/CyberSecurityRSS",
+      "commit": "fb8311e0fd7dc17a7d39931c0953bdda96609084",
+      "stars": 1978,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 97
+    },
+    {
+      "name": "aipoch__medical-research-skills",
+      "url": "https://github.com/aipoch/medical-research-skills",
+      "commit": "686e09dfdb45d9fa1a08664f06bb93769b3c9d91",
+      "stars": 1977,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 205
+    },
+    {
+      "name": "ifandelse__machina.js",
+      "url": "https://github.com/ifandelse/machina.js",
+      "commit": "1e0fcb39e1449f619b1a093fd621c91aa39fc204",
+      "stars": 1975,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "node",
+      "commits": 333
+    },
+    {
+      "name": "chengzuopeng__stock-sdk",
+      "url": "https://github.com/chengzuopeng/stock-sdk",
+      "commit": "c6c9a790870c5c607379e542e214a02ea05979c4",
+      "stars": 1972,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 233
+    },
+    {
+      "name": "OpenBMB__StaffDeck",
+      "url": "https://github.com/OpenBMB/StaffDeck",
+      "commit": "7adc7c84f61bd6cca13ff0380a811cbb3ae3c544",
+      "stars": 1970,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "cursorrules"
+      ],
+      "primary_stack": "python",
+      "commits": 987
+    },
+    {
+      "name": "webpack__minimizer-webpack-plugin",
+      "url": "https://github.com/webpack/minimizer-webpack-plugin",
+      "commit": "f185baae2898ea312890841a9917bde6e4fb023c",
+      "stars": 1970,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 471
+    },
+    {
+      "name": "ShenSeanChen__waku-agent",
+      "url": "https://github.com/ShenSeanChen/waku-agent",
+      "commit": "975f35d39a046c9732e578bddfd2fefbe77fe987",
+      "stars": 1964,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "python",
+      "commits": 454
+    },
+    {
+      "name": "microsoft__vscode-eslint",
+      "url": "https://github.com/microsoft/vscode-eslint",
+      "commit": "a13360268098e5c56272c73355e69e19d542bd09",
+      "stars": 1963,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 905
+    },
+    {
+      "name": "Zoo-Code-Org__Zoo-Code",
+      "url": "https://github.com/Zoo-Code-Org/Zoo-Code",
+      "commit": "2baac5e5b76018af2f1569450a70514b077a3748",
+      "stars": 1962,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 7713
+    },
+    {
+      "name": "zhangxiangliang__stock-api",
+      "url": "https://github.com/zhangxiangliang/stock-api",
+      "commit": "bdab24063fbb7e317608bb5ea3e51f9319dd9d95",
+      "stars": 1961,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 66
+    },
+    {
+      "name": "electric-capital__open-dev-data",
+      "url": "https://github.com/electric-capital/open-dev-data",
+      "commit": "0ec84adb09eb34d4530c7e06938aa0c4d014da62",
+      "stars": 1959,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 4706
+    },
+    {
+      "name": "filiksyos__gitreverse",
+      "url": "https://github.com/filiksyos/gitreverse",
+      "commit": "0c7adbeeacbd294e380885dc0f05b523c5d9fd36",
+      "stars": 1957,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "claude-md",
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 304
+    },
+    {
+      "name": "helallao__perplexity-ai",
+      "url": "https://github.com/helallao/perplexity-ai",
+      "commit": "05e1b65971ddbe0ac4eb0ab13296a8e78f710934",
+      "stars": 1957,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "python-requirements"
+      ],
+      "primary_stack": "python",
+      "commits": 304
+    },
+    {
+      "name": "VoidenHQ__voiden",
+      "url": "https://github.com/VoidenHQ/voiden",
+      "commit": "e83dae6be609361e24d33b1dc484d173d9928c3d",
+      "stars": 1956,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 863
+    },
+    {
+      "name": "danielwh2__cuelume",
+      "url": "https://github.com/danielwh2/cuelume",
+      "commit": "6ee4f7fab7890aeeb702cc311b14c6de937eceb5",
+      "stars": 1956,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 31
+    },
+    {
+      "name": "rq__django-rq",
+      "url": "https://github.com/rq/django-rq",
+      "commit": "1c8cac94f5414c67c6886b0237c70d5260576e97",
+      "stars": 1953,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 768
+    },
+    {
+      "name": "kadirnar__whisper-plus",
+      "url": "https://github.com/kadirnar/whisper-plus",
+      "commit": "1b54cc72204be9efa13ba342ff355c34e00cca1e",
+      "stars": 1952,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "python-requirements"
+      ],
+      "primary_stack": "python",
+      "commits": 206
+    },
+    {
+      "name": "feitangyuan__onetake",
+      "url": "https://github.com/feitangyuan/onetake",
+      "commit": "f5b1858b4b3e69d49c4cd7374f7c77761e8a1545",
+      "stars": 1951,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 10
+    },
+    {
+      "name": "uber__ADR",
+      "url": "https://github.com/uber/ADR",
+      "commit": "3782cea30a2f8ca88f266a5704194d603ae6cf1f",
+      "stars": 1951,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 116
+    },
+    {
+      "name": "marmelab__json-graphql-server",
+      "url": "https://github.com/marmelab/json-graphql-server",
+      "commit": "ad077d5f665cb1eb987fde04216b89f58af5c245",
+      "stars": 1949,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 423
+    },
+    {
+      "name": "nodejs__llhttp",
+      "url": "https://github.com/nodejs/llhttp",
+      "commit": "69936dbc22922e596a05dfa912fc11d9a7af2136",
+      "stars": 1947,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 632
+    },
+    {
+      "name": "TanShilongMario__PromptFill",
+      "url": "https://github.com/TanShilongMario/PromptFill",
+      "commit": "717dd234565b67adb75635d815d9da8e864eddfc",
+      "stars": 1946,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 118
+    },
+    {
+      "name": "kswedberg__jquery-smooth-scroll",
+      "url": "https://github.com/kswedberg/jquery-smooth-scroll",
+      "commit": "2a653cc32124253757b0c49881cc8f475c0ded5b",
+      "stars": 1943,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 182
+    },
+    {
+      "name": "nbubna__store",
+      "url": "https://github.com/nbubna/store",
+      "commit": "2fd7c93ac24855b98a56c05566cc19f2bb3e4229",
+      "stars": 1942,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 338
+    },
+    {
+      "name": "databricks-solutions__ai-dev-kit",
+      "url": "https://github.com/databricks-solutions/ai-dev-kit",
+      "commit": "b059fd017a2c5743c31a0ff30dc8a618723aae4f",
+      "stars": 1941,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 531
+    },
+    {
+      "name": "severity1__claude-code-prompt-improver",
+      "url": "https://github.com/severity1/claude-code-prompt-improver",
+      "commit": "50aae187bb4f08b852f318234b654df3332726a4",
+      "stars": 1941,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "python",
+      "commits": 44
+    },
+    {
+      "name": "timbrel__GitSavvy",
+      "url": "https://github.com/timbrel/GitSavvy",
+      "commit": "3da6d3be3f1baecc96acebe7f4194205644f9b0f",
+      "stars": 1940,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 5214
+    },
+    {
+      "name": "MicrosoftDocs__mcp",
+      "url": "https://github.com/MicrosoftDocs/mcp",
+      "commit": "f8ffde185dfd232dbf5d187c22ce299eadc3d583",
+      "stars": 1938,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 82
+    },
+    {
+      "name": "shadcnstudio__shadcn-studio",
+      "url": "https://github.com/shadcnstudio/shadcn-studio",
+      "commit": "72a20331970218848103184b61e1efa9d0e08dea",
+      "stars": 1937,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "shadcn",
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 12
+    },
+    {
+      "name": "c15t__c15t",
+      "url": "https://github.com/c15t/c15t",
+      "commit": "f2b2318629a30ca07ea3f3fc982f2d8179878230",
+      "stars": 1935,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "claude-md",
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 750
+    },
+    {
+      "name": "vstorm-co__full-stack-ai-agent-template",
+      "url": "https://github.com/vstorm-co/full-stack-ai-agent-template",
+      "commit": "475f799f7df02738f804fa350f2de244d7331a94",
+      "stars": 1934,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "python",
+      "commits": 430
+    },
+    {
+      "name": "Swatinem__rust-cache",
+      "url": "https://github.com/Swatinem/rust-cache",
+      "commit": "f0d9c3887740aee45f6153b24b3a6b815192ec16",
+      "stars": 1932,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 294
+    },
+    {
+      "name": "aeonfun__opendia",
+      "url": "https://github.com/aeonfun/opendia",
+      "commit": "b00767e16959c8aa0db65411a0ea287f841c0454",
+      "stars": 1926,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 125
+    },
+    {
+      "name": "balajmarius__svg2jsx",
+      "url": "https://github.com/balajmarius/svg2jsx",
+      "commit": "f967dd1061497e95e2da8fab219ede0cb5a42834",
+      "stars": 1925,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 260
+    },
+    {
+      "name": "JohnHeibel__PDoomVideo",
+      "url": "https://github.com/JohnHeibel/PDoomVideo",
+      "commit": "fa546a38092e75f2b079e6a86d6abc54dd525d17",
+      "stars": 1924,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 7
+    },
+    {
+      "name": "nuxt-community__auth-module",
+      "url": "https://github.com/nuxt-community/auth-module",
+      "commit": "6761714a06bb12be076a0e49e47d0a94e6db4fd9",
+      "stars": 1924,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 1300
+    },
+    {
+      "name": "wiedehopf__tar1090",
+      "url": "https://github.com/wiedehopf/tar1090",
+      "commit": "e784ee5ae82948f41efe3ef5c235ade0943ab8ff",
+      "stars": 1923,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 2393
+    },
+    {
+      "name": "openupm__openupm",
+      "url": "https://github.com/openupm/openupm",
+      "commit": "c044beb300757861010087ae1ddc213020195903",
+      "stars": 1918,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 13573
+    },
+    {
+      "name": "silvertakana__worldwideview",
+      "url": "https://github.com/silvertakana/worldwideview",
+      "commit": "33df7a5b7f89c9d9d432400937fa45aa7481d683",
+      "stars": 1915,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "shadcn",
+        "claude-md",
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 1200
+    },
+    {
+      "name": null,
+      "url": "https://github.com/NVIDIA-AI-Blueprints/video-search-and-summarization",
+      "commit": null,
+      "stars": 1914,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "unknown",
+      "clone_error": "not attempted"
+    },
+    {
+      "name": "zanwei__design-dna",
+      "url": "https://github.com/zanwei/design-dna",
+      "commit": "593e39bc9e3652734653bd75544a333d7d43615e",
+      "stars": 1914,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 27
+    },
+    {
+      "name": null,
+      "url": "https://github.com/ButzYung/SystemAnimatorOnline",
+      "commit": null,
+      "stars": 1912,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [],
+      "primary_stack": "unknown",
+      "clone_error": "not attempted"
+    },
+    {
+      "name": "PowerShell__vscode-powershell",
+      "url": "https://github.com/PowerShell/vscode-powershell",
+      "commit": "9c5933866b74051f0312d4239584522893736c87",
+      "stars": 1912,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 3027
+    },
+    {
+      "name": "microsoft__vscode-mssql",
+      "url": "https://github.com/microsoft/vscode-mssql",
+      "commit": "180adb0c10a926b0f8fe7246ed7f4a48dbdb2e39",
+      "stars": 1912,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "node",
+      "commits": 4056
+    },
+    {
+      "name": null,
+      "url": "https://github.com/trailofbits/publications",
+      "commit": null,
+      "stars": 1908,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "unknown",
+      "clone_error": "not attempted"
+    },
+    {
+      "name": "DanKE123abc__NoUnityCN",
+      "url": "https://github.com/DanKE123abc/NoUnityCN",
+      "commit": "e63b073559428a4a314077e2ee99f9a928ac390e",
+      "stars": 1904,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "shadcn",
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 381
+    },
+    {
+      "name": "hanshuaikang__nezha",
+      "url": "https://github.com/hanshuaikang/nezha",
+      "commit": "49a1c642e05b1f65448d78d53e21b283e73dc444",
+      "stars": 1904,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "node",
+      "commits": 276
+    },
+    {
+      "name": "parse-community__parse-server-example",
+      "url": "https://github.com/parse-community/parse-server-example",
+      "commit": "b5bf542aaec5475e614e8daee24ea66252233d7e",
+      "stars": 1903,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 496
+    },
+    {
+      "name": null,
+      "url": "https://github.com/pmh1314520/WebRPA",
+      "commit": null,
+      "stars": 1903,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "unknown",
+      "clone_error": "not attempted"
+    },
+    {
+      "name": "opennextjs__opennextjs-cloudflare",
+      "url": "https://github.com/opennextjs/opennextjs-cloudflare",
+      "commit": "82486c8a2e6ed698e1bfd18458bce4511380a466",
+      "stars": 1902,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "claude-md",
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 798
+    },
+    {
+      "name": "chinesehuazhou__python-weekly",
+      "url": "https://github.com/chinesehuazhou/python-weekly",
+      "commit": "87b75b7c46709cf3967e4288dd3072310b31d3fa",
+      "stars": 1901,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 252
+    },
+    {
+      "name": "evoluhq__evolu",
+      "url": "https://github.com/evoluhq/evolu",
+      "commit": "5a163b559af06036cda67be30a5057819c23bfa2",
+      "stars": 1901,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 3493
+    },
+    {
+      "name": "karlicoss__promnesia",
+      "url": "https://github.com/karlicoss/promnesia",
+      "commit": "197e6d0d655357aeb5c094f90713d9046d8028bc",
+      "stars": 1901,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 1511
+    },
+    {
+      "name": "RubinLabs26__ISpotify",
+      "url": "https://github.com/RubinLabs26/ISpotify",
+      "commit": "b694116fd638fb9bc31a3b608efce03998cfec6a",
+      "stars": 1900,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "python-requirements"
+      ],
+      "primary_stack": "python",
+      "commits": 103
+    },
+    {
+      "name": "valqore__valqore",
+      "url": "https://github.com/valqore/valqore",
+      "commit": "32712db9b62691221fd106b669d012cf228ce86e",
+      "stars": 1899,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 73
+    },
+    {
+      "name": "kajisho5__ffmpeg-skill",
+      "url": "https://github.com/kajisho5/ffmpeg-skill",
+      "commit": "008333aaf6722083392eb6bd8bd67b59884a2a26",
+      "stars": 1897,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 352
+    },
+    {
+      "name": "valor-software__ng2-file-upload",
+      "url": "https://github.com/valor-software/ng2-file-upload",
+      "commit": "7f446232c8e2772dc72141da784475a11ea4859c",
+      "stars": 1897,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 360
+    },
+    {
+      "name": "1lck__Lithe-IDEA",
+      "url": "https://github.com/1lck/Lithe-IDEA",
+      "commit": "c03dbbb260d133907fd53744a515967bf85e5ffd",
+      "stars": 1895,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "node",
+      "commits": 1892
+    },
+    {
+      "name": "ARC-MX__sgcc_electricity_new",
+      "url": "https://github.com/ARC-MX/sgcc_electricity_new",
+      "commit": "bef030a191b91d8c07cef0af10174c392d71caf0",
+      "stars": 1894,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "python-requirements"
+      ],
+      "primary_stack": "python",
+      "commits": 156
+    },
+    {
+      "name": null,
+      "url": "https://github.com/happier-dev/happier",
+      "commit": null,
+      "stars": 1893,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "unknown",
+      "clone_error": "not attempted"
+    },
+    {
+      "name": "coji__natural-japanese",
+      "url": "https://github.com/coji/natural-japanese",
+      "commit": "9a78a42964096da509b8f3e011f0085a5f080151",
+      "stars": 1891,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "python",
+      "commits": 77
+    },
+    {
+      "name": "evloghq__evlog",
+      "url": "https://github.com/evloghq/evlog",
+      "commit": "54dcc504d4926cf0f24e945db3cc770497b593f1",
+      "stars": 1888,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "claude-md",
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 1163
+    },
+    {
+      "name": "nearform__graphql-hooks",
+      "url": "https://github.com/nearform/graphql-hooks",
+      "commit": "b8b813e724163884384b4bb484aabc28e4bc5363",
+      "stars": 1888,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 834
+    },
+    {
+      "name": "vercel__react-tweet",
+      "url": "https://github.com/vercel/react-tweet",
+      "commit": "cb5070e392fe707f43cdcfcddbd9e3972142eb43",
+      "stars": 1885,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 208
+    },
+    {
+      "name": "vercel-labs__emulate",
+      "url": "https://github.com/vercel-labs/emulate",
+      "commit": "c77cb73e7ab525c5260dd36c04c91a54a23e7e75",
+      "stars": 1880,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 159
+    },
+    {
+      "name": "AminForou__mcp-gsc",
+      "url": "https://github.com/AminForou/mcp-gsc",
+      "commit": "d49eea9e5efb5eb645b722249303179b2c150b49",
+      "stars": 1879,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "claude-md",
+        "python-requirements"
+      ],
+      "primary_stack": "python",
+      "commits": 74
+    },
+    {
+      "name": "Jesseovo__last30days-skill-cn",
+      "url": "https://github.com/Jesseovo/last30days-skill-cn",
+      "commit": "171aa8fdfa2a2a2187ee3b179ac913153565fcc8",
+      "stars": 1879,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "claude-md",
+        "python-requirements"
+      ],
+      "primary_stack": "python",
+      "commits": 300
+    },
+    {
+      "name": "bugy__script-server",
+      "url": "https://github.com/bugy/script-server",
+      "commit": "62bd38a3942e73546ba701248253d043eb66dadd",
+      "stars": 1876,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "python-requirements"
+      ],
+      "primary_stack": "python",
+      "commits": 953
+    },
+    {
+      "name": null,
+      "url": "https://github.com/YouMind-OpenLab/nano-banana-pro-prompts-recommend-skill",
+      "commit": null,
+      "stars": 1872,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "unknown",
+      "clone_error": "not attempted"
+    },
+    {
+      "name": "zcpua__midjourney-api",
+      "url": "https://github.com/zcpua/midjourney-api",
+      "commit": "04b27a67d023ed45ed1ff936088565a8fe307e23",
+      "stars": 1869,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 320
+    },
+    {
+      "name": "u14app__neo-chat",
+      "url": "https://github.com/u14app/neo-chat",
+      "commit": "f135fd5bf741e7d244f2e566d6e9d937c3aa2fd9",
+      "stars": 1866,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "shadcn",
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 329
+    },
+    {
+      "name": "xushanpei__open-file-viewer",
+      "url": "https://github.com/xushanpei/open-file-viewer",
+      "commit": "6d85f230f0cf62320ffea146c2de6f15feb6cecb",
+      "stars": 1865,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 186
+    },
+    {
+      "name": "stripe__ai",
+      "url": "https://github.com/stripe/ai",
+      "commit": "08d371a9fbe098ecc943713a70a669ef05cfa6d6",
+      "stars": 1864,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 428
+    },
+    {
+      "name": null,
+      "url": "https://github.com/weapp-tailwindcss/weapp-tailwindcss",
+      "commit": null,
+      "stars": 1864,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "unknown",
+      "clone_error": "not attempted"
+    },
+    {
+      "name": "trustedsec__hate_crack",
+      "url": "https://github.com/trustedsec/hate_crack",
+      "commit": "fefe2abd9ce8de8880b471c6ad68166177ec2310",
+      "stars": 1863,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "python",
+      "commits": 1254
+    },
+    {
+      "name": "DHTMLX__gantt",
+      "url": "https://github.com/DHTMLX/gantt",
+      "commit": "67d4425db50009705fbe41538d75c8f5f5ac9276",
+      "stars": 1862,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 135
+    },
+    {
+      "name": "timescale__pg-aiguide",
+      "url": "https://github.com/timescale/pg-aiguide",
+      "commit": "187be00d317a51210c132010d947f4546ffb5eef",
+      "stars": 1862,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "python",
+      "commits": 163
+    },
+    {
+      "name": "TencentEdgeOne__edgeone-makers-tools",
+      "url": "https://github.com/TencentEdgeOne/edgeone-makers-tools",
+      "commit": "e6ead945373c8dc56dca91d3e586e3c7cccd0079",
+      "stars": 1861,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "node",
+      "commits": 242
+    },
+    {
+      "name": "facebookresearch__MetaCLIP",
+      "url": "https://github.com/facebookresearch/MetaCLIP",
+      "commit": "f47f7841f6a91cc5676729a3d125519393d87d1e",
+      "stars": 1854,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 160
+    },
+    {
+      "name": "nimbalyst__nimbalyst",
+      "url": "https://github.com/nimbalyst/nimbalyst",
+      "commit": "e506dfca634659dac0eb522aa64e32f30501a9b6",
+      "stars": 1853,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "node",
+      "commits": 6332
+    },
+    {
+      "name": "XiaoMaColtAI__math-modeling-skill",
+      "url": "https://github.com/XiaoMaColtAI/math-modeling-skill",
+      "commit": "8fd1f4b6a5f1de927202673bec1953fa0e148718",
+      "stars": 1851,
+      "language": "Python",
+      "signal": "Python",
+      "signals": [],
+      "primary_stack": "python",
+      "commits": 128
+    },
+    {
+      "name": "dyrector-io__dyrectorio",
+      "url": "https://github.com/dyrector-io/dyrectorio",
+      "commit": "9097fb5937f4c10312d07f1ccb0121c32c209d5c",
+      "stars": 1850,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 1069
+    },
+    {
+      "name": "Aas-ee__open-webSearch",
+      "url": "https://github.com/Aas-ee/open-webSearch",
+      "commit": "fb11fd94df736819a0d2765bf7645224f98b2c6b",
+      "stars": 1847,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 244
+    },
+    {
+      "name": "Julian-Ivanov__jarvis-voice-assistant",
+      "url": "https://github.com/Julian-Ivanov/jarvis-voice-assistant",
+      "commit": "0dbc657e311018a3022b8df50d2e4eb516e6c26c",
+      "stars": 113,
+      "language": "JavaScript",
+      "signal": "substitute",
+      "signals": [
+        "claude-md",
+        "python-requirements"
+      ],
+      "primary_stack": "node",
+      "commits": 8,
+      "substitute": true,
+      "covers": "re-clone abandoned by user decision (heavy repo), slot #1"
+    },
+    {
+      "name": "aomkoyo__obs-airplay-receiver",
+      "url": "https://github.com/aomkoyo/obs-airplay-receiver",
+      "commit": "a1b57cd56b276e7e2d381c8083f76cd80e2a2e0b",
+      "stars": 17,
+      "language": "TypeScript",
+      "signal": "substitute",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 43,
+      "substitute": true,
+      "covers": "re-clone abandoned by user decision (heavy repo), slot #2"
+    },
+    {
+      "name": "tokio-rs__mini-redis",
+      "url": "https://github.com/tokio-rs/mini-redis",
+      "commit": "3d93b42bc363220f85af4fc9e1bebd35b588a4a3",
+      "stars": 4795,
+      "language": "Rust",
+      "signal": "substitute",
+      "signals": [],
+      "primary_stack": "unknown",
+      "commits": 105,
+      "substitute": true,
+      "covers": "re-clone abandoned by user decision (heavy repo), slot #3"
+    },
+    {
+      "name": "gothinkster__node-express-realworld-example-app",
+      "url": "https://github.com/gothinkster/node-express-realworld-example-app",
+      "commit": "30b68e1e881462b2f4164ea09ab4c4f5699c7b0b",
+      "stars": 3796,
+      "language": "TypeScript",
+      "signal": "substitute",
+      "signals": [],
+      "primary_stack": "node",
+      "commits": 65,
+      "substitute": true,
+      "covers": "re-clone abandoned by user decision (heavy repo), slot #4"
+    },
+    {
+      "name": "AkbarDevop__ai-job-agent",
+      "url": "https://github.com/AkbarDevop/ai-job-agent",
+      "commit": "9ce47d29b5fcfd37ea2fdd5588c8d178bbfa7305",
+      "stars": 64,
+      "language": "TypeScript",
+      "signal": "substitute",
+      "signals": [
+        "claude-md",
+        "python-requirements"
+      ],
+      "primary_stack": "node",
+      "commits": 35,
+      "substitute": true,
+      "covers": "re-clone abandoned by user decision (heavy repo), slot #5"
+    },
+    {
+      "name": "hi-godot__cyberpunk-hud-demo",
+      "url": "https://github.com/hi-godot/cyberpunk-hud-demo",
+      "commit": "6dbc1460155c2a12ffbbb4bdf6a90d712ea35f08",
+      "stars": 18,
+      "language": "GDScript",
+      "signal": "substitute",
+      "signals": [
+        "claude-md"
+      ],
+      "primary_stack": "unknown",
+      "commits": 30,
+      "substitute": true,
+      "covers": "re-clone abandoned by user decision (heavy repo), slot #6"
+    },
+    {
+      "name": "hugoguerrap__crypto-claude-desk",
+      "url": "https://github.com/hugoguerrap/crypto-claude-desk",
+      "commit": "298cfd58408aa86ef3c7ce863c0c19858636df7a",
+      "stars": 34,
+      "language": "TypeScript",
+      "signal": "substitute",
+      "signals": [
+        "claude-md",
+        "next"
+      ],
+      "primary_stack": "next",
+      "commits": 22,
+      "substitute": true,
+      "covers": "re-clone abandoned by user decision (heavy repo), slot #7"
+    }
+  ]
+}

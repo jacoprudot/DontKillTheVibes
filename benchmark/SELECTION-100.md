@@ -82,6 +82,45 @@ criterio y está dentro de los primeros 100 en el orden determinista, se
 clona. Los únicos fallos posibles son técnicos (repo borrado entre la query
 y el clone, red, permisos) y se reportan con su causa.
 
+## Enmienda de completación (2026-10-08, declarada ANTES de clonar los
+## sustitutos)
+
+Los repos del top-100 que fallen por causa técnica VERIFICADA (repo
+inalcanzable, filename-too-long incluso con `core.longpaths=true`, o error
+de red en el reintento único) se sustituyen para completar la muestra de
+100, en este orden y con estas reglas, fijadas antes de saber cuántos
+fallarán:
+
+1. Fuente: la lista fija de 21 targets del barrido previo
+   (`benchmark/repos.local.json`, orden del archivo). Cero solapamiento con
+   el top-100 (verificado: los 21 superan el cap de 2000★ o no cumplen los
+   filtros de la query).
+2. Se toman del PRIMERO en adelante, tantos como fallos haya.
+3. Clonado FULL (sin --depth) en `benchmark/work100/<owner>__<repo>/`, mismo
+   formato de SHA pineado.
+4. Se marcan en `targets-100.json` con `"substitute": true` y la causa del
+   fallo que cubren — la muestra queda: top-100-clonables + sustitutos
+   declarados. Ninguno entra por gusto: entra por orden fijo de una lista
+   previa.
+
+## Enmienda 2 (2026-10-08, misma decisión, orden sustituido — declarada
+## ANTES de clonar los sustitutos)
+
+El orden "orden de archivo de repos.local.json" de la enmienda 1 se
+sustituye por: los 21 candidatos se ordenan por el campo `size` (KB) de la
+GitHub API, ascendiente, desempate por full_name asc; se toman los 7
+primeros. Razón (orden del usuario): preferir repos ligeros — los pesados
+de la lista (rich 50 MB, roomGPT 22 MB, holo-gestures 58 MB) alargan el
+clonado full-history horas sin mejorar la muestra. La regla sigue siendo
+determinista y previa a cualquier resultado de los sustitutos.
+
+Los 7 seleccionados por esta regla (size API 2026-10-08):
+Julian-Ivanov/jarvis-voice-assistant (36 KB) · aomkoyo/obs-airplay-receiver
+(121 KB) · tokio-rs/mini-redis (240 KB) ·
+gothinkster/node-express-realworld-example-app (345 KB) ·
+AkbarDevop/ai-job-agent (514 KB) · hi-godot/cyberpunk-hud-demo (540 KB) ·
+hugoguerrap/crypto-claude-desk (783 KB).
+
 ## Anonimización (reglas duras)
 
 - Nunca el VALOR de un secreto de un tercero, ni su ubicación si es
