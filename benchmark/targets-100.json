@@ -671,17 +671,6 @@
       "commits": 1200
     },
     {
-      "name": null,
-      "url": "https://github.com/NVIDIA-AI-Blueprints/video-search-and-summarization",
-      "commit": null,
-      "stars": 1914,
-      "language": "Python",
-      "signal": "Python",
-      "signals": [],
-      "primary_stack": "unknown",
-      "clone_error": "not attempted"
-    },
-    {
       "name": "zanwei__design-dna",
       "url": "https://github.com/zanwei/design-dna",
       "commit": "593e39bc9e3652734653bd75544a333d7d43615e",
@@ -691,17 +680,6 @@
       "signals": [],
       "primary_stack": "node",
       "commits": 27
-    },
-    {
-      "name": null,
-      "url": "https://github.com/ButzYung/SystemAnimatorOnline",
-      "commit": null,
-      "stars": 1912,
-      "language": "JavaScript",
-      "signal": "JavaScript",
-      "signals": [],
-      "primary_stack": "unknown",
-      "clone_error": "not attempted"
     },
     {
       "name": "PowerShell__vscode-powershell",
@@ -726,17 +704,6 @@
       ],
       "primary_stack": "node",
       "commits": 4056
-    },
-    {
-      "name": null,
-      "url": "https://github.com/trailofbits/publications",
-      "commit": null,
-      "stars": 1908,
-      "language": "Python",
-      "signal": "Python",
-      "signals": [],
-      "primary_stack": "unknown",
-      "clone_error": "not attempted"
     },
     {
       "name": "DanKE123abc__NoUnityCN",
@@ -775,17 +742,6 @@
       "signals": [],
       "primary_stack": "node",
       "commits": 496
-    },
-    {
-      "name": null,
-      "url": "https://github.com/pmh1314520/WebRPA",
-      "commit": null,
-      "stars": 1903,
-      "language": "Python",
-      "signal": "Python",
-      "signals": [],
-      "primary_stack": "unknown",
-      "clone_error": "not attempted"
     },
     {
       "name": "opennextjs__opennextjs-cloudflare",
@@ -911,17 +867,6 @@
       "commits": 156
     },
     {
-      "name": null,
-      "url": "https://github.com/happier-dev/happier",
-      "commit": null,
-      "stars": 1893,
-      "language": "TypeScript",
-      "signal": "TypeScript",
-      "signals": [],
-      "primary_stack": "unknown",
-      "clone_error": "not attempted"
-    },
-    {
       "name": "coji__natural-japanese",
       "url": "https://github.com/coji/natural-japanese",
       "commit": "9a78a42964096da509b8f3e011f0085a5f080151",
@@ -1027,17 +972,6 @@
       "commits": 953
     },
     {
-      "name": null,
-      "url": "https://github.com/YouMind-OpenLab/nano-banana-pro-prompts-recommend-skill",
-      "commit": null,
-      "stars": 1872,
-      "language": "TypeScript",
-      "signal": "TypeScript",
-      "signals": [],
-      "primary_stack": "unknown",
-      "clone_error": "not attempted"
-    },
-    {
       "name": "zcpua__midjourney-api",
       "url": "https://github.com/zcpua/midjourney-api",
       "commit": "04b27a67d023ed45ed1ff936088565a8fe307e23",
@@ -1083,17 +1017,6 @@
       "signals": [],
       "primary_stack": "node",
       "commits": 428
-    },
-    {
-      "name": null,
-      "url": "https://github.com/weapp-tailwindcss/weapp-tailwindcss",
-      "commit": null,
-      "stars": 1864,
-      "language": "TypeScript",
-      "signal": "TypeScript",
-      "signals": [],
-      "primary_stack": "unknown",
-      "clone_error": "not attempted"
     },
     {
       "name": "trustedsec__hate_crack",
@@ -1305,6 +1228,64 @@
       "commits": 22,
       "substitute": true,
       "covers": "re-clone abandoned by user decision (heavy repo), slot #7"
+    }
+  ],
+  "abandoned": [
+    {
+      "name": null,
+      "url": "https://github.com/NVIDIA-AI-Blueprints/video-search-and-summarization",
+      "stars": 1914,
+      "language": "Python",
+      "signal": "Python",
+      "reason": "not attempted"
+    },
+    {
+      "name": null,
+      "url": "https://github.com/ButzYung/SystemAnimatorOnline",
+      "stars": 1912,
+      "language": "JavaScript",
+      "signal": "JavaScript",
+      "reason": "not attempted"
+    },
+    {
+      "name": null,
+      "url": "https://github.com/trailofbits/publications",
+      "stars": 1908,
+      "language": "Python",
+      "signal": "Python",
+      "reason": "not attempted"
+    },
+    {
+      "name": null,
+      "url": "https://github.com/pmh1314520/WebRPA",
+      "stars": 1903,
+      "language": "Python",
+      "signal": "Python",
+      "reason": "not attempted"
+    },
+    {
+      "name": null,
+      "url": "https://github.com/happier-dev/happier",
+      "stars": 1893,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "reason": "not attempted"
+    },
+    {
+      "name": null,
+      "url": "https://github.com/YouMind-OpenLab/nano-banana-pro-prompts-recommend-skill",
+      "stars": 1872,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "reason": "not attempted"
+    },
+    {
+      "name": null,
+      "url": "https://github.com/weapp-tailwindcss/weapp-tailwindcss",
+      "stars": 1864,
+      "language": "TypeScript",
+      "signal": "TypeScript",
+      "reason": "not attempted"
     }
   ]
 }
