@@ -37,6 +37,95 @@ tool's observable contract. This file is the record of those changes.
 
 ---
 
+## 2026-10-09 — external-review remediation, ronda 2: value-layer supervivientes + SQL concat gate + recall net + the specs gate
+
+**Fingerprint: `368-08ed86b6`** (unchanged) · **Specs fingerprint: `368-f17003f9`** (changed —
+declared here) · **368 canonical finding rules** · 0 ids added or removed, 0 severities
+changed — spec-only and policy changes.
+
+Source: `REVISION-GLM-2026-10-09.md` §5, verified independently before touching anything
+(8/8 reproduced). The ronda-1 entry below carried this warning: *the ruleset fingerprint
+hashes only `id|severity|effort` and is blind to `detectors.json` specs — six specs changed
+and no gate saw it.* **That hole is now closed**: `specsFingerprint()` in
+`scripts/lib/canonical-registry.mjs` hashes the whole execution contract and
+`scripts/registry-diff.mjs` gates it against this changelog exactly like the ruleset
+fingerprint. From this entry forward, "fingerprint unchanged" can never again hide a spec
+change.
+
+What changed (all measured, none of it silent):
+
+- `scripts/detect/secret-noise.mjs`:
+  - README path pattern now covers **localized** READMEs (`README.zh.md`, `README_de.md`,
+    `[._-][a-z]{2,3}` segment) — GLM §3.5.1, fixes the FN where the ronda-1 unilingual
+    pattern left localized ones scannable.
+  - New value test: a value beginning with `++` or `--` is an operator application, not a
+    credential (`const token = ++deploymentRequest.current`) — GLM §5.3, ids 259/260.
+  - New value test: a value beginning with `your-` / `my-` / `insert-` / `replace-` is the
+    writer addressing the reader — GLM §5.3, ids 172/286/302, corpus-independent form of
+    the placeholder-word test.
+  - `NOISE_DIR_SEGMENTS` += `emulate`, `emulators` (segment match, not substring) —
+    GLM §5.6, id 232 (`client_secret: "secret_abc123"` inside an emulator package).
+- `skills/detectors.json` — `code-sql-injection-risk-4`, branch 2 (string concatenation)
+  gated on real query shape: the concatenated side must carry `SELECT…FROM` / `INSERT INTO`
+  / `UPDATE…SET` / `DELETE FROM`, not merely mention the words in prose. Probe
+  `temp/probe-r2-sqli.mjs`: 15/15 (concat positives stay live; `print("Error: SELECT
+  returned " + str(count))` drops). GLM §5.1.
+- `skills/detectors.json` — `security-secret-in-code-1` gains an optional `recall_regex`
+  (camelCase PREFIX vars: `accessToken`, `sessionToken`, `clientSecret`): the main regex's
+  FP lookbehind had blinded it to them. Engine admits recall hits ONLY through the value
+  layer (path policy + `classifySecretValue` must both clear). Probe
+  `temp/probe-r2-recall.mjs` BEFORE/AFTER: `accessToken = "eyJ…"` ZERO → LIVE;
+  `colorToken = '--pg-c-objective'` stays ZERO with the drop counted. The recall NET
+  (true positives minus re-admitted FPs) is measured on the re-sweep, not assumed.
+- `skills/detectors.json` — `security-private-key-7` regex widened: `ENCRYPTED PRIVATE KEY`
+  (PKCS#8) and `DSA PRIVATE KEY` headers were invisible. Probe: encrypted PEM ZERO → LIVE.
+- `scripts/detect/secret-noise.mjs` — PLACEHOLDER_WORDS += `bundle`, `bench`, `snapshot`
+  (GLM id 241, adjudicated FALSE — evidence-backed, so the recall path keeps
+  `policySnapshotToken = 'bundle-bench-snapshot'` dead). The `++`/`--` guard from above
+  also covers the CSS-custom-property class (`--pg-c-objective`) explicitly.
+- `scripts/detect/engine.mjs` — `runGitleaksLite` implements the recall path (counted,
+  budget- and CAP-respecting); `scripts/validate-detectors.mjs` validates the optional
+  field.
+- `scripts/lib/canonical-registry.mjs` — new `specsFingerprint()`: sha256 over the whole
+  `detectors.json` execution contract (per-id stable JSON, `$`-metadata excluded). NEMO §3
+  also closed: `validate-detectors.mjs` now REJECTS a `path_regex` on a working-tree
+  gitleaks spec (it is silently ignored by the runner — only `.git/`-targeting specs may
+  carry one). NEMO §4 closed: the entropy floor is the named, measured
+  `SINGLE_CLASS_ENTROPY_FLOOR` (survivors ≥ 3.64, drops ≤ 2.75; keyboard-walks declared
+  as the known residual).
+- New negative fixtures: `security-secret-in-code-1` (`src/counter-token.ts` ids 259/260,
+  `README_zh.md` id 302, `CONFIGURATION.md` id 286), `flows-n8n-hardcoded-secrets-7`
+  (`SKILL.md` id 172), `code-sql-injection-risk-4` (`src/concat_prose.py`). The
+  `ui-tokens.js` header comment is corrected: it claimed ids 259–264, it asserts 240/241.
+- `docs/RULES.md` regenerated.
+
+Known residual (declared, not fixed here): the D3 set — snake-case `.env`-style variable
+tails, prose-comma values, `.envrc` — stays measured in the re-sweep, not regex-fixed.
+
+## 2026-10-09 — external-review remediation, ronda 1: five credential rules, FP supervivientes
+
+**Fingerprint: `368-08ed86b6`** (unchanged — see the hole declared in the ronda-2 header;
+this entry is the first one it hides) · **368 canonical finding rules** · 0 ids added or
+removed, 0 severities changed.
+
+Measured on the sweep-100 adjudication: of 634 raw credential hits, ~4 in 5 were not
+credentials (fixtures/examples, env-var references — the remediation, not the leak —,
+empty values, placeholders). The suppression policy moved from inline engine code into the
+DECLARED and COUNTED `scripts/detect/secret-noise.mjs`; every drop carries a named reason
+and per-rule count in `findings.json.suppressions`.
+
+Spec changes (`skills/detectors.json`, all `noise: "secret"` gitleaks specs):
+`security-secret-in-code-1`, `security-secret-in-history-2`, `security-oauth-secret-8`,
+`security-gha-secret-leak-3`, `security-db-conn-string-6` — exclude globs widened
+(`*.example*`, `*.sample*`, docs paths), the `security-secret-in-history-2` history probe
+limited to non-test paths.
+
+Reconciliation: the adjudicated "nimbalyst secrets 20 → 9" count already contains ids
+259/260 (adjudicated FALSE in the ronda-1 pass, fixed only in ronda 2). **Do not re-cite
+the ronda-1 adjudication numbers until the re-sweep re-measures them** (ronda 2 Fase E).
+
+---
+
 ## 2026-10-08 — calibration: metrics become suggestions, an absence stops being a grade
 
 **Fingerprint: `368-08ed86b6`** (was `368-6e180554`) · **368 canonical finding rules** · no
