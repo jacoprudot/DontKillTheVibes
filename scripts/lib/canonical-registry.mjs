@@ -194,6 +194,40 @@ export function rulesetFingerprint(rules) {
 }
 
 /**
+ * Deterministic JSON: object keys sorted recursively, so a key reorder in the
+ * source file cannot move the fingerprint. Arrays keep their order (a spec's
+ * keyword list order is irrelevant but harmless to preserve).
+ */
+function stableJson(value) {
+  if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
+  if (value && typeof value === 'object') {
+    const keys = Object.keys(value).sort();
+    return `{${keys.map((k) => `${JSON.stringify(k)}:${stableJson(value[k])}`).join(',')}}`;
+  }
+  return JSON.stringify(value) ?? 'null';
+}
+
+/**
+ * Fingerprint of the EXECUTION contract: `skills/detectors.json`, one entry per
+ * rule id. `rulesetFingerprint()` hashes only `id|severity|effort` and is
+ * therefore BLIND to spec changes — proven 2026-10-09 when six specs changed
+ * (ronda 1 + 2 of the external-review remediation) and the ruleset fingerprint
+ * never moved. Two siblings, two contracts: the declared scoring contract and
+ * the execution contract. Both are gated by `scripts/registry-diff.mjs`.
+ *
+ * @param {object} detectorsDoc parsed `skills/detectors.json`
+ * @returns {string} e.g. "368-1a2b3c4d"
+ */
+export function specsFingerprint(detectorsDoc) {
+  const doc = detectorsDoc && typeof detectorsDoc === 'object' ? detectorsDoc : {};
+  // `$`-prefixed top-level keys are document metadata (e.g. `$comment`), not rules.
+  const ids = Object.keys(doc).sort().filter((k) => !k.startsWith('$'));
+  const canonical = ids.map((id) => `${id}|${stableJson(doc[id])}`).join('\n');
+  const hash = createHash('sha256').update(canonical, 'utf8').digest('hex').slice(0, 8);
+  return `${ids.length}-${hash}`;
+}
+
+/**
  * Every rule id DEFINED MORE THAN ONCE across `skills/*.skill.md`, with the files that
  * define it.
  *

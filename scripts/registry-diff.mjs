@@ -13,7 +13,7 @@
  *
  * This script is the missing process. It rebuilds the registry twice — once from the
  * working tree, once from the SAME files at a git ref — and reports ADDED / REMOVED /
- * CHANGED / DEPRECATED plus both fingerprints. Then it enforces two rules:
+ * CHANGED / DEPRECATED plus both fingerprints. Then it enforces three rules:
  *
  *   1. A CHANGE MUST BE DECLARED. If the fingerprint moved, `skills/CHANGELOG.md` must
  *      contain the new fingerprint. Otherwise the author is told to add an entry. (Same
@@ -23,6 +23,11 @@
  *      `[deprecated -> new-rule-id]` instead; it stays in the registry (so old reports
  *      still validate) and the validator downgrades a citation of it to a warning.
  *      A removed id that is NOT marked deprecated is always exit 1.
+ *   3. THE EXECUTION CONTRACT MOVES TOO. `skills/detectors.json` (how each rule runs)
+ *      has its own fingerprint, and a spec change must be declared in the changelog
+ *      exactly like a ruleset change. Without this gate the registry can swear
+ *      "ruleset unchanged" while the specs that execute it change underneath —
+ *      which is precisely what happened on 2026-10-09 (six specs moved, no gate saw it).
  *
  * Usage:
  *   node scripts/registry-diff.mjs [git-ref] [--json]
@@ -47,7 +52,7 @@ import { join, resolve, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { loadRules, loadRulesFrom, rulesetFingerprint } from './lib/canonical-registry.mjs';
+import { loadRules, loadRulesFrom, rulesetFingerprint, specsFingerprint } from './lib/canonical-registry.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SKILLS_DIR = join(root, 'skills');
@@ -116,6 +121,20 @@ for (const name of skillNames) {
   }
 }
 
+// The EXECUTION contract (skills/detectors.json) at the same ref. A missing file
+// at <ref> means "no specs yet" — an empty doc, which is a legitimate base.
+const DETECTORS_REL = 'skills/detectors.json';
+const detectorsShow = gitShowBlob(`${ref}:${DETECTORS_REL}`);
+const baseDetectorsMissing = !detectorsShow.ok;
+let baseDetectors = {};
+if (!baseDetectorsMissing) {
+  try {
+    baseDetectors = JSON.parse(detectorsShow.stdout);
+  } catch {
+    gitErrors.push(`git show ${ref}:${DETECTORS_REL} — blob is not valid JSON at that ref`);
+  }
+}
+
 try { rmSync(scratchDir, { recursive: true, force: true }); } catch { /* best effort */ }
 
 if (gitErrors.length) {
@@ -174,6 +193,18 @@ const baseFingerprint = rulesetFingerprint(base);
 const currentFingerprint = rulesetFingerprint(current);
 const fingerprintChanged = baseFingerprint !== currentFingerprint;
 
+/* ---------- the execution contract (detectors.json) ---------- */
+let currentDetectors = {};
+try {
+  currentDetectors = JSON.parse(readFileSync(join(root, DETECTORS_REL), 'utf8'));
+} catch {
+  console.error(`${DETECTORS_REL} is missing or not valid JSON in the working tree — the execution contract cannot be fingerprinted.`);
+  process.exit(2);
+}
+const baseSpecsFingerprint = specsFingerprint(baseDetectors);
+const currentSpecsFingerprint = specsFingerprint(currentDetectors);
+const specsChanged = baseSpecsFingerprint !== currentSpecsFingerprint;
+
 /* ---------- the changelog gate ---------- */
 const changelogExists = existsSync(CHANGELOG_PATH);
 const changelogText = changelogExists ? readFileSync(CHANGELOG_PATH, 'utf8') : '';
@@ -195,6 +226,17 @@ if (fingerprintChanged && !declared) {
     + `    Add a dated entry to ${CHANGELOG_REL} that names \`${currentFingerprint}\` and lists these changes.`
   );
 }
+// The SAME gate for the execution contract: a spec change with no changelog entry
+// is the exact hole the 2026-10-09 remediation found (six specs moved, no gate saw
+// it). From now on a detectors.json change must be declared like a ruleset change.
+const specsDeclared = changelogText.includes(currentSpecsFingerprint);
+if (specsChanged && !specsDeclared) {
+  failures.push(
+    `the specs fingerprint changed (${baseSpecsFingerprint} -> ${currentSpecsFingerprint}) but ${CHANGELOG_REL} does not mention the new specs fingerprint.\n`
+    + `    Add a dated entry to ${CHANGELOG_REL} that names \`${currentSpecsFingerprint}\` (the detectors.json execution contract) and lists the spec changes.\n`
+    + `    The ruleset fingerprint (${currentFingerprint}) may be unchanged — that is the blind spot this gate exists to close.`
+  );
+}
 if (fingerprintChanged && !changelogExists) {
   failures.push(`${CHANGELOG_REL} does not exist — a ruleset change must be recorded there.`);
 }
@@ -208,6 +250,9 @@ const report = {
   ref,
   base_fingerprint: baseFingerprint,
   current_fingerprint: currentFingerprint,
+  base_specs_fingerprint: baseSpecsFingerprint,
+  current_specs_fingerprint: currentSpecsFingerprint,
+  specs_changed: specsChanged,
   base_rule_count: base.size,
   current_rule_count: current.size,
   fingerprint_changed: fingerprintChanged,
@@ -237,6 +282,11 @@ if (asJson) {
   lines.push(fingerprintChanged
     ? '             CHANGED — this ruleset needs a changelog entry'
     : '             unchanged — no changelog entry required');
+  lines.push(`specs fp     base:    ${baseSpecsFingerprint}  (${DETECTORS_REL} at ${ref})`);
+  lines.push(`specs fp     current: ${currentSpecsFingerprint}`);
+  lines.push(specsChanged
+    ? '             CHANGED — the execution contract moved; the changelog must name the new specs fingerprint'
+    : '             unchanged — detectors.json execution contract is identical');
   if (missingInRef.length) {
     lines.push(`note: ${missingInRef.length} skill file(s) do not exist at "${ref}" and contributed no base rules: ${missingInRef.join(', ')}`);
   }
@@ -269,9 +319,13 @@ if (asJson) {
     + (fingerprintChanged ? '' : ' (not required: the fingerprint is unchanged)'));
   lines.push('');
   if (pass) {
-    lines.push(fingerprintChanged
-      ? `PASS: ruleset changed and declared in ${CHANGELOG_REL}; no undeclared removals.`
-      : `PASS: ruleset unchanged since ${ref} — nothing to declare.`);
+    if (fingerprintChanged) {
+      lines.push(`PASS: ruleset changed and declared in ${CHANGELOG_REL}; no undeclared removals.`);
+    } else if (specsChanged) {
+      lines.push(`PASS: ruleset unchanged since ${ref}, but the execution contract moved (${baseSpecsFingerprint} -> ${currentSpecsFingerprint}) and is declared in ${CHANGELOG_REL}.`);
+    } else {
+      lines.push(`PASS: ruleset and execution contract unchanged since ${ref} — nothing to declare.`);
+    }
   } else {
     for (const f of failures) lines.push(`FAIL: ${f}`);
     lines.push('');
