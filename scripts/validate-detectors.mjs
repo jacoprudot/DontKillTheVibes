@@ -34,6 +34,7 @@ import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadRules } from './lib/canonical-registry.mjs';
+import { isHistoryPathSpec } from './detect/matchers.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SKILLS_DIR = join(ROOT, 'skills');
@@ -92,7 +93,13 @@ function compiles(re) {
 const SPEC_CHECKERS = {
   gitleaks(id, spec, err) {
     if (typeof spec.regex !== 'string' || !compiles(spec.regex)) err.push(`${id}: gitleaks spec.regex must be a compiling regex string`);
+    if (spec.recall_regex !== undefined && (typeof spec.recall_regex !== 'string' || !compiles(spec.recall_regex))) err.push(`${id}: gitleaks spec.recall_regex must be a compiling regex string (optional recall path, admitted only through the value layer)`);
     if (spec.path_regex !== undefined && (typeof spec.path_regex !== 'string' || !compiles(spec.path_regex))) err.push(`${id}: gitleaks spec.path_regex must compile`);
+    // A path_regex on a working-tree spec is a LIE: runGitleaksLite ignores it,
+    // so the spec claims a scope it does not enforce (NEMO §3, verified 2026-10-09:
+    // only security-secret-in-history-2 legitimately carries one, and it routes to
+    // the history scan). Reject it at the door instead of letting it sit in the file.
+    if (spec.path_regex !== undefined && !isHistoryPathSpec(spec)) err.push(`${id}: gitleaks spec.path_regex only routes to the history scan when it targets .git/ — a working-tree spec cannot carry one (it would be silently ignored). Remove path_regex or use exclude_glob.`);
     if (spec.keywords !== undefined && (!Array.isArray(spec.keywords) || spec.keywords.some(k => typeof k !== 'string'))) err.push(`${id}: gitleaks spec.keywords must be a string array`);
     // MANDATORY DECISION (2026-10-08). A credential spec must say, in data,
     // whether the shared credential-noise policy applies to it. Leaving it

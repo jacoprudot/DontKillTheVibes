@@ -49,6 +49,14 @@
  *   - A credential in a root-level `README.md` / `*.md` outside a docs path.
  *     Documentation is the single most common place a real key gets pasted, so
  *     a bare markdown file is NOT noise.
+ *     ↳ REVERSED 2026-10-09, with evidence. The human adjudication of the
+ *       sweep-100 worklist (temp/adjudication-partial-2026-10-09.json) found
+ *       README hits to be placeholders and doc examples in every reviewed
+ *       case, while the FP volume they added buried the real findings. README
+ *       files (`.md/.markdown/.txt/.rst/.adoc`, any depth) are now a noise
+ *       PATH for credential rules, counted under PATH like every other drop —
+ *       and the policy can be re-reverted by deleting one line below, with the
+ *       count still visible in `suppressions`.
  *   - A value that merely looks unusual. The value tests below only reject
  *     shapes that cannot be a credential (empty, key-name, placeholder word,
  *     a single low-entropy character class); a 40-char high-entropy string in a
@@ -85,6 +93,14 @@ const NOISE_DIR_SEGMENTS = new Set([
   'fixture', 'fixtures', '__fixtures__', 'spec', 'specs', 'testdata',
   'test-data', 'test_data', 'sample', 'samples', 'example', 'examples',
   'demo', 'demos', 'doc', 'docs', 'documentation',
+  // 2026-10-09 adjudication: every benchmark/ and integration_test/ hit reviewed
+  // was test scaffolding, never a production credential.
+  'benchmark', 'benchmarks', 'integration_test', 'integration_tests',
+  // 2026-10-09 ronda 2 (GLM §5.6, id 232): `packages/emulate/` in osworld carried
+  // oauth fixtures of the form client_secret: "secret_abc123" — an emulator's
+  // own fake credentials. A segment match, never a substring: `simulation/`
+  // is not `emulate/`.
+  'emulate', 'emulators',
 ]);
 
 /** File-name shapes that are equally noise, wherever they live. */
@@ -95,6 +111,12 @@ const NOISE_FILE_PATTERNS = [
   /^.*\.(?:example|sample|template)\.[^.]+$/i,
   /^(?:example|sample|template)[-_.].*$/i,
   /.*\.(?:example|sample|template)$/i,
+  // 2026-10-09 adjudication (see the header note): README hits were 100%
+  // placeholders/doc examples in the reviewed sample. Only prose extensions —
+  // a source file named readme-something.ts is still scanned. Ronda 2 (GLM
+  // §3.5.1): the pattern covers localized READMEs (README.zh.md, README_de.md)
+  // — the universal OSS convention — not just the unilingual one.
+  /^readme(?:[._-][a-z]{2,3})?(?:\.(?:md|markdown|txt|rst|adoc))?$/i,
 ];
 
 /**
@@ -141,6 +163,12 @@ const PLACEHOLDER_WORDS = new Set([
   'placeholder', 'test', 'demo', 'yourkey', 'your', 'my', 'here', 'insert',
   'replace', 'value', 'key', 'api', 'client', 'credential', 'credentials',
   'path', 'file',
+  // 2026-10-09 ronda 2, GLM id 241 (adjudicated FALSE, evidence-backed — not a
+  // speculative addition): `policySnapshotToken = 'bundle-bench-snapshot'` must
+  // stay dead when the camelCase recall path re-admits the line. The compound
+  // test only fires when EVERY word part is in this set, so a real secret like
+  // `bench-snapshot-9xK2…` still survives.
+  'bundle', 'bench', 'snapshot',
 ]);
 
 /** Value SHAPES that cannot be a credential (unquoted; the caller strips quotes). */
@@ -240,6 +268,25 @@ function passwordFromUrl(text) {
  * survives and `aaaaaaaaaaaaaaaa` does not. Length alone would drop
  * `sk-live-ABCDEFG`; entropy alone would drop a hex token.
  */
+/**
+ * Single-class entropy floor (NEMO §4, 2026-10-09: "¿de dónde sale el 3.5?").
+ * It only fires TOGETHER with `charClasses < 2`, so its job is narrow: reject a
+ * value drawn from ONE character class that is ALSO low-entropy. PROVENANCE,
+ * measured the day it was named (probe over realistic shapes):
+ *
+ *   survives (real token shapes):   ghp_ PAT H=4.90 · AWS secret H=4.66 ·
+ *     Stripe sk_live H=4.75 · JWT segment H=4.36 · hex-32 H=3.64 ·
+ *     lowercase-random-16 H=4.00 — all ≥ 3.5 or multi-class, none near the floor
+ *   drops (degenerate shapes):      'a'×16 H=0.00 · 'abcabcabcabc' H=1.58 ·
+ *     'passwordpassword' H=2.75 — all single-class AND < 3.5
+ *
+ * The gap between the lowest survivor (3.64) and the highest drop (2.75) is the
+ * margin; 3.5 sits inside it. KNOWN RESIDUAL, declared: a keyboard-walk like
+ * 'qwertyuiopasdfgh' is single-class H=4.00 and SURVIVES — entropy cannot see
+ * keyboard adjacency, and no adjudicated corpus case justifies a fancier test.
+ */
+const SINGLE_CLASS_ENTROPY_FLOOR = 3.5;
+
 export function classifySecretValue(value, line, key) {
   if (value === null || value === undefined) return null;
   const v = String(value).trim().replace(/^["'`]|["'`]$/g, '');
@@ -251,6 +298,24 @@ export function classifySecretValue(value, line, key) {
   const norm = v.toLowerCase().replace(/[-_.]/g, '');
   const keyNorm = key ?? extractKey(line);
   if (keyNorm && norm === keyNorm) return SECRET_NOISE_REASONS.EQUALS_KEY;
+  // Ronda 2 (GLM §5.3, ids 172/286/302): doc placeholders in the form
+  // `your-<something>` / `my-<something>` / `insert-…` / `replace-…` —
+  // `your-ncbi-api-key`, `your-local-secret`, `your-discord-token`. The
+  // compound test below already catches them when EVERY word is in
+  // PLACEHOLDER_WORDS, but only after the shape tests and only when the split
+  // yields multiple words; the prefix test is the corpus-independent form:
+  // the writer is addressing the reader, whatever the words after `your-`
+  // are. Placed before the shape tests so the specific diagnosis is counted.
+  if (/^(?:your|my|insert|replace)[-_.]/i.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
+  // (GLM §5.3, ids 259/260): `const token = ++deploymentRequest.current` —
+  // the value extracted from the line is `++deploymentRequest`, a pre-increment
+  // of a counter, not a credential. A value that BEGINS with `++`/`--` is an
+  // operator application, full stop. This same test covers the CSS-custom-
+  // property FP class (`colorToken = '--pg-c-objective'`, id 240): a custom
+  // property IS a `--`-prefixed token. (Caveat recorded in the ronda-2 note:
+  // this also suppresses a hypothetically-secret variable NAMED `++foo`, which
+  // no real codebase writes.)
+  if (/^[-+]{2}/.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
   if (PLACEHOLDER_SHAPE_RE.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
   if (ALLCAPS_VALUE_RE.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
   if (PLACEHOLDER_WORDS.has(norm)) return SECRET_NOISE_REASONS.PLACEHOLDER;
@@ -260,7 +325,7 @@ export function classifySecretValue(value, line, key) {
     return SECRET_NOISE_REASONS.PLACEHOLDER;
   }
   if (v.length < 10) return SECRET_NOISE_REASONS.PLACEHOLDER;
-  if (charClasses(v) < 2 && entropy(v) < 3.5) return SECRET_NOISE_REASONS.PLACEHOLDER;
+  if (charClasses(v) < 2 && entropy(v) < SINGLE_CLASS_ENTROPY_FLOOR) return SECRET_NOISE_REASONS.PLACEHOLDER;
   return null;
 }
 

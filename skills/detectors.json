@@ -294,7 +294,7 @@
     "spec": {
       "matcher": "file-content-regex",
       "params": {
-        "pattern": "(?i:(?:console|logger|log|logging|sys)\\.(?:log|debug|info|warn|warning|error|exception)\\s*\\([^)\\n]*(?:password|passwd|token|secret|api[_-]?key|credential)\\w*\\s*[,)\\]};])",
+        "pattern": "(?i:(?:console|logger|log|logging|sys)\\.(?:log|debug|info|warn|warning|error|exception)\\s*\\([^)\\n]*(?<![\\w$.])(?:password|passwd|pwd|api[_-]?keys?|credentials?|secret|token)(?![\\w$])\\s*[,;)])",
         "path_glob": "**/*.{js,ts,jsx,tsx,py,java,cs,go}",
         "max_matches": 1000000
       }
@@ -528,7 +528,7 @@
     "spec": {
       "matcher": "file-content-regex",
       "params": {
-        "pattern": "(?i:(?:SELECT|INSERT|UPDATE|DELETE)[^\"'\\n]*[\"']\\s*\\+\\s*\\w+|f[\"'][^\"'\\n]*(?:SELECT|INSERT|UPDATE|DELETE)[^\\n]*?\\{[^}\\n]+\\})",
+        "pattern": "(?i:(?:\\bSELECT\\b[^\"'\\n]{0,80}?\\bFROM\\b|INSERT\\s+INTO\\b|UPDATE\\s+[^\\s\"'{}]{1,60}\\s+SET\\b|DELETE\\s+FROM\\b)[^\\n]*?\\{[^}\\n]+\\}|\\b(?:SELECT\\b[^\"'\\n]{0,80}?\\bFROM\\b|INSERT\\s+INTO\\b|UPDATE\\s+[^\\s\"'{}]{1,60}\\s+SET\\b|DELETE\\s+FROM\\b)[^\\n]*?[\"']\\s*\\+\\s*\\w+)",
         "path_glob": "**/*.py",
         "max_matches": 1000000
       }
@@ -2235,7 +2235,7 @@
       "matcher": "file-presence",
       "params": {
         "path_glob": "**/.env*",
-        "exclude_glob": "{**/.env{rc,dist,defaults,example,example.*,sample,sample.*,template,template.*,test,test.*,spec,spec.*},**/{test,tests,__tests__,spec,specs,fixture,fixtures,__fixtures__,mock,mocks,__mocks__,example,examples,sample,samples,demo,demos,doc,docs,documentation}/**}",
+        "exclude_glob": "{**/.env{rc,dist},**/.env.{example,sample,template,test,spec},**/.env.{example.,sample.,template.,test.,spec.}*,**/{test,tests,__tests__,spec,specs,fixture,fixtures,__fixtures__,mock,mocks,__mocks__,example,examples,sample,samples,demo,demos,doc,docs,documentation}/**}",
         "noise": "secret-path"
       }
     }
@@ -2391,7 +2391,7 @@
     "type": "detector",
     "tool": "gitleaks",
     "spec": {
-      "regex": "-----BEGIN (RSA |EC |OPENSSH |PGP )?PRIVATE KEY( BLOCK)?-----",
+      "regex": "-----BEGIN (?:(?:RSA|EC|DSA|OPENSSH|PGP|ENCRYPTED) )?PRIVATE KEY(?: BLOCK)?-----[ \\t]*\\r?\\n[ \\t]*[A-Za-z0-9+/]{20,}",
       "keywords": [
         "PRIVATE KEY"
       ],
@@ -2405,7 +2405,8 @@
     "type": "detector",
     "tool": "gitleaks",
     "spec": {
-      "regex": "(?i:(api[_-]?key|secret|token|password|passwd|pwd)[ \\t]*[:=][ \\t]*['\"]?[A-Za-z0-9_\\-/+=]{16,}['\"]?)",
+      "regex": "(?i:(?<![a-z0-9$])(api[_-]?key|secret|token|password|passwd|pwd)[ \\t]*[:=][ \\t]*['\"]?[A-Za-z0-9_\\-/+=]{16,}['\"]?)",
+      "recall_regex": "(?i:(?<![a-z0-9$])[a-z]{2,24}(?:secret|token|password|passwd|pwd)[ \\t]*[:=][ \\t]*['\"]?[A-Za-z0-9_\\-/+=]{16,}['\"]?)",
       "keywords": [
         "key",
         "secret",
@@ -2419,7 +2420,7 @@
     "type": "detector",
     "tool": "gitleaks",
     "spec": {
-      "regex": "(?i:(api[_-]?key|secret|token|password|passwd|pwd)[ \\t]*[:=][ \\t]*['\"]?[A-Za-z0-9_\\-/+=]{16,}['\"]?)",
+      "regex": "(?i:(?<![a-z0-9$])(api[_-]?key|secret|token|password|passwd|pwd)[ \\t]*[:=][ \\t]*['\"]?[A-Za-z0-9_\\-/+=]{16,}['\"]?)",
       "path_regex": "\\.git/",
       "noise": "secret"
     }

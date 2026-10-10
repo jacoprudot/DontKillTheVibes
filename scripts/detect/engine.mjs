@@ -52,7 +52,7 @@ import {
   MATCHER_IMPL, CAP, beginRuleContext, endRuleContext,
   runGitLog, runGitHistorySecrets, isHistoryPathSpec, noteSecretNoise,
 } from './matchers.mjs';
-import { classifySecretHit } from './secret-noise.mjs';
+import { classifySecretHit, classifySecretValue, extractValue, SECRET_NOISE_REASONS } from './secret-noise.mjs';
 import { makeGlobMatcher } from './glob.mjs';
 import { loadRules } from '../lib/canonical-registry.mjs';
 
@@ -192,6 +192,16 @@ function runYamlCheck(repo, spec, ctx) {
 function runGitleaksLite(repo, spec, ctx) {
   const keywords = spec.keywords || [];
   const declaredNoise = spec.noise === 'secret';
+  // RECALL PATH (2026-10-09, GLM ronda 2 §5.4). An optional second regex whose
+  // hits are admitted ONLY through the value layer: the path/annotation policy
+  // must clear them AND the extracted value must look like a real credential
+  // (`classifySecretValue` returns null). The main regex stays exactly as
+  // proven; the recall net (new true positives minus value-layer survivors that
+  // are still false) is measured on the re-sweep, never assumed. Rationale:
+  // the main regex's `(?<![a-z0-9$])` lookbehind — the FP fix for camelCase
+  // TAILS (colorToken) — also blinded it to camelCase PREFIXES, which is where
+  // real tokens live (`const accessToken = "eyJ…"`).
+  const recall = spec.recall_regex ? new RegExp(spec.recall_regex, 'g') : null;
   const out = [];
   for (const f of repo.tree) {
     if (budgetOver(ctx)) break;
@@ -216,6 +226,35 @@ function runGitleaksLite(repo, spec, ctx) {
       if (out.length >= CAP) break;
       if (budgetOver(ctx)) break;
       if (m.index === g.lastIndex) g.lastIndex++;
+    }
+    if (out.length >= CAP) break;
+    if (recall && !budgetOver(ctx)) {
+      recall.lastIndex = 0;
+      let rm;
+      while ((rm = recall.exec(r.content)) !== null) {
+        const line = fullLine(r.content, rm.index);
+        const pathVerdict = classifySecretHit({ path: f.rel, line, match: rm[0] });
+        if (pathVerdict.suppressed) {
+          noteSecretNoise(pathVerdict.reason);
+          if (rm.index === recall.lastIndex) recall.lastIndex++;
+          continue;
+        }
+        // Re-admission BY VALUE: even when the path/annotation policy clears the
+        // hit, the value itself must look like a credential. A recall hit whose
+        // value is a slug, a placeholder or a CSS variable is exactly the FP
+        // class the main lookbehind was keeping out — dropped and COUNTED.
+        const value = extractValue(line);
+        const valueReason = value === null ? SECRET_NOISE_REASONS.PLACEHOLDER : classifySecretValue(value, line, null);
+        if (valueReason) {
+          noteSecretNoise(valueReason);
+          if (rm.index === recall.lastIndex) recall.lastIndex++;
+          continue;
+        }
+        out.push({ file: f.rel, line: lineOf(r.content, rm.index), evidence: snippet(r.content, rm.index) });
+        if (out.length >= CAP) break;
+        if (budgetOver(ctx)) break;
+        if (rm.index === recall.lastIndex) recall.lastIndex++;
+      }
     }
     if (out.length >= CAP) break;
   }
