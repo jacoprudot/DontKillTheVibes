@@ -189,7 +189,7 @@ function wordParts(value) {
 }
 
 /** Shannon entropy in bits per character. */
-function entropy(value) {
+export function shannonEntropy(value) {
   const s = String(value);
   if (s.length === 0) return 0;
   const counts = new Map();
@@ -325,7 +325,7 @@ export function classifySecretValue(value, line, key) {
     return SECRET_NOISE_REASONS.PLACEHOLDER;
   }
   if (v.length < 10) return SECRET_NOISE_REASONS.PLACEHOLDER;
-  if (charClasses(v) < 2 && entropy(v) < SINGLE_CLASS_ENTROPY_FLOOR) return SECRET_NOISE_REASONS.PLACEHOLDER;
+  if (charClasses(v) < 2 && shannonEntropy(v) < SINGLE_CLASS_ENTROPY_FLOOR) return SECRET_NOISE_REASONS.PLACEHOLDER;
   return null;
 }
 

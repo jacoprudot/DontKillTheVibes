@@ -188,9 +188,15 @@ for (const [id, entry] of entries) {
   const where = `detectors.json["${id}"]`;
   if (!rules.has(id)) { errors.push(`${where}: "${id}" is not a canonical rule id in skills/*.skill.md`); continue; }
   if (!entry || typeof entry !== 'object' || Array.isArray(entry)) { errors.push(`${where}: entry must be an object`); continue; }
-  const { type, tool, spec, confidence, query } = entry;
+  const { type, tool, spec, confidence, query, tier } = entry;
   if (!TYPES.has(type)) { errors.push(`${where}: type must be one of ${[...TYPES].join(' | ')} (got ${JSON.stringify(type)})`); continue; }
   stats[type]++;
+  // OPTIONAL tier (K3 #2, 2026-10-10): the only value today is "judgment" — a
+  // mechanical rule whose hits need human context to be true or false (the first
+  // carrier, structure-inverted-dependency-2, flags any *Service file importing
+  // anything named *Controller, which a layer graph may fully legitimise). The
+  // precision score excludes tier=judgment findings; the report labels them.
+  if (tier !== undefined && tier !== 'judgment') errors.push(`${where}: tier, when present, must be "judgment" (got ${JSON.stringify(tier)})`);
   if (confidence !== undefined) errors.push(`${where}: confidence was removed by the 2026-10-06 audit — a number without a fixture is the invented-severity defect; it returns only when a fixture earns it`);
   if (query !== undefined) errors.push(`${where}: query (prose) was replaced by structured spec by the 2026-10-06 audit — prose validated nothing`);
   if (MECHANICAL.has(type)) {

@@ -37,6 +37,45 @@ tool's observable contract. This file is the record of those changes.
 
 ---
 
+## 2026-10-10 — Fase D (external-review remediation): quarantine + judgment tier + dead-branch gate + adjudicated decisions
+
+**Fingerprint: `368-08ed86b6`** (unchanged) · **Specs fingerprint: `368-393ab466`** (changed —
+declared here) · **368 canonical finding rules** · 0 ids added/removed, 0 severities changed.
+
+All four items answer `docs/internal/CRITICA-rondas-1-2-2026-10-10.md` (verified 8/10 exact):
+
+- **D1 Quarantine (GLM #8)** — a PATH-suppressed credential hit whose VALUE survives every
+  value test is no longer silently dropped: it lands in `findings.json.quarantined` and a
+  own report section ("manual review"), ranked by entropy, capped at 20, carrying NO
+  evidence by design. Not findings: publishable precision is untouched. Probe:
+  `temp/probe-quarantine.mjs` (README with a real-shaped key → quarantined; placeholder →
+  dropped; src key → finding).
+- **D2 Tier `judgment` (K3 #2)** — optional entry field; first carrier
+  `structure-inverted-dependency-2` (flags any `*Service` file importing anything named
+  `*Controller`; a layer graph may fully legitimise that). Findings carry `tier`, the work
+  plan labels them `[judgment — needs human context]`, and the Fase-E precision score
+  excludes them. Validator accepts only `judgment`.
+- **Dead-branch gate (the critic's deepest finding)** — `positive >= 1` per FILE could not
+  see a dead regex branch (the sql-injection concat branch lived months at zero). Fixtures
+  may now ship `expected_lines.txt` (`repo-relative-path:line` rows); each declared line
+  must receive a finding. First pin: `code-sql-injection-risk-4` lines 10/15/19. Tamper-
+  tested both directions.
+- **D3 Residuals, decided** — `.env.defaults` added to the env-file exclude (dotenv
+  convention; a live value there is still caught by the content rules) with a regression
+  fixture; `.envrc` stays excluded, deliberate: the file-presence rule stays scoped to
+  `.env` while gitleaks content rules still scan `.envrc` — a committed live export there
+  is caught. Snake-case tails and prose-comma stay measured-not-fixed (Fase E worklist).
+- **gha-secret-leak-3 carve-out audited** — `--password-stdin|file` carve-out is fixture-
+  locked for the sound case; confirmed weakness: the exemption is LINE-scoped and masks a
+  second `secrets.` exposure on the same line (probe-documented). Declared, not regex-
+  fixed; Fase E measures prevalence.
+- **logs-secrets-10 post-fix count** — the rule that produced 68 critical findings in the
+  v1 sweep now produces **5 over the same 100 pinned repos** (`temp/measure-logs-secrets-10.mjs`).
+  Caveat carried from the critic: the 68 came from a directed selection and is not
+  projectable; the 5 is a full-corpus count on the same pinned SHAs.
+
+---
+
 ## 2026-10-09 — external-review remediation, ronda 2: value-layer supervivientes + SQL concat gate + recall net + the specs gate
 
 **Fingerprint: `368-08ed86b6`** (unchanged) · **Specs fingerprint: `368-f17003f9`** (changed —

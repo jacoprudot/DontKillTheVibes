@@ -52,7 +52,7 @@ import {
   MATCHER_IMPL, CAP, beginRuleContext, endRuleContext,
   runGitLog, runGitHistorySecrets, isHistoryPathSpec, noteSecretNoise,
 } from './matchers.mjs';
-import { classifySecretHit, classifySecretValue, extractValue, SECRET_NOISE_REASONS } from './secret-noise.mjs';
+import { classifySecretHit, classifySecretValue, extractValue, shannonEntropy, SECRET_NOISE_REASONS } from './secret-noise.mjs';
 import { makeGlobMatcher } from './glob.mjs';
 import { loadRules } from '../lib/canonical-registry.mjs';
 
@@ -203,6 +203,25 @@ function runGitleaksLite(repo, spec, ctx) {
   // real tokens live (`const accessToken = "eyJ…"`).
   const recall = spec.recall_regex ? new RegExp(spec.recall_regex, 'g') : null;
   const out = [];
+  // QUARANTINE (2026-10-10, D1 — GLM #8). A PATH suppression is the one kind a
+  // reader cannot audit from the drop count alone: the README/docs reversal
+  // (ronda 1) is right ~always, but when it is wrong it hides a REAL pasted key
+  // in the single most common place keys get pasted. So a PATH-suppressed hit
+  // whose VALUE survives the value tests is not a finding (publishable precision
+  // untouched) and not silent either: it lands here, labelled manual-review,
+  // ranked by entropy. NO evidence value is ever carried — a quarantine entry
+  // is by definition a suspected real secret.
+  const quarantined = [];
+  const maybeQuarantine = (f, content, index) => {
+    const line = fullLine(content, index);
+    const value = extractValue(line);
+    if (value === null) return;
+    if (classifySecretValue(value, line, null) !== null) return;
+    quarantined.push({
+      file: f, line: lineOf(content, index),
+      entropy: Math.round(shannonEntropy(value) * 100) / 100,
+    });
+  };
   for (const f of repo.tree) {
     if (budgetOver(ctx)) break;
     if (f.binary) continue;
@@ -218,6 +237,7 @@ function runGitleaksLite(repo, spec, ctx) {
         const verdict = classifySecretHit({ path: f.rel, line: fullLine(r.content, m.index), match: m[0] });
         if (verdict.suppressed) {
           noteSecretNoise(verdict.reason);
+          if (verdict.reason === SECRET_NOISE_REASONS.PATH) maybeQuarantine(f.rel, r.content, m.index);
           if (m.index === g.lastIndex) g.lastIndex++;
           continue;
         }
@@ -236,6 +256,7 @@ function runGitleaksLite(repo, spec, ctx) {
         const pathVerdict = classifySecretHit({ path: f.rel, line, match: rm[0] });
         if (pathVerdict.suppressed) {
           noteSecretNoise(pathVerdict.reason);
+          if (pathVerdict.reason === SECRET_NOISE_REASONS.PATH) maybeQuarantine(f.rel, r.content, rm.index);
           if (rm.index === recall.lastIndex) recall.lastIndex++;
           continue;
         }
@@ -258,7 +279,7 @@ function runGitleaksLite(repo, spec, ctx) {
     }
     if (out.length >= CAP) break;
   }
-  return { findings: out };
+  return { findings: out, quarantined };
 }
 
 /**
@@ -412,6 +433,7 @@ export function runDetect(targetDir, opts = {}) {
   const ruleFailures = [];
   const capHits = [];
   const suppressions = [];
+  const quarantined = [];
   const clean = [];
   const timings = [];
   const runGlobs = new Set();
@@ -467,6 +489,9 @@ export function runDetect(targetDir, opts = {}) {
           ? runGitHistorySecrets(repo, entry.spec, { gitLimits: opts.gitLimits })
           : runGitleaksLite(repo, entry.spec, ctx);
         raw = res.findings;
+        if (res.quarantined) {
+          for (const q of res.quarantined) quarantined.push({ ...q, rule: id });
+        }
         if (res.degradedReason) {
           endRuleContext();
           degraded.push({ tool: 'gitleaks', rule: id, reason: res.degradedReason });
@@ -561,6 +586,7 @@ export function runDetect(targetDir, opts = {}) {
         module: id.split('-')[0],
         type: entry.type,
         tool: entry.tool,
+        tier: entry.tier ?? null,
         severity: fields.severity ?? null,
         effort: fields.effort ?? null,
         file: f.file,
@@ -582,8 +608,24 @@ export function runDetect(targetDir, opts = {}) {
 
   unique.sort((a, b) => a.rule.localeCompare(b.rule) || String(a.file).localeCompare(String(b.file)) || (a.line ?? 0) - (b.line ?? 0));
 
+  // Quarantine: ranked by entropy, capped — the list is for a HUMAN to eyeball,
+  // not a second findings channel. Entries carry no evidence by construction.
+  const QUARANTINE_CAP = 20;
+  const uniqueQuarantined = [];
+  {
+    const seen = new Set();
+    for (const q of [...quarantined].sort((a, b) => b.entropy - a.entropy)) {
+      const key = `${q.rule}|${q.file}|${q.line}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      uniqueQuarantined.push(q);
+      if (uniqueQuarantined.length >= QUARANTINE_CAP) break;
+    }
+  }
+
   return {
     findings: unique,
+    quarantined: uniqueQuarantined,
     degraded,
     ruleFailures,
     capHits,

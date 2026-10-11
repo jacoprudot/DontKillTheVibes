@@ -2235,7 +2235,7 @@
       "matcher": "file-presence",
       "params": {
         "path_glob": "**/.env*",
-        "exclude_glob": "{**/.env{rc,dist},**/.env.{example,sample,template,test,spec},**/.env.{example.,sample.,template.,test.,spec.}*,**/{test,tests,__tests__,spec,specs,fixture,fixtures,__fixtures__,mock,mocks,__mocks__,example,examples,sample,samples,demo,demos,doc,docs,documentation}/**}",
+        "exclude_glob": "{**/.env{rc,dist},**/.env.{example,sample,template,test,spec,defaults},**/.env.{example.,sample.,template.,test.,spec.,defaults.}*,**/{test,tests,__tests__,spec,specs,fixture,fixtures,__fixtures__,mock,mocks,__mocks__,example,examples,sample,samples,demo,demos,doc,docs,documentation}/**}",
         "noise": "secret-path"
       }
     }
@@ -2550,6 +2550,7 @@
   },
   "structure-inverted-dependency-2": {
     "type": "detector",
+    "tier": "judgment",
     "tool": "node-matcher",
     "spec": {
       "matcher": "file-content-regex",

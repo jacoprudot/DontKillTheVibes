@@ -106,6 +106,7 @@ const EMPTY_SCAN = {
   ruleFailures: [],
   capHits: [],
   suppressions: [],
+  quarantined: [],
   guardSkips: [],
   coverage: null,
   scanned: 0,
@@ -123,7 +124,7 @@ try {
   fatalError = { message: e?.message ?? String(e), stack: e?.stack ?? null };
   console.error(`scan failed: ${fatalError.message} — writing a partial report anyway (a failed run is data, silence is not)`);
 }
-const { findings: raw, degraded, scanned, skipped, clean, repo, ruleFailures: scanFailures, capHits, suppressions, guardSkips, coverage } = scan ?? EMPTY_SCAN;
+const { findings: raw, degraded, scanned, skipped, clean, repo, ruleFailures: scanFailures, capHits, suppressions, quarantined, guardSkips, coverage } = scan ?? EMPTY_SCAN;
 const ruleFailures = [...scanFailures];
 if (fatalError) ruleFailures.push({ rule: null, reason: 'fatal-scan-error', message: fatalError.message });
 
@@ -327,11 +328,20 @@ if (suppressions.length === 0) {
   md += `Suppression is not deletion: every dropped hit would otherwise be a finding of the severity that rule declares, so this table is the size of the precision correction the policy bought.\n\n`;
 }
 
+md += `## Quarantine (manual review)\n\n`;
+if (quarantined.length === 0) {
+  md += `No PATH-suppressed credential hit had a value that looks real. The README/docs policy dropped only values that cannot be credentials.\n\n`;
+} else {
+  md += `These hits were DROPPED by the PATH policy (test/fixture/example/docs paths) but their VALUE survived every value test — each one could be a real credential pasted where documentation lives. They are NOT findings (they do not count toward any precision claim) and they carry no evidence by design. A human looks at \`file:line\` and decides. Ranked by entropy, capped at 20.\n\n`;
+  for (const q of quarantined) md += `- **${q.rule}** — ${q.file}:${q.line} (entropy ${q.entropy})\n`;
+  md += `\n`;
+}
+
 md += `## Work plan (30/60)\n\n`;
 md += `Bucketing is deterministic: critical+high → 30 days, medium → 60 days; order inside a phase is severity × module weight. \`low\`/\`info\` detector findings are NOT in this plan — they are suggestions (see the appendix), the tier every demoted metric lands in. \`ausencia\` hits are NOT in this plan either: they are an ungraded checklist further down.\n\n`;
 for (const [phase, list] of Object.entries(byPhase)) {
   md += `### ${phase.replace('_', ' ')} (${list.length})\n\n`;
-  for (const f of list) md += `- **${f.rule}** [${f.severity}, effort ${f.effort}, score ${f.score}] — ${f.file}${f.line !== null ? `:${f.line}` : ''}\n`;
+  for (const f of list) md += `- **${f.rule}**${f.tier === 'judgment' ? ' `[judgment — needs human context]`' : ''} [${f.severity}, effort ${f.effort}, score ${f.score}] — ${f.file}${f.line !== null ? `:${f.line}` : ''}\n`;
   md += `\n`;
 }
 

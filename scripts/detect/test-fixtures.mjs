@@ -311,8 +311,42 @@ for (const id of ids) {
     continue;
   }
 
+  // OPT-IN LINE ASSERTIONS (2026-10-10, the dead-branch fix — CRITICA-rondas-1-2).
+  // `pos >= 1` per FILE cannot see a dead branch: the concat branch of
+  // code-sql-injection-risk-4 lived for months producing zero while the f-string
+  // branch kept the whole fixture green. A fixture that ships `expected_lines.txt`
+  // (one `repo-relative-path:line` per row) turns each declared line into part of
+  // the contract: SOME finding of this rule MUST land on that exact line on the
+  // positive side. A dead branch whose case sits on a declared line FAILS the gate.
+  const linesFile = join(base, 'expected_lines.txt');
+  let expectedLines = [];
+  if (existsSync(linesFile)) {
+    expectedLines = readFileSync(linesFile, 'utf8')
+      .split(/\r?\n/)
+      .map((s) => s.trim())
+      .filter((s) => s !== '' && !s.startsWith('#'))
+      .map((s) => {
+        const m = /^(.+?):(\d+)$/.exec(s);
+        return m ? { file: m[1], line: Number.parseInt(m[2], 10) } : null;
+      });
+    if (expectedLines.some((e) => e === null)) {
+      console.log(`FAIL ${id} — expected_lines.txt rows must be 'repo-relative-path:line'`);
+      fail++;
+      failures.push(id);
+      continue;
+    }
+  }
+
   if (pos >= 1 && (expected === null || pos === expected) && neg === 0) {
-    console.log(`PASS ${id} (positive: ${pos} finding(s)${expected === null ? '' : `, exactly the declared ${expected}`}, negative: 0)`);
+    const missed = expectedLines.filter((e) => !probe.findings.some((f) => f.rule === id && f.file === e.file && f.line === e.line));
+    if (missed.length) {
+      console.log(`FAIL ${id} — expected_lines.txt not satisfied (dead branch?): no finding on ${missed.map((e) => `${e.file}:${e.line}`).join(', ')}`);
+      fail++;
+      failures.push(id);
+      continue;
+    }
+    const pins = expectedLines.length ? `, ${expectedLines.length} line(s) pinned` : '';
+    console.log(`PASS ${id} (positive: ${pos} finding(s)${expected === null ? '' : `, exactly the declared ${expected}`}${pins}, negative: 0)`);
     pass++;
   } else {
     console.log(`FAIL ${id} — expected ${expected === null ? 'positive>=1' : `positive=${expected} (declared in expected_positive.txt)`}, negative=0; got positive=${pos}, negative=${neg}`);

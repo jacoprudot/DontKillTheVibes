@@ -1,0 +1,7 @@
+# code-sql-injection-risk-4 — pinned lines (positive side).
+# Each row must receive a finding of this rule. Line 10 is the string-CONCATENATION
+# branch: it is exactly the branch that lived dead for months while `positive >= 1`
+# stayed green on the f-string lines. If branch 2 dies again, this gate FAILS.
+src/users_repository.py:10
+src/users_repository.py:15
+src/users_repository.py:19
