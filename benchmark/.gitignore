@@ -72,3 +72,11 @@ sweep-100/runs/*/prompts.md
 # KEPT: they are the invocation record that makes each SWEEP-100.md row reproducible, and
 # the root "*.log"/"*.txt" habits must not swallow them by accident.
 !sweep-100/runs/**/*.txt
+
+# Sweep v2 (2026-10-10, post-remediation measurement over the same pinned 100): same
+# policy as v1 — the aggregate carries every published figure, the per-repo dumps are
+# regenerable from committed run captures.
+sweep-100-v2/runs/*/findings.json
+sweep-100-v2/runs/*/report.md
+sweep-100-v2/runs/*/prompts.md
+!sweep-100-v2/runs/**/*.txt

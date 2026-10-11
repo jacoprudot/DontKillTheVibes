@@ -1,0 +1,13 @@
+{
+  "frozen_at": "2026-10-10",
+  "purpose": "Frozen addendum for the sweep-100 v2 (post-remediation measurement). Every published figure of sweep-100-v2 must cite this fingerprint pair.",
+  "specs_fingerprint": "368-393ab466",
+  "ruleset_fingerprint": "368-08ed86b6",
+  "fingerprint_note": "specsFingerprint() over skills/detectors.json (the execution contract); rulesetFingerprint() over id|severity|effort. A figure computed with any other pair is from another tool.",
+  "selection_rule": "benchmark/SELECTION-100.md",
+  "targets_file": "benchmark/targets-100.json",
+  "clone": "full history, no --depth (re-cloned 2026-10-08; 0 shallow verified)",
+  "harness": "node benchmark/sweep-100.mjs --out-dir benchmark/sweep-100-v2",
+  "prior_round": "benchmark/sweep-100/ (v1, pre-remediation; do not mix figures across rounds)",
+  "remediation_declared_in": "skills/CHANGELOG.md (rondas 1-2, Fase D, specs fps 368-f17003f9 -> 368-393ab466)"
+}
