@@ -94,7 +94,7 @@ const STATUS_LEGEND = Object.freeze({
   [STATUS.RUNNABLE]: 'a `detector` rule whose tool this runner implements — it can fire today',
   [STATUS.BLOCKED]: 'a `detector` rule whose tool this runner does NOT implement (`DEGRADED_TOOLS`) — it can never fire today',
   [STATUS.AUSENCIA]: 'a checklist / absence check: a hit proves a safeguard is MISSING, not that a violation was found',
-  [STATUS.JUICIO]: 'needs a model to decide a closed question (Fase 3 — no engine exists) — NOT enforced today',
+  [STATUS.JUICIO]: 'needs a model to decide a closed question (Phase 3 — no engine exists) — NOT enforced today',
   [STATUS.FUERA]: 'declared out of scope by design — never enforced',
   [STATUS.UNCLASSIFIED]: 'canonical rule with no entry in `skills/detectors.json` — a contract violation to fix, NOT a status',
 });
@@ -541,7 +541,7 @@ function renderSummary(model) {
   L.push('`proven` rules carry a non-empty positive **and** negative fixture set on disk,');
   L.push('`declared` rules carry none.');
   L.push('');
-  L.push(tableRow(['area', 'rules', 'proven / declared', 'det. runnable', 'det. blocked', 'ausencia', 'juicio', 'fuera', '% enforced']));
+  L.push(tableRow(['area', 'rules', 'proven / declared', 'det. runnable', 'det. blocked', 'absence', 'judgment', 'out of scope', '% enforced']));
   L.push(tableRow(['---', '---:', '---:', '---:', '---:', '---:', '---:', '---:', '---:']));
   for (const area of areas) {
     const s = area.stats;
@@ -563,7 +563,7 @@ function renderSummary(model) {
   L.push(`- \`proven / declared\` splits every area by the evidence on disk: \`proven\` = a non-empty \`tests/fixtures/detectors/<rule-id>/positive/\` **and** \`.../negative/\`, \`declared\` = no such pair, so the two numbers always sum to \`rules\`. It is independent of \`det. runnable\`: one is about tested evidence, the other about which tool this runner implements.`);
   L.push(`- **Audit headline: ${totals.proven} of ${totals.total} rules (${pct(totals.proven, totals.total)}) are \`proven\` — demonstrated by fixtures — and ${totals.declared} (${pct(totals.declared, totals.total)}) are \`declared\`, asserted with no fixture.** Run \`node scripts/detect/test-fixtures.mjs\` to execute the gate those ${totals.proven} evidence sets feed.`);
   L.push(`- \`% enforced\` = \`det. runnable ÷ rules\`: the share of the area whose violations a deterministic detector can *prove* today. \`ausencia\` rules also execute but are excluded here, because they prove only the absence of a guard.`);
-  L.push(`- **${pct(totals.detectorRunnable, totals.total)} of the ruleset (${totals.detectorRunnable} of ${totals.total}) is runnable by the deterministic engine today.** ${totals.detectorBlocked} \`detector\` rules are blocked by an unimplemented tool, ${totals.ausencia} are checklist checks, ${totals.juicio} need a model (Fase 3) and ${totals.fuera} are declared out of scope.`);
+  L.push(`- **${pct(totals.detectorRunnable, totals.total)} of the ruleset (${totals.detectorRunnable} of ${totals.total}) is runnable by the deterministic engine today.** ${totals.detectorBlocked} \`detector\` rules are blocked by an unimplemented tool, ${totals.ausencia} are checklist checks, ${totals.juicio} need a model (Phase 3) and ${totals.fuera} are declared out of scope.`);
   L.push(`- Areas are ordered by module weight — the same weights the work plan orders by — read live from \`scripts/lib/module-weights.mjs\`, whose source line is: \`${model.weightSource}\`.`);
   if (totals.ausenciaBlocked > 0) {
     L.push(`- Of the ${totals.ausencia} \`ausencia\` checks, ${totals.ausenciaBlocked} ${totals.ausenciaBlocked === 1 ? 'also needs' : 'also need'} a tool this runner does not implement (${sortedList(totals.ausenciaBlockedTools)}) and can never fire today.`);
@@ -632,7 +632,7 @@ function renderArea(area) {
   L.push(`- **Skill source:** ${area.skillFiles.length ? area.skillFiles.map((f) => `\`skills/${f}\``).join(', ') : `${EMPTY} (no skill file declares a rule in this area)`}`);
   L.push(`- **Rules:** ${s.total} — ${typeBreakdown(s)}`);
   L.push(`- **Demonstrated:** ${s.proven} of ${s.total} ${s.total === 1 ? 'rule' : 'rules'} are \`${PROVENANCE.PROVEN}\` (a non-empty \`positive/\` and \`negative/\` fixture set exists on disk); the other ${s.declared} ${s.declared === 1 ? 'is' : 'are'} \`${PROVENANCE.DECLARED}\` — asserted, not yet demonstrated.`);
-  L.push(`- **Enforced today:** ${s.detectorRunnable} of ${s.total} rules run (${pct(s.detectorRunnable, s.total)}). The other ${s.total - s.detectorRunnable}: ${plural(s.detectorBlocked, 'blocked `detector` rule', 'blocked `detector` rules')}${s.detectorBlocked > 0 ? ` — tool not implemented (${sortedList(s.blockedTools)})` : ''} · ${plural(s.ausencia, 'checklist-only rule', 'checklist-only rules')} · ${plural(s.juicio, 'rule needing', 'rules needing')} judgment (Fase 3) · ${plural(s.fuera, 'rule', 'rules')} out of scope.`);
+  L.push(`- **Enforced today:** ${s.detectorRunnable} of ${s.total} rules run (${pct(s.detectorRunnable, s.total)}). The other ${s.total - s.detectorRunnable}: ${plural(s.detectorBlocked, 'blocked `detector` rule', 'blocked `detector` rules')}${s.detectorBlocked > 0 ? ` — tool not implemented (${sortedList(s.blockedTools)})` : ''} · ${plural(s.ausencia, 'checklist-only rule', 'checklist-only rules')} · ${plural(s.juicio, 'rule needing', 'rules needing')} judgment (Phase 3) · ${plural(s.fuera, 'rule', 'rules')} out of scope.`);
   if (s.ausenciaBlocked > 0) {
     L.push(`- ${s.ausenciaBlocked} of the ${s.ausencia} \`ausencia\` ${s.ausencia === 1 ? 'check' : 'checks'} ${s.ausenciaBlocked === 1 ? 'needs' : 'need'} an unimplemented tool (${sortedList(s.ausenciaBlockedTools)}) and can never fire today.`);
   }
@@ -699,7 +699,7 @@ function printSummary(model, generated) {
   console.log(`docs/RULES.md — ${totals.total} rules in ${areas.length} areas (fingerprint ${model.fingerprint}, date ${generated.date})`);
   console.log(`  detector  ${pad(totals.detector)}  (runnable ${totals.detectorRunnable}, blocked ${totals.detectorBlocked})`);
   console.log(`  ausencia  ${pad(totals.ausencia)}${totals.ausenciaBlocked > 0 ? `  (${totals.ausenciaBlocked} ${totals.ausenciaBlocked === 1 ? 'needs' : 'need'} an unimplemented tool: ${sortedList(totals.ausenciaBlockedTools)})` : ''}`);
-  console.log(`  juicio    ${pad(totals.juicio)}  (Fase 3 — no engine)`);
+  console.log(`  juicio    ${pad(totals.juicio)}  (Phase 3 — no engine)`);
   console.log(`  fuera     ${pad(totals.fuera)}`);
   if (totals.unclassified > 0) console.log(`  unclassified ${pad(totals.unclassified)}  (no detectors.json entry — contract violation)`);
   console.log(`  enforced today: ${totals.detectorRunnable}/${totals.total} runnable detectors (${pct(totals.detectorRunnable, totals.total)})`);

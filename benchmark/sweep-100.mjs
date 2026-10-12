@@ -32,7 +32,7 @@
  *      how many are shallow and that any history statistic over them is VOID.
  *
  *   3. A REPO WITH ZERO FINDINGS IS NOT CLEAN. The per-area status table
- *      ("NOT EVALUATED" / SIN MOTOR / PARCIAL) survives into the summary, and
+ *      ("NOT EVALUATED" / NO ENGINE / PARTIAL) survives into the summary, and
  *      detector findings whose remediation is the report's fallback string are NOT
  *      counted as "with a real remediation attached".
  *
@@ -737,7 +737,7 @@ md.push(`## Per-repo results`);
 md.push('');
 md.push(`Every target in the manifest appears below with its status. \`sec\` is the child's wall-clock time. \`cov!\` is the share of non-binary files no regex rule examined (\`coverage.files_not_analysed / files_text\`) — high \`cov!\` means a low finding count is weak evidence, not good news.`);
 md.push('');
-md.push(`| # | repo | primary_stack | status | checkout | pinned | sec | grade | det | crit | high | crit+high | with real remediation | ausencia | degraded | rule fail | cap trunc | cov! % |`);
+md.push(`| # | repo | primary_stack | status | checkout | pinned | sec | grade | det | crit | high | crit+high | with real remediation | gaps | degraded | rule fail | cap trunc | cov! % |`);
 md.push(`|---:|---|---|---|---|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|`);
 rows.forEach((r, i) => {
   const n = (v) => (v === null || v === undefined ? '—' : v);
@@ -758,7 +758,7 @@ const s = summary.sums_over_measured_rows_only;
 md.push(`| measure | sum over ${measuredRows.length} measured row(s) |`);
 md.push(`|---|---:|`);
 md.push(`| detector findings | ${s.detector_findings} |`);
-md.push(`| ausencia (checklist gaps) | ${s.ausencia_findings} |`);
+md.push(`| gaps (absence checks) | ${s.ausencia_findings} |`);
 md.push(`| critical | ${s.critical} |`);
 md.push(`| high | ${s.high} |`);
 md.push(`| critical + high | ${s.critical_high} |`);
@@ -771,9 +771,9 @@ md.push(`The \`degraded\` cell counts **per-repo instances**, so the same unimpl
 
 md.push(`## Per-area status — the "NOT EVALUATED" information survives`);
 md.push('');
-md.push(`\`SIN MOTOR\` = zero runnable mechanical rules for the area (nothing was evaluated) · \`PARCIAL\` = the rules needing judgment or live data are at least as many as the runnable mechanical ones · \`CUBIERTA\` = otherwise. **A 0 in the findings column is a statement about the rules that RAN, never about the area.**`);
+md.push(`\`NO ENGINE\` = zero runnable mechanical rules for the area (nothing was evaluated) · \`PARTIAL\` = the rules needing judgment or live data are at least as many as the runnable mechanical ones · \`COVERED\` = otherwise. **A 0 in the findings column is a statement about the rules that RAN, never about the area.**`);
 md.push('');
-md.push(`| repo | area | status | rules | det. runnable | det. blocked | juicio | fuera | findings | crit+high | gaps |`);
+md.push(`| repo | area | status | rules | det. runnable | det. blocked | judgment | out of scope | findings | crit+high | gaps |`);
 md.push(`|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|`);
 let anyArea = false;
 for (const r of rows) {
@@ -785,7 +785,7 @@ for (const r of rows) {
 if (!anyArea) md.push(`| — | — | no run produced an \`area_verdicts\` block | | | | | | | | |`);
 md.push('');
 const notEvaluatedAreas = rows.flatMap((r) => r.area_verdicts
-  .filter((v) => v.status === 'SIN MOTOR' || v.detector_runnable === 0)
+  .filter((v) => v.status === 'NO ENGINE' || v.detector_runnable === 0)
   .map((v) => `${r.name}/${v.module}`));
 if (notEvaluatedAreas.length > 0) {
   md.push(`**Areas where no mechanical rule was evaluated at all** (${notEvaluatedAreas.length}) — nothing in these areas was assessed, so their silence carries no information: ${notEvaluatedAreas.map((a) => `\`${a}\``).join(' · ')}`);
@@ -795,7 +795,7 @@ const zeroFindingAreas = rows.flatMap((r) => r.area_verdicts
   .filter((v) => v.findings === 0 && v.detector_runnable > 0)
   .map((v) => `${r.name}/${v.module}`));
 if (zeroFindingAreas.length > 0) {
-  md.push(`**Areas with 0 findings across the rules that RAN** (${zeroFindingAreas.length}) — a 0 here is a statement about those rules, NOT a clean bill of health (each area's \`juicio\` / \`fuera\` / \`det. blocked\` columns above say what was never examined): ${zeroFindingAreas.map((a) => `\`${a}\``).join(' · ')}`);
+  md.push(`**Areas with 0 findings across the rules that RAN** (${zeroFindingAreas.length}) — a 0 here is a statement about those rules, NOT a clean bill of health (each area's judgment / out-of-scope / det.-blocked columns above say what was never examined): ${zeroFindingAreas.map((a) => `\`${a}\``).join(' · ')}`);
   md.push('');
 }
 const allSilentRepos = rows.filter((r) => r.area_verdicts.length > 0 && r.area_verdicts.every((v) => v.findings === 0));
@@ -806,8 +806,8 @@ if (allSilentRepos.length > 0) {
 
 md.push(`## What this number is NOT`);
 md.push('');
-md.push(`1. **Precision is unmeasured.** Every finding is a raw mechanical signal (label \`probado\`). Nothing here was adjudicated by a human, so there is no true-positive rate and no false-positive rate. A count of findings is a count of signals, not a count of defects.`);
-md.push(`2. **\`juicio\` rules never ran.** ${rows.length > 0 ? `Across the measured repos the \`area_verdicts\` tables name them per area. ` : ''}These rules require a model to decide (Fase 3 has no engine). Their verdict is absent, not negative — a repo with zero findings may have every \`juicio\` rule outstanding.`);
+md.push(`1. **Precision is unmeasured.** Every finding is a raw mechanical signal (label \`proven\`). Nothing here was adjudicated by a human, so there is no true-positive rate and no false-positive rate. A count of findings is a count of signals, not a count of defects.`);
+md.push(`2. **Judgment rules never ran.** ${rows.length > 0 ? `Across the measured repos the \`area_verdicts\` tables name them per area. ` : ''}These rules require a model to decide (Phase 3 has no engine). Their verdict is absent, not negative — a repo with zero findings may have every judgment rule outstanding.`);
 md.push(`3. **Tools that are not implemented are named, never silent.** ${summary.blocked_tools_named.length > 0 ? `Degraded rule ids across this run: ${summary.blocked_tools_named.length} distinct rule(s): ${summary.blocked_tools_named.slice(0, 40).map((r) => `\`${r}\``).join(', ')}${summary.blocked_tools_named.length > 40 ? ` … +${summary.blocked_tools_named.length - 40} more (full list in SWEEP-100.json \`targets[].degraded_rules\`)` : ''}.` : 'No rule reported a degraded tool in this run.'} Rules the engine actually refused at run time (\`degraded\`) and rules that failed mid-run (\`rule_failures\`) are recorded per repo.`);
 if (summary.rule_failures_named.length > 0) {
   md.push(`   - rules that did not complete in at least one repo: ${summary.rule_failures_named.map(([r, n]) => `\`${r}\` (${n})`).join(', ')} — findings for those repos are PARTIAL.`);

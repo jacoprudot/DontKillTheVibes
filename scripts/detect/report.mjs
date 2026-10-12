@@ -155,7 +155,7 @@ const findings = raw.map((f) => {
     graded: !ungraded,
     name: m.name ?? null,
     remediation,
-    label: 'probado',
+    label: 'proven',
     score,
     // `effort` is a COST estimate, not a grade: it stays, so the checklist can be
     // planned without being prioritised.
@@ -210,7 +210,7 @@ const document = {
   generated_by: 'dktv-detect-report',
   target,
   generated_at: new Date().toISOString(),
-  label_legend: { probado: 'mechanically proven by the deterministic engine', juzgado: 'LLM-judged (none in this report)' },
+  label_legend: { proven: 'mechanically proven by the deterministic engine', judged: 'LLM-judged (none in this report)' },
   grade,
   counts,
   module_weights: moduleWeights,
@@ -251,10 +251,10 @@ if (grade.coverageLimited) {
 if (ruleFailures.length > 0) {
   md += `- ⚠️ **${ruleFailures.length} rule(s) did not complete**: ${ruleFailures.map((f) => f.rule ?? '(engine)').join(', ')} — findings below are PARTIAL, see "Rule failures"\n`;
 }
-md += `- ${detectorFindings.length} detector finding(s) + ${ausenciaFindings.length} checklist gap(s) — an ausencia hit means a safeguard is MISSING, not that a violation was found\n`;
+md += `- ${detectorFindings.length} detector finding(s) + ${ausenciaFindings.length} checklist gap(s) — an absence check means a safeguard is MISSING, not that a violation was found\n`;
 const suppressedTotal = suppressions.reduce((a, s) => a + s.dropped, 0);
 md += `- declared exclusions: **${suppressedTotal}** hit(s) dropped by policy across ${suppressions.length} rule(s) — named and counted below, never silent\n`;
-md += `- every detector finding is a raw mechanical signal (label \`probado\`) — verify by hand (file:line) before acting; precision is NOT yet measured (see protocol in PLAN.md)\n\n`;
+md += `- every detector finding is a raw mechanical signal (label \`proven\`) — verify by hand (file:line) before acting; precision is NOT yet measured (see protocol in PLAN.md)\n\n`;
 
 // ---- per-area verdicts: what was assessed, and what was not (2026-10-08) ----
 // Placed BEFORE coverage on purpose: "how much of the tree could a glob match"
@@ -338,7 +338,7 @@ if (quarantined.length === 0) {
 }
 
 md += `## Work plan (30/60)\n\n`;
-md += `Bucketing is deterministic: critical+high → 30 days, medium → 60 days; order inside a phase is severity × module weight. \`low\`/\`info\` detector findings are NOT in this plan — they are suggestions (see the appendix), the tier every demoted metric lands in. \`ausencia\` hits are NOT in this plan either: they are an ungraded checklist further down.\n\n`;
+md += `Bucketing is deterministic: critical+high → 30 days, medium → 60 days; order inside a phase is severity × module weight. \`low\`/\`info\` detector findings are NOT in this plan — they are suggestions (see the appendix), the tier every demoted metric lands in. Absence checks are NOT in this plan either: they are an ungraded checklist further down.\n\n`;
 for (const [phase, list] of Object.entries(byPhase)) {
   md += `### ${phase.replace('_', ' ')} (${list.length})\n\n`;
   for (const f of list) md += `- **${f.rule}**${f.tier === 'judgment' ? ' `[judgment — needs human context]`' : ''} [${f.severity}, effort ${f.effort}, score ${f.score}] — ${f.file}${f.line !== null ? `:${f.line}` : ''}\n`;
@@ -379,7 +379,7 @@ for (const f of appendix) {
 }
 md += `\n`;
 
-md += `## Checklist gaps — ausencia checks, UNGRADED (${ausenciaFindings.length})\n\n`;
+md += `## Checklist gaps — absence checks, UNGRADED (${ausenciaFindings.length})\n\n`;
 md += `These prove a safeguard is MISSING (a timeout, a budget, a monitor). They are not violations and they carry NO severity, NO score and NO phase (\`graded: false\` in findings.json): a missing thing is missing in every repo until it isn't — 38 210 of these fired across the 2026-10-08 100-repo sweep, on 93–100 of the 100 repositories. An absence present in almost every repository is the norm of software, not a graded defect, so it stays in the report as an ordered checklist and out of the graded plan. Grouped by rule, largest first (then rule id, so the order is deterministic); the fix is "add the safeguard", no per-finding prompt needed.\n\n`;
 const gapsByRule = new Map();
 for (const f of ausenciaFindings) {
@@ -394,10 +394,10 @@ for (const [rule, gap] of [...gapsByRule.entries()].sort((a, b) => b[1].files.le
 
 md += `## Coverage vs baseline ruleset (paso D)\n\n`;
 md += `- Canonical registry: ${counts.registry} rules\n`;
-md += `- Mechanical (detector/ausencia): ${counts.mechanical} — fired: ${counts.fired} · ran clean: ${counts.clean} · not runnable yet (tool degraded, listed in findings.json): ${counts.degraded} · failed (error/budget): ${counts.failed}\n`;
+md += `- Mechanical (detector + absence): ${counts.mechanical} — fired: ${counts.fired} · ran clean: ${counts.clean} · not runnable yet (tool degraded, listed in findings.json): ${counts.degraded} · failed (error/budget): ${counts.failed}\n`;
 md += `- Findings per rule are capped at 20: ${counts.capped} rule(s) stopped at the cap (their counts are floors)\n`;
-md += `- \`juicio\`: ${counts.juicioNotEvaluated} — not evaluated by this engine (Fase 3; would carry label \`juzgado\`)\n`;
-md += `- \`fuera\`: ${counts.fuera} — out of scope by design\n\n`;
+md += `- Judgment rules: ${counts.juicioNotEvaluated} — not evaluated by this engine (Phase 3; a judged hit would carry the label \`judged\`)\n`;
+md += `- Out of scope by design: ${counts.fuera}\n\n`;
 md += `Degraded tools (named, never silent): ${degraded.map((d) => `${d.rule} (${d.tool})`).join(', ') || 'none'}\n`;
 
 writeFileSync(join(out, 'report.md'), md);
@@ -406,7 +406,7 @@ writeFileSync(join(out, 'report.md'), md);
 let pr = '';
 pr += `# Remediation prompts (C2) — one per finding, in report order\n\n`;
 pr += `Generated deterministically from the rule registry — no LLM wrote these. `;
-pr += `Every prompt cites its rule. \`probado\` → direct fix prompt. `;
+pr += `Every prompt cites its rule. A \`proven\` finding carries a direct fix prompt. `;
 pr += `Destructive actions (rotate/revoke/rewrite history) are flagged and must be confirmed by a human — never auto-executed. `;
 pr += `Only critical/high findings carry prompts (the rest live in the report appendix; a 555KB prompt file is a wall, not a plan).\n\n`;
 if (ruleFailures.length > 0) {
@@ -443,7 +443,7 @@ writeFileSync(join(out, 'prompts.md'), pr);
 console.log(`report written: ${join(out, 'report.md')}`);
 console.log(`prompts written: ${join(out, 'prompts.md')}`);
 console.log(`findings written: ${join(out, 'findings.json')}`);
-console.log(`grade: ${grade.display} · detector findings: ${detectorFindings.length} (main: ${main.length}) · checklist gaps (ausencia, ungraded): ${ausenciaFindings.length} · clean: ${clean.length} · degraded: ${degraded.length} · juicio not evaluated: ${counts.juicioNotEvaluated}`);
+console.log(`grade: ${grade.display} · detector findings: ${detectorFindings.length} (main: ${main.length}) · checklist gaps (absence checks, ungraded): ${ausenciaFindings.length} · clean: ${clean.length} · degraded: ${degraded.length} · judgment rules not evaluated: ${counts.juicioNotEvaluated}`);
 if (suppressedTotal > 0) console.log(`declared exclusions: ${suppressedTotal} hit(s) dropped by policy across ${suppressions.length} rule(s) — see "Declared exclusions" in report.md`);
 if (coverage) {
   console.log(`coverage: ${coverage.files_text} non-binary file(s) · matched by ≥1 rule path-glob: ${coverage.files_matched_by_any_rule_glob} · NO rule path-glob: ${coverage.files_matched_by_no_rule_glob} · refused by read guards: ${coverage.files_refused_by_read_guards} · NOT examined by any regex rule: ${coverage.files_not_analysed} (${(coverage.uncovered_ratio * 100).toFixed(1)}%)`);

@@ -24,9 +24,9 @@
  *   - every rule count is read from skills/detectors.json at call time.
  *
  * STATUS RULE (also printed in the report, so the reader sees the criterion):
- *   `SIN MOTOR`  zero runnable mechanical rules for the area (nothing evaluated)
- *   `PARCIAL`    juicio + fuera >= the runnable mechanical rules
- *   `CUBIERTA`   otherwise
+ *   `NO ENGINE`  zero runnable mechanical rules for the area (nothing evaluated)
+ *   `PARTIAL`    juicio + fuera >= the runnable mechanical rules
+ *   `COVERED`    otherwise
  *
  * NON-NEGOTIABLE: `areaNote()` never lets zero findings read as health. For an
  * area that produced none it states, with counts, which rules RAN and found
@@ -44,11 +44,14 @@ import { loadModuleWeights, loadModuleNames } from './module-weights.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
-/** The status vocabulary, in one place (the legend and the computation agree). */
+/** The status vocabulary, in one place (the legend and the computation agree).
+ *  English-only since 2026-10-10: the report and the sweep summary are user-facing
+ *  surface for a global audience; the previous Spanish values leaked into shipped
+ *  tables. */
 export const AREA_STATUS = Object.freeze({
-  SIN_MOTOR: 'SIN MOTOR',
-  PARCIAL: 'PARCIAL',
-  CUBIERTA: 'CUBIERTA',
+  SIN_MOTOR: 'NO ENGINE',
+  PARCIAL: 'PARTIAL',
+  CUBIERTA: 'COVERED',
 });
 
 /** The exact shape of one `area_verdicts` row in findings.json. */
@@ -221,7 +224,7 @@ export function areaNote(v, opts = {}) {
   const blockedTotal = v.detector_blocked + v.ausencia_blocked;
   const notEvaluated = v.juicio + v.fuera + blockedTotal;
   const reasons = [];
-  if (v.juicio > 0) reasons.push(`${v.juicio} ${plural(v.juicio, 'needs', 'need')} judgment — Fase 3 has no engine`);
+  if (v.juicio > 0) reasons.push(`${v.juicio} ${plural(v.juicio, 'needs', 'need')} judgment — Phase 3 has no engine`);
   if (v.fuera > 0) reasons.push(`${v.fuera} ${plural(v.fuera, 'is', 'are')} \`fuera\` — need runtime/live data`);
   if (v.tool_blocked_count > 0) reasons.push(`${v.tool_blocked_count} blocked — tool not implemented: ${v.blocked_tools.join(', ')}`);
   if (v.blocked_specs.length > 0) reasons.push(`${v.blocked_specs.length} blocked — spec this runner refuses: ${v.blocked_specs.join(', ')}`);
@@ -253,15 +256,15 @@ export function renderAreaSection(verdicts, opts = {}) {
   const lines = [];
   lines.push(`## Areas — what was assessed, and what was not`);
   lines.push('');
-  lines.push(`One row per assessment area (the skill modules; the rule-id prefixes of \`skills/detectors.json\`, which is also where every rule count below is read from). \`det. runnable\` = \`detector\` rules the runner executed · \`det. blocked\` = \`detector\` rules the runner could NOT execute (tool not implemented, or a spec this run refused) · \`ausencia\` = checklist rules · \`juicio\` = rules a model must decide (Fase 3 — no engine in this report) · \`fuera\` = declared out of scope · \`findings\`/\`crit+high\`/\`gaps\` = this run's output.`);
+  lines.push(`One row per assessment area (the skill modules; the rule-id prefixes of \`skills/detectors.json\`, which is also where every rule count below is read from). \`det. runnable\` = \`detector\` rules the runner executed · \`det. blocked\` = \`detector\` rules the runner could NOT execute (tool not implemented, or a spec this run refused) · \`absence\` = checklist rules (data key \`ausencia\`) · \`judgment\` = rules a model must decide (data key \`juicio\`; Phase 3 — no engine in this report) · \`out of scope\` = declared out of scope (data key \`fuera\`) · \`findings\`/\`crit+high\`/\`gaps\` = this run's output.`);
   lines.push('');
-  lines.push(`**A 0 in the findings column is a statement about the rules that RAN, never about the area.** Status rule: \`SIN MOTOR\` = zero runnable mechanical rules for the area (nothing was evaluated) · \`PARCIAL\` = the rules needing judgment or live data (\`juicio\` + \`fuera\`) are at least as many as the runnable mechanical ones · \`CUBIERTA\` = otherwise.`);
+  lines.push(`**A 0 in the findings column is a statement about the rules that RAN, never about the area.** Status rule: \`NO ENGINE\` = zero runnable mechanical rules for the area (nothing was evaluated) · \`PARTIAL\` = the rules needing judgment or live data are at least as many as the runnable mechanical ones · \`COVERED\` = otherwise.`);
   lines.push('');
   if (opts.moduleFilter) {
     lines.push(`⚠️ This run was restricted with \`--module ${opts.moduleFilter}\`: findings/gaps below exist only for that area; the rule counts are registry facts for every area.`);
     lines.push('');
   }
-  lines.push(`| area | status | rules | det. runnable | det. blocked | ausencia | juicio | fuera | findings | crit+high | gaps |`);
+  lines.push(`| area | status | rules | det. runnable | det. blocked | absence | judgment | out of scope | findings | crit+high | gaps |`);
   lines.push(`|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|`);
   for (const v of verdicts) {
     lines.push(`| \`${v.module}\` (${v.name}) | ${v.status} | ${v.rules_total} | ${v.detector_runnable} | ${v.detector_blocked} | ${v.ausencia} | ${v.juicio} | ${v.fuera} | ${v.findings} | ${v.critical_high} | ${v.gaps} |`);
@@ -271,7 +274,7 @@ export function renderAreaSection(verdicts, opts = {}) {
   const unrun = [];
   for (const v of verdicts) {
     const bits = [];
-    if (v.ausencia_blocked > 0) bits.push(`${v.ausencia_blocked} \`ausencia\`${v.ausencia_blocked_tools.length > 0 ? ` (missing tool: ${v.ausencia_blocked_tools.join(', ')})` : ''}`);
+    if (v.ausencia_blocked > 0) bits.push(`${v.ausencia_blocked} absence-check rule(s)${v.ausencia_blocked_tools.length > 0 ? ` (missing tool: ${v.ausencia_blocked_tools.join(', ')})` : ''}`);
     if (v.blocked_specs.length > 0) bits.push(`refused spec: ${v.blocked_specs.map((id) => `\`${id}\``).join(', ')}`);
     if (bits.length > 0) unrun.push(`\`${v.module}\` ${bits.join(' · ')}`);
   }
@@ -297,12 +300,12 @@ export function renderAreaSection(verdicts, opts = {}) {
 export function formatAreaSummary(verdicts, opts = {}) {
   const lines = [];
   lines.push('areas — what was assessed, and what was not:');
-  lines.push(`  status rule: SIN MOTOR = zero runnable mechanical rules · PARCIAL = juicio + fuera >= runnable mechanical rules · CUBIERTA = otherwise`);
+  lines.push(`  status rule: NO ENGINE = zero runnable mechanical rules · PARTIAL = judgment + out-of-scope >= runnable mechanical rules · COVERED = otherwise`);
   if (opts.moduleFilter) lines.push(`  NOTE: --module ${opts.moduleFilter} restricted the scan; other areas show registry counts only`);
   const width = Math.max(8, ...verdicts.map((v) => v.module.length));
   for (const v of verdicts) {
     lines.push(
-      `  ${v.module.padEnd(width)}  ${v.status.padEnd(9)} rules ${v.rules_total} · det-runnable ${v.detector_runnable} · det-blocked ${v.detector_blocked} · ausencia ${v.ausencia} · juicio ${v.juicio} · fuera ${v.fuera} · findings ${v.findings} (crit+high ${v.critical_high}) · gaps ${v.gaps}`,
+      `  ${v.module.padEnd(width)}  ${v.status.padEnd(9)} rules ${v.rules_total} · det-runnable ${v.detector_runnable} · det-blocked ${v.detector_blocked} · absence ${v.ausencia} · judgment ${v.juicio} · out-of-scope ${v.fuera} · findings ${v.findings} (crit+high ${v.critical_high}) · gaps ${v.gaps}`,
     );
   }
   const silent = verdicts.filter((v) => v.findings === 0);

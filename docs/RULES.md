@@ -8,7 +8,7 @@
 - **Regenerate with:** `node scripts/gen-rules-doc.mjs`
 - **Verify the file is up to date:** `node scripts/gen-rules-doc.mjs --check` (exit 1 when stale)
 - **Ruleset fingerprint:** `368-08ed86b6` — from `rulesetFingerprint()` in `scripts/lib/canonical-registry.mjs`: `<count>-<sha256(id|severity|effort)>`, so any added, removed, reclassified or re-scored rule changes it.
-- **Generation date:** 2026-10-11 — from UTC clock (pin with `--date=` or `SOURCE_DATE_EPOCH`). Regeneration is otherwise deterministic: the registry has 368 rules in 8 areas, of which **49 are `proven`** (fixture-gated) and **319 are `declared`** (asserted, no fixture).
+- **Generation date:** 2026-10-12 — from UTC clock (pin with `--date=` or `SOURCE_DATE_EPOCH`). Regeneration is otherwise deterministic: the registry has 368 rules in 8 areas, of which **49 are `proven`** (fixture-gated) and **319 are `declared`** (asserted, no fixture).
 - **Sources (one source of truth per field — no second parser, no second list):**
   - `skills/*.skill.md` → rule id, severity, effort, deprecation (`loadRules()` in `scripts/lib/canonical-registry.mjs`) and the verbatim condition / remediation text (`loadSkillMetadata()` in `scripts/lib/skill-metadata.mjs`).
   - `skills/detectors.json` → `type`, `tool`, `spec` (the single source for these three).
@@ -28,7 +28,7 @@ deterministic runner would give it **today**:
 | `runnable` | a `detector` rule whose tool this runner implements — it can fire today |
 | `blocked` | a `detector` rule whose tool this runner does NOT implement (`DEGRADED_TOOLS`) — it can never fire today |
 | `ausencia` | a checklist / absence check: a hit proves a safeguard is MISSING, not that a violation was found |
-| `juicio` | needs a model to decide a closed question (Fase 3 — no engine exists) — NOT enforced today |
+| `juicio` | needs a model to decide a closed question (Phase 3 — no engine exists) — NOT enforced today |
 | `fuera` | declared out of scope by design — never enforced |
 
 - The `provenance` column is the audit column: **`proven` = demonstrated, `declared` = only asserted.** A rule is `proven` when `tests/fixtures/detectors/<rule-id>/positive/` and `.../negative/` both exist and are non-empty on disk — the evidence `node scripts/detect/test-fixtures.mjs` needs to show the rule fires on what it targets and stays silent on what it should not flag. A rule with no fixture, or with only one side, is `declared`: an untested assertion. The marker is read from disk at generation time; nothing here lists which rules are proven.
@@ -50,7 +50,7 @@ demonstrated rather than merely asserted?** `proven / declared` answers it —
 `proven` rules carry a non-empty positive **and** negative fixture set on disk,
 `declared` rules carry none.
 
-| area | rules | proven / declared | det. runnable | det. blocked | ausencia | juicio | fuera | % enforced |
+| area | rules | proven / declared | det. runnable | det. blocked | absence | judgment | out of scope | % enforced |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | [`security`](#security--security-assessment) — security-assessment (weight 1.5) | 45 | 17 / 28 | 17 | 8 | 3 | 17 | 0 | 38% |
 | [`database`](#database--database-assessment) — database-assessment (weight 1.3) | 32 | 3 / 29 | 7 | 0 | 7 | 9 | 9 | 22% |
@@ -66,7 +66,7 @@ demonstrated rather than merely asserted?** `proven / declared` answers it —
 - `proven / declared` splits every area by the evidence on disk: `proven` = a non-empty `tests/fixtures/detectors/<rule-id>/positive/` **and** `.../negative/`, `declared` = no such pair, so the two numbers always sum to `rules`. It is independent of `det. runnable`: one is about tested evidence, the other about which tool this runner implements.
 - **Audit headline: 49 of 368 rules (13%) are `proven` — demonstrated by fixtures — and 319 (87%) are `declared`, asserted with no fixture.** Run `node scripts/detect/test-fixtures.mjs` to execute the gate those 49 evidence sets feed.
 - `% enforced` = `det. runnable ÷ rules`: the share of the area whose violations a deterministic detector can *prove* today. `ausencia` rules also execute but are excluded here, because they prove only the absence of a guard.
-- **26% of the ruleset (97 of 368) is runnable by the deterministic engine today.** 37 `detector` rules are blocked by an unimplemented tool, 51 are checklist checks, 117 need a model (Fase 3) and 66 are declared out of scope.
+- **26% of the ruleset (97 of 368) is runnable by the deterministic engine today.** 37 `detector` rules are blocked by an unimplemented tool, 51 are checklist checks, 117 need a model (Phase 3) and 66 are declared out of scope.
 - Areas are ordered by module weight — the same weights the work plan orders by — read live from `scripts/lib/module-weights.mjs`, whose source line is: `security: 1.5, database: 1.3, performance: 1.2, structure: 1.1, flows: 1.0, code: 1.0, cost: 0.8, github: 0.7`.
 - Of the 51 `ausencia` checks, 1 also needs a tool this runner does not implement (semgrep) and can never fire today.
 
@@ -75,7 +75,7 @@ demonstrated rather than merely asserted?** `proven / declared` answers it —
 - **Skill source:** `skills/security-assessment.skill.md`
 - **Rules:** 45 — `detector` 25 (runnable 17, blocked 8) · `ausencia` 3 · `juicio` 17 · `fuera` 0
 - **Demonstrated:** 17 of 45 rules are `proven` (a non-empty `positive/` and `negative/` fixture set exists on disk); the other 28 are `declared` — asserted, not yet demonstrated.
-- **Enforced today:** 17 of 45 rules run (38%). The other 28: 8 blocked `detector` rules — tool not implemented (license-scan, osv-scanner) · 3 checklist-only rules · 17 rules needing judgment (Fase 3) · 0 rules out of scope.
+- **Enforced today:** 17 of 45 rules run (38%). The other 28: 8 blocked `detector` rules — tool not implemented (license-scan, osv-scanner) · 3 checklist-only rules · 17 rules needing judgment (Phase 3) · 0 rules out of scope.
 
 | rule | status | provenance | severity | effort | condition | remediation (verbatim) | tool / spec |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -130,7 +130,7 @@ demonstrated rather than merely asserted?** `proven / declared` answers it —
 - **Skill source:** `skills/database-assessment.skill.md`
 - **Rules:** 32 — `detector` 7 (runnable 7, blocked 0) · `ausencia` 7 · `juicio` 9 · `fuera` 9
 - **Demonstrated:** 3 of 32 rules are `proven` (a non-empty `positive/` and `negative/` fixture set exists on disk); the other 29 are `declared` — asserted, not yet demonstrated.
-- **Enforced today:** 7 of 32 rules run (22%). The other 25: 0 blocked `detector` rules · 7 checklist-only rules · 9 rules needing judgment (Fase 3) · 9 rules out of scope.
+- **Enforced today:** 7 of 32 rules run (22%). The other 25: 0 blocked `detector` rules · 7 checklist-only rules · 9 rules needing judgment (Phase 3) · 9 rules out of scope.
 
 | rule | status | provenance | severity | effort | condition | remediation (verbatim) | tool / spec |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -172,7 +172,7 @@ demonstrated rather than merely asserted?** `proven / declared` answers it —
 - **Skill source:** `skills/performance-assessment.skill.md`
 - **Rules:** 71 — `detector` 2 (runnable 2, blocked 0) · `ausencia` 8 · `juicio` 32 · `fuera` 29
 - **Demonstrated:** 0 of 71 rules are `proven` (a non-empty `positive/` and `negative/` fixture set exists on disk); the other 71 are `declared` — asserted, not yet demonstrated.
-- **Enforced today:** 2 of 71 rules run (3%). The other 69: 0 blocked `detector` rules · 8 checklist-only rules · 32 rules needing judgment (Fase 3) · 29 rules out of scope.
+- **Enforced today:** 2 of 71 rules run (3%). The other 69: 0 blocked `detector` rules · 8 checklist-only rules · 32 rules needing judgment (Phase 3) · 29 rules out of scope.
 
 | rule | status | provenance | severity | effort | condition | remediation (verbatim) | tool / spec |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -253,7 +253,7 @@ demonstrated rather than merely asserted?** `proven / declared` answers it —
 - **Skill source:** `skills/structure-assessment.skill.md`
 - **Rules:** 29 — `detector` 8 (runnable 7, blocked 1) · `ausencia` 0 · `juicio` 21 · `fuera` 0
 - **Demonstrated:** 2 of 29 rules are `proven` (a non-empty `positive/` and `negative/` fixture set exists on disk); the other 27 are `declared` — asserted, not yet demonstrated.
-- **Enforced today:** 7 of 29 rules run (24%). The other 22: 1 blocked `detector` rule — tool not implemented (semgrep) · 0 checklist-only rules · 21 rules needing judgment (Fase 3) · 0 rules out of scope.
+- **Enforced today:** 7 of 29 rules run (24%). The other 22: 1 blocked `detector` rule — tool not implemented (semgrep) · 0 checklist-only rules · 21 rules needing judgment (Phase 3) · 0 rules out of scope.
 
 | rule | status | provenance | severity | effort | condition | remediation (verbatim) | tool / spec |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -292,7 +292,7 @@ demonstrated rather than merely asserted?** `proven / declared` answers it —
 - **Skill source:** `skills/code-quality-assessment.skill.md`
 - **Rules:** 59 — `detector` 44 (runnable 26, blocked 18) · `ausencia` 2 · `juicio` 13 · `fuera` 0
 - **Demonstrated:** 12 of 59 rules are `proven` (a non-empty `positive/` and `negative/` fixture set exists on disk); the other 47 are `declared` — asserted, not yet demonstrated.
-- **Enforced today:** 26 of 59 rules run (44%). The other 33: 18 blocked `detector` rules — tool not implemented (semgrep) · 2 checklist-only rules · 13 rules needing judgment (Fase 3) · 0 rules out of scope.
+- **Enforced today:** 26 of 59 rules run (44%). The other 33: 18 blocked `detector` rules — tool not implemented (semgrep) · 2 checklist-only rules · 13 rules needing judgment (Phase 3) · 0 rules out of scope.
 
 | rule | status | provenance | severity | effort | condition | remediation (verbatim) | tool / spec |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -361,7 +361,7 @@ demonstrated rather than merely asserted?** `proven / declared` answers it —
 - **Skill source:** `skills/flows-assessment.skill.md`
 - **Rules:** 50 — `detector` 17 (runnable 12, blocked 5) · `ausencia` 18 · `juicio` 14 · `fuera` 1
 - **Demonstrated:** 3 of 50 rules are `proven` (a non-empty `positive/` and `negative/` fixture set exists on disk); the other 47 are `declared` — asserted, not yet demonstrated.
-- **Enforced today:** 12 of 50 rules run (24%). The other 38: 5 blocked `detector` rules — tool not implemented (semgrep) · 18 checklist-only rules · 14 rules needing judgment (Fase 3) · 1 rule out of scope.
+- **Enforced today:** 12 of 50 rules run (24%). The other 38: 5 blocked `detector` rules — tool not implemented (semgrep) · 18 checklist-only rules · 14 rules needing judgment (Phase 3) · 1 rule out of scope.
 - 1 of the 18 `ausencia` checks needs an unimplemented tool (semgrep) and can never fire today.
 
 | rule | status | provenance | severity | effort | condition | remediation (verbatim) | tool / spec |
@@ -422,7 +422,7 @@ demonstrated rather than merely asserted?** `proven / declared` answers it —
 - **Skill source:** `skills/cost-analysis.skill.md`
 - **Rules:** 50 — `detector` 12 (runnable 8, blocked 4) · `ausencia` 12 · `juicio` 10 · `fuera` 16
 - **Demonstrated:** 2 of 50 rules are `proven` (a non-empty `positive/` and `negative/` fixture set exists on disk); the other 48 are `declared` — asserted, not yet demonstrated.
-- **Enforced today:** 8 of 50 rules run (16%). The other 42: 4 blocked `detector` rules — tool not implemented (license-scan, osv-scanner) · 12 checklist-only rules · 10 rules needing judgment (Fase 3) · 16 rules out of scope.
+- **Enforced today:** 8 of 50 rules run (16%). The other 42: 4 blocked `detector` rules — tool not implemented (license-scan, osv-scanner) · 12 checklist-only rules · 10 rules needing judgment (Phase 3) · 16 rules out of scope.
 
 | rule | status | provenance | severity | effort | condition | remediation (verbatim) | tool / spec |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -482,7 +482,7 @@ demonstrated rather than merely asserted?** `proven / declared` answers it —
 - **Skill source:** `skills/github-intelligence.skill.md`
 - **Rules:** 32 — `detector` 19 (runnable 18, blocked 1) · `ausencia` 1 · `juicio` 1 · `fuera` 11
 - **Demonstrated:** 10 of 32 rules are `proven` (a non-empty `positive/` and `negative/` fixture set exists on disk); the other 22 are `declared` — asserted, not yet demonstrated.
-- **Enforced today:** 18 of 32 rules run (56%). The other 14: 1 blocked `detector` rule — tool not implemented (github-api) · 1 checklist-only rule · 1 rule needing judgment (Fase 3) · 11 rules out of scope.
+- **Enforced today:** 18 of 32 rules run (56%). The other 14: 1 blocked `detector` rule — tool not implemented (github-api) · 1 checklist-only rule · 1 rule needing judgment (Phase 3) · 11 rules out of scope.
 
 | rule | status | provenance | severity | effort | condition | remediation (verbatim) | tool / spec |
 | --- | --- | --- | --- | --- | --- | --- | --- |
