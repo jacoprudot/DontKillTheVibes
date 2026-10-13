@@ -171,6 +171,19 @@ function snippet(content, index, len = 120) {
 export const MATCHER_IMPL = {
   'file-content-regex'(repo, p) {
     const re = new RegExp(p.pattern);
+    // SCOPE-GATING PARAMS (ronda 3, 2026-10-12 adjudication): `require_pattern`
+    // gates the FILE — a hit only counts if the file also matches this regex
+    // (e.g. a DB-client rule demanding a DB-library import). `exclude_pattern`
+    // vetoes the whole file (e.g. an MCP/LSP client file). `exclude_line_pattern`
+    // vetoes individual HIT LINES (e.g. TS type unions, error-message prose).
+    // These are part of the rule's definition — the same class as path_glob —
+    // not post-hoc suppressions: a non-firing gate narrows what the rule MEANS,
+    // so nothing here is counted in `suppressions` (that counter stays reserved
+    // for the declared noise policy). Probe-validated against the adjudicated
+    // corpus before adoption (temp/probe-r3.mjs): 0 adjudicated REALS killed.
+    const requireRe = p.require_pattern ? new RegExp(p.require_pattern) : null;
+    const excludeRe = p.exclude_pattern ? new RegExp(p.exclude_pattern) : null;
+    const excludeLineRe = p.exclude_line_pattern ? new RegExp(p.exclude_line_pattern) : null;
     const max = p.max_matches ?? CAP;
     const out = [];
     // A spec may declare the credential path scope (`noise: "secret-path"`), the
@@ -183,8 +196,11 @@ export const MATCHER_IMPL = {
       if (pathNoise && pathNoise(f.rel)) { noteSecretNoise(declaredScopeReason()); continue; }
       const r = repo.readRegexText(f.rel);
       if (r === null) continue;
+      if (requireRe && !requireRe.test(r.content)) continue;
+      if (excludeRe && excludeRe.test(r.content)) continue;
       let n = 0;
       for (const m of iterMatches(re, r.content)) {
+        if (excludeLineRe && excludeLineRe.test(snippet(r.content, m.index, 500))) continue;
         out.push({ file: f.rel, line: lineOf(r.content, m.index), evidence: snippet(r.content, m.index) });
         if (++n >= max) break;
         if (budgetExceeded()) break;

@@ -37,6 +37,47 @@ tool's observable contract. This file is the record of those changes.
 
 ---
 
+## 2026-10-12 — Ronda 3 (adjudication-driven spec surgery): scope gating + noise policy extension
+
+**Fingerprint: `368-08ed86b6`** (unchanged) · **Specs fingerprint: `368-49f988e7`** (changed —
+declared here) · **368 canonical finding rules** · 0 ids added/removed, 0 severities changed.
+
+All changes answer the 2026-10-12 GLM adjudication (`temp/adjudication-v2-verdicts.json`,
+62 real / 317 falso) consolidated in `docs/internal/CONSOLIDACION-ADJUDICACION-V2.md`. Every
+spec change was probe-validated against the adjudicated corpus BEFORE adoption
+(`temp/probe-r3.mjs`): **0 adjudicated REALS killed** by any gate; every suppressed FALSE
+class is corpus-backed. New matcher params are rule semantics (same class as `path_glob`),
+not post-hoc suppressions, so nothing they drop is counted in `suppressions`.
+
+- **`file-content-regex` gains `require_pattern` / `exclude_pattern` (file scope) and
+  `exclude_line_pattern` (hit-line scope)** — a hit only counts if the file matches
+  `require_pattern` and not `exclude_pattern`, and hit lines matching `exclude_line_pattern`
+  are out of the rule's definition. Validator accepts the three as compiling regexes.
+- **`cost-db-no-pooling-10`** (0/39 real in the sample): gated to files importing a DB
+  library; files importing MCP / vscode-languageserver / net are vetoed. 25 of 39 falsos
+  gated out; the 14 remaining are real `pg.Client` hits in one-shot CLI/migration scripts
+  (adjudicated not-a-defect) — quarantine candidates, never silently dropped.
+- **`github-log-pattern-6`** (1/10 real): TS type unions (`type LogLevel = "debug" | ...`),
+  string-literal SSH params and ternary verbosity kwargs excluded at line scope. 9/9 falsos
+  suppressed, the 1 real still fires.
+- **`code-sql-injection-risk-4`** (14/71 real): line scope removes error/log prose,
+  bind-param evidence (`?`, `:name`, `%(name)s`, `VALUES(?)`), internal identifiers
+  (`self.X`, UPPER constants, `*col/*field/*clause` names, bare `{table}/{name}`), and
+  LIMIT/OFFSET/WHERE templates WITH bind evidence. 37/57 falsos suppressed. DECLARED
+  RESIDUAL: dict-subscript (`{data['table']}`) and inline `join()` identifiers stay firing —
+  the line regex cannot separate their corpus-falso from their corpus-real (uber__ADR
+  sql_toolkit), and FN-safe wins.
+- **Secret-noise policy extension** (credential rules): value prefixes (`test-`, `fixture-`,
+  `synthetic-`, `dummy-`, `sample-`, `demo-`, `playground…`, `example-`), standalone-word
+  `fake` (embedded FAKE kept — the blunt test killed fixture positive `sk_live_FAKE_DO_NOT_USE`),
+  x-group placeholders, `example.*/localhost` URLs, file-path values, SOPS `ENC[...]` marker,
+  star-history badge URLs (`sealed_token` is public by design); compound-word set extended
+  with adjudicated parts (`user_provided_key`, `id_token_from_idp`, `revokeDeployToken`,
+  `stytch_session_token`, …); README noise pattern fixed for language+region suffixes
+  (README.zh-CN.md); `.lsif` generated index files excluded. 12-survivor gate still green.
+- **Fixtures**: regression sets added for every class above (MCP/LSP gating, TS type unions,
+  parametrized SQL, ronda-3 placeholder values). Gate: 52/52.
+
 ## 2026-10-10 — Fase D (external-review remediation): quarantine + judgment tier + dead-branch gate + adjudicated decisions
 
 **Fingerprint: `368-08ed86b6`** (unchanged) · **Specs fingerprint: `368-393ab466`** (changed —

@@ -116,7 +116,13 @@ const NOISE_FILE_PATTERNS = [
   // a source file named readme-something.ts is still scanned. Ronda 2 (GLM
   // §3.5.1): the pattern covers localized READMEs (README.zh.md, README_de.md)
   // — the universal OSS convention — not just the unilingual one.
-  /^readme(?:[._-][a-z]{2,3})?(?:\.(?:md|markdown|txt|rst|adoc))?$/i,
+  // Ronda 3: README.zh-CN.md / README.pt-BR.md (language + region suffix) were
+  // NOT covered — `zh-CN` broke the `[a-z]{2,3}` stop. Every sampled hit in
+  // localized READMEs was a star-history badge URL or a doc placeholder.
+  /^readme(?:[._-][a-z]{2,3}(?:-[a-z]{2,4})?)?(?:\.(?:md|markdown|txt|rst|adoc))?$/i,
+  // Ronda 3 (adjudication): `.lsif` language-index dumps are generated
+  // artifacts (vscode-eslint server.lsif hits were 100% indexer tokens).
+  /\.lsif$/i,
 ];
 
 /**
@@ -169,6 +175,15 @@ const PLACEHOLDER_WORDS = new Set([
   // test only fires when EVERY word part is in this set, so a real secret like
   // `bench-snapshot-9xK2…` still survives.
   'bundle', 'bench', 'snapshot',
+  // Ronda 3 (2026-10-12 adjudication) — every addition below was an adjudicated
+  // FALSE whose value decomposed into these parts and nothing else
+  // (`user_provided_key`, `id_token_from_idp`, `revokeDeployToken`,
+  // `certificate-password`, `public-token-live-...`, `stytch_session_token`,
+  // `example-model`). The whole-compound test needs EVERY part present, so a
+  // value mixing any of these with a non-listed word still survives.
+  'user', 'provided', 'from', 'idp', 'id', 'revoke', 'deploy', 'model',
+  'session', 'stytch', 'sealed', 'certificate', 'public', 'live', 'xxx',
+  'xxxx', 'auth', 'settings', 'change',
 ]);
 
 /** Value SHAPES that cannot be a credential (unquoted; the caller strips quotes). */
@@ -307,6 +322,37 @@ export function classifySecretValue(value, line, key) {
   // the writer is addressing the reader, whatever the words after `your-`
   // are. Placed before the shape tests so the specific diagnosis is counted.
   if (/^(?:your|my|insert|replace)[-_.]/i.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
+  // Ronda 3 (adjudication): same addressing-the-reader / this-is-a-stand-in
+  // logic for documented prefixes: `test-key-123`, `fixture-...`,
+  // `synthetic-...`, `dummy-...`, `sample-...`, `demo-...`, `playground123`,
+  // `example-model`. A real credential does not begin with a word declaring
+  // itself fake; Stripe TEST keys begin `sk_test_`, not `test-`.
+  if (/^(?:test|fixture|synthetic|dummy|sample|demo|playground|example)[-_.]/i.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
+  // Ronda 3 (adjudication, id 233 `C15TFAKEAMPLITUDEKEY`): FAKE as a standalone
+  // word declares a stand-in (`fake-api-key`). Deliberately `\b`-bounded: an
+  // embedded FAKE (`C15TFAKEAMPLITUDEKEY`) survives — the blunt substring test
+  // killed the fixture positive `sk_live_FAKE_DO_NOT_USE_0000`, and a value
+  // carrying a real-credential prefix with FAKE inside is still a fixture-style
+  // declaration, not a corpus case worth a positive. KNOWN RESIDUAL: exactly
+  // that embedded-fake shape stays a finding.
+  if (/\bfake\b/i.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
+  // Ronda 3 (adjudication, ids 246/247 `xxxx-xxxx-xxxx-xxxx`): grouped-x
+  // placeholders. Single-word `xxxx` is already in PLACEHOLDER_WORDS; this is
+  // the separated-group shape.
+  if (/^(?:x{2,}[-_.]?)+$/i.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
+  // Ronda 3 (adjudication, ids 227/228 `base_url = 'https://gateway.example.test/...'`):
+  // a URL pointing at example.* / localhost is documentation, whatever its
+  // length. Real URL-credentials are extracted by passwordFromUrl BEFORE this
+  // test and never reach it as a bare URL.
+  if (/^https?:\/\/(?:(?:[\w-]+\.)*example(?:\.[\w-]+)?|localhost|127\.0\.0\.1)(?::[\d]+)?(?:[/?]|$)/i.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
+  // Ronda 3 (adjudication, ids 158/160 `changePassword: "src/webviews/pages/ChangePassword/index.tsx"`):
+  // a file path as a value (segments + trailing extension). Requires a `/` and
+  // a final `name.ext`, so base64 secrets (no dot) and JWTs (no slash) survive.
+  if (/^(?:[\w@.-]+\/){1,8}[\w.-]+\.[a-z]{1,8}$/i.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
+  // Ronda 3 (adjudication): Mozilla SOPS ciphertext marker. A `sops:`-encrypted
+  // yaml VALUE is `ENC[AES256_GCM,...]` — protected data by construction, not
+  // an exposed credential.
+  if (/^ENC\[/i.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
   // (GLM §5.3, ids 259/260): `const token = ++deploymentRequest.current` —
   // the value extracted from the line is `++deploymentRequest`, a pre-increment
   // of a counter, not a credential. A value that BEGINS with `++`/`--` is an
@@ -354,6 +400,12 @@ export function classifySecretHit(hit = {}) {
   const pathIsNoise = hit.pathIsNoise ?? isSecretNoisePath(hit.path);
   if (pathIsNoise) return { suppressed: true, reason: SECRET_NOISE_REASONS.PATH };
   if (NOSEC_RE.test(line) || NOSEC_RE.test(match)) return { suppressed: true, reason: SECRET_NOISE_REASONS.NOSEC };
+  // Ronda 3 (adjudication, 13 hits): star-history chart badge URLs carry a
+  // `sealed_token` that is PUBLIC BY DESIGN (it renders an image in GitHub).
+  // The badge url or its sealed_token param on the line disqualifies the hit.
+  if (/api\.star-history\.com|sealed[_-]token/i.test(line) || /sealed[_-]token/i.test(match)) {
+    return { suppressed: true, reason: SECRET_NOISE_REASONS.PLACEHOLDER };
+  }
   if (ENV_USAGE_RE.test(line)) return { suppressed: true, reason: SECRET_NOISE_REASONS.ENV_USAGE };
   const key = extractKey(line) ?? extractKey(match);
   // A connection string is `scheme://user:password@host`: the credential is the

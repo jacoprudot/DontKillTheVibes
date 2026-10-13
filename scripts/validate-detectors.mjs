@@ -55,7 +55,7 @@ const GITHUB_API_CHECKS = new Set(['issue-staleness', 'issue-response-time', 'la
  * this validator (V8 syntax: inline flags must be scoped, e.g. (?i:...)).
  */
 const MATCHERS = {
-  'file-content-regex': { req: { regex: ['pattern'] }, opt: { strings: ['path_glob', 'noise'], ints: ['max_matches'] } },
+  'file-content-regex': { req: { regex: ['pattern'] }, opt: { regex: ['require_pattern', 'exclude_pattern', 'exclude_line_pattern'], strings: ['path_glob', 'noise'], ints: ['max_matches'] } },
   'content-presence': { req: { regex: ['pattern'], strings: ['path_glob'] } },
   'content-absence': { req: { regex: ['pattern'], strings: ['path_glob'] } },
   'file-presence': { req: { strings: ['path_glob'] }, opt: { strings: ['exclude_glob', 'noise'] } },

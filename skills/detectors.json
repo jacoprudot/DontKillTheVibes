@@ -530,8 +530,10 @@
       "params": {
         "pattern": "(?i:(?:\\bSELECT\\b[^\"'\\n]{0,80}?\\bFROM\\b|INSERT\\s+INTO\\b|UPDATE\\s+[^\\s\"'{}]{1,60}\\s+SET\\b|DELETE\\s+FROM\\b)[^\\n]*?\\{[^}\\n]+\\}|\\b(?:SELECT\\b[^\"'\\n]{0,80}?\\bFROM\\b|INSERT\\s+INTO\\b|UPDATE\\s+[^\\s\"'{}]{1,60}\\s+SET\\b|DELETE\\s+FROM\\b)[^\\n]*?[\"']\\s*\\+\\s*\\w+)",
         "path_glob": "**/*.py",
-        "max_matches": 1000000
-      }
+        "max_matches": 1000000,
+        "exclude_line_pattern": "(?i:(raise\\s+\\w*(?:Error|Exception)\\(|^\\s*(?:print|logging\\.|logger\\.)\\(|\\{\\s*placeholders\\s*\\}|\\{\\s*(?:schema|store_clause)\\s*\\}|\\{self\\.\\w+\\}|\\{\\s*\\w+(?:col|column|field|clause|predicate|_sql|_list)\\w*\\s*\\}|\\{\\s*(?:limit|offset|conditions|where)\\s*\\}[^\"'\\n]{0,80}(?:\\?|%\\(\\w+\\)s|:\\w+\\s*[,)\\]}])|VALUES\\s*\\(\\s*\\?|text\\(\\s*f?[\"'][^\"']*:\\w+|\\(\\s*\\{[^{}]{1,40}\\}\\s*\\)[^\"']*\\?|e\\.g\\.[\"']|\\{[a-z]\\w*\\.[a-z]\\w*\\}|\\{\\s*(?:table|name|bstring)\\s*\\}))"
+      },
+      "note": "Ronda 3 (2026-10-12 adjudication, 57 falsos / 14 reales en muestra): exclude_line_pattern removes the adjudicated FALSE classes only — error/log prose, bind-param evidence (?, :name, %(name)s, VALUES(?)), internal identifier names (self.X, *col/*field/*clause constants, schema, {table}/{name} exact), LIMIT/OFFSET/WHERE templates WITH bind evidence on the line, and SQLAlchemy text() with :binds. DELIBERATELY KEPT as findings (line regex cannot distinguish): dict-subscript identifiers (`{data['table']}` — request-driven in the databricks real, fixture config in tests) and bare `{table_name}` from agent toolkits — adjudicated REAL in uber__ADR. 37/57 falsos suppressed, 0/14 reales killed. Probe: temp/probe-r3.mjs."
     }
   },
   "code-structural-duplication-high-4": {
@@ -682,8 +684,11 @@
       "matcher": "file-content-regex",
       "params": {
         "pattern": "new\\s+(pg\\.)?Client\\s*\\(|createConnection\\s*\\(|DriverManager\\.getConnection\\s*\\(",
-        "path_glob": "**/*.{ts,js,py,java,go,kt}"
-      }
+        "path_glob": "**/*.{ts,js,py,java,go,kt}",
+        "require_pattern": "(?i:(from\\s+[\"'](?:pg|mysql2|mongodb|mariadb|sqlite3|knex)[\"']|require\\(\\s*[\"'](?:pg|mysql2|mongodb|mariadb|sqlite3|knex)[\"']\\s*\\)|@prisma/client|java\\.sql\\.|jdbc:|sqlalchemy|psycopg|pymysql))",
+        "exclude_pattern": "(?i:(@modelcontextprotocol|vscode-languageserver|from\\s+[\"']net[\"']|require\\(\\s*[\"']net[\"']\\s*\\)|node:net|createConnection\\s*\\(\\s*ProposedFeatures))"
+      },
+      "note": "Ronda 3 (2026-10-12 adjudication, GLM 0/39 real): gated to files that import a DB library, and vetoes files importing MCP / vscode-languageserver / net. Measured effect on the adjudicated corpus: 25 of 39 falsos gated out; the 14 remaining hits are real pg.Client constructions in one-shot CLI/migration scripts, adjudicated as not-a-defect for lack of pooling need — they stay visible and are quarantine candidates (measured ~0% useful signal), never silently dropped. Probe: temp/probe-r3.mjs (0 adjudicated reals killed by the gate)."
     }
   },
   "cost-db-pool-5": {
@@ -1826,8 +1831,10 @@
       "matcher": "file-content-regex",
       "params": {
         "pattern": "(?i:(LOG_LEVEL|log[_-]?level)\\s*[:=]\\s*['\"]?(debug|trace))",
-        "path_glob": "**/*.{env,yaml,yml,json,ts,js,py}"
-      }
+        "path_glob": "**/*.{env,yaml,yml,json,ts,js,py}",
+        "exclude_line_pattern": "(?i:(^\\s*(?:export\\s+)?(?:type|interface|enum)\\s+\\w|\\|\\s*[\"'](?:trace|debug|info|warn|error|fatal)[\"']\\s*\\||[\"']LogLevel\\s*[=:]|\\w+:\\s*LogLevel\\s*=|\\blog[_-]?level\\s*[=:]\\s*[\"']debug[\"']\\s+if\\b))"
+      },
+      "note": "Ronda 3 (2026-10-12 adjudication): 9 of 10 sampled hits were TypeScript type unions (`type LogLevel = \"debug\" | ...`), string-literal SSH params (\"LogLevel=DEBUG1\"), or ternary verbosity kwargs — none a committed hardcoded debug default. exclude_line_pattern removes exactly those line shapes; the 1 adjudicated real still fires. Probe: temp/probe-r3.mjs (0 reals killed, 9/9 falsos suppressed)."
     }
   },
   "github-log-pattern-7": {
