@@ -80,3 +80,9 @@ sweep-100-v2/runs/*/findings.json
 sweep-100-v2/runs/*/report.md
 sweep-100-v2/runs/*/prompts.md
 !sweep-100-v2/runs/**/*.txt
+
+# Sweep v3 (2026-10-13, post-ronda-3 measurement over the same pinned 100): same policy.
+sweep-100-v3/runs/*/findings.json
+sweep-100-v3/runs/*/report.md
+sweep-100-v3/runs/*/prompts.md
+!sweep-100-v3/runs/**/*.txt
