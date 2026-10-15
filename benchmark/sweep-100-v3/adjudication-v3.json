@@ -1,0 +1,228 @@
+{
+  "artifact": "Human-anchored precision measurement for sweep-100 v3 (post ronda 3)",
+  "measured_at": "2026-10-15T15:59:53.085Z",
+  "instrument": "temp/adjudication-worklist-v3.json (census of 343 graded crit+high findings, seed 20261013) — gitignored",
+  "judges": {
+    "machine": "GLM (z-ai/glm-5.3) — external adversarial reviewer, model family distinct from the artifact author (DeepSeek); full census (343/343)",
+    "human": "project owner — stratified subsample (156/156): all machine-real stratum (96) + deterministic seed sample of machine-false stratum (60 of 247)"
+  },
+  "protocol_notes": [
+    "Human subsample selection was deterministic (sha1(seed:id)), frozen before human review; unlisted ids default false.",
+    "Blindness: the first 28 human verdicts were fully blind (no machine verdicts visible); chat-served batches carried machine labels, so agreement on those items is not independent evidence. Kappa reported with this caveat.",
+    "Uncertain verdicts: none (0 of 343).",
+    "Engine census contains 3 duplicate findings (same rule, same file:line counted twice: ids 157/249, 158/250, 152/232); fixed in ronda 4, noted here for record.",
+    "Raw verdicts (contain third-party repo references and secret-shape descriptions) are deliberately NOT committed; internal copies in docs/internal/adjudication-v3/ (gitignored)."
+  ],
+  "concordance": {
+    "n_pairs": 156,
+    "kappa_cohen": 1,
+    "observed_agreement": 1,
+    "expected_agreement": 0.527
+  },
+  "detector_precision_human_reference": {
+    "strata": {
+      "real": {
+        "n_subset": 96,
+        "jaco_real": 96,
+        "precision": 1,
+        "wilson95": [
+          0.962,
+          1
+        ],
+        "n_census": 96
+      },
+      "false": {
+        "n_subset": 60,
+        "jaco_real": 0,
+        "precision": 0,
+        "wilson95": [
+          0,
+          0.06
+        ],
+        "n_census": 247
+      }
+    },
+    "pooled_point_estimate": 0.28,
+    "range_including_false_stratum_ci": [
+      0.28,
+      0.323
+    ],
+    "note": "Range: pooled if the unsampled machine-false stratum contains zero reals (lower bound) vs its Wilson upper bound of 6% reals (upper bound). Report the range, not the point."
+  },
+  "glm_only_pooled_for_comparison": {
+    "real": 96,
+    "n": 343,
+    "precision": 0.28,
+    "wilson95": [
+      0.235,
+      0.33
+    ]
+  },
+  "per_rule": {
+    "code-logs-secrets-10": {
+      "real": 1,
+      "false": 4,
+      "uncertain": 0,
+      "total": 5,
+      "tier": null,
+      "adjudicated": 5,
+      "precision": 0.2,
+      "wilson_lo": 0.036,
+      "wilson_hi": 0.624
+    },
+    "code-sql-injection-risk-4": {
+      "real": 25,
+      "false": 27,
+      "uncertain": 0,
+      "total": 52,
+      "tier": null,
+      "adjudicated": 52,
+      "precision": 0.481,
+      "wilson_lo": 0.351,
+      "wilson_hi": 0.613
+    },
+    "cost-api-in-loop-3": {
+      "real": 10,
+      "false": 30,
+      "uncertain": 0,
+      "total": 40,
+      "tier": null,
+      "adjudicated": 40,
+      "precision": 0.25,
+      "wilson_lo": 0.142,
+      "wilson_hi": 0.402
+    },
+    "cost-db-no-pooling-10": {
+      "real": 0,
+      "false": 22,
+      "uncertain": 0,
+      "total": 22,
+      "tier": null,
+      "adjudicated": 22,
+      "precision": 0,
+      "wilson_lo": 0,
+      "wilson_hi": 0.149
+    },
+    "database-not-null-violation-4": {
+      "real": 8,
+      "false": 2,
+      "uncertain": 0,
+      "total": 10,
+      "tier": null,
+      "adjudicated": 10,
+      "precision": 0.8,
+      "wilson_lo": 0.49,
+      "wilson_hi": 0.943
+    },
+    "database-sequential-pagination-1": {
+      "real": 2,
+      "false": 0,
+      "uncertain": 0,
+      "total": 2,
+      "tier": null,
+      "adjudicated": 2,
+      "precision": 1,
+      "wilson_lo": 0.342,
+      "wilson_hi": 1
+    },
+    "flows-n8n-hardcoded-secrets-7": {
+      "real": 5,
+      "false": 35,
+      "uncertain": 0,
+      "total": 40,
+      "tier": null,
+      "adjudicated": 40,
+      "precision": 0.125,
+      "wilson_lo": 0.055,
+      "wilson_hi": 0.261
+    },
+    "github-log-pattern-6": {
+      "real": 3,
+      "false": 2,
+      "uncertain": 0,
+      "total": 5,
+      "tier": null,
+      "adjudicated": 5,
+      "precision": 0.6,
+      "wilson_lo": 0.231,
+      "wilson_hi": 0.882
+    },
+    "security-gha-pr-target-risk-1": {
+      "real": 0,
+      "false": 7,
+      "uncertain": 0,
+      "total": 7,
+      "tier": null,
+      "adjudicated": 7,
+      "precision": 0,
+      "wilson_lo": 0,
+      "wilson_hi": 0.354
+    },
+    "security-gha-secret-leak-3": {
+      "real": 11,
+      "false": 0,
+      "uncertain": 0,
+      "total": 11,
+      "tier": null,
+      "adjudicated": 11,
+      "precision": 1,
+      "wilson_lo": 0.741,
+      "wilson_hi": 1
+    },
+    "security-jwt-weak-3": {
+      "real": 3,
+      "false": 0,
+      "uncertain": 0,
+      "total": 3,
+      "tier": null,
+      "adjudicated": 3,
+      "precision": 1,
+      "wilson_lo": 0.438,
+      "wilson_hi": 1
+    },
+    "security-oauth-secret-8": {
+      "real": 1,
+      "false": 6,
+      "uncertain": 0,
+      "total": 7,
+      "tier": null,
+      "adjudicated": 7,
+      "precision": 0.143,
+      "wilson_lo": 0.026,
+      "wilson_hi": 0.513
+    },
+    "security-secret-in-code-1": {
+      "real": 11,
+      "false": 44,
+      "uncertain": 0,
+      "total": 55,
+      "tier": null,
+      "adjudicated": 55,
+      "precision": 0.2,
+      "wilson_lo": 0.116,
+      "wilson_hi": 0.324
+    },
+    "security-secret-in-history-2": {
+      "real": 16,
+      "false": 57,
+      "uncertain": 0,
+      "total": 73,
+      "tier": null,
+      "adjudicated": 73,
+      "precision": 0.219,
+      "wilson_lo": 0.14,
+      "wilson_hi": 0.327
+    },
+    "structure-inverted-dependency-2": {
+      "real": 0,
+      "false": 11,
+      "uncertain": 0,
+      "total": 11,
+      "tier": "judgment",
+      "adjudicated": 11,
+      "precision": 0,
+      "wilson_lo": 0,
+      "wilson_hi": 0.259
+    }
+  }
+}
