@@ -191,12 +191,18 @@ for (const [id, entry] of entries) {
   const { type, tool, spec, confidence, query, tier } = entry;
   if (!TYPES.has(type)) { errors.push(`${where}: type must be one of ${[...TYPES].join(' | ')} (got ${JSON.stringify(type)})`); continue; }
   stats[type]++;
-  // OPTIONAL tier (K3 #2, 2026-10-10): the only value today is "judgment" — a
-  // mechanical rule whose hits need human context to be true or false (the first
-  // carrier, structure-inverted-dependency-2, flags any *Service file importing
-  // anything named *Controller, which a layer graph may fully legitimise). The
-  // precision score excludes tier=judgment findings; the report labels them.
-  if (tier !== undefined && tier !== 'judgment') errors.push(`${where}: tier, when present, must be "judgment" (got ${JSON.stringify(tier)})`);
+  // OPTIONAL tier (K3 #2, 2026-10-10): two values today —
+  //   "judgment"   — a mechanical rule whose hits need human context to be true
+  //                  or false (the first carrier, structure-inverted-dependency-2,
+  //                  flags any *Service file importing anything named
+  //                  *Controller, which a layer graph may fully legitimise);
+  //   "quarantine" (ronda 4, 2026-10-13) — a rule whose precision was MEASURED
+  //                  against human reference and came out 0% (cost-db-no-pooling-10
+  //                  0/22, security-gha-pr-target-risk-1 0/7, version_audit): it
+  //                  still runs and is labelled in the report, but its findings
+  //                  are excluded from the pooled precision score exactly like
+  //                  judgment's.
+  if (tier !== undefined && tier !== 'judgment' && tier !== 'quarantine') errors.push(`${where}: tier, when present, must be "judgment" | "quarantine" (got ${JSON.stringify(tier)})`);
   if (confidence !== undefined) errors.push(`${where}: confidence was removed by the 2026-10-06 audit — a number without a fixture is the invented-severity defect; it returns only when a fixture earns it`);
   if (query !== undefined) errors.push(`${where}: query (prose) was replaced by structured spec by the 2026-10-06 audit — prose validated nothing`);
   if (MECHANICAL.has(type)) {

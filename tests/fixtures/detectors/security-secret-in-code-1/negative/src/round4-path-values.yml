@@ -1,0 +1,17 @@
+# security-secret-in-code-1 negative (ronda 4, 2026-10-13 version_audit).
+# Three adjudicated FALSE shapes that the value layer must suppress:
+#   id 216 (doobidoo)  — a compose default `${VAR:-your-...}` extracts with a
+#                        leading dash; the addressing-the-reader prefix must
+#                        still be recognised on the dash-stripped copy.
+#   id 240 (growth-lab)— a bind-mount value `/data/wechat-token`: an ABSOLUTE
+#                        file path, no extension (the ronda-3 shape test demanded
+#                        name.ext and let it through).
+#   id 219 (machina.js)— a Dockerfile sudoers line whose recall-path match ends
+#                        in `/usr/local/bin/init-firewall`: leading slash, no
+#                        extension for the same reason.
+# This file must NOT fire.
+services:
+  memory:
+    environment:
+      - MCP_API_KEY=${MCP_API_KEY:-your-secure-api-key-here}
+      - ./data/wechat-token:/data/wechat-token

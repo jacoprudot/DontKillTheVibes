@@ -341,7 +341,7 @@ md += `## Work plan (30/60)\n\n`;
 md += `Bucketing is deterministic: critical+high → 30 days, medium → 60 days; order inside a phase is severity × module weight. \`low\`/\`info\` detector findings are NOT in this plan — they are suggestions (see the appendix), the tier every demoted metric lands in. Absence checks are NOT in this plan either: they are an ungraded checklist further down.\n\n`;
 for (const [phase, list] of Object.entries(byPhase)) {
   md += `### ${phase.replace('_', ' ')} (${list.length})\n\n`;
-  for (const f of list) md += `- **${f.rule}**${f.tier === 'judgment' ? ' `[judgment — needs human context]`' : ''} [${f.severity}, effort ${f.effort}, score ${f.score}] — ${f.file}${f.line !== null ? `:${f.line}` : ''}\n`;
+  for (const f of list) md += `- **${f.rule}**${f.tier === 'judgment' ? ' `[judgment — needs human context]`' : ''}${f.tier === 'quarantine' ? ' `[quarantined — precision 0% human-verified, excluded from score]`' : ''} [${f.severity}, effort ${f.effort}, score ${f.score}] — ${f.file}${f.line !== null ? `:${f.line}` : ''}\n`;
   md += `\n`;
 }
 

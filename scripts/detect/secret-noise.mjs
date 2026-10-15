@@ -134,7 +134,16 @@ export function isSecretNoisePath(rel) {
   const p = String(rel ?? '').replace(/\\/g, '/');
   if (p === '') return false;
   const parts = p.split('/');
-  for (const seg of parts.slice(0, -1)) if (NOISE_DIR_SEGMENTS.has(seg.toLowerCase())) return true;
+  // Ronda 4 (version_audit, 18 census items): npm-scoped packages live under
+  // `@scope/` (`packages/@emulators/clerk/…` in vercel-labs__emulate). The scope
+  // marker `@` is packaging syntax, not part of the directory's name — a
+  // segment is compared with a single leading `@` stripped, so `@emulators/`
+  // is `emulators/` and `@tests/` is `tests/`. Only the FIRST `@` is stripped:
+  // `@@foo` matches nothing. File-name segments are never stripped (a scoped
+  // package never puts `@` in a file name).
+  for (const seg of parts.slice(0, -1)) {
+    if (NOISE_DIR_SEGMENTS.has(seg.replace(/^@/, '').toLowerCase())) return true;
+  }
   const base = parts[parts.length - 1] ?? '';
   return NOISE_FILE_PATTERNS.some((re) => re.test(base));
 }
@@ -184,6 +193,11 @@ const PLACEHOLDER_WORDS = new Set([
   'user', 'provided', 'from', 'idp', 'id', 'revoke', 'deploy', 'model',
   'session', 'stytch', 'sealed', 'certificate', 'public', 'live', 'xxx',
   'xxxx', 'auth', 'settings', 'change',
+  // Ronda 4 (version_audit, id 216 `your-secure-api-key-here`): the word half of
+  // the addressing-the-reader placeholder pair (`your-…` / `secure-…`). Only the
+  // whole-compound test consumes it — EVERY part must still be in this set, so
+  // `secure-random-9xK2…` survives.
+  'secure',
 ]);
 
 /** Value SHAPES that cannot be a credential (unquoted; the caller strips quotes). */
@@ -321,13 +335,23 @@ export function classifySecretValue(value, line, key) {
   // yields multiple words; the prefix test is the corpus-independent form:
   // the writer is addressing the reader, whatever the words after `your-`
   // are. Placed before the shape tests so the specific diagnosis is counted.
-  if (/^(?:your|my|insert|replace)[-_.]/i.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
+  //
+  // Ronda 4 (version_audit, id 216 `${MCP_API_KEY:-your-secure-api-key-here}`):
+  // a compose default extraction leaves a leading dash on the value
+  // (`-your-secure-api-key-here`) and the `^`-anchored prefix test misses.
+  // The addressing-the-reader signal is in the WORDS, not the dashes, so the
+  // prefix tests also run against a dash-stripped copy. Deliberately a COPY:
+  // the `^[-+]{2}` operator test below still sees the original `--pg-c-objective`
+  // CSS shape, and a value whose only content is dashes still reaches the
+  // shape tests unchanged.
+  const vBare = v.replace(/^-+|-+$/g, '');
+  if (/^(?:your|my|insert|replace)[-_.]/i.test(v) || /^(?:your|my|insert|replace)[-_.]/i.test(vBare)) return SECRET_NOISE_REASONS.PLACEHOLDER;
   // Ronda 3 (adjudication): same addressing-the-reader / this-is-a-stand-in
   // logic for documented prefixes: `test-key-123`, `fixture-...`,
   // `synthetic-...`, `dummy-...`, `sample-...`, `demo-...`, `playground123`,
   // `example-model`. A real credential does not begin with a word declaring
   // itself fake; Stripe TEST keys begin `sk_test_`, not `test-`.
-  if (/^(?:test|fixture|synthetic|dummy|sample|demo|playground|example)[-_.]/i.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
+  if (/^(?:test|fixture|synthetic|dummy|sample|demo|playground|example)[-_.]/i.test(v) || /^(?:test|fixture|synthetic|dummy|sample|demo|playground|example)[-_.]/i.test(vBare)) return SECRET_NOISE_REASONS.PLACEHOLDER;
   // Ronda 3 (adjudication, id 233 `C15TFAKEAMPLITUDEKEY`): FAKE as a standalone
   // word declares a stand-in (`fake-api-key`). Deliberately `\b`-bounded: an
   // embedded FAKE (`C15TFAKEAMPLITUDEKEY`) survives — the blunt substring test
@@ -348,7 +372,12 @@ export function classifySecretValue(value, line, key) {
   // Ronda 3 (adjudication, ids 158/160 `changePassword: "src/webviews/pages/ChangePassword/index.tsx"`):
   // a file path as a value (segments + trailing extension). Requires a `/` and
   // a final `name.ext`, so base64 secrets (no dot) and JWTs (no slash) survive.
-  if (/^(?:[\w@.-]+\/){1,8}[\w.-]+\.[a-z]{1,8}$/i.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
+  // Ronda 4 (version_audit, ids 219/240): allow an ABSOLUTE path (`/usr/local/bin/init-firewall`,
+  // `/data/wechat-token`) — leading slash, extension optional. Conservative on
+  // purpose: the extension stays REQUIRED for relative paths, so `foo/bar` (two
+  // segments, no dot — plausibly `user:pass`) still reports, and an absolute
+  // path requires ≥2 real segments, so `/x` (a single char) survives.
+  if (/^(?:(?:[\w@.-]+\/){1,8}[\w.-]+\.[a-z]{1,8}|\/(?:[\w@.-]+\/){1,7}[\w.-]+(?:\.[a-z]{1,8})?)$/i.test(v)) return SECRET_NOISE_REASONS.PLACEHOLDER;
   // Ronda 3 (adjudication): Mozilla SOPS ciphertext marker. A `sops:`-encrypted
   // yaml VALUE is `ENC[AES256_GCM,...]` — protected data by construction, not
   // an exposed credential.

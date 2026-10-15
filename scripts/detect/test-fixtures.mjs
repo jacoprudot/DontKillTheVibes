@@ -185,6 +185,20 @@ function runHistoryFixture(id, base) {
       }
       if (side === 'positive') {
         if (found.length < 1) return { ok: false, detail: 'positive: 0 findings (expected >= 1)' };
+        // OPT-IN EXACT COUNT (ronda 4, 2026-10-13): same contract as the
+        // directory fixtures' expected_positive.txt, which the history runner
+        // used to IGNORE. First carrier: security-secret-in-history-2 pins 1 —
+        // its positive history adds the secret line in commit 1 and removes it
+        // in commit 2, and the engine's ronda-4 (rule, file, line) dedup must
+        // collapse the add+remove pair. A dedup regression turns this into 2
+        // and FAILS here instead of at the next census.
+        const expectedFile = join(base, 'expected_positive.txt');
+        if (existsSync(expectedFile)) {
+          const expected = Number.parseInt(readFileSync(expectedFile, 'utf8').trim(), 10);
+          if (!Number.isInteger(expected) || expected < 0) return { ok: false, detail: 'expected_positive.txt must hold a non-negative integer' };
+          if (found.length !== expected) return { ok: false, detail: `positive: expected exactly ${expected} finding(s) (expected_positive.txt), got ${found.length}` };
+          notes.push(`exactly the declared ${expected}`);
+        }
         if (secret && !found.some((f) => String(f.evidence).includes('<redacted'))) {
           return { ok: false, detail: 'positive: no finding carried a redaction marker' };
         }

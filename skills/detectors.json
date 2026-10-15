@@ -531,9 +531,9 @@
         "pattern": "(?i:(?:\\bSELECT\\b[^\"'\\n]{0,80}?\\bFROM\\b|INSERT\\s+INTO\\b|UPDATE\\s+[^\\s\"'{}]{1,60}\\s+SET\\b|DELETE\\s+FROM\\b)[^\\n]*?\\{[^}\\n]+\\}|\\b(?:SELECT\\b[^\"'\\n]{0,80}?\\bFROM\\b|INSERT\\s+INTO\\b|UPDATE\\s+[^\\s\"'{}]{1,60}\\s+SET\\b|DELETE\\s+FROM\\b)[^\\n]*?[\"']\\s*\\+\\s*\\w+)",
         "path_glob": "**/*.py",
         "max_matches": 1000000,
-        "exclude_line_pattern": "(?i:(raise\\s+\\w*(?:Error|Exception)\\(|^\\s*(?:print|logging\\.|logger\\.)\\(|\\{\\s*placeholders\\s*\\}|\\{\\s*(?:schema|store_clause)\\s*\\}|\\{self\\.\\w+\\}|\\{\\s*\\w+(?:col|column|field|clause|predicate|_sql|_list)\\w*\\s*\\}|\\{\\s*(?:limit|offset|conditions|where)\\s*\\}[^\"'\\n]{0,80}(?:\\?|%\\(\\w+\\)s|:\\w+\\s*[,)\\]}])|VALUES\\s*\\(\\s*\\?|text\\(\\s*f?[\"'][^\"']*:\\w+|\\(\\s*\\{[^{}]{1,40}\\}\\s*\\)[^\"']*\\?|e\\.g\\.[\"']|\\{[a-z]\\w*\\.[a-z]\\w*\\}|\\{\\s*(?:table|name|bstring)\\s*\\}))"
+        "exclude_line_pattern": "(?i:(raise\\s+\\w*(?:Error|Exception)\\(|^\\s*(?:print|logging\\.|logger\\.)\\(|\\{\\s*placeholders\\s*\\}|\\{\\s*(?:schema|store_clause)\\s*\\}|\\{self\\.\\w+\\}|\\{\\s*\\w+(?:col|column|field|clause|predicate|_sql|_list)\\w*\\s*\\}|\\{\\s*\\w*(?:where|order|limit|offset|conditions)\\w*\\s*\\}[^\"'\\n]{0,80}(?:\\?|%\\(\\w+\\)s|:\\w+\\s*[,)\\]}])|VALUES\\s*\\(\\s*\\?|text\\(\\s*f?[\"'][^\"']*:\\w+|\\(\\s*\\{[^{}]{1,40}\\}\\s*\\)[^\"']*\\?|e\\.g\\.\\s*(?:[\"']|\\{)|\\{[a-z]\\w*\\.[a-z]\\w*\\}|\\{\\s*[a-z]\\s*\\}|[\"']\\s*\\+\\s*(?:tbl|tables|table|table_name|tableName)\\b|\\{\\s*(?:table|name|bstring)\\s*\\}))"
       },
-      "note": "Ronda 3 (2026-10-12 adjudication, 57 falsos / 14 reales en muestra): exclude_line_pattern removes the adjudicated FALSE classes only — error/log prose, bind-param evidence (?, :name, %(name)s, VALUES(?)), internal identifier names (self.X, *col/*field/*clause constants, schema, {table}/{name} exact), LIMIT/OFFSET/WHERE templates WITH bind evidence on the line, and SQLAlchemy text() with :binds. DELIBERATELY KEPT as findings (line regex cannot distinguish): dict-subscript identifiers (`{data['table']}` — request-driven in the databricks real, fixture config in tests) and bare `{table_name}` from agent toolkits — adjudicated REAL in uber__ADR. 37/57 falsos suppressed, 0/14 reales killed. Probe: temp/probe-r3.mjs."
+      "note": "Ronda 3 (2026-10-12 adjudication, 57 falsos / 14 reales en muestra): exclude_line_pattern removes the adjudicated FALSE classes only — error/log prose, bind-param evidence (?, :name, %(name)s, VALUES(?)), internal identifier names (self.X, *col/*field/*clause constants, schema, {table}/{name} exact), LIMIT/OFFSET/WHERE templates WITH bind evidence on the line, and SQLAlchemy text() with :binds. DELIBERATELY KEPT as findings (line regex cannot distinguish): dict-subscript identifiers (`{data['table']}` — request-driven in the databricks real, fixture config in tests) and bare `{table_name}` from agent toolkits — adjudicated REAL in uber__ADR. 37/57 falsos suppressed, 0/14 reales killed. Probe: temp/probe-r3.mjs. Ronda 4 (2026-10-13 version_audit, ids 26/30/49/57 falsos, 0/96 reales killed — probe temp/probe-r4.mjs): four corpus-backed additions — (a) `e.g.` may be followed by whitespace before the quote/brace (`e.g. {` docstring example, py-gpt/uber), (b) single-letter internal identifiers (`{h}` loop var, doobidoo), (c) WHERE/ORDER/LIMIT-family tokens with ANY affix (`{time_where}`) keep the bind-evidence clause, and (d) string concat ending in an enumerated internal table variable (`\"DELETE FROM \" + tbl`, py-gpt). (d) is PROVISIONAL: a line regex cannot see data flow, so the concat operand is an enumerated name list until an origin mechanism (external input vs internal literal) exists; the f-string positives and every adjudicated REAL use user-driven names the list does not contain."
     }
   },
   "code-structural-duplication-high-4": {
@@ -680,6 +680,7 @@
   "cost-db-no-pooling-10": {
     "type": "detector",
     "tool": "node-matcher",
+    "tier": "quarantine",
     "spec": {
       "matcher": "file-content-regex",
       "params": {
@@ -2308,6 +2309,7 @@
   "security-gha-pr-target-risk-1": {
     "type": "detector",
     "tool": "yaml-check",
+    "tier": "quarantine",
     "spec": {
       "file_glob": ".github/workflows/*.y*ml",
       "check": "presence",

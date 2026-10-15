@@ -596,11 +596,26 @@ export function runDetect(targetDir, opts = {}) {
     }
   }
 
-  // exact duplicates can be emitted (overlapping windows, repeated evidence
-  // lines): one finding per (rule, file, line, evidence), keeping first order
+  // Exact duplicates are emitted with DISTINCT evidence strings, which is why
+  // the evidence can no longer be part of the key. Two verified cases
+  // (version_audit, ronda 4):
+  //   - the git-HISTORY secret scan emits the same file:line twice — once as
+  //     the commit that ADDED the line, once as the commit that REMOVED it
+  //     (vercel-labs__emulate packages/@emulators/clerk/src/index.ts:68,
+  //     okta:126, skills/okta/SKILL.md:96). Two remediation facts by the
+  //     matcher's own design, but ONE location for the reader, and the census
+  //     (ids 317/318, 320/321) counted the pair as two findings.
+  //   - the cross-rule pairs the audit flagged (ids 157/249, 158/250, 152/232:
+  //     flows-n8n-hardcoded-secrets-7 + security-secret-in-code-1 on the same
+  //     line) are DIFFERENT rules and are NOT touched — the key carries the rule.
+  // Working-tree matchers emit the line snippet as evidence, so for them
+  // (rule, file, line) == (rule, file, line, evidence) and the relaxed key
+  // changes nothing; the history rule is the one whose evidence differed.
+  // FN-safe: the location still fires once — nothing is suppressed, the twin
+  // record of the same location is.
   const seen = new Set();
   const unique = findings.filter((f) => {
-    const key = `${f.rule}|${f.file}|${f.line}|${f.evidence}`;
+    const key = `${f.rule}|${f.file}|${f.line}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;

@@ -37,6 +37,49 @@ tool's observable contract. This file is the record of those changes.
 
 ---
 
+## 2026-10-15 — Ronda 4 (version_audit spec surgery): scoped-emulator paths, value shapes, sqli exclusions, emission dedup, quarantine tier
+
+**Fingerprint: `368-08ed86b6`** (unchanged) · **Specs fingerprint: `368-fb05070a`** (changed —
+declared here) · **368 canonical finding rules** · 0 ids added/removed, 0 severities changed.
+
+All changes answer the 2026-10-13 GLM version_audit (28.0% pooled over 343 crit+high findings,
+96 real / 247 false, `temp/adjudication-v3-verdict-map-glm.json`); every mechanism was
+verified against the real clone before touching code (`temp/probe-r4-investigate.mjs`) and
+every fix was probe-validated after (`temp/probe-r4.mjs`): all 18 targeted FALSE ids
+suppressed, 0 of the 96 adjudicated REALS killed.
+
+- **`isSecretNoisePath` strips one leading `@` from a directory segment** — npm-scoped
+  packages (`packages/@emulators/…`, 18 census items across four credential rules) carry
+  fake emulator credentials under a scope the segment comparison could not see.
+- **The file-path value test admits absolute paths** (`/usr/local/bin/init-firewall`,
+  `/data/wechat-token`): leading slash, extension optional, ≥2 segments — while the
+  extension stays REQUIRED for relative paths, so `foo/bar` (possibly `user:pass`) still
+  reports. **`your-`/`test-`-family prefix tests also run on a dash-stripped copy** and
+  PLACEHOLDER_WORDS gains `secure` — a compose default `${VAR:-your-secure-api-key-here}`
+  extracts with a leading dash that used to defeat the `^`-anchored prefix test.
+- **`code-sql-injection-risk-4` exclude_line_pattern gains four corpus-backed clauses**:
+  `e.g.` may carry whitespace before the quote/brace (docstring examples), single-letter
+  internal identifiers (`{h}`), WHERE/ORDER/LIMIT-family tokens with any affix
+  (`{time_where}`) keep the bind-evidence clause, and string concat ending in an enumerated
+  internal table variable (`"DELETE FROM " + tbl`) — the last one declared PROVISIONAL in
+  the spec note until an input-origin mechanism replaces the enumeration.
+- **The engine dedups emission by (rule, file, line)** — the git-history secret scan used
+  to emit the same location twice (the commit that added the line and the commit that
+  removed it: vercel-labs__emulate clerk:68, okta:126, SKILL.md:96). Two DIFFERENT rules on
+  the same line are not touched. The history fixture gains `expected_positive.txt` support
+  (the runner used to ignore it) and pins exactly 1 — a dedup regression now fails the gate.
+- **New `tier: "quarantine"`** (validator-accepted, propagated to findings.json, labelled in
+  the report's plan as `[quarantined — precision 0% human-verified, excluded from score]`):
+  `cost-db-no-pooling-10` (0/22 real) and `security-gha-pr-target-risk-1` (0/7 real) still
+  run; the pooled precision excludes their findings exactly like `judgment`.
+- **Regression fixtures** (all inside existing sets — the fixture count is unchanged):
+  `security-secret-in-code-1` negative `packages/@emulators/clerk/src/index.ts` +
+  `src/round4-path-values.yml`, positive `packages/@infra/config.ts` (FN-safe: a scoped
+  package is NOT an emulator); `code-sql-injection-risk-4` negative
+  `src/round4_provisional.py`; `security-secret-in-history-2/expected_positive.txt`.
+
+---
+
 ## 2026-10-12 — Ronda 3 (adjudication-driven spec surgery): scope gating + noise policy extension
 
 **Fingerprint: `368-08ed86b6`** (unchanged) · **Specs fingerprint: `368-49f988e7`** (changed —
