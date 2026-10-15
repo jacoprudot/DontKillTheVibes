@@ -1,0 +1,82 @@
+{
+  "artifact": "Human-anchored precision for sweep-100 v4 (post ronda 4), inherited from the v3 adjudication",
+  "measured_at": "2026-10-15T20:12:40.051Z",
+  "method": "Ronda 4 only suppresses (never adds). Every v4 graded finding was matched to the v3 census by (rule,repo,file,line) and inherits its human verdict (project owner where sampled, external reviewer otherwise). Verified: 0 findings in v4 without a prior verdict; 0 findings new to v4; 0 unique v3-real findings lost (the 96->94 real count drop is duplicate copies collapsing: history add+remove of the same location, all duplicates in security-secret-in-history-2).",
+  "universe": {
+    "v3_graded_items": 332,
+    "v3_unique": 314,
+    "v4_graded": 257,
+    "quarantined_excluded": 29,
+    "collapsed_duplicates": 18,
+    "suppressed_fps": 28
+  },
+  "precision": {
+    "pooled": 0.366,
+    "real": 94,
+    "n": 257,
+    "false_mass_note": "The 163 inherited-false findings carry the same human sample guarantee as the v3 measurement (0/60 reals found in the seeded false-stratum sample, Wilson upper 6%); if up to 6% of them were real, the pooled upper bound is ~40.4%."
+  },
+  "per_rule": {
+    "security-gha-secret-leak-3": {
+      "n": 11,
+      "real": 11,
+      "precision": 1
+    },
+    "security-jwt-weak-3": {
+      "n": 3,
+      "real": 3,
+      "precision": 1
+    },
+    "database-sequential-pagination-1": {
+      "n": 2,
+      "real": 2,
+      "precision": 1
+    },
+    "database-not-null-violation-4": {
+      "n": 10,
+      "real": 8,
+      "precision": 0.8
+    },
+    "github-log-pattern-6": {
+      "n": 5,
+      "real": 3,
+      "precision": 0.6
+    },
+    "code-sql-injection-risk-4": {
+      "n": 47,
+      "real": 25,
+      "precision": 0.532
+    },
+    "security-secret-in-history-2": {
+      "n": 46,
+      "real": 14,
+      "precision": 0.304
+    },
+    "cost-api-in-loop-3": {
+      "n": 40,
+      "real": 10,
+      "precision": 0.25
+    },
+    "security-secret-in-code-1": {
+      "n": 47,
+      "real": 11,
+      "precision": 0.234
+    },
+    "code-logs-secrets-10": {
+      "n": 5,
+      "real": 1,
+      "precision": 0.2
+    },
+    "security-oauth-secret-8": {
+      "n": 5,
+      "real": 1,
+      "precision": 0.2
+    },
+    "flows-n8n-hardcoded-secrets-7": {
+      "n": 36,
+      "real": 5,
+      "precision": 0.139
+    }
+  },
+  "prior": "benchmark/sweep-100-v3/adjudication-v3.json (28.0% [28.0-32.3] pre-ronda-4)"
+}
