@@ -536,6 +536,19 @@ for (const id of ids) {
     [SECRET_NOISE_REASONS.EMPTY, { path: 'src/config.ts', line: 'OPENAI_API_KEY=', match: 'OPENAI_API_KEY=' }],
     [SECRET_NOISE_REASONS.EQUALS_KEY, { path: 'src/config.js', line: 'const DATABASE_PASSWORD = "DATABASE_PASSWORD";' }],
     [SECRET_NOISE_REASONS.PLACEHOLDER, { path: 'src/config.js', line: 'const apiKey = "your-api-key-here";' }],
+    [SECRET_NOISE_REASONS.LOW_ENTROPY_PATTERN, { path: 'src/config.js', line: "const token = 'ab12ab12ab12ab12ab12ab12ab12ab12';" }],
+    [SECRET_NOISE_REASONS.LOW_ENTROPY_PATTERN, { path: 'src/config.js', line: "const token = '0123456789abcdef0123456789abcdef0123';" }],
+    [SECRET_NOISE_REASONS.E2E_SYNTHETIC, { path: 'scripts/e2e/apply-drift-refresh.ts', line: 'GH_TOKEN: "loopback-proof-token"' }],
+    [SECRET_NOISE_REASONS.SELF_DESCRIBING_DEMO, { path: 'src/config.ts', line: 'const REDIS_PASSWORD = "redis-cache-password";' }],
+    [SECRET_NOISE_REASONS.SELF_DESCRIBING_DEMO, { path: 'src/config.ts', line: 'const JWT_SECRET = "jwt-signing-secret-key";' }],
+    [SECRET_NOISE_REASONS.PLACEHOLDER, { path: 'src/ui.py', line: 'OPENAI_API_KEY=sk-your-actual-api-key-here' }],
+    [SECRET_NOISE_REASONS.TEMPLATE_SLOT, { path: 'src/main/composer.ts', line: 'const APP_VERSION_TOKEN = "__APP_VERSION_SLOT__";' }],
+    [SECRET_NOISE_REASONS.ROUTE_PATH_CONSTANT, { path: 'src/lib/constants.ts', line: 'FORGOT_PASSWORD: "/forgot-password",' }],
+    [SECRET_NOISE_REASONS.KNOWN_NON_SECRET_PREFIX, { path: 'src/dataset/cookies.py', line: '"auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"' }],
+    [SECRET_NOISE_REASONS.KNOWN_NON_SECRET_PREFIX, { path: 'chart/values/dev.yaml', line: 'password: "AgA1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8S9t0U1v2W3x4Y5z6A7B8C9D0E1F2G3H4I5J6K7L8M9N0"' }],
+    [SECRET_NOISE_REASONS.KNOWN_NON_SECRET_PREFIX, { path: 'keys/recipients.txt', line: 'recipient: "age1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"' }],
+    [SECRET_NOISE_REASONS.PERMISSION_LABEL, { path: 'src/quality-assurance.ts', line: 'export const QA_DIALOG_LABEL_REVOKE_DEPLOY_TOKEN = "revokeDeployToken";' }],
+    [SECRET_NOISE_REASONS.PUBLIC_BY_DESIGN, { path: 'src/config/stytch.ts', line: "const publicClientKey = \"public-key-live-9f8e7d6c5b4a3f2e1d0c9b8\";" }],
   ];
   /** realistic credentials the policy must NOT swallow (mirrors the rule fixtures). */
   const MUST_SURVIVE = [
@@ -551,6 +564,18 @@ for (const id of ids) {
     "  url: 'postgres://appuser:S3cret!Pass@db.internal.example.com:5432/appdb',",
     '-----BEGIN RSA PRIVATE KEY-----',
     'const LEGACY_CLOUD_SECRET = "AKIA4T7YQ2W9ZP1LMN6R";',
+    // Ronda 5 (temp/r5-falses.md FN gate): shapes of the 94 adjudicated REALS
+    // that the new classes must NOT swallow. sk_live_/sk_test_/phc_ keep their
+    // prefixes (only dash-prefixed sk-/pk-/rk- are stripped); the full signed
+    // JWT keeps its dots (only a dot-less header segment is non-secret).
+    `const stripe_api_key = "sk_live_${'K7mQ2vL8zR4tY9nB3xW6cF0hDkP1sN8aE5gH2jM'}";`,
+    `const stripe_test_key = "sk_test_${'K7mQ2vL8zR4tY9nB3xW6cF0hDkP1sN8aE'}";`,
+    'const posthog_api_key = "phc_9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1d0e9f8c7b6a5";',
+    'const session_secret = "a94f8e2b7c15d40386f2a9c7e3b1d580";',
+    'const client_secret = "b7e3f9a2c41d8e6f0a35c7b2d9e4f81a6c3d5e7f90a2b4c";',
+    'const webhook_token = "l/UrZGNHj5a7EK4UxP2w8zQf0b3nVc6W1e9hDkLmNoY";',
+    'const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U";',
+    'const db_token_url = "https://svc.internal/cb?pwd=Xw3Kp9mQ2vL8z+R7tY4nB&mode=1";',
   ];
   const problems = [];
   for (const [reason, hit] of REACHABLE) {

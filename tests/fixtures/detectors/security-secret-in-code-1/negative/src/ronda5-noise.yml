@@ -1,0 +1,30 @@
+# security-secret-in-code-1 NEGATIVE — ronda 5 (2026-10-15) noise classes.
+# Every value below MATCHES the rule's credential regex (>=16 chars, keyword +
+# `:`/`=`) and must be suppressed by the secret-noise policy. All shapes are
+# invented for this fixture: they derive from generic mechanisms (periodic
+# fillers, demo compounds, template slots, route constants, public-by-design
+# prefixes), not from any third party's values.
+
+# class B: periodic / sequential low-entropy fillers
+CI_LOOP_TOKEN: "ab12ab12ab12ab12ab12ab12ab12ab12"
+CI_SEQ_SECRET: "0123456789abcdef0123456789abcdef0123"
+
+# class C: demo compounds — every word names itself demo
+REDIS_PASSWORD: "redis-cache-password"
+JWT_SECRET: "jwt-signing-secret-key"
+FALLBACK_SECRET: "default_secret_for_local_dev"
+
+# class E: key-format prefix (sk-) over a placeholder core
+SANDBOX_API_KEY: "sk-your-actual-api-key-here"
+
+# class F: build/template slot
+VERSION_TOKEN: "__APP_VERSION_SLOT__"
+
+# class I: single-segment route path constant
+ROUTE_PASSWORD: "/forgot-password"
+
+# class D: well-known non-secret prefixes (header-only JWT segment, kubeseal
+# ciphertext, age public key — shapes only)
+DATASET_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+SEALED_PASSWORD: "AgA1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8S9t0U1v2W3x4Y5z6A7B8C9"
+AGE_TOKEN: "age1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"

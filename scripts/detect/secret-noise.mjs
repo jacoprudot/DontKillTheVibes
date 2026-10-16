@@ -72,6 +72,22 @@ export const SECRET_NOISE_REASONS = Object.freeze({
   DECLARED_SCOPE: 'path:declared-spec-scope',
   ENV_USAGE: 'value:env-var-or-credential-reference',
   BARE_IDENTIFIER: 'value:bare-identifier-reference',
+  // Ronda 5 (temp/r5-falses.md class A): e2e/test path + self-describing value.
+  E2E_SYNTHETIC: 'path:e2e-synthetic-value',
+  // Ronda 5 (temp/r5-falses.md class F): ALL-CAPS template slots (__X__).
+  TEMPLATE_SLOT: 'value:template-slot',
+  // Ronda 5 (temp/r5-falses.md class D): well-known non-secret prefixes.
+  KNOWN_NON_SECRET_PREFIX: 'value:known-non-secret-prefix',
+  // Ronda 5 (temp/r5-falses.md class G): camelCase permission label as value.
+  PERMISSION_LABEL: 'value:permission-label-with-label-name',
+  // Ronda 5 (temp/r5-falses.md class H): public-by-design (Stytch publicToken).
+  PUBLIC_BY_DESIGN: 'value:public-by-design',
+  // Ronda 5 (temp/r5-falses.md class I): route-path constants (/forgot-password).
+  ROUTE_PATH_CONSTANT: 'value:route-path-constant',
+  // Ronda 5 (temp/r5-falses.md class C): demo compounds (redis-cache-password).
+  SELF_DESCRIBING_DEMO: 'value:self-describing-demo-compound',
+  // Ronda 5 (temp/r5-falses.md class B): sequential/periodic low-entropy values.
+  LOW_ENTROPY_PATTERN: 'value:low-entropy-pattern',
   EMPTY: 'value:empty',
   EQUALS_KEY: 'value:equals-key-name',
   PLACEHOLDER: 'value:placeholder-or-degenerate',
@@ -169,8 +185,21 @@ const ENV_USAGE_RE = new RegExp(
   'i',
 );
 
-/** Words that, alone or as the whole compound, mean "this is not a credential". */
-const PLACEHOLDER_WORDS = new Set([
+/**
+ * Ronda 5 (temp/r5-falses.md class C): demo-vocabulary words. A compound value
+ * made ONLY of these words (plus PLACEHOLDER_WORDS) is a generic demo
+ * (`redis-cache-password`, `enterprise-jwt-secret-key`,
+ * `default_secret_for_local_dev`), whatever the path. FN-checked against the
+ * 94 adjudicated REALS: every real value decomposes into at least one part
+ * that is in neither set (a high-entropy slug), so the every-part test holds.
+ */
+const DEMO_WORDS = new Set([
+  'demo', 'example', 'sample', 'test', 'fake', 'mock', 'dummy', 'placeholder',
+  'fixture', 'local', 'dev', 'default', 'public', 'enterprise', 'signing',
+  'cache', 'redis', 'password', 'secret', 'key', 'token', 'jwt',
+]);
+
+/** Words that, alone or as the whole compound, mean "this is not a credential". */const PLACEHOLDER_WORDS = new Set([
   'null', 'none', 'nil', 'undefined', 'true', 'false', 'empty', 'redacted',
   'removed', 'notset', 'changeme', 'changeme', 'password', 'passwd', 'secret',
   'token', 'apikey', 'todo', 'fixme', 'na', 'foo', 'bar', 'baz', 'foobar',
@@ -193,6 +222,12 @@ const PLACEHOLDER_WORDS = new Set([
   'user', 'provided', 'from', 'idp', 'id', 'revoke', 'deploy', 'model',
   'session', 'stytch', 'sealed', 'certificate', 'public', 'live', 'xxx',
   'xxxx', 'auth', 'settings', 'change',
+  // Ronda 5 (temp/r5-falses.md class C): `default_secret_for_local_dev`
+  // decomposes into default/secret/for/local/dev — `for` is a joiner word,
+  // like the ronda-3 `from`. Single word is below the length floor; the
+  // every-part tests need the WHOLE compound listed, so this only ever fires
+  // as part of an all-placeholder/demo compound.
+  'for',
   // Ronda 4 (version_audit, id 216 `your-secure-api-key-here`): the word half of
   // the addressing-the-reader placeholder pair (`your-…` / `secure-…`). Only the
   // whole-compound test consumes it — EVERY part must still be in this set, so
@@ -232,13 +267,66 @@ export function shannonEntropy(value) {
 }
 
 /** How many of {lower, upper, digit, symbol} appear in the value. */
-function charClasses(value) {
-  let n = 0;
+function charClasses(value) {  let n = 0;
   if (/[a-z]/.test(value)) n++;
   if (/[A-Z]/.test(value)) n++;
   if (/[0-9]/.test(value)) n++;
   if (/[^A-Za-z0-9]/.test(value)) n++;
   return n;
+}
+
+/**
+ * Ronda 5 (temp/r5-falses.md class B, adjudicated FALSE shapes like
+ * `c15fc15fc15fc15f…` and `1234567890abcdef1234567890abcdef`): the value is
+ * ONE short block repeated whole >= 2 times. A real credential is
+ * high-entropy; an exact repetition of a short block never is. The block cap
+ * is 16 (= half of the 32-char corpus shapes): a 2N-char value that is
+ * exactly its own N-char prefix repeated has probability ~64^-N of occurring
+ * in a real secret, and the >= 16 total length keeps the floor far from
+ * realistic token lengths. (The sequential-run test below covers the
+ * cyclic-ascending variant whose repetition JUNCTION breaks ascending
+ * continuity — that is why this test exists separately.)
+ */
+function isRepeatedBlockValue(v) {
+  if (v.length < 16) return false;
+  for (let blockLen = 1; blockLen <= 16; blockLen++) {
+    if (v.length % blockLen !== 0) continue;
+    const reps = v.length / blockLen;
+    if (reps < 2) continue;
+    if (v.slice(0, blockLen).repeat(reps) === v) return true;
+  }
+  return false;
+}
+
+/**
+ * Ronda 5 (temp/r5-falses.md class B, adjudicated FALSE shapes like
+ * `0123456789abcdef0123…`): an ascending sequential run over the digits /
+ * digits+hex / digits+lowercase alphabet, length >= 16. The run may wrap
+ * cyclically at the alphabet end (`…f0123…`), which is how the corpus shapes
+ * repeat. FN-safe by construction: 16 independent ascending steps have
+ * probability ~0 in a real secret. The digit order varies in the corpus
+ * (`0123…` vs the human `1234567890…`), so both digit orders are listed.
+ */
+const SEQ_ALPHABETS = [
+  '0123456789',
+  '1234567890',
+  '0123456789abcdef',
+  '1234567890abcdef',
+  '0123456789abcdefghijklmnopqrstuvwxyz',
+  '1234567890abcdefghijklmnopqrstuvwxyz',
+];
+function isSequentialRunValue(v) {
+  if (v.length < 16) return false;
+  for (const alpha of SEQ_ALPHABETS) {
+    let ok = true;
+    for (let i = 1; i < v.length; i++) {
+      const a = alpha.indexOf(v[i - 1]);
+      const b = alpha.indexOf(v[i]);
+      if (a === -1 || b !== (a + 1) % alpha.length) { ok = false; break; }
+    }
+    if (ok) return true;
+  }
+  return false;
 }
 
 /**
@@ -282,6 +370,24 @@ export function extractKey(line) {
 function passwordFromUrl(text) {
   const m = /[a-z][a-z0-9+.\-]*:\/\/([^/\s:@]+):([^/\s@]*)@/i.exec(String(text ?? ''));
   return m ? m[2] : null;
+}
+
+/**
+ * Ronda 5 (temp/r5-falses.md class A, ~17 items): an e2e/test/fixture path
+ * whose value DECLARED ITSELF synthetic. BOTH signals are required: the path
+ * segment alone is not noise (an `e2e/` dir can hold a real credential — that
+ * is exactly what the rule is for) and the word alone on a production path is
+ * not noise either (a value containing `test` may still be a real key in
+ * `src/`). Together they are a sentinel token.
+ */
+const E2E_PATH_SEGMENT_RE = /(?:^|\/)(?:e2e|__tests__|tests?|fixtures?)(?:\/|$)/i;
+const E2E_VALUE_WORDS = new Set([
+  'fixture', 'loopback', 'synthetic', 'proof', 'placeholder', 'ephemeral',
+  'controlled', 'ambient', 'dummy', 'sample', 'fake', 'test',
+]);
+function isE2ESyntheticHit(path, value) {
+  if (!E2E_PATH_SEGMENT_RE.test(String(path ?? ''))) return false;
+  return String(value).split(/[-_\s]+/).some((w) => E2E_VALUE_WORDS.has(w.toLowerCase()));
 }
 
 /**
@@ -399,6 +505,77 @@ export function classifySecretValue(value, line, key) {
   if (parts.length > 1 && parts.every((w) => PLACEHOLDER_WORDS.has(w.toLowerCase()))) {
     return SECRET_NOISE_REASONS.PLACEHOLDER;
   }
+  // Ronda 5 (temp/r5-falses.md class C): "made only of demo words":
+  // redis-cache-password, enterprise-jwt-secret-key, jwt-signing-secret-key,
+  // default_secret_for_local_dev. UNION with PLACEHOLDER_WORDS: the
+  // every-part test needs every part present, so a value mixing any of these
+  // with a non-listed slug (a real credential) still survives.
+  if (parts.length > 1 && parts.every((w) => PLACEHOLDER_WORDS.has(w.toLowerCase()) || DEMO_WORDS.has(w.toLowerCase()))) {
+    return SECRET_NOISE_REASONS.SELF_DESCRIBING_DEMO;
+  }
+  // Ronda 5 (temp/r5-falses.md class E): strip key-FORMAT prefixes (sk-, pk-,
+  // rk-) that carry no entropy, then re-apply the word/entropy tests to the
+  // exposed core: `sk-your-actual-api-key-here` -> `your-actual-api-key-here`
+  // (your- prefix + compound words now visible). Deliberately NOT stripped:
+  // phc_ (real a times), sk_live_/sk_test_ (underscore, real Stripe shapes —
+  // `sk_live_…` must keep reaching the value tests untouched).
+  const vCred = v.replace(/^(?:sk|pk|rk)-/i, '');
+  if (vCred !== v) {
+    if (/^(?:your|my|insert|replace|test|fixture|synthetic|dummy|sample|demo|playground|example)[-_.]/i.test(vCred)) return SECRET_NOISE_REASONS.PLACEHOLDER;
+    if (/\bfake\b/i.test(vCred)) return SECRET_NOISE_REASONS.PLACEHOLDER;
+    if (isRepeatedBlockValue(vCred) || isSequentialRunValue(vCred)) return SECRET_NOISE_REASONS.LOW_ENTROPY_PATTERN;
+    const credParts = wordParts(vCred);
+    if (credParts.length > 1 && credParts.every((w) => PLACEHOLDER_WORDS.has(w.toLowerCase()) || DEMO_WORDS.has(w.toLowerCase()))) {
+      return SECRET_NOISE_REASONS.SELF_DESCRIBING_DEMO;
+    }
+  }
+  // Ronda 5 (temp/r5-falses.md class F): a build/template slot (`__VOIDEN_APP_VERSION__`)
+  // is a named hole, not a credential. Uppercase + digits/underscore inside
+  // double underscores; before the length floor because slots are short.
+  if (/^__[A-Z][A-Z0-9_]+__$/.test(v)) return SECRET_NOISE_REASONS.TEMPLATE_SLOT;
+  // Ronda 5 (temp/r5-falses.md class D, verified against
+  // benchmark/work100/timescale__pg-aiguide git show fbdf7512c3~1:chart/values/dev.yaml
+  // lines 4/8/10): well-known NON-SECRET prefixes. Shapes only — never values.
+  //   - `eyJhbGciOiJ` is the canonical base64 JWT HEADER ({"alg":...}) — it is
+  //     byte-identical in every JWT ever minted, so a value that IS just the
+  //     header segment (no `.`) is public by construction. A FULL signed JWT
+  //     (header.payload.signature, dots present) still reports.
+  //   - `Ag` + long base64 is kubeseal/SealedSecret ciphertext (bytes 02 00):
+  //     encrypted-at-rest data, commit-safe by design.
+  //   - `age1` + bech32 is an age PUBLIC key — public by design (the encrypt
+  //     side; the private key is `AGE-SECRET-KEY-…` and stays a finding).
+  if (/^eyJhbGciOiJ/.test(v) && !v.includes('.')) return SECRET_NOISE_REASONS.KNOWN_NON_SECRET_PREFIX;
+  if (/^Ag[A-Za-z0-9+/]{38,}={0,2}$/.test(v)) return SECRET_NOISE_REASONS.KNOWN_NON_SECRET_PREFIX;
+  if (/^age1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{20,}$/i.test(v)) return SECRET_NOISE_REASONS.KNOWN_NON_SECRET_PREFIX;
+  // Ronda 5 (temp/r5-falses.md class G): a camelCase PERMISSION LABEL as its
+  // own value (`revokeDeployToken`) — BOTH signals required: the value must be
+  // a camelCase identifier ending in Token|Key|Secret|Password AND the
+  // variable/const name to its left must carry a label marker (LABEL, TITLE,
+  // NAME, TEXT, DIALOG). The corpus shape is
+  // `const QA_DIALOG_LABEL_REVOKE_DEPLOY_TOKEN = 'revokeDeployToken'` — a UI
+  // permission label constant, not a credential. A camelCase value ending in
+  // `Token` assigned to a plain config name still reports.
+  if (key && /(?:label|title|name|text|dialog)/.test(key) && /^[a-z]+(?:[A-Z][a-zA-Z0-9]+)+(?:Token|Key|Secret|Password)$/.test(v)) {
+    return SECRET_NOISE_REASONS.PERMISSION_LABEL;
+  }
+  // Ronda 5 (temp/r5-falses.md class H): public-by-design. ACCEPTED RISK
+  // (documented): a variable NAMED public* whose value is a real high-entropy
+  // token would be suppressed. The corpus adjudication says the opposite
+  // shape is the mechanism — Stytch `publicToken` values are publishable
+  // by design (`public-token-live-…`), and a credential naming itself
+  // `public` is a corner case no adjudicated REAL exhibited.
+  if ((key && /^public/.test(key)) || /^public-/i.test(v)) return SECRET_NOISE_REASONS.PUBLIC_BY_DESIGN;
+  // Ronda 5 (temp/r5-falses.md class I): a single-segment lower-case route
+  // path (`/forgot-password`) is a URL constant, not a credential. DECLARED
+  // RISK: a real secret with this exact shape (one segment, lowercase+digits+
+  // dashes, 4+ chars) is implausible — no adjudicated REAL has it, and a
+  // credential of that shape would be a coincidence, not a mechanism.
+  if (/^\/[a-z0-9][a-z0-9-]{2,}$/.test(v)) return SECRET_NOISE_REASONS.ROUTE_PATH_CONSTANT;
+  // Ronda 5 (temp/r5-falses.md class B): a sequential or periodic value is a
+  // test fixture or a deliberate long-line filler, never a credential. Placed
+  // BEFORE the single-class entropy floor so the specific reason is counted
+  // instead of the generic placeholder one.
+  if (isRepeatedBlockValue(v) || isSequentialRunValue(v)) return SECRET_NOISE_REASONS.LOW_ENTROPY_PATTERN;
   if (v.length < 10) return SECRET_NOISE_REASONS.PLACEHOLDER;
   if (charClasses(v) < 2 && shannonEntropy(v) < SINGLE_CLASS_ENTROPY_FLOOR) return SECRET_NOISE_REASONS.PLACEHOLDER;
   return null;
@@ -444,6 +621,13 @@ export function classifySecretHit(hit = {}) {
   // `OPENAI_API_KEY=` + the NEXT line's identifier one match) yields a `match`
   // with no readable value, while the line itself reads as an empty assignment.
   const value = passwordFromUrl(match) ?? passwordFromUrl(line) ?? extractValue(match) ?? extractValue(line);
+  // Ronda 5 (temp/r5-falses.md class A): e2e/test path AND a value that names
+  // itself synthetic. Before the value-shape tests so the specific reason is
+  // counted (most of these values would otherwise fall through to a generic
+  // placeholder diagnosis or even survive).
+  if (value !== null && isE2ESyntheticHit(hit.path, value)) {
+    return { suppressed: true, reason: SECRET_NOISE_REASONS.E2E_SYNTHETIC };
+  }
   if (value !== null && isBareIdentifierReference(match, value)) {
     return { suppressed: true, reason: SECRET_NOISE_REASONS.BARE_IDENTIFIER };
   }

@@ -37,6 +37,53 @@ tool's observable contract. This file is the record of those changes.
 
 ---
 
+## 2026-10-15 — Ronda 5 (secret-noise classifier): corpus-backed noise classes for the credential rules
+
+**Fingerprint: `368-08ed86b6`** (unchanged) · **Specs fingerprint: `368-fb05070a`** (unchanged —
+this round extends the declared noise POLICY in `scripts/detect/secret-noise.mjs`, no spec or
+registry change) · **368 canonical finding rules** · 0 ids added/removed, 0 severities changed.
+
+Targets the two noisiest credential rules of the v4 sweep (pooled 36.6%,
+`temp/r5-falses.md`, 68 adjudicated FALSE items): `security-secret-in-code-1` (47 hits, 23.4%
+real) and `security-secret-in-history-2` (46 hits, 30.4% real). Both pipelines share the single
+classification point `classifySecretHit({path, line, match})`, so every value-shape class below
+applies to the working-tree scan AND the git-history scan. All classes are corpus-backed,
+conservative and FN-safe; probe: `temp/probe-r5.mjs`. New counted reasons (every one reachable
+in the `secret-noise-policy` gate):
+
+- **`value:low-entropy-pattern`** (class B): a ≤16-char block repeated whole ≥2×
+  (`c15fc15f…`, `1234567890abcdef1234567890abcdef`), or an ascending (cyclically
+  wrapping) run of ≥16 chars over digits/hex/lowercase — deliberate long-line
+  fillers and periodic test tokens, never high-entropy credentials.
+- **`path:e2e-synthetic-value`** (class A): an `e2e|__tests__|tests?|fixtures?` path segment
+  AND a value word from the synthetic-sentinel set — both signals required.
+- **`value:self-describing-demo-compound`** (class C): every word of the value in
+  PLACEHOLDER_WORDS ∪ a demo vocabulary (`redis-cache-password`, `jwt-signing-secret-key`,
+  `default_secret_for_local_dev`); `for` joins PLACEHOLDER_WORDS as a joiner word.
+- **`value:template-slot`** (class F): `^[A-Z][A-Z0-9_]+__$` slots (`__APP_VERSION_SLOT__`).
+- **`value:route-path-constant`** (class I): `^/[a-z0-9][a-z0-9-]{2,}$` single-segment URL
+  constants (`/forgot-password`) — declared risk documented in code.
+- **Key-format prefix strip (class E)**: `sk-`/`pk-`/`rk-` (dash only — `sk_live_`, `sk_test_`,
+  `phc_` untouched) expose the core to the word/entropy tests
+  (`sk-your-actual-api-key-here`, `sk-` + sequential run).
+- **`value:known-non-secret-prefix`** (class D): header-only JWT segment (`eyJhbGciOiJ…` with
+  no dot — a full signed JWT with dots still reports), kubeseal `Ag`+base64≥40 (verified
+  `timescale__pg-aiguide` `fbdf7512c3~1:chart/values/dev.yaml` lines 4/8/10), age public key
+  `age1`+bech32.
+- **`value:permission-label-with-label-name`** (class G): camelCase label ending
+  Token|Key|Secret|Password (`revokeDeployToken`) AND a LABEL|TITLE|NAME|TEXT|DIALOG marker in
+  the variable name — both signals required.
+- **`value:public-by-design`** (class H): variable named `public*` or value starting
+  `public-` (Stytch publishable keys) — accepted risk documented in code.
+
+Fixtures: `security-secret-in-code-1` negative `src/ronda5-noise.yml`, `scripts/e2e/proof.mjs`,
+`src/ronda5-labels.js`; positive `src/ronda5-real.js` (sk_live/hex32/hex42/slashed-token/pwd=
+shapes must-survive). `security-secret-in-history-2` negative `commits/2024-01-07T0900` and
+positive `commits/2024-01-05T1000` (same shapes through the history pipeline;
+`expected_positive.txt` 1 → 6). `temp/r5-progress.md` carries the full log.
+
+---
+
 ## 2026-10-15 — Ronda 4 (version_audit spec surgery): scoped-emulator paths, value shapes, sqli exclusions, emission dedup, quarantine tier
 
 **Fingerprint: `368-08ed86b6`** (unchanged) · **Specs fingerprint: `368-fb05070a`** (changed —

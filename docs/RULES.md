@@ -8,7 +8,7 @@
 - **Regenerate with:** `node scripts/gen-rules-doc.mjs`
 - **Verify the file is up to date:** `node scripts/gen-rules-doc.mjs --check` (exit 1 when stale)
 - **Ruleset fingerprint:** `368-08ed86b6` — from `rulesetFingerprint()` in `scripts/lib/canonical-registry.mjs`: `<count>-<sha256(id|severity|effort)>`, so any added, removed, reclassified or re-scored rule changes it.
-- **Generation date:** 2026-10-15 — from UTC clock (pin with `--date=` or `SOURCE_DATE_EPOCH`). Regeneration is otherwise deterministic: the registry has 368 rules in 8 areas, of which **49 are `proven`** (fixture-gated) and **319 are `declared`** (asserted, no fixture).
+- **Generation date:** 2026-10-16 — from UTC clock (pin with `--date=` or `SOURCE_DATE_EPOCH`). Regeneration is otherwise deterministic: the registry has 368 rules in 8 areas, of which **49 are `proven`** (fixture-gated) and **319 are `declared`** (asserted, no fixture).
 - **Sources (one source of truth per field — no second parser, no second list):**
   - `skills/*.skill.md` → rule id, severity, effort, deprecation (`loadRules()` in `scripts/lib/canonical-registry.mjs`) and the verbatim condition / remediation text (`loadSkillMetadata()` in `scripts/lib/skill-metadata.mjs`).
   - `skills/detectors.json` → `type`, `tool`, `spec` (the single source for these three).
