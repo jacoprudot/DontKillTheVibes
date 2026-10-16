@@ -81,6 +81,12 @@ sweep-100-v2/runs/*/report.md
 sweep-100-v2/runs/*/prompts.md
 !sweep-100-v2/runs/**/*.txt
 
+# Sweep v5 (2026-10-15, post-ronda-5 measurement over the same pinned 100): same policy.
+sweep-100-v5/runs/*/findings.json
+sweep-100-v5/runs/*/report.md
+sweep-100-v5/runs/*/prompts.md
+!sweep-100-v5/runs/**/*.txt
+
 # Sweep v4 (2026-10-15, post-ronda-4 measurement over the same pinned 100): same policy.
 sweep-100-v4/runs/*/findings.json
 sweep-100-v4/runs/*/report.md
