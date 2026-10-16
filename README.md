@@ -4,7 +4,7 @@
 
 ![CI](https://github.com/jacoprudot/DontKillTheVibes/actions/workflows/ci.yml/badge.svg)
 
-Turn an LLM loose on your repo and get a **structured, validated 30/60/90-day plan** — not another wall of confident prose.
+Deterministic detectors audit the repo your AI built — every citation a real line, precision **measured against human verdicts: 46.5%** (n=202, sweep-100).
 
 Free, MIT, LLM-agnostic. Works with Claude Code, Cursor, Gemini, or any OpenAI-compatible endpoint.
 
@@ -46,15 +46,13 @@ Why first:  critical in the security module outranks everything else — that or
 
 **The honest number.** A general single-model pass over the same repo reported **3 findings, 0 security, 0 criticals** ([committed baseline](examples/gemini-baseline/)). It never saw this auth bypass — the most severe thing in the repository. The deterministic detector finds all three sites in 402 ms on the committed snapshot (`pnpm detect`, measured here — no network, no model, no API key), and every citation resolves to a real line *by construction*: the scanner produced the citation by matching the line.
 
-**The caveat, said out loud.** Precision over *all* detector findings is still unmeasured — it stays unclaimed until the human-adjudicated sample exists ([PLAN.md](PLAN.md) Fase 7, declared up front). What you can verify by hand today is every citation; what you cannot yet trust is how often the rule cries wolf. [The full report this demo produced](examples/detect-realworld/report.md) is committed alongside the [snapshot it scanned](examples/detect-realworld/repo/) — reproduce it with that exact command and diff. The `--out` is not decoration: the tool's default output directory is `<target>/.dontkillthevibes/`, i.e. *inside* the frozen snapshot, so without it the committed artifacts stay untouched and the diff is empty. Be exact about what is reproducible: `report.md` and `prompts.md` come out **byte-identical**, and `findings.json` differs in exactly two fields — `generated_at` (a wall-clock timestamp) and `target` (the absolute path of *your* checkout, which `report.md` and `prompts.md` print too). Nothing else varies between runs; the finding counts, ordering and citations are deterministic.
+**The caveat, said out loud.** Precision over *all* detector findings used to be unmeasured; it no longer is. On a pre-registered sample of 100 public AI-adjacent repos, every critical/high finding was adjudicated by a human (the project owner, cross-checked by an external judge from a different model family): pooled precision is **46.5%** (94/202, Wilson 95% CI [39.8–53.4]) — with a 6-rule core at ≥60% human-verified precision and two rules quarantined at 0% because humans said so. The full method and artifacts are [below](#the-deterministic-path-measured-against-humans). What that means for you: the core signals (leaked secrets in CI, weak JWT fallbacks, missing pagination limits) are trustworthy; the tail still cries wolf, and the report says which is which. What you can verify by hand today is every citation; what you can now also consult is a measured precision, not a vibe. [The full report this demo produced](examples/detect-realworld/report.md) is committed alongside the [snapshot it scanned](examples/detect-realworld/repo/) — reproduce it with that exact command and diff. The `--out` is not decoration: the tool's default output directory is `<target>/.dontkillthevibes/`, i.e. *inside* the frozen snapshot, so without it the committed artifacts stay untouched and the diff is empty. Be exact about what is reproducible: `report.md` and `prompts.md` come out **byte-identical**, and `findings.json` differs in exactly two fields — `generated_at` (a wall-clock timestamp) and `target` (the absolute path of *your* checkout, which `report.md` and `prompts.md` print too). Nothing else varies between runs; the finding counts, ordering and citations are deterministic.
 
 ## Overview
 
-**DontKillTheVibes** is a toolkit of opinionated *Skills* (decision-tree analysis), *MCPs* (Model Context Protocol servers), and *Agent definitions* that let your LLM audit a repository and emit an actionable 30/60/90-day work plan.
+**DontKillTheVibes** is a deterministic audit toolkit for AI-built repositories: structured detectors (gitleaks/semgrep/glob specs, no LLM in the loop) find issues with file:line citations that are valid by construction, and a registry of 368 canonical rules translates each hit into severity, effort, evidence and a remediation you can paste to your coding agent.
 
-The LLM proposes findings; **the toolkit disposes**. 368 canonical rules own their own severity and effort — the model can never inflate or invent them. A strict validator enforces the output contract: malformed structure, unknown rule IDs, dangling cross-references and inconsistent tallies never survive validation. That contract is what separates this from "just ask ChatGPT to review my code."
-
-What the validator does **not** do: confirm that a cited line still matches the code. Citation repair is the runner's job (see [Measured results](#measured-results-not-claimed) for how well that works today).
+The LLM proposes nothing here. **The detectors find; the registry disposes.** Each rule owns its own severity and effort, so no model can inflate or invent them — and when a rule misbehaves, fixtures plus a human-adjudicated verdict map catch it (two rules are quarantined at 0% human-verified precision). The LLM-as-detector paths from v0.1.0 remain in the repo as versioned evidence, not as the recommended path.
 
 ## 🎯 The Vibe Coding Problems We Solve
 
@@ -142,6 +140,17 @@ Scope, honestly: the contract guarantees *shape*, not *truth* — a well-formed 
 Corrected 2026-10-06: an earlier revision showed 22/25 and 9/14; the raw judge output is 21/25 and 9/15 (`real ÷ real+false` in `benchmark/results/*/scores.json`). The 0.84 that was quoted as the range floor is the pooled arm-C precision, not a per-repo value — the true per-repo range is 0.625–1.0 (0.625, 0.9, 1.0, 1.0, 1.0).
 
 Structural findings beat free prose not because the model is smarter, but because the contract makes every claim checkable. Honest caveats: convenience sample (not representative), judge has run-to-run variance, recall against ground truth is measured only on the control repo. Full evidence is versioned in [`benchmark/results/`](benchmark/results/) and reproducible from [`benchmark/run.mjs`](benchmark/run.mjs) + [`benchmark/judge.mjs`](benchmark/judge.mjs).
+
+### The deterministic path, measured against humans
+
+The table above measures LLM arms. The recommended path is deterministic — and it is the one with an **absolute, human-anchored precision** (updated 2026-10-16):
+
+- **100 public AI-adjacent repos**, selected by queries frozen *before* cloning ([`benchmark/SELECTION-100.md`](benchmark/SELECTION-100.md)), full git history, pinned commits, zero shallow clones, zero drift on re-verification.
+- **Every critical/high finding was adjudicated by a human.** The project owner classified a census sample (156 items, including a seeded false stratum), cross-checked against an external judge from a different model family (GLM, 343 items) — inter-rater agreement on the blind pairs: **kappa 1.000**. No self-judging: the author never judges alone, per the house rule.
+- **Pooled precision: 46.5%** (94/202, Wilson 95% CI [39.8–53.4]; upper bound ~49.7% under the false-stratum assumption). Artifacts: [`benchmark/sweep-100-v5/precision-v5.json`](benchmark/sweep-100-v5/precision-v5.json), [`benchmark/sweep-100-v3/adjudication-v3.json`](benchmark/sweep-100-v3/adjudication-v3.json).
+- **How it got there, in public:** 28.0% → 36.6% → 46.5% over three rounds of false-positive surgery. Each round only *suppresses* noise classes, each suppression is proven by a positive+negative fixture, and across all rounds **zero real findings were lost** (94/94 intact) and zero new findings appear without an inherited human verdict. Precision here is not a number someone typed: it is recomputed from the verdict map on every sweep.
+- **The core is much sharper than the pooled figure.** Six rules sit at ≥60% human-verified precision — leaked secrets in CI (100%), weak JWT fallback (100%), sequential pagination without limit (100%), `NOT NULL` column without default (80%), hardcoded secrets in code (61%), sensitive data in logs (60%). Two rules that humans rated 0% are **quarantined**: the tool retires its own rules when the evidence says they don't fire.
+- **Honest limits:** the denominator is critical/high findings only; medium/low noise is not in this figure. The judgment tier (117 of the 368 rules that need context, not pattern-matching) is not yet measured. The sample is 100 public repos, not your repo — run it on yours and verify the citations yourself; that takes minutes, and it is the design intent.
 
 ## See it on a real repository
 
