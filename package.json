@@ -1,6 +1,6 @@
 {
   "name": "dontkillthevibes",
-  "version": "0.1.0-beta",
+  "version": "0.1.0",
   "description": "Deterministic assessment for vibe-coded repos: canonical rule registry + contract + detectors, citations valid by construction (pivot declared 2026-10-06, see PLAN.md)",
   "keywords": [
     "mcp",
