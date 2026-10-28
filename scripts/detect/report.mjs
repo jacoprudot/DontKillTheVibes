@@ -92,6 +92,7 @@ for (let i = 0; i < args.length; i++) {
   else usage();
 }
 if (!target) usage();
+const targetArg = target; // as passed on the CLI — what artifacts display, so committed reports reproduce on any machine
 target = resolve(target);
 out = out ? resolve(out) : join(target, '.dontkillthevibes');
 
@@ -208,7 +209,7 @@ const counts = {
 mkdirSync(out, { recursive: true });
 const document = {
   generated_by: 'dktv-detect-report',
-  target,
+  target: targetArg,
   generated_at: new Date().toISOString(),
   label_legend: { proven: 'mechanically proven by the deterministic engine', judged: 'LLM-judged (none in this report)' },
   grade,
@@ -242,7 +243,7 @@ const listNames = (names, max = 10) => {
 
 let md = '';
 md += `# DontKillTheVibes — deterministic assessment\n\n`;
-md += `- target: \`${target}\`\n`;
+md += `- target: \`${targetArg}\`\n`;
 md += `- files scanned: ${repo.fileCount} · test/spec/fixture files excluded: ${repo.skippedTestLike.length} · rules run: ${scanned} · skipped (tool not implemented): ${skipped}\n`;
 md += `- overall health: **${grade.display}** (worst-severity grade over detector findings; ${grade.criticalCount} critical)\n`;
 if (grade.coverageLimited) {
@@ -254,7 +255,7 @@ if (ruleFailures.length > 0) {
 md += `- ${detectorFindings.length} detector finding(s) + ${ausenciaFindings.length} checklist gap(s) — an absence check means a safeguard is MISSING, not that a violation was found\n`;
 const suppressedTotal = suppressions.reduce((a, s) => a + s.dropped, 0);
 md += `- declared exclusions: **${suppressedTotal}** hit(s) dropped by policy across ${suppressions.length} rule(s) — named and counted below, never silent\n`;
-md += `- every detector finding is a raw mechanical signal (label \`proven\`) — verify by hand (file:line) before acting; precision is NOT yet measured (see protocol in PLAN.md)\n\n`;
+md += `- every detector finding is a raw mechanical signal (label \`proven\`) — verify by hand (file:line) before acting. Precision over critical/high findings is **measured against human verdicts on 100 repos: 46.5% pooled** (\`benchmark/sweep-100-v5/precision-v5.json\`); per-rule precision varies — the proven core sits at 80–100% for the security rules that matter most\n\n`;
 
 // ---- per-area verdicts: what was assessed, and what was not (2026-10-08) ----
 // Placed BEFORE coverage on purpose: "how much of the tree could a glob match"
@@ -424,7 +425,7 @@ for (const f of main) {
     ? `The repository is MISSING a safeguard required by rule ${f.rule}. Add it.`
     : `Find every occurrence of this issue in the repository and fix it.`;
   const prompt = [
-    `You are fixing one finding in the repository at ${target}.`,
+    `You are fixing one finding in the repository at ${targetArg}.`,
     ``,
     `Rule: ${f.rule}${f.name ? ` (${f.name})` : ''} — severity ${f.severity}, effort ${f.effort}.`,
     `Location: ${loc}`,

@@ -999,7 +999,7 @@
       "params": {
         "pattern": "idle[_-]?[Tt]imeout",
         "path_glob": "**/*.{ts,js,json,yml,yaml,toml,properties,conf,prisma}",
-        "exclude_glob": "**/{.vscode,.claude,.idea,.zed,.devcontainer}/**"
+        "exclude_glob": "**/{.vscode/**,.claude/**,.idea/**,.zed/**,.devcontainer/**,jest.config.*,.eslintrc*,.prettierrc*,.babelrc*,babel.config.*,tsconfig.json}"
       }
     }
   },

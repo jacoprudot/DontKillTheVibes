@@ -24,8 +24,10 @@ This is the deterministic path on a public RealWorld app — the same repository
 
 ```bash
 git clone https://github.com/jacoprudot/dontkillthevibes.git && cd dontkillthevibes
-pnpm install && pnpm detect --target examples/detect-realworld/repo
+node scripts/detect/run.mjs --target examples/detect-realworld/repo
 ```
+
+No install step: the engine has zero npm dependencies (verified). `pnpm install` is only needed for the MCP packages and the legacy paths.
 
 Raw signal, straight from the scanner — this exact line is in the repo:
 
@@ -34,7 +36,7 @@ src/app/routes/auth/auth.ts:16
   secret: process.env.JWT_SECRET || 'superSecret',
 ```
 
-What the registry turns it into (`pnpm detect:report --target examples/detect-realworld/repo --out examples/detect-realworld`):
+What the registry turns it into (`node scripts/detect/report.mjs --target examples/detect-realworld/repo --out examples/detect-realworld`):
 
 ```
 security-jwt-weak-3 — CRITICAL, effort XS, score 150
@@ -46,13 +48,13 @@ Why first:  critical in the security module outranks everything else — that or
 
 **The honest number.** A general single-model pass over the same repo reported **3 findings, 0 security, 0 criticals** ([committed baseline](examples/gemini-baseline/)). It never saw this auth bypass — the most severe thing in the repository. The deterministic detector finds all three sites in 402 ms on the committed snapshot (`pnpm detect`, measured here — no network, no model, no API key), and every citation resolves to a real line *by construction*: the scanner produced the citation by matching the line.
 
-**The caveat, said out loud.** Precision over *all* detector findings used to be unmeasured; it no longer is. On a pre-registered sample of 100 public AI-adjacent repos, every critical/high finding was adjudicated by a human (the project owner, cross-checked by an external judge from a different model family): pooled precision is **46.5%** (94/202, Wilson 95% CI [39.8–53.4]) — with a 6-rule core at ≥60% human-verified precision and two rules quarantined at 0% because humans said so. The full method and artifacts are [below](#the-deterministic-path-measured-against-humans). What that means for you: the core signals (leaked secrets in CI, weak JWT fallbacks, missing pagination limits) are trustworthy; the tail still cries wolf, and the report says which is which. What you can verify by hand today is every citation; what you can now also consult is a measured precision, not a vibe. [The full report this demo produced](examples/detect-realworld/report.md) is committed alongside the [snapshot it scanned](examples/detect-realworld/repo/) — reproduce it with that exact command and diff. The `--out` is not decoration: the tool's default output directory is `<target>/.dontkillthevibes/`, i.e. *inside* the frozen snapshot, so without it the committed artifacts stay untouched and the diff is empty. Be exact about what is reproducible: `report.md` and `prompts.md` come out **byte-identical**, and `findings.json` differs in exactly two fields — `generated_at` (a wall-clock timestamp) and `target` (the absolute path of *your* checkout, which `report.md` and `prompts.md` print too). Nothing else varies between runs; the finding counts, ordering and citations are deterministic.
+**The caveat, said out loud.** Precision over *all* detector findings used to be unmeasured; it no longer is. On a pre-registered sample of 100 public AI-adjacent repos, every critical/high finding was adjudicated by a human (the project owner, cross-checked by an external judge from a different model family): pooled precision is **46.5%** (94/202, Wilson 95% CI [39.8–53.4]) — with a 6-rule core at ≥60% human-verified precision and two rules quarantined at 0% because humans said so. The full method and artifacts are [below](#the-deterministic-path-measured-against-humans). What that means for you: the core signals (leaked secrets in CI, weak JWT fallbacks, missing pagination limits) are trustworthy; the tail still cries wolf, and the report says which is which. What you can verify by hand today is every citation; what you can now also consult is a measured precision, not a vibe. [The full report this demo produced](examples/detect-realworld/report.md) is committed alongside the [snapshot it scanned](examples/detect-realworld/repo/) — reproduce it with that exact command and diff. The `--out` is not decoration: the tool's default output directory is `<target>/.dontkillthevibes/`, i.e. *inside* the frozen snapshot, so without it the committed artifacts stay untouched and the diff is empty. Be exact about what is reproducible: artifacts display the target **as passed on the command line** (not an absolute path), so run from the repo root with the commands above, `report.md` and `prompts.md` come out **byte-identical** on any machine, and `findings.json` differs in exactly one field — `generated_at` (a wall-clock timestamp). Nothing else varies between runs; the finding counts, ordering and citations are deterministic. (Earlier revisions embedded the author's absolute checkout path in the artifacts; that made the byte-identical claim false anywhere else — fixed 2026-10-16.)
 
 ## Overview
 
-**DontKillTheVibes** is a deterministic audit toolkit for AI-built repositories: structured detectors (gitleaks/semgrep/glob specs, no LLM in the loop) find issues with file:line citations that are valid by construction, and a registry of 368 canonical rules translates each hit into severity, effort, evidence and a remediation you can paste to your coding agent.
+**DontKillTheVibes** is a deterministic audit toolkit for AI-built repositories: its own matchers (gitleaks-style secret detection, git-log history checks, glob/content specs — no external scanner binaries required, no LLM in the loop) find issues with file:line citations that are valid by construction, and a registry of 368 canonical rules translates each hit into severity, effort, evidence and a remediation you can paste to your coding agent.
 
-The LLM proposes nothing here. **The detectors find; the registry disposes.** Each rule owns its own severity and effort, so no model can inflate or invent them — and when a rule misbehaves, fixtures plus a human-adjudicated verdict map catch it (two rules are quarantined at 0% human-verified precision). The LLM-as-detector paths from v0.1.0 remain in the repo as versioned evidence, not as the recommended path.
+Honest scope: 24 rules declare `semgrep` specs and 8 declare `osv-scanner` specs that are **not yet wired** — the engine reports them as skipped, never silently. What runs today is the built-in matcher set plus git-log. Each rule owns its own severity and effort, so no model can inflate or invent them — and when a rule misbehaves, fixtures plus a human-adjudicated verdict map catch it (two rules are quarantined at 0% human-verified precision). The LLM-as-detector paths from v0.1.0 remain in the repo as versioned evidence, not as the recommended path.
 
 ## 🎯 The Vibe Coding Problems We Solve
 

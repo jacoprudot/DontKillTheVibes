@@ -37,6 +37,25 @@ tool's observable contract. This file is the record of those changes.
 
 ---
 
+## 2026-10-16 — Ausencia scope: exclude lint/test/build configs from the DB-timeout gap checks
+
+**Fingerprint: `368-08ed86b6`** (unchanged — no rule id/severity/effort change) ·
+**Specs fingerprint: `368-00247948`** (changed) · **368 canonical finding rules** · 0 ids
+added/removed, 0 severities changed.
+
+Why: `content-absence` gap rules fire on every scanned file lacking the pattern; on the demo
+repo they reported "DB idle timeout missing" in `.eslintrc.json`, `jest.config.ts`,
+`tsconfig.json` and other lint/test/build configs — noise a reader cannot act on (found by
+external product review, 2026-10-16).
+
+What: `database-idle-timeout-missing-4` `exclude_glob` extended with
+`jest.config.*`, `.eslintrc*`, `.prettierrc*`, `.babelrc*`, `babel.config.*`, `tsconfig.json`
+(full-pattern brace alternation, the documented `{README.md,docs/**}` form in `glob.mjs`).
+Negative fixtures added for `jest.config.ts` and `.eslintrc.json` (52/52 sets pass). The
+per-file semantics of `content-absence` (a repo-level concern reported per file, capped at 20)
+is a known class issue, parked for a later round — this entry fixes only the config-file
+slice demonstrated in the review.
+
 ## 2026-10-15 — Ronda 5 (secret-noise classifier): corpus-backed noise classes for the credential rules
 
 **Fingerprint: `368-08ed86b6`** (unchanged) · **Specs fingerprint: `368-fb05070a`** (unchanged —
