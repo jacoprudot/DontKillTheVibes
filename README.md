@@ -6,9 +6,9 @@
 
 Deterministic detectors audit the repo your AI built — every citation a real line, precision **measured against human verdicts: 46.5%** (n=202, sweep-100).
 
-Free, MIT, LLM-agnostic. Works with Claude Code, Cursor, Gemini, or any OpenAI-compatible endpoint.
+Free, MIT, zero dependencies, no API key. One command: `npx dontkillthevibes --target .`
 
-**[👉 See a real assessment on a real repository](examples/realworld-assessment-en/)** — raw pipeline output: findings with file:line citations, priority scores, and the plan. Judge for yourself before installing anything.
+**[👉 See the deterministic report on a real repository](examples/detect-realworld/report.md)** — raw engine output: findings with file:line citations, severity, and paste-ready remediation prompts. Judge for yourself before installing anything.
 
 ## ⚠️ Pivot (2026-10-06): the LLM-as-detector paths are retired
 
@@ -16,7 +16,7 @@ Free, MIT, LLM-agnostic. Works with Claude Code, Cursor, Gemini, or any OpenAI-c
 
 **Why it did not serve vibecoders:** the structure was real but the findings were not actionable. Measured on 10 vibe-coded repos ([evidence](benchmark/results-lote2-crossjudge/VALIDATION-REPORT-REV5.md)): only **60%** of citations resolve to a real line, **88%** of orchestrated findings were unverifiable, and precision over all claims was **24%** (single pass) / **10%** (orchestrator). A user cannot fix a finding they cannot verify — the report read complete and wasn't. The unreliable part was the LLM as *detector*; the asset that survived is the **368-rule registry + contract**.
 
-**New direction**, declared in [PLAN.md](PLAN.md): deterministic detectors (`gitleaks`/`semgrep`/`osv-scanner`) find, the registry translates, code assembles the report — citations valid by construction. Paths A/B/C below stay as **versioned evidence**, not as the recommended path.
+**New direction**, declared in [PLAN.md](PLAN.md): built-in deterministic matchers (gitleaks-style secret detection, git-log history checks, glob/content specs — no external scanner binaries) find, the registry translates, code assembles the report — citations valid by construction. Paths A/B/C below stay as **versioned evidence**, not as the recommended path.
 
 ## 🔍 See it work (20 seconds, no install)
 
@@ -50,7 +50,7 @@ Remediation: Use strong random secret (minimum 32 bytes) from secure source
 Why first:  critical in the security module outranks everything else — that ordering is arithmetic, not a model's mood
 ```
 
-**The honest number.** A general single-model pass over the same repo reported **3 findings, 0 security, 0 criticals** ([committed baseline](examples/gemini-baseline/)). It never saw this auth bypass — the most severe thing in the repository. The deterministic detector finds all three sites in 402 ms on the committed snapshot (`pnpm detect`, measured here — no network, no model, no API key), and every citation resolves to a real line *by construction*: the scanner produced the citation by matching the line.
+**The honest number.** A general single-model pass over the same repo reported **3 findings, 0 security, 0 criticals** ([committed baseline](examples/gemini-baseline/)). It never saw this auth bypass — the most severe thing in the repository. The deterministic detector finds all three sites in 402 ms on the committed snapshot (`node scripts/detect/run.mjs`, measured here — no network, no model, no API key), and every citation resolves to a real line *by construction*: the scanner produced the citation by matching the line.
 
 **The caveat, said out loud.** Precision over *all* detector findings used to be unmeasured; it no longer is. On a pre-registered sample of 100 public AI-adjacent repos, every critical/high finding was adjudicated by a human (the project owner, cross-checked by an external judge from a different model family): pooled precision is **46.5%** (94/202, Wilson 95% CI [39.8–53.4]) — with a 6-rule core at ≥60% human-verified precision and two rules quarantined at 0% because humans said so. The full method and artifacts are [below](#the-deterministic-path-measured-against-humans). What that means for you: the core signals (leaked secrets in CI, weak JWT fallbacks, missing pagination limits) are trustworthy; the tail still cries wolf, and the report says which is which. What you can verify by hand today is every citation; what you can now also consult is a measured precision, not a vibe. [The full report this demo produced](examples/detect-realworld/report.md) is committed alongside the [snapshot it scanned](examples/detect-realworld/repo/) — reproduce it with that exact command and diff. The `--out` is not decoration: the tool's default output directory is `<target>/.dontkillthevibes/`, i.e. *inside* the frozen snapshot, so without it the committed artifacts stay untouched and the diff is empty. Be exact about what is reproducible: artifacts display the target **as passed on the command line** (not an absolute path), so run from the repo root with the commands above, `report.md` and `prompts.md` come out **byte-identical** on any machine, and `findings.json` differs in exactly one field — `generated_at` (a wall-clock timestamp). Nothing else varies between runs; the finding counts, ordering and citations are deterministic. (Earlier revisions embedded the author's absolute checkout path in the artifacts; that made the byte-identical claim false anywhere else — fixed 2026-10-16.)
 
@@ -65,15 +65,15 @@ Honest scope: 24 rules declare `semgrep` specs and 8 declare `osv-scanner` specs
 As teams increasingly rely on AI to write code, several critical risks emerge. DKTV is explicitly designed to catch them:
 
 1. **Silent tech debt accumulation** — LLMs with limited context duplicate logic and patch superficially. The `structure` and `code-quality` skills look at macro-architecture: coupling, dependency cycles, duplication.
-2. **Critical security vulnerabilities** — iterative AI bug-fixing inherits insecure patterns (hardcoded secrets, open CORS, leaked errors). The `security` skill is the strongest module: 45 rules, hand-verified ground truth.
-3. **Loss of control (black box effect)** — the Synthesis Agent returns control by outputting a structured, prioritized roadmap: what to fix in 30/60/90 days, what blocks what, and *why*.
+2. **Critical security vulnerabilities** — iterative AI bug-fixing inherits insecure patterns (hardcoded secrets, open CORS, leaked errors). The security module is the strongest: 45 rules, and the highest human-verified precision in the sweep (secrets-in-CI 100%, weak-JWT 100%).
+3. **Loss of control (black box effect)** — the report returns control by outputting a structured, prioritized roadmap: what to fix first, what blocks what, and *why*.
 4. **Hidden costs** — the `cost` and `performance` skills flag API-call-in-loop, missing caches, and sequential-where-parallel patterns.
 
 ## ⚡ Quick Start
 
-Three ways to run it, from zero-config to full pipeline:
+The recommended path is the deterministic engine — the one-command demo above (`npx dontkillthevibes --target /path/to/repo`, or `node scripts/detect/report.mjs` for the full report with remediation prompts). What follows are the three legacy LLM paths from v0.1.0, kept as versioned evidence of what was measured and retired — not as the recommended way to run the tool:
 
-### Path A — inside your AI agent (zero config, no API key needed)
+### Path A — inside your AI agent (zero config, no API key needed) — LEGACY
 
 The toolkit is skills + agents + MCPs: your existing agent subscription does the work.
 
@@ -158,9 +158,9 @@ The table above measures LLM arms. The recommended path is deterministic — and
 - **The core is much sharper than the pooled figure.** Six rules sit at ≥60% human-verified precision — leaked secrets in CI (100%), weak JWT fallback (100%), sequential pagination without limit (100%), `NOT NULL` column without default (80%), hardcoded secrets in code (61%), sensitive data in logs (60%). Two rules that humans rated 0% are **quarantined**: the tool retires its own rules when the evidence says they don't fire.
 - **Honest limits:** the denominator is critical/high findings only; medium/low noise is not in this figure. The judgment tier (117 of the 368 rules that need context, not pattern-matching) is not yet measured. The sample is 100 public repos, not your repo — run it on yours and verify the citations yourself; that takes minutes, and it is the design intent.
 
-## See it on a real repository
+## See it on a real repository (v0.1.0 LLM-toolkit output — versioned evidence of the retired path)
 
-[`examples/realworld-assessment/`](examples/realworld-assessment/) — a complete run on the RealWorld API repo: 7 findings traced to canonical rule IDs, including the critical JWT-secret fallback that a plain LLM pass missed. [`examples/realworld-assessment-en/`](examples/realworld-assessment-en/) is the raw English pipeline output for the same repo — exactly what the tool emits, no hand-tuning, validator verdict included.
+[`examples/realworld-assessment/`](examples/realworld-assessment/) — a complete legacy run on the RealWorld API repo: 7 findings traced to canonical rule IDs, including the critical JWT-secret fallback that a plain LLM pass missed. [`examples/realworld-assessment-en/`](examples/realworld-assessment-en/) is the raw English pipeline output for the same repo. The deterministic engine's own output on the same repository is the [committed demo report](examples/detect-realworld/report.md) above.
 
 What the output looks like, end to end:
 
