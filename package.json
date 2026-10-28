@@ -15,7 +15,18 @@
   ],
   "author": "Jacobo Prudot (Jaco) <jaco@leongael.xyz>",
   "license": "MIT",
-  "private": true,
+  "bin": {
+    "dktv": "scripts/detect/run.mjs",
+    "dktv-report": "scripts/detect/report.mjs"
+  },
+  "files": [
+    "scripts/detect/**",
+    "scripts/lib/**",
+    "skills/**",
+    "README.md",
+    "PLAN.md",
+    "LICENSE"
+  ],
   "packageManager": "pnpm@12.8.1",
   "engines": {
     "node": ">=20.0.0"
