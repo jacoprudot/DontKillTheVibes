@@ -27,7 +27,11 @@ git clone https://github.com/jacoprudot/dontkillthevibes.git && cd dontkillthevi
 node scripts/detect/run.mjs --target examples/detect-realworld/repo
 ```
 
-No install step: the engine has zero npm dependencies (verified). `pnpm install` is only needed for the MCP packages and the legacy paths.
+No install step: the engine has zero npm dependencies (verified). `pnpm install` is only needed for the MCP packages and the legacy paths. On any repo of yours:
+
+```bash
+npx dontkillthevibes --target /path/to/your/repo
+```
 
 Raw signal, straight from the scanner — this exact line is in the repo:
 

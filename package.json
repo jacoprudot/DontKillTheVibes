@@ -16,6 +16,7 @@
   "author": "Jacobo Prudot (Jaco) <jaco@leongael.xyz>",
   "license": "MIT",
   "bin": {
+    "dontkillthevibes": "scripts/detect/run.mjs",
     "dktv": "scripts/detect/run.mjs",
     "dktv-report": "scripts/detect/report.mjs"
   },
@@ -23,6 +24,7 @@
     "scripts/detect/**",
     "scripts/lib/**",
     "skills/**",
+    "agents/synthesis-agent.md",
     "README.md",
     "PLAN.md",
     "LICENSE"
